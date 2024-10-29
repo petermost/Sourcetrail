@@ -114,7 +114,7 @@ if (isVcpkgBuild)
 	set(Boost_NO_SYSTEM_PATHS ON)
 endif()
 
-find_package(Boost 1.83 REQUIRED COMPONENTS
+find_package(Boost 1.83 CONFIG REQUIRED COMPONENTS
 	# compiled libraries:
 	system program_options filesystem date_time locale
 
@@ -130,7 +130,7 @@ add_library(External_lib_boost INTERFACE)
 
 target_compile_definitions(External_lib_boost
 	INTERFACE
-		# Fix "Boost-uuid should link against bcrypt on windows"
+	# Fix "Boost-uuid should link against bcrypt on windows"
 		# (https://github.com/microsoft/vcpkg/issues/4481)
 		BOOST_UUID_FORCE_AUTO_LINK
 
@@ -217,12 +217,12 @@ add_subdirectory(src/lib)
 if (NOT isVcpkgBuild)
 	set_target_properties(Sourcetrail_lib
 		PROPERTIES
-			LINK_INTERFACE_MULTIPLICITY 3
+		LINK_INTERFACE_MULTIPLICITY 3
 	)
 
-	set_target_properties(Sourcetrail_lib_gui
+set_target_properties(Sourcetrail_lib_gui
 		PROPERTIES
-			LINK_INTERFACE_MULTIPLICITY 3
+		LINK_INTERFACE_MULTIPLICITY 3
 	)
 endif()
 
@@ -248,18 +248,18 @@ if (BUILD_CXX_LANGUAGE_PACKAGE)
 	add_library(External_lib_clang INTERFACE)
 	target_compile_definitions(External_lib_clang
 		INTERFACE
-			${LLVM_DEFINITIONS}
+		${LLVM_DEFINITIONS}
 	)
-	target_include_directories(External_lib_clang SYSTEM
+target_include_directories(External_lib_clang SYSTEM
 		INTERFACE
-			${LLVM_INCLUDE_DIRS}
+		${LLVM_INCLUDE_DIRS}
 	)
-	llvm_map_components_to_libnames(REQ_LLVM_LIBS
+llvm_map_components_to_libnames(REQ_LLVM_LIBS
 		${LLVM_TARGETS_TO_BUILD} support core libdriver passes option
 	)
-	target_link_libraries(External_lib_clang
+target_link_libraries(External_lib_clang
 		INTERFACE
-			clangASTMatchers
+		clangASTMatchers
 			clangFrontend
 			clangSerialization
 			clangDriver
@@ -279,7 +279,7 @@ if (BUILD_CXX_LANGUAGE_PACKAGE)
 			${REQ_LLVM_LIBS}
 	)
 
-	add_subdirectory(src/lib_cxx)
+add_subdirectory(src/lib_cxx)
 else()
 	message(STATUS "Building the Cxx indexer will be skipped. You can enable building this target by setting 'BUILD_CXX_LANGUAGE_PACKAGE' to 'ON'.")
 endif()
