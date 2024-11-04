@@ -7,6 +7,7 @@
 #include "CodeFocusHandler.h"
 #include "QtCodeField.h"
 #include "QtScrollSpeedChangeListener.h"
+#include "compatibilityQt.h"
 
 class QDragMoveEvent;
 class QPaintEvent;

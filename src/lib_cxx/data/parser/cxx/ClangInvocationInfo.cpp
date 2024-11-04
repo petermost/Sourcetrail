@@ -47,7 +47,11 @@ ClangInvocationInfo ClangInvocationInfo::getClangInvocationString(
 		const char* const BinaryName = Argv[0];
 		clang::IntrusiveRefCntPtr<clang::DiagnosticOptions> DiagOpts = new clang::DiagnosticOptions();
 		unsigned MissingArgIndex, MissingArgCount;
+<<<<<<< HEAD
 		const llvm::opt::OptTable &Opts = clang::driver::getDriverOptTable();
+=======
+		const llvm::opt::OptTable& Opts = clang::driver::getDriverOptTable();
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 		llvm::opt::InputArgList ParsedArgs = Opts.ParseArgs(
 			clang::ArrayRef<const char*>(Argv).slice(1), MissingArgIndex, MissingArgCount);
 		clang::ParseDiagnosticArgs(*DiagOpts, ParsedArgs);

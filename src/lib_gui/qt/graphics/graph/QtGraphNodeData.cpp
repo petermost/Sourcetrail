@@ -75,6 +75,7 @@ void QtGraphNodeData::onMiddleClick()
 
 void QtGraphNodeData::updateStyle()
 {
+	const Node* data = getData();
 	GraphViewStyle::NodeStyle style = GraphViewStyle::getStyleForNodeType(
 		m_data->getType(),
 		m_data->isExplicit(),
@@ -82,7 +83,8 @@ void QtGraphNodeData::updateStyle()
 		m_isFocused,
 		m_isCoFocused,
 		m_childVisible,
-		m_hasQualifier);
+		m_hasQualifier,
+		data ? data->getId() : 0);
 
 	TokenComponentFilePath* component = m_data->getComponent<TokenComponentFilePath>();
 	if (component && !component->isComplete())

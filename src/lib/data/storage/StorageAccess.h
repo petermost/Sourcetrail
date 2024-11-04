@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <set>
 
 #include "types.h"
 
@@ -16,6 +17,7 @@
 #include "Node.h"
 #include "NodeBookmark.h"
 #include "SearchMatch.h"
+#include "StorageNodeFile.h"
 #include "StorageEdge.h"
 #include "StorageStats.h"
 #include "TooltipInfo.h"
@@ -45,6 +47,9 @@ public:
 		const std::vector<Id>& nodeIds) const = 0;
 	virtual std::map<Id, std::pair<Id, NameHierarchy>> getNodeIdToParentFileMap(
 		const std::vector<Id>& nodeIds) const = 0;
+
+	virtual std::set<Id> getReferencingNodes(Id nodeId) const = 0;
+	virtual std::set<Id> getReferencedNodes(Id nodeId) const = 0;
 
 	virtual NodeType getNodeTypeForNodeWithId(Id id) const = 0;
 
@@ -99,6 +104,8 @@ public:
 	virtual FileInfo getFileInfoForFilePath(const FilePath& filePath) const = 0;
 	virtual std::vector<FileInfo> getFileInfosForFilePaths(
 		const std::vector<FilePath>& filePaths) const = 0;
+
+	virtual StorageNodeFile getAssociatedFile(Id id) const = 0;
 
 	virtual StorageStats getStorageStats() const = 0;
 

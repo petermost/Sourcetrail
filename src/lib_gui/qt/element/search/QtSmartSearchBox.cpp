@@ -512,8 +512,13 @@ void QtSmartSearchBox::mouseMoveEvent(QMouseEvent* event)
 		return;
 	}
 
+<<<<<<< HEAD
 	int lo = QMouseEvent_x(event) < m_mouseX ? QMouseEvent_x(event) : m_mouseX;
 	int hi = QMouseEvent_x(event) > m_mouseX ? QMouseEvent_x(event) : m_mouseX;
+=======
+	int lo = utility::compatibility::QMouseEvent_x(event) < m_mouseX ? utility::compatibility::QMouseEvent_x(event) : m_mouseX;
+	int hi = utility::compatibility::QMouseEvent_x(event) > m_mouseX ? utility::compatibility::QMouseEvent_x(event) : m_mouseX;
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 
 	for (size_t i = 0; i < m_elements.size(); i++)
 	{
@@ -532,7 +537,11 @@ void QtSmartSearchBox::mousePressEvent(QMouseEvent* event)
 		QLineEdit::mousePressEvent(event);
 
 		m_mousePressed = true;
+<<<<<<< HEAD
 		m_mouseX = QMouseEvent_x(event);
+=======
+		m_mouseX = utility::compatibility::QMouseEvent_x(event);
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 	}
 
 	m_ignoreNextMousePress = false;
@@ -549,16 +558,28 @@ void QtSmartSearchBox::mouseReleaseEvent(QMouseEvent* event)
 
 	m_mousePressed = false;
 
+<<<<<<< HEAD
 	if (abs(QMouseEvent_x(event) - m_mouseX) > 5)
+=======
+	if (abs(utility::compatibility::QMouseEvent_x(event) - m_mouseX) > 5)
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 	{
 		return;
 	}
 
+<<<<<<< HEAD
 	int minDist = QMouseEvent_x(event);
 	int pos = 0;
 	for (size_t i = 0; i < m_elements.size(); i++)
 	{
 		int dist = m_elements[i]->x() + m_elements[i]->width() - QMouseEvent_x(event);
+=======
+	int minDist = utility::compatibility::QMouseEvent_x(event);
+	int pos = 0;
+	for (size_t i = 0; i < m_elements.size(); i++)
+	{
+		int dist = m_elements[i]->x() + m_elements[i]->width() - utility::compatibility::QMouseEvent_x(event);
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 		if (abs(dist) < abs(minDist))
 		{
 			pos = static_cast<int>(i) + 1;

@@ -127,7 +127,8 @@ public:
 		bool isFocused,
 		bool isCoFocused,
 		bool hasChildren,
-		bool hasQualifier);
+		bool hasQualifier,
+		Id nodeId=0);
 	static NodeStyle getStyleOfAccessNode();
 	static NodeStyle getStyleOfExpandToggleNode();
 	static NodeStyle getStyleOfCountCircle();
@@ -137,7 +138,7 @@ public:
 	static NodeStyle getStyleOfGroupNode(GroupType type, bool isCoFocused);
 
 	static EdgeStyle getStyleForEdgeType(
-		Edge::EdgeType type, bool isActive, bool isFocused, bool isTrailEdge, bool isAmbiguous);
+		Edge::EdgeType type, bool isActive, bool isFocused, bool isTrailEdge, bool isAmbiguous, Id edgeId=0);
 
 	static int toGridOffset(int x);
 	static int toGridSize(int x);
@@ -146,12 +147,16 @@ public:
 	static float getZoomFactor();
 
 	static const std::string& getFocusColor();
-	static const NodeColor& getNodeColor(const std::string& typeStr, bool highlight);
-	static const std::string& getEdgeColor(const std::string& type);
+	static const NodeColor& getNodeColor(const std::string& typeStr, bool highlight, Id nodeId=0);
+	static const std::string& getEdgeColor(const std::string& type, Id edgeId=0);
 	static const NodeColor& getScreenMatchColor(bool focus);
 
 	static int s_gridCellSize;
 	static int s_gridCellPadding;
+
+	static std::map<Id, std::string> s_customEdgeColors;
+	static std::map<Id, NodeColor> s_customNodeColors;
+	static std::map<Id, NodeColor> s_fullNodeColors;
 
 private:
 	static NodeStyle getStyleForNodeType(
@@ -163,7 +168,8 @@ private:
 		bool isFocused,
 		bool isCoFocused,
 		bool hasChildren,
-		bool hasQualifier);
+		bool hasQualifier,
+		Id nodeId);
 
 	static float getCharWidth(NodeType::StyleType type);
 	static float getCharHeight(NodeType::StyleType type);

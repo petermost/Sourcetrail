@@ -96,12 +96,20 @@ SymbolKind utility::convertTagKind(const clang::TagTypeKind tagKind)
 	}
 }
 
+<<<<<<< HEAD
 bool utility::isLocalVariable(const clang::ValueDecl *d)
+=======
+bool utility::isLocalVariable(const clang::ValueDecl* d)
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 {
 	return !llvm::isa<clang::ParmVarDecl>(d) && !(d->getParentFunctionOrMethod() == nullptr);
 }
 
+<<<<<<< HEAD
 bool utility::isParameter(const clang::ValueDecl *d)
+=======
+bool utility::isParameter(const clang::ValueDecl* d)
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 {
 	return llvm::isa<clang::ParmVarDecl>(d);
 }
@@ -127,8 +135,13 @@ SymbolKind utility::getSymbolKind(const clang::VarDecl* d)
 
 wstring utility::getFileNameOfFileEntry(const FileEntryRef &entry)
 {
+<<<<<<< HEAD
 	wstring fileName = decodeFromUtf8(entry.getFileEntry().tryGetRealPathName().str());
 	if (fileName.empty())
+=======
+	std::wstring fileName = L"";
+	if (entry != nullptr)
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 	{
 		fileName = decodeFromUtf8(entry.getName().str());
 	}

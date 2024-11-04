@@ -4,10 +4,12 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <set>
 
 #include "ErrorInfo.h"
 #include "LocationType.h"
 #include "LowMemoryStringMap.h"
+#include "NodeExtras.h"
 #include "SqliteDatabaseIndex.h"
 #include "SqliteStorage.h"
 #include "StorageComponentAccess.h"
@@ -17,6 +19,8 @@
 #include "StorageFile.h"
 #include "StorageLocalSymbol.h"
 #include "StorageNode.h"
+#include "StorageNodeFile.h"
+#include "StorageNodeType.h"
 #include "StorageOccurrence.h"
 #include "StorageSourceLocation.h"
 #include "StorageSymbol.h"
@@ -86,6 +90,9 @@ public:
 	StorageEdge getEdgeById(Id edgeId) const;
 	StorageEdge getEdgeBySourceTargetType(Id sourceId, Id targetId, int type) const;
 
+	std::map<Id,std::string> getEdgeColors() const;
+	std::map<Id, std::string> getEdgeHoverText() const;
+
 	std::vector<StorageEdge> getEdgesBySourceId(Id sourceId) const;
 	std::vector<StorageEdge> getEdgesBySourceIds(const std::vector<Id>& sourceIds) const;
 	std::vector<StorageEdge> getEdgesByTargetId(Id targetId) const;
@@ -100,6 +107,13 @@ public:
 
 	StorageNode getNodeById(Id id) const;
 	StorageNode getNodeBySerializedName(const std::wstring& serializedName) const;
+
+	std::map<Id, std::string> getNodeColors() const;
+	std::map<Id, std::string> getNodeHoverText() const;
+	std::map<Id, CustomCommand> getNodeCustomCommands() const;
+
+	std::set<Id> getReferencingNodes(Id nodeId) const;
+	std::set<Id> getReferencedNodes(Id nodeId) const;
 
 	std::vector<int> getAvailableNodeTypes() const;
 	std::vector<int> getAvailableEdgeTypes() const;
@@ -136,6 +150,9 @@ public:
 		const std::vector<Id>& elementIds) const;
 
 	std::vector<ErrorInfo> getAllErrorInfos() const;
+
+	StorageNodeFile getAssociatedFile(Id fileId) const;
+	StorageNodeFile getAssociatedFile(const FilePath& filePath) const;
 
 	template <typename ResultType>
 	std::vector<ResultType> getAll() const
@@ -192,6 +209,8 @@ public:
 	int getFileLineSum() const;
 	int getSourceLocationCount() const;
 	int getErrorCount() const;
+
+	void setupNodeTypes();
 
 private:
 	static const size_t s_storageVersion;
@@ -374,6 +393,12 @@ void SqliteIndexStorage::forEach<StorageEdge>(
 template <>
 void SqliteIndexStorage::forEach<StorageNode>(
 	const std::string& query, std::function<void(StorageNode&&)> func) const;
+template <>
+void SqliteIndexStorage::forEach<StorageNodeType>(
+	const std::string& query, std::function<void(StorageNodeType&&)> func) const;
+template <>
+void SqliteIndexStorage::forEach<StorageNodeFile>(
+	const std::string& query, std::function<void(StorageNodeFile&&)> func) const;
 template <>
 void SqliteIndexStorage::forEach<StorageSymbol>(
 	const std::string& query, std::function<void(StorageSymbol&&)> func) const;

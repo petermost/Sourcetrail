@@ -162,7 +162,11 @@ std::unique_ptr<CxxTypeName> CxxTypeNameResolver::getName(const clang::Type* typ
 					resolver.ignoreContextDecl(templateSpecializationType->getTemplateName()
 												   .getAsTemplateDecl()
 												   ->getTemplatedDecl());
+<<<<<<< HEAD
 					for (const clang::TemplateArgument &templateArgument : templateSpecializationType->template_arguments())
+=======
+					for (const clang::TemplateArgument& templateArgument : templateSpecializationType->template_arguments())
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 					{
 						if (templateArgument.isDependent())
 						{
@@ -220,7 +224,11 @@ std::unique_ptr<CxxTypeName> CxxTypeNameResolver::getName(const clang::Type* typ
 
 			std::vector<std::wstring> templateArguments;
 			CxxTemplateArgumentNameResolver resolver(this);
+<<<<<<< HEAD
 			for (const clang::TemplateArgument &templateArgument : dependentType->template_arguments())
+=======
+			for (const clang::TemplateArgument& templateArgument : dependentType->template_arguments())
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 			{
 				templateArguments.push_back(
 					resolver.getTemplateArgumentName(templateArgument));

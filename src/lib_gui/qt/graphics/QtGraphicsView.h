@@ -3,11 +3,18 @@
 
 #include <memory>
 
+#include <boost/process.hpp>
+#include <boost/algorithm/string.hpp>
+
 #include <QGraphicsView>
 
 #include "MessageListener.h"
 #include "MessageSaveAsImage.h"
+<<<<<<< HEAD
 #include "types.h"
+=======
+#include "NodeExtras.h"
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 
 
 class GraphFocusHandler;
@@ -83,7 +90,10 @@ private slots:
 	void showDefinition();
 	void hideNode();
 	void hideEdge();
+
 	void bookmarkNode();
+	void bookmarkReferencing();
+	void bookmarkReferences();
 
 	void zoomInPressed();
 	void zoomOutPressed();
@@ -91,6 +101,8 @@ private slots:
 	void hideZoomLabel();
 
 	static void legendClicked();
+
+	void execCustomAction();
 
 private:
 	bool moves() const;
@@ -137,9 +149,14 @@ private:
 	QAction* m_hideNodeAction;
 	QAction* m_hideEdgeAction;
 	QAction* m_bookmarkNodeAction;
+	QAction* m_bookmarkReferencingAction;
+	QAction* m_bookmarkReferencesAction;
 
 	QAction* m_exportGraphAction;
 	QAction* m_copyGraphAction;
+
+	QAction* m_customCommand;
+	CustomCommand commandData;
 
 	QWidget* m_focusIndicator;
 

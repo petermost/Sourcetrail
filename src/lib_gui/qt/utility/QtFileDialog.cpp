@@ -4,6 +4,7 @@
 #include <QListView>
 #include <QRegularExpression>
 #include <QTreeView>
+#include <QRegExp>
 
 #include "ApplicationSettings.h"
 #include "FilePath.h"

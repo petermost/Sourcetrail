@@ -22,6 +22,8 @@
 	border: none;
 	color: black;
 	font-size: 12px;
+	padding-left: 6px;
+	padding-right: 6px;
 }
 
 #recentButtonMissing {

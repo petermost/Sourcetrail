@@ -13,6 +13,7 @@
 #include "SourceLocationCollection.h"
 #include "SourceLocationFile.h"
 #include "StorageAccess.h"
+#include "StorageNodeFile.h"
 #include "TextAccess.h"
 #include "logging.h"
 #include "tracing.h"
@@ -219,6 +220,11 @@ void CodeController::handleMessage(MessageActivateTokens* message)
 	m_collection = m_storageAccess->getSourceLocationsForTokenIds(params.activeTokenIds);
 
 	m_files = getFilesForActiveSourceLocations(m_collection.get(), declarationId);
+
+	CodeFileParams sideloadedFile = getSideloadedFile(params.activeTokenIds[0]);
+	if (sideloadedFile.referenceCount != 0)
+		m_files.push_back(sideloadedFile);
+
 	createReferences();
 	expandVisibleFiles(params.useSingleFileCache);
 	showFiles(params, definitionReferenceScrollParams(params.activeTokenIds), !message->isReplayed());
@@ -717,6 +723,22 @@ std::vector<CodeFileParams> CodeController::getFilesForCollection(
 	return files;
 }
 
+CodeFileParams CodeController::getSideloadedFile(Id nodeId) const
+{
+	CodeFileParams ret;
+	StorageNodeFile file = m_storageAccess->getAssociatedFile(nodeId);
+
+	if (file.id == 0)
+	{
+		return {};
+	}
+	FilePath basePath = Application::getInstance()->getCurrentProjectPath().getParentDirectory();
+	ret.locationFile = std::make_shared<SourceLocationFile>(
+		basePath.concatenate(FilePath(file.fileName)), L"", true, true, true);
+	ret.referenceCount = 1;
+
+	return ret;
+}
 
 CodeSnippetParams CodeController::getSnippetParamsForWholeFile(
 	std::shared_ptr<SourceLocationFile> locationFile, bool useSingleFileCache) const

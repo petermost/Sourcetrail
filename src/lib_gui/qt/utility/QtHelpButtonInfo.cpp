@@ -8,9 +8,15 @@ QtHelpButtonInfo::QtHelpButtonInfo(const QString& title, const QString& text)
 
 void QtHelpButtonInfo::displayMessage(QWidget* messageBoxParent)
 {
+<<<<<<< HEAD
 	QtMessageBox msgBox(messageBoxParent);
 	msgBox.setWindowTitle(QStringLiteral("Sourcetrail"));
 	msgBox.setIcon(QtMessageBox::Information);
+=======
+	QMessageBox msgBox(messageBoxParent);
+	msgBox.setWindowTitle(QStringLiteral("NumbatUI"));
+	msgBox.setIcon(QMessageBox::Information);
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 	msgBox.setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::LinksAccessibleByMouse);
 	msgBox.setText("<b>" + m_title + "</b>");
 	msgBox.setInformativeText(m_text);

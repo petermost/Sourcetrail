@@ -338,14 +338,14 @@ void QtWindow::setupDone()
 void QtWindow::addLogo()
 {
 	QtDeviceScaledPixmap sourcetrailLogo(
-		QString::fromStdWString(ResourcePaths::getGuiDirectoryPath().concatenate(L"window/logo.png").wstr()));
-	sourcetrailLogo.scaleToWidth(240);
+		QString::fromStdWString(ResourcePaths::getGuiDirectoryPath().concatenate(L"window/numbatui.png").wstr()));
+	sourcetrailLogo.scaleToWidth(200);
 
 	QLabel* sourcetrailLogoLabel = new QLabel(this);
 	sourcetrailLogoLabel->setPixmap(sourcetrailLogo.pixmap());
 	sourcetrailLogoLabel->resize(
 		static_cast<int>(sourcetrailLogo.width()), static_cast<int>(sourcetrailLogo.height()));
-	sourcetrailLogoLabel->move(m_isSubWindow ? 40 : 23, 25);
+	sourcetrailLogoLabel->move(m_isSubWindow ? 60 : 35, 0);
 	sourcetrailLogoLabel->show();
 
 	m_hasLogo = true;

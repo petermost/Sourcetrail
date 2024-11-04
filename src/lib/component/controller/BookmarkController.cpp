@@ -16,6 +16,8 @@
 #include "utility.h"
 #include "utilityString.h"
 
+#include <boost/range/combine.hpp>
+
 const std::wstring BookmarkController::s_edgeSeparatorToken = L" => ";
 const std::wstring BookmarkController::s_defaultCategoryName = L"default";
 
@@ -281,6 +283,31 @@ BookmarkController::BookmarkCache::BookmarkCache(StorageAccess* storageAccess)
 {
 }
 
+void BookmarkController::bookmarkReferencing(Id nodeId)
+{
+	std::set<Id> referencing = m_storageAccess->getReferencingNodes(nodeId);
+	std::vector<Id> referencing_vec(referencing.begin(),referencing.end());
+	std::vector<NameHierarchy> names = m_storageAccess->getNameHierarchiesForNodeIds(referencing_vec);
+	std::wstring nodeName = m_storageAccess->getNameHierarchyForNodeId(nodeId).getQualifiedName();
+	for (auto&& [id, name]: boost::combine(referencing_vec, names))
+	{
+		createBookmark(name.getQualifiedName(), L"", L"referencing " + nodeName, id);
+	}
+}
+
+void BookmarkController::bookmarkReferences(Id nodeId)
+{
+	std::set<Id> references = m_storageAccess->getReferencedNodes(nodeId);
+	std::vector<Id> references_vec(references.begin(),references.end());
+	std::vector<NameHierarchy> names = m_storageAccess->getNameHierarchiesForNodeIds(references_vec);
+	std::wstring nodeName = m_storageAccess->getNameHierarchyForNodeId(nodeId).getQualifiedName();
+
+	for (auto&& [id, name]: boost::combine(references_vec, names))
+	{
+		createBookmark(name.getQualifiedName(), L"", L"referenced by " + nodeName, id);
+	}
+}
+
 void BookmarkController::BookmarkCache::clear()
 {
 	m_nodeBookmarksValid = false;
@@ -370,7 +397,21 @@ void BookmarkController::handleMessage(MessageBookmarkEdit*  /*message*/)
 	showBookmarkCreator(0);
 }
 
+<<<<<<< HEAD
 void BookmarkController::handleMessage(MessageIndexingFinished*  /*message*/)
+=======
+void BookmarkController::handleMessage(MessageBookmarkReferencing* message)
+{
+	bookmarkReferencing(message->nodeId);
+}
+
+void BookmarkController::handleMessage(MessageBookmarkReferences* message)
+{
+	bookmarkReferences(message->nodeId);
+}
+
+void BookmarkController::handleMessage(MessageIndexingFinished* message)
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 {
 	m_bookmarkCache.clear();
 

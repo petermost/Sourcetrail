@@ -22,8 +22,13 @@ public:
 
 protected:
 	// because changing font-weight within the stylesheet does not work for some reason
+<<<<<<< HEAD
 	void enterEvent(QEnterEvent* event) override;
 	void leaveEvent(QEvent* event) override;
+=======
+	void enterEvent(QEnterEvent* event);
+	void leaveEvent(QEvent* event);
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 
 private:
 	QLabel* m_name;

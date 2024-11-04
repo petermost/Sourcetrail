@@ -248,8 +248,13 @@ bool FileSystem::copyDirectory(const FilePath &from, const FilePath &to)
 	{
 		return false;
 	}
+<<<<<<< HEAD
 	
 	boost::filesystem::copy(from.getPath(), to.getPath(), boost::filesystem::copy_options::recursive);
+=======
+
+	boost::filesystem::create_directory(to.getPath(), from.getPath());
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 	to.recheckExists();
 	return true;
 }

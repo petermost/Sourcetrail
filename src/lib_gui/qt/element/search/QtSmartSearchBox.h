@@ -9,6 +9,7 @@
 
 #include "QtAutocompletionList.h"
 #include "SearchMatch.h"
+#include "compatibilityQt.h"
 
 class NodeTypeSet;
 

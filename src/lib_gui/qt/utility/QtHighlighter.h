@@ -3,6 +3,8 @@
 
 #include <QRegularExpression>
 #include <QTextCharFormat>
+#include <QRegExp>
+#include <QRegularExpression>
 
 #include <aidkit/enum_class.hpp>
 

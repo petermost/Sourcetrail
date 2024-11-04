@@ -33,8 +33,13 @@ FilePath CanonicalFilePathCache::getCanonicalFilePath(
 
 	FilePath filePath;
 
+<<<<<<< HEAD
 	const OptionalFileEntryRef fileEntry = sourceManager.getFileEntryRefForID(fileId);
 	if (fileEntry)
+=======
+	const clang::FileEntry* fileEntry = sourceManager.getFileEntryForID(fileId);
+	if (fileEntry != nullptr)
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 	{
 		filePath = getCanonicalFilePath(*fileEntry);
 		m_fileIdMap.emplace(fileId, filePath);

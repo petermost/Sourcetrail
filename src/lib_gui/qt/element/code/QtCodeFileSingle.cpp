@@ -97,8 +97,8 @@ bool QtCodeFileSingle::addFile(const CodeFileParams& params, bool useSingleFileC
 	m_lastLocationFile = locationFile;
 
 	file.filePath = locationFile->getFilePath();
-	file.isComplete = locationFile->isComplete();
-	file.isIndexed = locationFile->isIndexed();
+	file.isComplete = params.locationFile->isComplete();
+	file.isIndexed = params.locationFile->isIndexed();
 	file.modificationTime = params.modificationTime;
 
 	if (params.fileParams->isOverview)

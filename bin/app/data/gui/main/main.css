@@ -58,3 +58,7 @@ QDockWidget::float-button {
 #screen_button:hover {
 	border: 1px solid <color:window/button/border_hover>;
 }
+
+QMenu::item:disabled {
+	color: #80808080;
+}

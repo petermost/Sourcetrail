@@ -148,6 +148,7 @@
 #creator_label {
 	font-size: 14px;
 	font-weight: bold;
+	color: black;
 }
 
 #creator_name_edit, #creator_comment_box {
@@ -159,6 +160,7 @@
 	min-height: 30px;
 	padding: 3px;
 	padding-left: 5px;
+	color: black;
 }
 
 #creator_comment_box {

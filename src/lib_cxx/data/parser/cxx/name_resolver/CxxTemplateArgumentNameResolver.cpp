@@ -51,7 +51,11 @@ std::wstring CxxTemplateArgumentNameResolver::getTemplateArgumentName(
 		constexpr bool includeType = false;
 		std::string buf;
 		llvm::raw_string_ostream os(buf);
+<<<<<<< HEAD
 		argument.print(pp, os, includeType);
+=======
+		argument.print(pp, os, true); // 3rd argument is required with llvm ver. >=14
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 		return utility::decodeFromUtf8(os.str());
 	}
 	case clang::TemplateArgument::Pack:

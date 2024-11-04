@@ -89,7 +89,11 @@ const SearchMatch& QtHistoryItem::getMatch() const
 	return m_match;
 }
 
+<<<<<<< HEAD
 void QtHistoryItem::enterEvent(QEnterEvent *event)
+=======
+void QtHistoryItem::enterEvent(QEnterEvent* event)
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 {
 	QWidget::enterEvent(event);
 

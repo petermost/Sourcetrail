@@ -304,6 +304,8 @@ add_library(Sourcetrail_lib
 	data/GroupType.h
 	data/HierarchyCache.cpp
 	data/HierarchyCache.h
+	data/NodeExtras.cpp
+	data/NodeExtras.h
 	data/NodeKind.cpp
 	data/NodeKind.h
 	data/NodeType.cpp

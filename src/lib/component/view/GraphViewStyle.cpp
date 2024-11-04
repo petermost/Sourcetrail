@@ -24,6 +24,10 @@ std::map<std::string, GraphViewStyle::NodeColor> GraphViewStyle::s_nodeColors;
 std::map<std::string, std::string> GraphViewStyle::s_edgeColors;
 std::map<bool, GraphViewStyle::NodeColor> GraphViewStyle::s_screenMatchColors;
 
+std::map<Id, std::string> GraphViewStyle::s_customEdgeColors;
+std::map<Id, GraphViewStyle::NodeColor> GraphViewStyle::s_customNodeColors;
+std::map<Id, GraphViewStyle::NodeColor> GraphViewStyle::s_fullNodeColors;
+
 Vec2i GraphViewStyle::alignOnRaster(Vec2i position)
 {
 	int rasterPosDivisor = s_gridCellSize + s_gridCellPadding;
@@ -113,6 +117,7 @@ void GraphViewStyle::loadStyleSettings()
 	s_focusColor.clear();
 	s_nodeColors.clear();
 	s_edgeColors.clear();
+	s_fullNodeColors.clear();
 	s_screenMatchColors.clear();
 
 	s_gridCellPadding = static_cast<int>(getCharHeight(NodeType::STYLE_BIG_NODE) - 8);
@@ -345,7 +350,8 @@ GraphViewStyle::NodeStyle GraphViewStyle::getStyleForNodeType(
 	bool isFocused,
 	bool isCoFocused,
 	bool hasChildren,
-	bool hasQualifier)
+	bool hasQualifier,
+	Id nodeId)
 {
 	return getStyleForNodeType(
 		type.getNodeStyle(),
@@ -356,7 +362,8 @@ GraphViewStyle::NodeStyle GraphViewStyle::getStyleForNodeType(
 		isFocused,
 		isCoFocused,
 		hasChildren,
-		hasQualifier);
+		hasQualifier,
+		nodeId);
 }
 
 GraphViewStyle::NodeStyle GraphViewStyle::getStyleForNodeType(
@@ -368,11 +375,12 @@ GraphViewStyle::NodeStyle GraphViewStyle::getStyleForNodeType(
 	bool isFocused,
 	bool isCoFocused,
 	bool hasChildren,
-	bool hasQualifier)
+	bool hasQualifier,
+	Id nodeId = 0)
 {
 	NodeStyle style;
 
-	style.color = getNodeColor(underscoredTypeString, isActive || isCoFocused);
+	style.color = getNodeColor(underscoredTypeString, isActive || isCoFocused, nodeId);
 
 	style.fontName = getFontNameForDataNode();
 	style.fontSize = getFontSizeForStyleType(type);
@@ -602,7 +610,7 @@ GraphViewStyle::NodeStyle GraphViewStyle::getStyleOfGroupNode(GroupType type, bo
 }
 
 GraphViewStyle::EdgeStyle GraphViewStyle::getStyleForEdgeType(
-	Edge::EdgeType type, bool isActive, bool isFocused, bool isTrailEdge, bool isAmbiguous)
+	Edge::EdgeType type, bool isActive, bool isFocused, bool isTrailEdge, bool isAmbiguous, Id edgeId)
 {
 	EdgeStyle style;
 
@@ -634,7 +642,8 @@ GraphViewStyle::EdgeStyle GraphViewStyle::getStyleForEdgeType(
 	}
 	else
 	{
-		style.color = getEdgeColor(utility::encodeToUtf8(Edge::getUnderscoredTypeString(type)));
+		style.color = getEdgeColor(
+			utility::encodeToUtf8(Edge::getUnderscoredTypeString(type)), edgeId);
 	}
 
 	switch (type)
@@ -756,12 +765,31 @@ const std::string& GraphViewStyle::getFocusColor()
 	return s_focusColor;
 }
 
-const GraphViewStyle::NodeColor& GraphViewStyle::getNodeColor(const std::string& typeStr, bool highlight)
+const GraphViewStyle::NodeColor& GraphViewStyle::getNodeColor(
+	const std::string& typeStr, bool highlight, Id nodeId)
 {
+	std::map<Id, NodeColor>::const_iterator it1 = s_customNodeColors.find(nodeId);
+	std::map<Id, NodeColor>::const_iterator it2 = s_fullNodeColors.find(nodeId);
+
+	// check for custom colors
+	if (it2 != s_fullNodeColors.end())
+	{
+		return it2->second;
+	}
+	if (it1 != s_customNodeColors.end())
+	{
+		if (it1->second.fill != "default" && it1->second.border != "default" &&
+			it1->second.text != "default" && it1->second.icon != "default" &&
+			it1->second.hatching != "default")
+		{
+			return it1->second;
+		}
+	}
+
 	std::string type = highlight ? typeStr + "highlight" : typeStr;
 	std::map<std::string, NodeColor>::const_iterator it = s_nodeColors.find(type);
 
-	if (it != s_nodeColors.end())
+	if (it1 == s_customNodeColors.end() && it != s_nodeColors.end())
 	{
 		return it->second;
 	}
@@ -777,11 +805,34 @@ const GraphViewStyle::NodeColor& GraphViewStyle::getNodeColor(const std::string&
 
 	s_nodeColors.emplace(type, color);
 
+	if (it1 != s_customNodeColors.end())
+	{
+		// load default colors if not registered in database
+		s_fullNodeColors[nodeId] = s_customNodeColors[nodeId];
+		if (it1->second.fill == "default")
+			s_fullNodeColors[nodeId].fill = color.fill;
+		if (it1->second.border == "default")
+			s_fullNodeColors[nodeId].border = color.border;
+		if (it1->second.text == "default")
+			s_fullNodeColors[nodeId].text = color.text;
+		if (it1->second.icon == "default")
+			s_fullNodeColors[nodeId].icon = color.icon;
+		if (it1->second.hatching == "default")
+			s_fullNodeColors[nodeId].hatching = color.hatching;
+		return s_fullNodeColors[nodeId];
+	}
+
 	return s_nodeColors.find(type)->second;
 }
 
-const std::string& GraphViewStyle::getEdgeColor(const std::string& type)
+const std::string& GraphViewStyle::getEdgeColor(const std::string& type, Id edgeId)
 {
+	std::map<Id, std::string>::const_iterator it1 = s_customEdgeColors.find(edgeId);
+	if (it1 != s_customEdgeColors.end())
+	{
+		return it1->second;
+	}
+
 	std::map<std::string, std::string>::const_iterator it = s_edgeColors.find(type);
 	if (it != s_edgeColors.end())
 	{

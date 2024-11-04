@@ -20,6 +20,7 @@ std::vector<NodeType> const NodeType::overviewBundleNodeTypesOrdered = {
 	NodeType(NODE_TYPEDEF),
 	NodeType(NODE_ENUM)};
 
+std::map<NodeKind, std::wstring> NodeType::nodeTypes;
 
 NodeType::NodeType(NodeKind kind): m_kind(kind) {}
 
@@ -131,51 +132,16 @@ bool NodeType::hasSearchFilter() const
 
 Tree<NodeType::BundleInfo> NodeType::getOverviewBundleTree() const
 {
-	switch (m_kind)
+	if (m_kind == NODE_NAMESPACE)
 	{
-	case NODE_FILE:
-		return Tree<BundleInfo>(BundleInfo(L"Files"));
-	case NODE_MACRO:
-		return Tree<BundleInfo>(BundleInfo(L"Macros"));
-	case NODE_NAMESPACE:
-	{
-		Tree<BundleInfo> tree(BundleInfo(L"Namespaces"));
+		Tree<BundleInfo> tree(BundleInfo(NodeType::nodeTypes.at(m_kind)));
 		tree.children.push_back(Tree<BundleInfo>(BundleInfo(
-			[](const std::wstring& nodeName) {
-				return nodeName.find(L"anonymous namespace") != std::wstring::npos;
-			},
+			[](const std::wstring& nodeName)
+			{ return nodeName.find(L"anonymous namespace") != std::wstring::npos; },
 			L"Anonymous Namespaces")));
 		return tree;
 	}
-	case NODE_MODULE:
-		return Tree<BundleInfo>(BundleInfo(L"Modules"));
-	case NODE_PACKAGE:
-		return Tree<BundleInfo>(BundleInfo(L"Packages"));
-	case NODE_CLASS:
-		return Tree<BundleInfo>(BundleInfo(L"Classes"));
-	case NODE_INTERFACE:
-		return Tree<BundleInfo>(BundleInfo(L"Interfaces"));
-	case NODE_ANNOTATION:
-		return Tree<BundleInfo>(BundleInfo(L"Annotations"));
-	case NODE_STRUCT:
-		return Tree<BundleInfo>(BundleInfo(L"Structs"));
-	case NODE_FUNCTION:
-		return Tree<BundleInfo>(BundleInfo(L"Functions"));
-	case NODE_GLOBAL_VARIABLE:
-		return Tree<BundleInfo>(BundleInfo(L"Global Variables"));
-	case NODE_TYPE:
-		return Tree<BundleInfo>(BundleInfo(L"Types"));
-	case NODE_TYPEDEF:
-		return Tree<BundleInfo>(BundleInfo(L"Typedefs"));
-	case NODE_ENUM:
-		return Tree<BundleInfo>(BundleInfo(L"Enums"));
-	case NODE_UNION:
-		return Tree<BundleInfo>(BundleInfo(L"Unions"));
-	default:
-		break;
-	}
-
-	return Tree<BundleInfo>();
+	return Tree<BundleInfo>(BundleInfo(NodeType::nodeTypes[m_kind]));
 }
 
 FilePath NodeType::getIconPath() const
@@ -271,5 +237,11 @@ std::wstring NodeType::getUnderscoredTypeWString() const
 std::wstring NodeType::getReadableTypeWString() const
 {
 	std::string str = getReadableTypeString();
+	return std::wstring(str.begin(), str.end());
+}
+
+std::wstring NodeType::getModifiedTypeWString() const
+{
+	std::string str = getModifiedNodeKindString(m_kind);
 	return std::wstring(str.begin(), str.end());
 }

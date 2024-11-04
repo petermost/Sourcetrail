@@ -33,8 +33,13 @@ public slots:
 	void expandClicked();
 
 protected:
+<<<<<<< HEAD
 	void enterEvent(QEnterEvent* event) override;
 	void leaveEvent(QEvent* event) override;
+=======
+	virtual void enterEvent(QEnterEvent* event);
+	virtual void leaveEvent(QEvent* event);
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 
 private slots:
 	void deleteClicked();

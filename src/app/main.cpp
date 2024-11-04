@@ -102,7 +102,19 @@ int main(int argc, char* argv[])
 		std::cout << "ERROR: Please run Sourcetrail via the Sourcetrail.sh script!" << std::endl;
 	}
 
+<<<<<<< HEAD
 	MessageStatus(std::wstring(L"Starting Sourcetrail version ") + version.toDisplayWString())
+=======
+	QApplication::setApplicationName(QStringLiteral("NumbatUI"));
+
+	Version version(VERSION_YEAR, VERSION_MINOR, VERSION_COMMIT, GIT_COMMIT_HASH);
+	QApplication::setApplicationVersion(version.toDisplayString().c_str());
+
+	MessageStatus(
+		std::wstring(L"Starting Sourcetrail ") +
+		(utility::getApplicationArchitectureType() == APPLICATION_ARCHITECTURE_X86_32 ? L"32" : L"64") +
+		L" bit, " + L"version " + version.toDisplayWString())
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 		.dispatch();
 
 	commandline::CommandLineParser commandLineParser(version.toDisplayString());

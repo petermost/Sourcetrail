@@ -3,7 +3,7 @@
 #include <QCursor>
 #include <QGraphicsItemGroup>
 #include <QGraphicsSceneEvent>
-
+#include <iostream>
 #include "Edge.h"
 #include "GraphFocusHandler.h"
 #include "GraphViewStyle.h"
@@ -15,6 +15,7 @@
 #include "MessageGraphNodeHide.h"
 #include "MessageTooltipHide.h"
 #include "MessageTooltipShow.h"
+#include "NodeExtras.h"
 #include "QtGraphNode.h"
 #include "QtLineItemAngled.h"
 #include "QtLineItemBezier.h"
@@ -103,9 +104,16 @@ void QtGraphEdge::updateLine()
 	const QtGraphNode* owner = m_owner;
 	const QtGraphNode* target = m_target;
 
+	const Edge* data = getData();
+
 	Edge::EdgeType type = (getData() ? getData()->getType() : Edge::EDGE_BUNDLED_EDGES);
 	GraphViewStyle::EdgeStyle style = GraphViewStyle::getStyleForEdgeType(
-		type, m_isActive | m_isCoFocused, m_isFocused, m_isTrailEdge, isAmbiguous());
+		type,
+		m_isActive | m_isCoFocused,
+		m_isFocused,
+		m_isTrailEdge,
+		isAmbiguous(),
+		data ? data->getId() : 0);
 
 	Vec4i ownerRect = owner->getBoundingRect();
 	Vec4i targetRect = target->getBoundingRect();
@@ -397,6 +405,7 @@ void QtGraphEdge::coFocusIn()
 		if (s_focusedEdge == this)
 		{
 			Edge::EdgeType type = (getData() ? getData()->getType() : Edge::EDGE_BUNDLED_EDGES);
+			Id id = getData() ? getData()->getId() : 0;
 
 			TooltipInfo info;
 			info.title = Edge::getReadableTypeString(type);
@@ -427,6 +436,11 @@ void QtGraphEdge::coFocusIn()
 				{
 					info.title = L"multi-level " + info.title;
 				}
+			}
+
+			if (NodeExtras::hoverText.find(id) != NodeExtras::hoverText.end())
+			{
+				info.title = std::wstring(NodeExtras::hoverText[id].begin(), NodeExtras::hoverText[id].end());
 			}
 
 			MessageTooltipShow(info, TOOLTIP_ORIGIN_GRAPH).dispatch();

@@ -1,7 +1,11 @@
 #ifndef QT_FILE_DIALOG_H
 #define QT_FILE_DIALOG_H
 
+<<<<<<< HEAD
 #include <QtContainerFwd>
+=======
+#include <QStringList>
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 
 class FilePath;
 class QString;

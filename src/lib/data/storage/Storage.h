@@ -13,6 +13,7 @@
 #include "StorageFile.h"
 #include "StorageLocalSymbol.h"
 #include "StorageNode.h"
+#include "StorageNodeType.h"
 #include "StorageOccurrence.h"
 #include "StorageSourceLocation.h"
 #include "StorageSymbol.h"

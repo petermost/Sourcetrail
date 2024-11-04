@@ -2,6 +2,7 @@
 #define NODE_KIND_H
 
 #include <string>
+#include <map>
 
 typedef int NodeKindMask;
 
@@ -34,11 +35,14 @@ enum NodeKind : NodeKindMask
 	NODE_MAX_VALUE = NODE_UNION
 };
 
+extern std::map<NodeKind, std::string> nodeKinds;
+
 int nodeKindToInt(NodeKind kind);
 NodeKind intToNodeKind(int value);
 
 std::string getReadableNodeKindString(NodeKind kind);
 std::wstring getReadableNodeKindWString(NodeKind kind);
+std::string getModifiedNodeKindString(NodeKind kind);
 NodeKind getNodeKindForReadableNodeKindString(const std::wstring& str);
 
 #endif	  // NODE_KIND_H

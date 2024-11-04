@@ -10,6 +10,8 @@
 #include "MessageBookmarkCreate.h"
 #include "MessageBookmarkDelete.h"
 #include "MessageBookmarkEdit.h"
+#include "MessageBookmarkReferences.h"
+#include "MessageBookmarkReferencing.h"
 #include "MessageIndexingFinished.h"
 #include "MessageListener.h"
 #include "NodeBookmark.h"
@@ -24,6 +26,8 @@ class BookmarkController
 	, public MessageListener<MessageBookmarkCreate>
 	, public MessageListener<MessageBookmarkDelete>
 	, public MessageListener<MessageBookmarkEdit>
+	, public MessageListener<MessageBookmarkReferences>
+	, public MessageListener<MessageBookmarkReferencing>
 	, public MessageListener<MessageIndexingFinished>
 {
 public:
@@ -52,6 +56,9 @@ public:
 	void showBookmarkCreator(Id nodeId = 0);
 	void showBookmarkEditor(const std::shared_ptr<Bookmark> bookmark);
 
+	void bookmarkReferences(Id nodeId);
+	void bookmarkReferencing(Id nodeId);
+
 private:
 	class BookmarkCache
 	{
@@ -79,6 +86,8 @@ private:
 	void handleMessage(MessageBookmarkCreate* message) override;
 	void handleMessage(MessageBookmarkDelete* message) override;
 	void handleMessage(MessageBookmarkEdit* message) override;
+	void handleMessage(MessageBookmarkReferences* message) override;
+	void handleMessage(MessageBookmarkReferencing* message) override;
 	void handleMessage(MessageIndexingFinished* message) override;
 
 	std::vector<std::wstring> getActiveTokenDisplayNames() const;

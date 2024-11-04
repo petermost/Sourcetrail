@@ -6,6 +6,10 @@
 	color: black;
 }
 
+#window QCheckBox {
+	background-color: white;
+}
+
 #window QCheckBox::indicator {
 	color: black;
 }

@@ -868,7 +868,11 @@ void QtMainWindow::setupEditMenu()
 	menuBar()->addMenu(menu);
 
 	menu->addAction(tr("&Refresh"), QKeySequence::Refresh, this, &QtMainWindow::refresh);
+<<<<<<< HEAD
 	if constexpr (utility::Platform::isWindows())
+=======
+	if (utility::getOsType() == OS_WINDOWS)
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 	{
 		menu->addAction(
 			tr("&Full Refresh"),
@@ -1096,7 +1100,7 @@ void QtMainWindow::setupHelpMenu()
 	menu->addSeparator();
 
 	menu->addAction(tr("License"), this, &QtMainWindow::showLicenses);
-	menu->addAction(tr("&About Sourcetrail"), this, &QtMainWindow::about);
+	menu->addAction(tr("&About NumbatUI"), this, &QtMainWindow::about);
 
 	menu->addSeparator();
 

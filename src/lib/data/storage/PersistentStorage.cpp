@@ -2,8 +2,10 @@
 
 #include <queue>
 #include <sstream>
+#include <boost/filesystem.hpp>
 
 #include "AccessKind.h"
+#include "Application.h"
 #include "ApplicationSettings.h"
 #include "ElementComponentKind.h"
 #include "FileInfo.h"
@@ -11,6 +13,7 @@
 #include "Graph.h"
 #include "MessageErrorCountUpdate.h"
 #include "MessageStatus.h"
+#include "NodeExtras.h"
 #include "NodeTypeSet.h"
 #include "ParseLocation.h"
 #include "SourceLocationCollection.h"
@@ -36,6 +39,16 @@ PersistentStorage::PersistentStorage(const FilePath& dbPath, const FilePath& boo
 	m_commandIndex.addNode(0, SearchMatch::getCommandName(SearchMatch::COMMAND_ERROR));
 	m_commandIndex.addNode(0, SearchMatch::getCommandName(SearchMatch::COMMAND_LEGEND));
 
+	// load node types
+	m_sqliteIndexStorage.setupNodeTypes();
+	this->getStorageNodeTypes();
+	for (const StorageNodeType& sNodeType: m_storageData.nodetypes)
+	{
+		NodeType::nodeTypes[NodeKind(sNodeType.id)] = std::wstring(
+			sNodeType.graphDisplay.begin(), sNodeType.graphDisplay.end());
+		nodeKinds[NodeKind(sNodeType.id)] = sNodeType.hoverDisplay;
+	}
+
 	for (const NodeType& nodeType: NodeTypeSet::all().getNodeTypes())
 	{
 		if (nodeType.hasSearchFilter())
@@ -45,6 +58,24 @@ PersistentStorage::PersistentStorage(const FilePath& dbPath, const FilePath& boo
 	}
 
 	m_commandIndex.finishSetup();
+}
+
+std::map<Id, GraphViewStyle::NodeColor> PersistentStorage::setupNodeColors(
+	std::map<Id, std::string>& colors)
+{
+	std::map<Id, GraphViewStyle::NodeColor> ret;
+
+	for (std::map<Id, std::string>::iterator it = colors.begin(); it != colors.end(); it++)
+	{
+		GraphViewStyle::NodeColor color;
+		std::stringstream ss(it->second);
+		if (!getline(ss, color.fill, ' ') || !getline(ss, color.border, ' ') ||
+			!getline(ss, color.text, ' ') || !getline(ss, color.icon, ' ') ||
+			!getline(ss, color.hatching, ' '))
+			;
+		ret[it->first] = color;
+	}
+	return ret;
 }
 
 std::pair<Id, bool> PersistentStorage::addNode(const StorageNodeData& data)
@@ -183,6 +214,11 @@ void PersistentStorage::removeElementsWithoutOccurrences(const std::vector<Id>& 
 const std::vector<StorageNode>& PersistentStorage::getStorageNodes() const
 {
 	return m_storageData.nodes = m_sqliteIndexStorage.getAll<StorageNode>();
+}
+
+const std::vector<StorageNodeType>& PersistentStorage::getStorageNodeTypes() const
+{
+	return m_storageData.nodetypes = m_sqliteIndexStorage.getAll<StorageNodeType>();
 }
 
 const std::vector<StorageFile>& PersistentStorage::getStorageFiles() const
@@ -328,6 +364,19 @@ void PersistentStorage::setup()
 {
 	m_sqliteIndexStorage.setup();
 	m_sqliteBookmarkStorage.setup();
+
+	// load additional hover text
+	std::map<Id, std::string> hover_tmp = m_sqliteIndexStorage.getEdgeHoverText();
+	NodeExtras::hoverText = m_sqliteIndexStorage.getNodeHoverText();
+	NodeExtras::hoverText.insert(hover_tmp.begin(), hover_tmp.end());
+
+	// load custom actions
+	NodeExtras::customCommands = m_sqliteIndexStorage.getNodeCustomCommands();
+
+	// load colors
+	std::map<Id, std::string> colors_tmp = m_sqliteIndexStorage.getNodeColors();
+	GraphViewStyle::s_customEdgeColors = m_sqliteIndexStorage.getEdgeColors();
+	GraphViewStyle::s_customNodeColors = setupNodeColors(colors_tmp);
 
 	m_sqliteBookmarkStorage.migrateIfNecessary();
 }
@@ -574,6 +623,16 @@ std::map<Id, std::pair<Id, NameHierarchy>> PersistentStorage::getNodeIdToParentF
 	});
 
 	return nodeIdToParentFileMap;
+}
+
+std::set<Id> PersistentStorage::getReferencingNodes(Id nodeId) const
+{
+	return m_sqliteIndexStorage.getReferencingNodes(nodeId);
+}
+
+std::set<Id> PersistentStorage::getReferencedNodes(Id nodeId) const
+{
+	return m_sqliteIndexStorage.getReferencedNodes(nodeId);
 }
 
 NodeType PersistentStorage::getNodeTypeForNodeWithId(Id nodeId) const
@@ -1778,7 +1837,30 @@ std::shared_ptr<TextAccess> PersistentStorage::getFileContent(
 	const FilePath& filePath, bool  /*showsErrors*/) const
 {
 	TRACE();
+	FilePath project_path = Application::getInstance()->getCurrentProjectPath().getParentDirectory();
+	Id id = m_sqliteIndexStorage.getAssociatedFile(filePath.getRelativeTo(project_path)).id;
+	StorageNodeFile node_file = m_sqliteIndexStorage.getAssociatedFile(id);
 
+	// there is a recorded copy of the file
+	if (node_file.id != 0)
+	{
+		if (node_file.display_content == false)
+			return TextAccess::createFromString("File is not available for viewing");
+		try
+		{
+			std::ifstream ifs(project_path.str() + "/" + node_file.fileName);
+			if (boost::filesystem::exists(project_path.str() + "/" + node_file.fileName) and ifs.good())
+				return TextAccess::createFromFile(FilePath(project_path.str() + "/" + node_file.fileName));
+		}
+		catch (const std::exception& e)
+		{
+			std::string tmp(e.what());
+			MessageStatus(std::wstring(tmp.begin(), tmp.end()), true).dispatch();
+		}
+		return TextAccess::createFromString("File is not available for viewing");
+	}
+
+	// default behavior
 	std::shared_ptr<TextAccess> fileContent = m_sqliteIndexStorage.getFileContentByPath(
 		filePath.wstr());
 	if (fileContent->getLineCount() > 0)
@@ -1817,6 +1899,11 @@ std::vector<FileInfo> PersistentStorage::getFileInfosForFilePaths(
 	}
 
 	return fileInfos;
+}
+
+StorageNodeFile PersistentStorage::getAssociatedFile(Id id) const
+{
+	return m_sqliteIndexStorage.getAssociatedFile(id);
 }
 
 StorageStats PersistentStorage::getStorageStats() const
@@ -2166,8 +2253,7 @@ TooltipInfo PersistentStorage::getTooltipInfoForTokenIds(
 	}
 
 	const NodeType type(intToNodeKind(node.type));
-	info.title = type.getReadableTypeWString();
-
+	info.title = type.getModifiedTypeWString();
 	DefinitionKind defKind = DEFINITION_NONE;
 	const StorageSymbol symbol = m_sqliteIndexStorage.getFirstById<StorageSymbol>(node.id);
 	if (symbol.id > 0)
@@ -2184,7 +2270,11 @@ TooltipInfo PersistentStorage::getTooltipInfoForTokenIds(
 		}
 	}
 
-	if (type.isFile())
+	if (NodeExtras::hoverText.find(node.id) != NodeExtras::hoverText.end())
+	{
+		info.title = std::wstring(NodeExtras::hoverText[node.id].begin(), NodeExtras::hoverText[node.id].end());
+	}
+	else if (type.isFile())
 	{
 		if (!getFileNodeIndexed(node.id))
 		{

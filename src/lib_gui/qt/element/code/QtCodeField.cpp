@@ -251,7 +251,11 @@ void QtCodeField::paintEvent(QPaintEvent* event)
 	QPlainTextEdit::paintEvent(event);
 }
 
+<<<<<<< HEAD
 void QtCodeField::enterEvent(QEnterEvent * /*event*/) {}
+=======
+void QtCodeField::enterEvent(QEnterEvent* event) {}
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 
 void QtCodeField::leaveEvent(QEvent*  /*event*/)
 {

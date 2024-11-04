@@ -83,7 +83,13 @@ void CxxDiagnosticConsumer::HandleDiagnostic(
 			}
 
 			clang::FileID clangFileId = sourceManager.getFileID(loc);
+<<<<<<< HEAD
 			if (sourceManager.getFileEntryForID(clangFileId) != nullptr)
+=======
+			const clang::FileEntry* fileEntry = sourceManager.getFileEntryForID(clangFileId);
+
+			if (fileEntry != nullptr)
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 			{
 				ParseLocation location = utility::getParseLocation(
 					loc, sourceManager, nullptr, m_canonicalFilePathCache);
@@ -94,8 +100,13 @@ void CxxDiagnosticConsumer::HandleDiagnostic(
 			}
 			else
 			{
+<<<<<<< HEAD
 				const OptionalFileEntryRef fileEntry = sourceManager.getFileEntryRefForID(sourceManager.getMainFileID());
 				if (fileEntry)
+=======
+				fileEntry = sourceManager.getFileEntryForID(sourceManager.getMainFileID());
+				if (fileEntry != nullptr)
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 				{
 					filePath = m_canonicalFilePathCache->getCanonicalFilePath(*fileEntry);
 					fileId = m_client->recordFile(

@@ -92,6 +92,35 @@ bool QtProjectWizardContentPathsHeaderSearchGlobal::check()
 			}
 		}
 	}
+<<<<<<< HEAD
+=======
+
+	if (compilerHeaderPaths.size())
+	{
+		QMessageBox msgBox(m_window);
+		msgBox.setText(QStringLiteral("Multiple Compiler Headers"));
+		msgBox.setInformativeText(
+			"Your Global Include Paths contain other paths that hold C/C++ compiler headers, "
+			"probably those of your local C/C++ compiler. They are possibly in conflict with the "
+			"compiler headers of "
+			"Sourcetrail's C/C++ indexer. This can lead to compatibility errors during indexing. "
+			"Do "
+			"you want to remove "
+			"these paths?");
+		msgBox.setDetailedText(compilerHeaderPaths);
+		QPushButton* removeButton = msgBox.addButton(QStringLiteral("Remove"), QMessageBox::ButtonRole::YesRole);
+		QPushButton* keepButton = msgBox.addButton(QStringLiteral("Keep"), QMessageBox::ButtonRole::NoRole);
+		msgBox.setIcon(QMessageBox::Icon::Question);
+		msgBox.exec();
+
+		if (msgBox.clickedButton() == removeButton)
+		{
+			setPaths(paths);
+			save();
+		}
+	}
+
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 	return QtProjectWizardContentPaths::check();
 }
 

@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "FullTextSearchIndex.h"
+#include "GraphViewStyle.h"
 #include "HierarchyCache.h"
 #include "SearchIndex.h"
 #include "SqliteBookmarkStorage.h"
@@ -45,6 +46,7 @@ public:
 	void removeElementsWithoutOccurrences(const std::vector<Id>& elementIds);
 
 	const std::vector<StorageNode>& getStorageNodes() const override;
+	const std::vector<StorageNodeType>& getStorageNodeTypes() const;
 	const std::vector<StorageFile>& getStorageFiles() const override;
 	const std::vector<StorageSymbol>& getStorageSymbols() const override;
 	const std::vector<StorageEdge>& getStorageEdges() const override;
@@ -104,6 +106,9 @@ public:
 	std::vector<NameHierarchy> getNameHierarchiesForNodeIds(const std::vector<Id>& nodeIds) const override;
 	std::map<Id, std::pair<Id, NameHierarchy>> getNodeIdToParentFileMap(
 		const std::vector<Id>& nodeIds) const override;
+
+	std::set<Id> getReferencingNodes(Id nodeId) const override;
+	std::set<Id> getReferencedNodes(Id nodeId) const override;
 
 	NodeType getNodeTypeForNodeWithId(Id nodeId) const override;
 
@@ -166,6 +171,8 @@ public:
 	FileInfo getFileInfoForFilePath(const FilePath& filePath) const override;
 	std::vector<FileInfo> getFileInfosForFilePaths(const std::vector<FilePath>& filePaths) const override;
 
+	StorageNodeFile getAssociatedFile(Id id) const;
+
 	StorageStats getStorageStats() const override;
 
 	ErrorCountInfo getErrorCount() const override;
@@ -201,6 +208,7 @@ private:
 	mutable struct
 	{
 		std::vector<StorageNode> nodes;
+		std::vector<StorageNodeType> nodetypes;
 		std::vector<StorageFile> files;
 		std::vector<StorageSymbol> symbols;
 		std::vector<StorageEdge> edges;
@@ -260,6 +268,8 @@ private:
 	void buildFullTextSearchIndex() const;
 	void buildMemberEdgeIdOrderMap();
 	void buildHierarchyCache();
+
+	std::map<Id, GraphViewStyle::NodeColor> setupNodeColors(std::map<Id, std::string>& colors);
 
 	bool m_preIndexingErrorCountSet = false;
 	size_t m_preIndexingErrorCount = 0;

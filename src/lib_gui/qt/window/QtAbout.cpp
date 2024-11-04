@@ -34,7 +34,7 @@ void QtAbout::setupAbout()
 
 	{
 		QtDeviceScaledPixmap sourcetrailLogo(QString::fromStdWString(
-			ResourcePaths::getGuiDirectoryPath().wstr() + L"about/logo_sourcetrail.png"));
+			ResourcePaths::getGuiDirectoryPath().wstr() + L"window/numbatui.png"));
 		sourcetrailLogo.scaleToHeight(150);
 		QLabel* sourcetrailLogoLabel = new QLabel(this);
 		sourcetrailLogoLabel->setPixmap(sourcetrailLogo.pixmap());
@@ -66,6 +66,7 @@ void QtAbout::setupAbout()
 		layoutHorz1->addStretch();
 
 		QLabel* developerLabel = new QLabel(
+<<<<<<< HEAD
 			"<b>Authors:</b><br />"
 			"<a href=\"https://github.com/petermost/Sourcetrail/blob/master/unused_coati_software_files/AUTHORS.txt\" "
 			"style=\"color: white;\">The Coati Software Developer</a><br />"
@@ -76,6 +77,10 @@ void QtAbout::setupAbout()
 			"<b>Repository:</b><br />"
 			"<a href=\"https://github.com/petermost/Sourcetrail\" "
 			"style=\"color: white;\">github.com/petermost/Sourcetrail</a><br />");
+=======
+			QString::fromStdString("<br /><br />"
+								   "Developed by Quarkslab<br />"));
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 
 		developerLabel->setObjectName(QStringLiteral("small"));
 		developerLabel->setOpenExternalLinks(true);
@@ -85,4 +90,36 @@ void QtAbout::setupAbout()
 	}
 
 	windowLayout->addStretch();
+<<<<<<< HEAD
+=======
+
+	{
+		QLabel* acknowledgementsLabel = new QLabel(QString::fromStdString(
+			"<b>Acknowledgements:</b><br />"
+			"NumbatUI is forked from <b><a href=\"https://github.com/CoatiSoftware/Sourcetrail\" "
+			"style=\"color:white;\">Sourcetrail</a></b>, originally developed by:<br /><br />"
+			"Manuel Dobusch<br />"
+			"Eberhard Gräther<br />"
+			"Malte Langkabel<br />"
+			"Viktoria Pfausler<br />"
+			"Andreas Stallinger<br />"));
+		acknowledgementsLabel->setObjectName(QStringLiteral("small"));
+		acknowledgementsLabel->setWordWrap(true);
+		acknowledgementsLabel->setOpenExternalLinks(true);
+		windowLayout->addWidget(acknowledgementsLabel);
+		windowLayout->addSpacing(10);
+	}
+
+	{
+		QLabel* webLabel = new QLabel(
+			"<b>Repository: <a href=\"https://github.com/quarkslab/Numbat-UI\" "
+			"style=\"color: "
+			"white;\">https://github.com/quarkslab/Numbat-UI</a></b>",
+			this);
+		webLabel->setObjectName(QStringLiteral("small"));
+		webLabel->setOpenExternalLinks(true);
+		windowLayout->addWidget(webLabel);
+		windowLayout->addSpacing(10);
+	}
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 }

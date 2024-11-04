@@ -178,7 +178,11 @@ void QtBookmark::showEvent(QShowEvent*  /*event*/)
 	elideButtonText();
 }
 
+<<<<<<< HEAD
 void QtBookmark::enterEvent(QEnterEvent * /*event*/)
+=======
+void QtBookmark::enterEvent(QEnterEvent* event)
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 {
 	m_editButton->show();
 	m_deleteButton->show();
@@ -211,10 +215,19 @@ void QtBookmark::deleteClicked()
 	QtMessageBox msgBox;
 	msgBox.setText(QStringLiteral("Delete Bookmark"));
 	msgBox.setInformativeText(QStringLiteral("Do you really want to delete this bookmark?"));
+<<<<<<< HEAD
 	QPushButton *deleteButton = msgBox.addButton(QStringLiteral("Delete"), QtMessageBox::ButtonRole::YesRole);
 	msgBox.addButton(QStringLiteral("Keep"), QtMessageBox::ButtonRole::NoRole);
 	msgBox.setIcon(QtMessageBox::Icon::Question);
 	if (msgBox.execModal() == deleteButton)	 // QtMessageBox::Yes
+=======
+	QPushButton* deleteButton = msgBox.addButton(QStringLiteral("Delete"), QMessageBox::ButtonRole::YesRole);
+	QPushButton* keepButton = msgBox.addButton(QStringLiteral("Keep"), QMessageBox::ButtonRole::NoRole);
+	msgBox.setIcon(QMessageBox::Icon::Question);
+	msgBox.exec();
+
+	if (msgBox.clickedButton() == deleteButton)
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 	{
 		m_controllerProxy->executeAsTaskWithArgs(
 			&BookmarkController::deleteBookmark, m_bookmark->getId());

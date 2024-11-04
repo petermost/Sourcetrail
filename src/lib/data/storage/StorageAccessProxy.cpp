@@ -162,6 +162,9 @@ DEF_GETTER_1(getNameHierarchiesForNodeIds, const std::vector<Id>&, std::vector<N
 typedef std::map<Id, std::pair<Id, NameHierarchy>> NodeIdToParentFileMap;
 DEF_GETTER_1(getNodeIdToParentFileMap, const std::vector<Id>&, NodeIdToParentFileMap, {})
 
+DEF_GETTER_1(getReferencingNodes, Id, std::set<Id>, {})
+DEF_GETTER_1(getReferencedNodes, Id, std::set<Id>, {})
+
 DEF_GETTER_1(getNodeTypeForNodeWithId, Id, NodeType, NodeType(NODE_SYMBOL))
 DEF_GETTER_1(getEdgeById, Id, StorageEdge, StorageEdge())
 DEF_GETTER_2(
@@ -239,6 +242,7 @@ DEF_GETTER_2(getFileContent, const FilePath&, bool, std::shared_ptr<TextAccess>,
 DEF_GETTER_1(getFileInfoForFileId, Id, FileInfo, FileInfo())
 DEF_GETTER_1(getFileInfoForFilePath, const FilePath&, FileInfo, FileInfo())
 DEF_GETTER_1(getFileInfosForFilePaths, const std::vector<FilePath>&, std::vector<FileInfo>, {})
+DEF_GETTER_1(getAssociatedFile, Id, StorageNodeFile, {})
 DEF_GETTER_0(getStorageStats, StorageStats, StorageStats())
 DEF_GETTER_0(getErrorCount, ErrorCountInfo, ErrorCountInfo())
 DEF_GETTER_1(getErrorsLimited, const ErrorFilter&, std::vector<ErrorInfo>, {})

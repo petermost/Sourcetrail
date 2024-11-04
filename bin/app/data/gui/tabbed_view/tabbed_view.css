@@ -109,6 +109,7 @@ QTableView QTableCornerButton::section {
 }
 
 QCheckBox {
+	background-color: <color:table/background>;
 	color: <color:table/text/normal>;
 	font-size: <setting:font_size>px;
 }

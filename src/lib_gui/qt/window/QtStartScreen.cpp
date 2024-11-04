@@ -53,11 +53,20 @@ void QtRecentProjectButton::handleButtonClick()
 			L"<p>Couldn't find \"" + m_projectFilePath.wstr() +
 			L"\" on your filesystem.</p><p>Do you want to remove it from recent project "
 			L"list?</p>"));
+<<<<<<< HEAD
 		QPushButton *removeButton = msgBox.addButton(QStringLiteral("Remove"), QtMessageBox::ButtonRole::YesRole);
 		msgBox.addButton(QStringLiteral("Keep"), QtMessageBox::ButtonRole::NoRole);
 		msgBox.setIcon(QtMessageBox::Icon::Question);
 
 		if (msgBox.execModal() == removeButton)
+=======
+		QPushButton* removeButton = msgBox.addButton(QStringLiteral("Remove"), QMessageBox::ButtonRole::YesRole);
+		QPushButton* keepButton = msgBox.addButton(QStringLiteral("Keep"), QMessageBox::ButtonRole::NoRole);
+		msgBox.setIcon(QMessageBox::Icon::Question);
+		msgBox.exec();
+
+		if (msgBox.clickedButton() == removeButton)
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 		{
 			std::vector<FilePath> recentProjects = ApplicationSettings::getInstance()->getRecentProjects();
 			for (auto it = recentProjects.begin(); it != recentProjects.end(); ++it)

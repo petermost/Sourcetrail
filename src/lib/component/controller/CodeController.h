@@ -121,6 +121,7 @@ private:
 		std::shared_ptr<SourceLocationFile> locationFile, bool useSingleFileCache) const;
 	std::vector<CodeSnippetParams> getSnippetsForFile(
 		std::shared_ptr<SourceLocationFile> activeSourceLocations) const;
+	CodeFileParams getSideloadedFile(Id nodeId) const;
 
 	std::shared_ptr<SnippetMerger> buildMergerHierarchy(
 		const SourceLocation* location,

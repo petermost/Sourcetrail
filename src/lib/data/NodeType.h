@@ -81,8 +81,11 @@ public:
 	std::string getReadableTypeString() const;
 	std::wstring getUnderscoredTypeWString() const;
 	std::wstring getReadableTypeWString() const;
+	std::wstring getModifiedTypeWString() const;
 
 	static std::vector<NodeType> const overviewBundleNodeTypesOrdered;
+
+	static std::map<NodeKind, std::wstring> nodeTypes;
 
 private:
 	NodeKind m_kind;

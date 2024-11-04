@@ -479,7 +479,7 @@ void Application::updateTitle()
 {
 	if (m_hasGUI)
 	{
-		std::wstring title = L"Sourcetrail";
+		std::wstring title = L"NumbatUI";
 
 		if (m_project)
 		{

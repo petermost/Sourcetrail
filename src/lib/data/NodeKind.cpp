@@ -1,5 +1,7 @@
 #include "NodeKind.h"
 
+std::map<NodeKind, std::string> nodeKinds;
+
 int nodeKindToInt(NodeKind kind)
 {
 	return kind;
@@ -103,6 +105,11 @@ std::string getReadableNodeKindString(NodeKind kind)
 	}
 
 	return "";
+}
+
+std::string getModifiedNodeKindString(NodeKind kind)
+{
+	return nodeKinds[kind];
 }
 
 std::wstring getReadableNodeKindWString(NodeKind kind)

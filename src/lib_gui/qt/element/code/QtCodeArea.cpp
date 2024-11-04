@@ -905,7 +905,11 @@ void QtCodeArea::mouseMoveEvent(QMouseEvent* event)
 					std::wstring errorMessage = m_navigator->getErrorMessageForId(
 						*annotation->tokenIds.begin());
 					QToolTip::showText(
+<<<<<<< HEAD
 						QMouseEvent_globalPos(event), QString::fromStdWString(errorMessage), this);
+=======
+						utility::compatibility::QMouseEvent_globalPos(event), QString::fromStdWString(errorMessage), this);
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 
 					QtCodeField::focusTokenIds({*annotation->tokenIds.begin()});
 					viewport()->setCursor(Qt::PointingHandCursor);

@@ -41,7 +41,7 @@ public:
 		llvm::StringRef searchPath,
 		llvm::StringRef relativePath,
 		const clang::Module* imported,
-		clang::SrcMgr::CharacteristicKind fileType) override;
+		clang::SrcMgr::CharacteristicKind fileType);
 
 	void MacroDefined(
 		const clang::Token& macroNameToken, const clang::MacroDirective* macroDirective) override;

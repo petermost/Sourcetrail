@@ -33,8 +33,13 @@ protected:
 	void resizeEvent(QResizeEvent* event) override;
 	void showEvent(QShowEvent* event) override;
 
+<<<<<<< HEAD
 	void enterEvent(QEnterEvent* event) override;
 	void leaveEvent(QEvent* event) override;
+=======
+	virtual void enterEvent(QEnterEvent* event) override;
+	virtual void leaveEvent(QEvent* event) override;
+>>>>>>> 09ccbe42a1120f7185e91e13d9d2b8583217be7f
 
 private slots:
 	void activateClicked();
