@@ -69,6 +69,16 @@
 		},
 		{
 			"hidden": true,
+			"name": "vcpkg-default-presets-macos",
+			"inherits": "default-presets",
+			"generator": "Ninja",
+			"cacheVariables": {
+				"CMAKE_TOOLCHAIN_FILE": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
+				"VCPKG_TARGET_TRIPLET": "custom-arm64-osx"
+			}
+		},
+		{
+			"hidden": true,
 			"name": "system-default-presets",
 			"inherits": "default-presets",
 			"generator": "Ninja",
@@ -97,6 +107,15 @@
 			"displayName": "Vcpkg Ninja Release Build",
 			"inherits": [
 				"vcpkg-default-presets",
+				"sourcetrail-mixin-presets",
+				"release-mixin-presets"
+			]
+		},
+		{
+			"name": "vcpkg-ninja-release-macos",
+			"displayName": "Vcpkg Ninja Release Build",
+			"inherits": [
+				"vcpkg-default-presets-macos",
 				"sourcetrail-mixin-presets",
 				"release-mixin-presets"
 			]

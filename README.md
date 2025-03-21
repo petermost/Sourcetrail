@@ -41,6 +41,8 @@ There are 2 ways to build the project:
 
 It is important to clone the repository with the **submodules** and the **symlinks**:
 ```
+# note under windows either development mode or an elevated git terminal/console is required or the git clone fails
+# due to failing of symlink creation
 git clone https://github.com/petermost/Sourcetrail.git --recurse-submodules --config core.symlinks=true
 ```
 and get the updates with:
@@ -57,12 +59,22 @@ git pull --recurse-submodules
     * [Maven](https://maven.apache.org/)
 * **Linux:** Because **Qt6** is build from source, additional packages are needed. Install these packages with `script/install-qt6-dependencies.sh`.
 * **Windows:** The build must be done in a **"x64 Native Tools Command Prompt for VS 2022"**.
+* **MacOS:** to compile under MacOS several things have to be installed beforehand, even with vcpkg  
+* * XCode has to be installed
+* * the following packages have to be installed via brew `brew install libtools maven autoconf autoconf-archive automake patchelf ninja`
 
-Prepare the build:
+Prepare the build in Windows and Linux:
 ```
 $ cd Sourcetrail
 $ cmake --preset vcpkg-ninja-release
 ```
+
+Prepare the build in MacOs:
+```
+$ cd Sourcetrail
+$ cmake --preset vcpkg-ninja-release-macos
+```
+
 Note that the initial compilation of the vcpkg packages (especially LLVM) will take a **long** time! Depending on your machine, it probably will take about 2 to 3 hours!
 
 Build:
@@ -100,6 +112,9 @@ $ cmake --build .
 
 ### Windows
 It's probably also possible to build with pre-installed libraries, like the original build instructions describe, but it's untested and unsupported.
+
+### MacOS
+System build was not tested under MacOS
 
 ### Used/Supported libraries: ###
 
