@@ -60,8 +60,8 @@ git pull --recurse-submodules
 * **Linux:** Because **Qt6** is build from source, additional packages are needed. Install these packages with `script/install-qt6-dependencies.sh`.
 * **Windows:** The build must be done in a **"x64 Native Tools Command Prompt for VS 2022"**.
 * **MacOS:** to compile under MacOS several things have to be installed beforehand, even with vcpkg  
-* * XCode has to be installed
-* * the following packages have to be installed via brew `brew install libtools maven autoconf autoconf-archive automake patchelf ninja`
+  * XCode has to be installed
+  * the following packages have to be installed via brew `brew install libtools maven autoconf autoconf-archive automake patchelf ninja`
 
 Prepare the build in Windows and Linux:
 ```
