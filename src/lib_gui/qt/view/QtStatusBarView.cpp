@@ -16,7 +16,7 @@ void QtStatusBarView::createWidgetWrapper() {}
 
 void QtStatusBarView::refreshView() {}
 
-void QtStatusBarView::showMessage(const std::wstring& message, bool isError, bool showLoader)
+void QtStatusBarView::showMessage(const std::string& message, bool isError, bool showLoader)
 {
 	m_onQtThread([=, this]() { m_widget->setText(message, isError, showLoader); });
 }
@@ -26,7 +26,7 @@ void QtStatusBarView::setErrorCount(ErrorCountInfo errorCount)
 	m_onQtThread([=, this]() { m_widget->setErrorCount(errorCount); });
 }
 
-void QtStatusBarView::showIdeStatus(const std::wstring& message)
+void QtStatusBarView::showIdeStatus(const std::string& message)
 {
 	m_onQtThread([=, this]() { m_widget->setIdeStatus(message); });
 }

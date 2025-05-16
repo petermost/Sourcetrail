@@ -84,7 +84,7 @@ public:
 	QRectF getLineRectForLineNumber(size_t lineNumber) const;
 
 	void findScreenMatches(
-		const std::wstring& query, std::vector<std::pair<QtCodeArea*, Id>>* screenMatches);
+		const std::string& query, std::vector<std::pair<QtCodeArea*, Id>>* screenMatches);
 	void clearScreenMatches();
 
 	void ensureLocationIdVisible(Id locationId, int parentWidth, bool animated);

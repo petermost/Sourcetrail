@@ -3,8 +3,8 @@
 #include <sstream>
 
 CxxFunctionDeclName::CxxFunctionDeclName(
-	std::wstring name,
-	std::vector<std::wstring> templateParameterNames,
+	std::string name,
+	std::vector<std::string> templateParameterNames,
 	std::unique_ptr<CxxTypeName> returnTypeName,
 	std::vector<std::unique_ptr<CxxTypeName>> parameterTypeNames,
 	const bool isConst,
@@ -19,27 +19,27 @@ CxxFunctionDeclName::CxxFunctionDeclName(
 
 NameHierarchy CxxFunctionDeclName::toNameHierarchy() const
 {
-	std::wstringstream prefix;
+	std::stringstream prefix;
 	if (m_isStatic)
 	{
-		prefix << L"static ";
+		prefix << "static ";
 	}
 	prefix << m_returnTypeName->toString();
 
-	std::wstringstream postfix;
-	postfix << L'(';
+	std::stringstream postfix;
+	postfix << '(';
 	for (size_t i = 0; i < m_parameterTypeNames.size(); i++)
 	{
 		if (i != 0)
 		{
-			postfix << L", ";
+			postfix << ", ";
 		}
 		postfix << m_parameterTypeNames[i]->toString();
 	}
-	postfix << L')';
+	postfix << ')';
 	if (m_isConst)
 	{
-		postfix << L" const";
+		postfix << " const";
 	}
 
 	NameHierarchy ret = CxxDeclName::toNameHierarchy();

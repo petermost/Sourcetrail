@@ -56,11 +56,11 @@ void StatusBarController::handleMessage(MessageIndexingStatus* message)
 
 void StatusBarController::handleMessage(MessagePingReceived* message)
 {
-	std::wstring status = L"No IDE connected";
+	std::string status = "No IDE connected";
 
 	if (!message->ideName.empty())
 	{
-		status = L"Connected to ";
+		status = "Connected to ";
 		status += message->ideName;
 	}
 
@@ -80,11 +80,11 @@ void StatusBarController::handleMessage(MessageStatus* message)
 	}
 }
 
-void StatusBarController::setStatus(const std::wstring& status, bool isError, bool showLoader)
+void StatusBarController::setStatus(const std::string& status, bool isError, bool showLoader)
 {
 	if (!status.empty())
 	{
-		LOG_INFO(L"STATUS " + status);
+		LOG_INFO("STATUS " + status);
 	}
 
 	getView()->showMessage(status, isError, showLoader);

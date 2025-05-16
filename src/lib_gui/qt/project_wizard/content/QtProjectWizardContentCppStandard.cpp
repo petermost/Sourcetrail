@@ -30,13 +30,13 @@ void QtProjectWizardContentCppStandard::load()
 
 	if (m_sourceGroupSettings)
 	{
-		std::vector<std::wstring> standards = m_sourceGroupSettings->getAvailableCppStandards();
+		std::vector<std::string> standards = m_sourceGroupSettings->getAvailableCppStandards();
 		for (size_t i = 0; i < standards.size(); i++)
 		{
-			m_standard->insertItem(static_cast<int>(i), QString::fromStdWString(standards[i]));
+			m_standard->insertItem(static_cast<int>(i), QString::fromStdString(standards[i]));
 		}
 
-		m_standard->setCurrentText(QString::fromStdWString(m_sourceGroupSettings->getCppStandard()));
+		m_standard->setCurrentText(QString::fromStdString(m_sourceGroupSettings->getCppStandard()));
 	}
 }
 
@@ -44,6 +44,6 @@ void QtProjectWizardContentCppStandard::save()
 {
 	if (m_sourceGroupSettings)
 	{
-		m_sourceGroupSettings->setCppStandard(m_standard->currentText().toStdWString());
+		m_sourceGroupSettings->setCppStandard(m_standard->currentText().toStdString());
 	}
 }

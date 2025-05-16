@@ -57,14 +57,14 @@ std::string getReadableNodeKindString(NodeKind kind)
 	{
 	case NODE_UNDEFINED:
 		return "";
-		
+
 	case NODE_SYMBOL:
 		return "symbol";
 	case NODE_BUILTIN_TYPE:
 		return "built-in type";
 	case NODE_TYPE:
 		return "type";
-		
+
 	case NODE_MODULE:
 		return "module";
 	case NODE_NAMESPACE:
@@ -95,7 +95,7 @@ std::string getReadableNodeKindString(NodeKind kind)
 		return "typedef";
 	case NODE_TYPE_PARAMETER:
 		return "type parameter";
-		
+
 	case NODE_FILE:
 		return "file";
 	case NODE_MACRO:
@@ -108,18 +108,12 @@ std::string getReadableNodeKindString(NodeKind kind)
 	return "";
 }
 
-std::wstring getReadableNodeKindWString(NodeKind kind)
-{
-	std::string str = getReadableNodeKindString(kind);
-	return std::wstring(str.begin(), str.end());
-}
-
-NodeKind getNodeKindForReadableNodeKindString(const std::wstring& str)
+NodeKind getNodeKindForReadableNodeKindString(const std::string& str)
 {
 	for (NodeKindMask mask = 1; mask <= NODE_KIND_MAX_VALUE; mask *= 2)
 	{
 		NodeKind kind = intToEnum<NodeKind>(mask);
-		if (getReadableNodeKindWString(kind) == str)
+		if (getReadableNodeKindString(kind) == str)
 		{
 			return kind;
 		}

@@ -31,7 +31,7 @@ public:
 	static void loadHighlightingRules();
 	static void clearHighlightingRules();
 
-	QtHighlighter(QTextDocument* parent, const std::wstring& language);
+	QtHighlighter(QTextDocument* parent, const std::string& language);
 	~QtHighlighter() = default;
 
 	void highlightDocument();
@@ -89,7 +89,7 @@ private:
 
 	QTextDocument* document() const;
 
-	static std::map<std::wstring, std::vector<HighlightingRule>> s_highlightingRules;
+	static std::map<std::string, std::vector<HighlightingRule>> s_highlightingRules;
 	static std::map<HighlightType, QTextCharFormat> s_charFormats;
 
 	QTextDocument* m_document;

@@ -11,8 +11,8 @@ class CxxVariableDeclName: public CxxDeclName
 {
 public:
 	CxxVariableDeclName(
-		std::wstring name,
-		std::vector<std::wstring> templateParameterNames,
+		std::string name,
+		std::vector<std::string> templateParameterNames,
 		std::unique_ptr<CxxTypeName> typeName,
 		bool isStatic);
 

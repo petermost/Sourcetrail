@@ -8,13 +8,13 @@
 class SourceGroupSettingsWithCppStandard: public SourceGroupSettingsComponent
 {
 public:
-	static std::wstring getDefaultCppStandard();
-	static std::vector<std::wstring> getAvailableCppStandards();
+	static std::string getDefaultCppStandard();
+	static std::vector<std::string> getAvailableCppStandards();
 
 	~SourceGroupSettingsWithCppStandard() override = default;
 
-	std::wstring getCppStandard() const;
-	void setCppStandard(const std::wstring& standard);
+	std::string getCppStandard() const;
+	void setCppStandard(const std::string& standard);
 
 protected:
 	bool equals(const SourceGroupSettingsBase* other) const override;
@@ -23,7 +23,7 @@ protected:
 	void save(ConfigManager* config, const std::string& key) override;
 
 private:
-	std::wstring m_cppStandard;
+	std::string m_cppStandard;
 };
 
 #endif	  // SOURCE_GROUP_SETTINGS_WITH_CPP_STANDARD_H

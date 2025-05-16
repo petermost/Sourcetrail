@@ -44,33 +44,33 @@ public:
 		return "MessageChangeFileView";
 	}
 
-	void print(std::wostream& os) const override
+	void print(std::ostream& os) const override
 	{
-		os << filePath.wstr();
+		os << filePath.str();
 
 		switch (state)
 		{
 		case FILE_MINIMIZED:
-			os << L", minimize";
+			os << ", minimize";
 			break;
 		case FILE_SNIPPETS:
-			os << L", snippets";
+			os << ", snippets";
 			break;
 		case FILE_MAXIMIZED:
-			os << L", maximize";
+			os << ", maximize";
 			break;
 		}
 
 		switch (viewMode)
 		{
 		case VIEW_LIST:
-			os << L", list";
+			os << ", list";
 			break;
 		case VIEW_SINGLE:
-			os << L", single";
+			os << ", single";
 			break;
 		case VIEW_CURRENT:
-			os << L", current";
+			os << ", current";
 			break;
 		}
 	}

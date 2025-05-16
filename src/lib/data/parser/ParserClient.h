@@ -17,7 +17,7 @@ public:
 	virtual ~ParserClient() = default;
 
 	virtual Id recordFile(const FilePath& filePath, bool indexed) = 0;
-	virtual void recordFileLanguage(Id fileId, const std::wstring& languageIdentifier) = 0;
+	virtual void recordFileLanguage(Id fileId, const std::string& languageIdentifier) = 0;
 
 	virtual Id recordSymbol(const NameHierarchy& symbolName) = 0;
 	virtual void recordSymbolKind(Id symbolId, SymbolKind symbolKind) = 0;
@@ -30,12 +30,12 @@ public:
 		Id contextSymbolId,
 		const ParseLocation& location) = 0;
 
-	virtual void recordLocalSymbol(const std::wstring& name, const ParseLocation& location) = 0;
+	virtual void recordLocalSymbol(const std::string& name, const ParseLocation& location) = 0;
 	virtual void recordLocation(Id elementId, const ParseLocation& location, ParseLocationType type) = 0;
 	virtual void recordComment(const ParseLocation& location) = 0;
 
 	virtual void recordError(
-		const std::wstring& message,
+		const std::string& message,
 		bool fatal,
 		bool indexed,
 		const FilePath& translationUnit,

@@ -13,7 +13,7 @@
 #include "QtRoundedRectItem.h"
 
 QtGraphNodeGroup::QtGraphNodeGroup(
-	GraphFocusHandler* focusHandler, Id tokenId, const std::wstring& name, GroupType type, bool interactive)
+	GraphFocusHandler* focusHandler, Id tokenId, const std::string& name, GroupType type, bool interactive)
 	: QtGraphNode(focusHandler), m_tokenId(tokenId), m_type(type)
 {
 	m_isInteractive = interactive;

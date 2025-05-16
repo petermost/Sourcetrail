@@ -40,7 +40,7 @@ void PreprocessorCallbacks::FileChanged(
 		{
 			m_currentFileSymbolId = m_client->recordFile(
 				currentPath, m_currentPathIsProjectFile);	 // todo: fix for tests
-			m_client->recordFileLanguage(m_currentFileSymbolId, L"cpp");
+			m_client->recordFileLanguage(m_currentFileSymbolId, "cpp");
 
 			m_canonicalFilePathCache->addFileSymbolId(fileId, currentPath, m_currentFileSymbolId);
 			m_fileWasRecorded.insert(fileId);
@@ -69,7 +69,7 @@ void PreprocessorCallbacks::InclusionDirective(clang::SourceLocation  /*hashLoca
 	if (m_currentFileSymbolId && fileEntry)
 	{
 		const FilePath includedFilePath = m_canonicalFilePathCache->getCanonicalFilePath(*fileEntry);
-		const NameHierarchy includedFileNameHierarchy(includedFilePath.wstr(), NAME_DELIMITER_FILE);
+		const NameHierarchy includedFileNameHierarchy(includedFilePath.str(), NAME_DELIMITER_FILE);
 
 		Id includedFileSymbolId = m_client->recordSymbol(includedFileNameHierarchy);
 

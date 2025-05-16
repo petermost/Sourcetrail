@@ -74,7 +74,7 @@ public:
 	const std::set<Id>& getCoFocusedTokenIds() const;
 	void setCoFocusedTokenIds(const std::vector<Id>& coFocusedTokenIds);
 
-	std::wstring getErrorMessageForId(Id errorId) const;
+	std::string getErrorMessageForId(Id errorId) const;
 	void setErrorInfos(const std::vector<ErrorInfo>& errorInfos);
 
 	bool hasErrors() const;
@@ -93,7 +93,7 @@ public:
 
 	void refreshStyle();
 
-	size_t findScreenMatches(const std::wstring& query);
+	size_t findScreenMatches(const std::string& query);
 	void activateScreenMatch(size_t matchIndex);
 	void deactivateScreenMatch(size_t matchIndex);
 	bool hasScreenMatches() const;

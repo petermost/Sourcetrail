@@ -19,13 +19,13 @@ public:
 	static std::string getXmlElementName();
 	static std::shared_ptr<Target> create(const TiXmlElement* element);
 
-	std::wstring getTitle() const;
+	std::string getTitle() const;
 	std::shared_ptr<const Compiler> getCompiler() const;
 
 private:
 	Target();
 
-	std::wstring m_title;
+	std::string m_title;
 	TargetRelationType m_projectCompilerOptionsRelation = CODEBLOCKS_TARGET_RELATION_TARGET_AFTER_PROJECT;
 	TargetRelationType m_projectIncludeDirsRelation = CODEBLOCKS_TARGET_RELATION_TARGET_AFTER_PROJECT;
 	std::shared_ptr<Compiler> m_compiler;

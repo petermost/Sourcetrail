@@ -24,20 +24,20 @@ public:
 		return "MessageCodeReference";
 	}
 
-	void print(std::wostream& os) const override
+	void print(std::ostream& os) const override
 	{
 		if (type == REFERENCE_PREVIOUS)
 		{
-			os << L"previous";
+			os << "previous";
 		}
 		else
 		{
-			os << L"next";
+			os << "next";
 		}
 
 		if (localReference)
 		{
-			os << L" local";
+			os << " local";
 		}
 	}
 

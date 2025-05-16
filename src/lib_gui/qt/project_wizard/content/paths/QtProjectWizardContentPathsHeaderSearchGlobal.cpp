@@ -59,9 +59,9 @@ bool QtProjectWizardContentPathsHeaderSearchGlobal::check()
 		for (const FilePath& headerPath: m_list->getPathsAsDisplayed())
 		{
 			if (headerPath != ResourcePaths::getCxxCompilerHeaderDirectoryPath() &&
-				headerPath.getCanonical().getConcatenated(L"/stdarg.h").exists())
+				headerPath.getCanonical().getConcatenated("/stdarg.h").exists())
 			{
-				compilerHeaderPaths += QString::fromStdWString(headerPath.wstr()) + "\n";
+				compilerHeaderPaths += QString::fromStdString(headerPath.str()) + "\n";
 			}
 			else
 			{

@@ -11,22 +11,22 @@ class ToolVersionSupport { // Just a 'marker' interface
 
 class ClangVersionSupport final : public ToolVersionSupport {
 	public:
-		static std::wstring getLatestCppStandard();
-		static std::vector<std::wstring> getAvailableCppStandards();
+		static std::string getLatestCppStandard();
+		static std::vector<std::string> getAvailableCppStandards();
 
-		static std::wstring getLatestCStandard();
-		static std::vector<std::wstring> getAvailableCStandards();
+		static std::string getLatestCStandard();
+		static std::vector<std::string> getAvailableCStandards();
 };
 
 class EclipseVersionSupport final : public ToolVersionSupport {
 	public:
-		static std::wstring getLatestJavaStandard();
-		static std::vector<std::wstring> getAvailableJavaStandards();
+		static std::string getLatestJavaStandard();
+		static std::vector<std::string> getAvailableJavaStandards();
 };
 
 class VisualStudioVersionSupport final : public ToolVersionSupport {
 	public:
-		static std::vector<std::wstring> getVersionRanges();
+		static std::vector<std::string> getVersionRanges();
 };
 
 class WindowsSdkVersionSupport final : public ToolVersionSupport {

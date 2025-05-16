@@ -59,22 +59,22 @@ void QtProjectWizardContentFlags::save()
 
 bool QtProjectWizardContentFlags::check()
 {
-	std::wstring error;
+	std::string error;
 
-	for (const std::wstring& flag: m_list->getStrings())
+	for (const std::string& flag: m_list->getStrings())
 	{
-		if (utility::isPrefix<std::wstring>(L"-include ", flag) ||
-			utility::isPrefix<std::wstring>(L"--include ", flag))
+		if (utility::isPrefix<std::string>("-include ", flag) ||
+			utility::isPrefix<std::string>("--include ", flag))
 		{
-			error = L"The entered compiler flag \"" + flag +
-				L"\" contains an error. Please remove the intermediate space character.\n";
+			error = "The entered compiler flag \"" + flag +
+				"\" contains an error. Please remove the intermediate space character.\n";
 		}
 	}
 
 	if (!error.empty())
 	{
 		QtMessageBox msgBox(m_window);
-		msgBox.setText(QString::fromStdWString(error));
+		msgBox.setText(QString::fromStdString(error));
 		msgBox.execModal();
 		return false;
 	}

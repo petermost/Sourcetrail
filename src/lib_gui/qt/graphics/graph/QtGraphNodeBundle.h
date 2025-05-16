@@ -15,7 +15,7 @@ public:
 		Id tokenId,
 		size_t nodeCount,
 		NodeType type,
-		const std::wstring& name,
+		const std::string& name,
 		bool interactive);
 	~QtGraphNodeBundle() override;
 

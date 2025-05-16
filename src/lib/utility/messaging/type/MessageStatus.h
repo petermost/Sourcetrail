@@ -10,28 +10,28 @@ class MessageStatus: public Message<MessageStatus>
 {
 public:
 	MessageStatus(
-		const std::wstring& status,
+		const std::string& status,
 		bool isError = false,
 		bool showLoader = false,
 		bool showInStatusBar = true);
 	MessageStatus(
-		const std::vector<std::wstring>& stati,
+		const std::vector<std::string>& stati,
 		bool isError = false,
 		bool showLoader = false,
 		bool showInStatusBar = true);
 
 	static const std::string getStaticType();
 
-	const std::vector<std::wstring>& stati() const;
-	std::wstring status() const;
-	void print(std::wostream& os) const override;
+	const std::vector<std::string>& stati() const;
+	std::string status() const;
+	void print(std::ostream& os) const override;
 
 	const bool isError;
 	const bool showLoader;
 	const bool showInStatusBar;
 
 private:
-	std::vector<std::wstring> m_stati;
+	std::vector<std::string> m_stati;
 };
 
 #endif	  // MESSAGE_STATUS_H

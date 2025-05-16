@@ -9,9 +9,9 @@
 #include "utilityString.h"
 
 std::vector<FilePath> FileSystem::getFilePathsFromDirectory(
-	const FilePath& path, const std::vector<std::wstring>& extensions)
+	const FilePath& path, const std::vector<std::string>& extensions)
 {
-	std::set<std::wstring> ext(extensions.begin(), extensions.end());
+	std::set<std::string> ext(extensions.begin(), extensions.end());
 	std::vector<FilePath> files;
 
 	if (path.isDirectory())
@@ -32,9 +32,9 @@ std::vector<FilePath> FileSystem::getFilePathsFromDirectory(
 			}
 
 			if (boost::filesystem::is_regular_file(*it) &&
-				(ext.empty() || ext.find(it->path().extension().wstring()) != ext.end()))
+				(ext.empty() || ext.find(it->path().extension().string()) != ext.end()))
 			{
-				files.push_back(FilePath(it->path().generic_wstring()));
+				files.push_back(FilePath(it->path().generic_string()));
 			}
 			++it;
 		}
@@ -53,11 +53,11 @@ FileInfo FileSystem::getFileInfoForPath(const FilePath& filePath)
 
 std::vector<FileInfo> FileSystem::getFileInfosFromPaths(
 	const std::vector<FilePath>& paths,
-	const std::vector<std::wstring>& fileExtensions,
+	const std::vector<std::string>& fileExtensions,
 	bool followSymLinks)
 {
-	std::set<std::wstring> ext;
-	for (const std::wstring& e: fileExtensions)
+	std::set<std::string> ext;
+	for (const std::string& e: fileExtensions)
 	{
 		ext.insert(utility::toLowerCase(e));
 	}
@@ -110,9 +110,9 @@ std::vector<FileInfo> FileSystem::getFileInfosFromPaths(
 
 				if (boost::filesystem::is_regular_file(*it) &&
 					(ext.empty() ||
-					 ext.find(utility::toLowerCase(it->path().extension().wstring())) != ext.end()))
+					 ext.find(utility::toLowerCase(it->path().extension().string())) != ext.end()))
 				{
-					const FilePath canonicalPath = FilePath(it->path().wstring()).getCanonical();
+					const FilePath canonicalPath = FilePath(it->path().string()).getCanonical();
 					if (filePaths.find(canonicalPath) != filePaths.end())
 					{
 						continue;
@@ -187,7 +187,7 @@ std::set<FilePath> FileSystem::getSymLinkedDirectories(const std::vector<FilePat
 	std::set<FilePath> files;
 	for (const auto& p: symlinkDirs)
 	{
-		files.insert(FilePath(p.wstring()));
+		files.insert(FilePath(p.string()));
 	}
 	return files;
 }
@@ -270,7 +270,7 @@ std::vector<FilePath> FileSystem::getDirectSubDirectories(const FilePath& path)
 		{
 			if (boost::filesystem::is_directory(dir->path()))
 			{
-				v.push_back(FilePath(dir->path().wstring()));
+				v.push_back(FilePath(dir->path().string()));
 			}
 		}
 	}

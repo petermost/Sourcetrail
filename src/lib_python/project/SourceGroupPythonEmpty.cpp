@@ -49,28 +49,28 @@ std::set<FilePath> SourceGroupPythonEmpty::getAllSourceFilePaths() const
 std::vector<std::shared_ptr<IndexerCommand>> SourceGroupPythonEmpty::getIndexerCommands(
 	const RefreshInfo& info) const
 {
-	std::vector<std::wstring> args;
-	args.push_back(L"index");
+	std::vector<std::string> args;
+	args.push_back("index");
 
-	args.push_back(L"--source-file-path");
-	args.push_back(L"%{SOURCE_FILE_PATH}");
-	args.push_back(L"--database-file-path");
-	args.push_back(L"%{DATABASE_FILE_PATH}");
+	args.push_back("--source-file-path");
+	args.push_back("%{SOURCE_FILE_PATH}");
+	args.push_back("--database-file-path");
+	args.push_back("%{DATABASE_FILE_PATH}");
 
 	if (!m_settings->getEnvironmentPath().empty())
 	{
-		args.push_back(L"--environment-path");
-		args.push_back(m_settings->getEnvironmentPathExpandedAndAbsolute().wstr());
+		args.push_back("--environment-path");
+		args.push_back(m_settings->getEnvironmentPathExpandedAndAbsolute().str());
 	}
 
 	if (ApplicationSettings::getInstance()->getVerboseIndexerLoggingEnabled())
 	{
-		args.push_back(L"--verbose");
+		args.push_back("--verbose");
 	}
 
 	if (info.shallow)
 	{
-		args.push_back(L"--shallow");
+		args.push_back("--shallow");
 	}
 
 	std::vector<std::shared_ptr<IndexerCommand>> indexerCommands;
@@ -80,11 +80,11 @@ std::vector<std::shared_ptr<IndexerCommand>> SourceGroupPythonEmpty::getIndexerC
 		{
 			indexerCommands.push_back(std::make_shared<IndexerCommandCustom>(
 				INDEXER_COMMAND_PYTHON,
-				ResourcePaths::getPythonIndexerFilePath().wstr(),
+				ResourcePaths::getPythonIndexerFilePath().str(),
 				args,
 				m_settings->getProjectSettings()->getProjectFilePath(),
 				m_settings->getProjectSettings()->getTempDBFilePath(),
-				std::to_wstring(SqliteIndexStorage::getStorageVersion()),
+				std::to_string(SqliteIndexStorage::getStorageVersion()),
 				sourceFilePath,
 				true));
 		}

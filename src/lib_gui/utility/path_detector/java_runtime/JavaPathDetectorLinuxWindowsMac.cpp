@@ -12,18 +12,18 @@ namespace
 
 FilePath getFilePathRelativeToJavaExecutable(const FilePath& javaExecutablePath)
 {
-	wstring relativeJvmLibPath;
+	string relativeJvmLibPath;
 
 	// If those paths change then adjust:
 	// - The place holder hints in QtProjectWizardContentPreferences.cpp
 	// - The documentation in DOCUMENTATION.md
 
 	if constexpr (Platform::isLinux())
-		relativeJvmLibPath = L"/../lib/server/libjvm.so"s;
+		relativeJvmLibPath = "/../lib/server/libjvm.so"s;
 	else if constexpr (Platform::isWindows())
-		relativeJvmLibPath = L"/./server/jvm.dll"s;
+		relativeJvmLibPath = "/./server/jvm.dll"s;
 	else if constexpr (Platform::isMac())
-		relativeJvmLibPath = L"/../lib/server/libjvm.dylib"s;
+		relativeJvmLibPath = "/../lib/server/libjvm.dylib"s;
 
 	FilePath jvmLibPath = javaExecutablePath.getParentDirectory().concatenate(relativeJvmLibPath);
 	if (jvmLibPath.exists())
@@ -35,7 +35,7 @@ FilePath getFilePathRelativeToJavaExecutable(const FilePath& javaExecutablePath)
 FilePath getJavaInPath()
 {
 	bool ok;
-	FilePath javaPath(searchPath(L"java"s, ok));
+	FilePath javaPath(searchPath("java"s, ok));
 	if (ok && !javaPath.empty() && javaPath.exists())
 	{
 		return javaPath;

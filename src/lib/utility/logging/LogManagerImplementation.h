@@ -30,17 +30,17 @@ public:
 	Logger* getLoggerByType(const std::string& type);
 
 	void logInfo(
-		const std::wstring& message,
+		const std::string& message,
 		const std::string& file,
 		const std::string& function,
 		const unsigned int line);
 	void logWarning(
-		const std::wstring& message,
+		const std::string& message,
 		const std::string& file,
 		const std::string& function,
 		const unsigned int line);
 	void logError(
-		const std::wstring& message,
+		const std::string& message,
 		const std::string& file,
 		const std::string& function,
 		const unsigned int line);

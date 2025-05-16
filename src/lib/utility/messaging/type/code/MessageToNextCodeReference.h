@@ -18,17 +18,17 @@ public:
 		return "MessageToNextCodeReference";
 	}
 
-	void print(std::wostream& os) const override
+	void print(std::ostream& os) const override
 	{
-		os << filePath.wstr() << L' ' << lineNumber << L':' << columnNumber << L' ';
+		os << filePath.str() << ' ' << lineNumber << ':' << columnNumber << ' ';
 
 		if (next)
 		{
-			os << L"next";
+			os << "next";
 		}
 		else
 		{
-			os << L"previous";
+			os << "previous";
 		}
 	}
 

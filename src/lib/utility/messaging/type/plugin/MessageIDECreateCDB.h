@@ -13,9 +13,9 @@ public:
 		return "MessageIDECreateCDB";
 	}
 
-	void print(std::wostream& os) const override
+	void print(std::ostream& os) const override
 	{
-		os << L"Create CDB from current solution";
+		os << "Create CDB from current solution";
 	}
 };
 

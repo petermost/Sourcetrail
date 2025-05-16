@@ -10,15 +10,14 @@ class FilePath
 {
 public:
 	static char getEnvironmentVariablePathSeparator();
-	static std::wstring getExecutableExtension();
+	static std::string getExecutableExtension();
 
 	FilePath();
 	FilePath(const char filePath[]);
 	FilePath(const std::string& filePath);
-	FilePath(const std::wstring& filePath);
 	FilePath(const FilePath& other);
 	FilePath(FilePath&& other);
-	FilePath(const std::wstring& filePath, const std::wstring& base);
+	FilePath(const std::string& filePath, const std::string& base);
 	~FilePath();
 
 	const boost::filesystem::path &getPath() const;
@@ -40,21 +39,20 @@ public:
 	FilePath getRelativeTo(const FilePath& other) const;
 	FilePath& concatenate(const FilePath& other);
 	FilePath getConcatenated(const FilePath& other) const;
-	FilePath& concatenate(const std::wstring& other);
-	FilePath getConcatenated(const std::wstring& other) const;
+	FilePath& concatenate(const char other[]);
+	FilePath getConcatenated(const char other[]) const;
 	FilePath getLowerCase() const;
 	std::vector<FilePath> expandEnvironmentVariables() const;
 
 	bool contains(const FilePath& other) const;
 
 	std::string str() const;
-	std::wstring wstr() const;
-	std::wstring fileName() const;
+	std::string fileName() const;
 
-	std::wstring extension() const;
+	std::string extension() const;
 	FilePath withoutExtension() const;
-	FilePath replaceExtension(const std::wstring& extension) const;
-	bool hasExtension(const std::vector<std::wstring>& extensions) const;
+	FilePath replaceExtension(const std::string& extension) const;
+	bool hasExtension(const std::vector<std::string>& extensions) const;
 
 	FilePath& operator=(const FilePath& other);
 	FilePath& operator=(FilePath&& other);

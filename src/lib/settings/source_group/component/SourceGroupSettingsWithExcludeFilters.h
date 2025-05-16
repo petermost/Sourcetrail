@@ -12,9 +12,9 @@ class SourceGroupSettingsWithExcludeFilters: public SourceGroupSettingsComponent
 public:
 	~SourceGroupSettingsWithExcludeFilters() override = default;
 
-	std::vector<std::wstring> getExcludeFilterStrings() const;
+	std::vector<std::string> getExcludeFilterStrings() const;
 	std::vector<FilePathFilter> getExcludeFiltersExpandedAndAbsolute() const;
-	void setExcludeFilterStrings(const std::vector<std::wstring>& excludeFilters);
+	void setExcludeFilterStrings(const std::vector<std::string>& excludeFilters);
 
 protected:
 	bool equals(const SourceGroupSettingsBase* other) const override;
@@ -24,9 +24,9 @@ protected:
 
 private:
 	std::vector<FilePathFilter> getFiltersExpandedAndAbsolute(
-		const std::vector<std::wstring>& filterStrings) const;
+		const std::vector<std::string>& filterStrings) const;
 
-	std::vector<std::wstring> m_excludeFilters;
+	std::vector<std::string> m_excludeFilters;
 };
 
 #endif	  // SOURCE_GROUP_SETTINGS_WITH_EXCLUDE_FILTERS_H

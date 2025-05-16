@@ -234,7 +234,7 @@ void QtCodeFileSingle::onWindowFocus()
 }
 
 void QtCodeFileSingle::findScreenMatches(
-	const std::wstring& query, std::vector<std::pair<QtCodeArea*, Id>>* screenMatches)
+	const std::string& query, std::vector<std::pair<QtCodeArea*, Id>>* screenMatches)
 {
 	if (m_area)
 	{

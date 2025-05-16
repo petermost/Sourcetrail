@@ -112,11 +112,11 @@ ParserClientImpl::ParserClientImpl(std::shared_ptr<IntermediateStorage> storage)
 Id ParserClientImpl::recordFile(const FilePath& filePath, bool indexed)
 {
 	Id fileId = addFileName(filePath);
-	m_storage->addFile(StorageFile(fileId, filePath.wstr(), L"", "", indexed, true));
+	m_storage->addFile(StorageFile(fileId, filePath.str(), "", "", indexed, true));
 	return fileId;
 }
 
-void ParserClientImpl::recordFileLanguage(Id fileId, const std::wstring& languageIdentifier)
+void ParserClientImpl::recordFileLanguage(Id fileId, const std::string& languageIdentifier)
 {
 	m_storage->setFileLanguage(fileId, languageIdentifier);
 }
@@ -158,7 +158,7 @@ Id ParserClientImpl::recordReference(
 	return edgeId;
 }
 
-void ParserClientImpl::recordLocalSymbol(const std::wstring& name, const ParseLocation& location)
+void ParserClientImpl::recordLocalSymbol(const std::string& name, const ParseLocation& location)
 {
 	const Id localSymbolId = m_storage->addLocalSymbol(name);
 	addSourceLocation(localSymbolId, location, LocationType::LOCAL_SYMBOL);
@@ -186,7 +186,7 @@ void ParserClientImpl::recordComment(const ParseLocation& location)
 }
 
 void ParserClientImpl::recordError(
-	const std::wstring& message,
+	const std::string& message,
 	bool fatal,
 	bool indexed,
 	const FilePath& translationUnit,
@@ -195,7 +195,7 @@ void ParserClientImpl::recordError(
 	if (location.fileId != 0)
 	{
 		Id errorId = m_storage->addError(
-			StorageErrorData(message, translationUnit.wstr(), fatal, indexed));
+			StorageErrorData(message, translationUnit.str(), fatal, indexed));
 
 		addSourceLocation(errorId, location, LocationType::ERROR);
 	}
@@ -238,7 +238,7 @@ Id ParserClientImpl::addNodeHierarchy(const NameHierarchy& nameHierarchy)
 
 Id ParserClientImpl::addFileName(const FilePath& filePath)
 {
-	const std::wstring file = filePath.wstr();
+	const std::string file = filePath.str();
 
 	auto it = m_fileIdMap.find(file);
 	if (it != m_fileIdMap.end())

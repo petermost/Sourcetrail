@@ -14,7 +14,7 @@ Node::Node(Id id, NodeType type, NameHierarchy nameHierarchy, DefinitionKind def
 	, m_type(type)
 	, m_nameHierarchy(std::move(nameHierarchy))
 	, m_definitionKind(definitionKind)
-	 
+
 {
 }
 
@@ -39,8 +39,8 @@ void Node::setType(NodeType type)
 	if (!isType(type.getKind() | NODE_SYMBOL))
 	{
 		LOG_WARNING(
-			L"Cannot change NodeType after it was already set from " + getReadableTypeString() +
-			L" to " + type.getReadableTypeWString());
+			"Cannot change NodeType after it was already set from " + getReadableTypeString() +
+			" to " + type.getReadableTypeString());
 		return;
 	}
 	m_type = type;
@@ -51,12 +51,12 @@ bool Node::isType(NodeKindMask mask) const
 	return (m_type.getKind() & mask) > 0;
 }
 
-std::wstring Node::getName() const
+std::string Node::getName() const
 {
 	return m_nameHierarchy.getRawName();
 }
 
-std::wstring Node::getFullName() const
+std::string Node::getFullName() const
 {
 	return m_nameHierarchy.getQualifiedName();
 }
@@ -248,37 +248,37 @@ bool Node::isEdge() const
 	return false;
 }
 
-std::wstring Node::getReadableTypeString() const
+std::string Node::getReadableTypeString() const
 {
-	return m_type.getReadableTypeWString();
+	return m_type.getReadableTypeString();
 }
 
-std::wstring Node::getAsString() const
+std::string Node::getAsString() const
 {
-	std::wstringstream str;
-	str << L"[" << getId() << L"] " << getReadableTypeString() << L": " << L"\"" << getName()
-		<< L"\"";
+	std::stringstream str;
+	str << "[" << getId() << "] " << getReadableTypeString() << ": " << "\"" << getName()
+		<< "\"";
 
 	TokenComponentAccess* access = getComponent<TokenComponentAccess>();
 	if (access)
 	{
-		str << L" " << access->getAccessString();
+		str << " " << access->getAccessString();
 	}
 
 	if (getComponent<TokenComponentStatic>())
 	{
-		str << L" static";
+		str << " static";
 	}
 
 	if (getComponent<TokenComponentConst>())
 	{
-		str << L" const";
+		str << " const";
 	}
 
 	return str.str();
 }
 
-std::wostream& operator<<(std::wostream& ostream, const Node& node)
+std::ostream& operator<<(std::ostream& ostream, const Node& node)
 {
 	ostream << node.getAsString();
 	return ostream;

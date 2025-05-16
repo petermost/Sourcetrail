@@ -22,10 +22,10 @@ FilePath IncludeDirective::getIncludingFile() const
 	return m_includingFilePath;
 }
 
-std::wstring IncludeDirective::getDirective() const
+std::string IncludeDirective::getDirective() const
 {
-	return std::wstring(L"#include ") + (m_usesBrackets ? L"<" : L"\"") +
-		m_includedFilePath.wstr() + (m_usesBrackets ? L">" : L"\"");
+	return std::string("#include ") + (m_usesBrackets ? "<" : "\"") +
+		m_includedFilePath.str() + (m_usesBrackets ? ">" : "\"");
 }
 
 unsigned int IncludeDirective::getLineNumber() const

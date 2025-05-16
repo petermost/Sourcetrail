@@ -109,7 +109,7 @@ void ActivationController::handleMessage(MessageActivateSourceLocations* message
 
 	if (message->containsUnsolvedLocations && msg.nodes.size() == 1 &&
 		m_storageAccess->getNameHierarchyForNodeId(msg.nodes[0].nodeId).getQualifiedName() ==
-			L"unsolved symbol")
+			"unsolved symbol")
 	{
 		MessageTooltipShow m(message->locationIds, {}, TOOLTIP_ORIGIN_CODE);
 		m.force = true;
@@ -134,7 +134,7 @@ void ActivationController::handleMessage(MessageResetZoom*  /*message*/)
 		MessageRefreshUI().dispatch();
 	}
 
-	MessageStatus(L"Font size: " + std::to_wstring(fontSizeStd)).dispatch();
+	MessageStatus("Font size: " + std::to_string(fontSizeStd)).dispatch();
 }
 
 void ActivationController::handleMessage(MessageSearch* message)
@@ -203,6 +203,6 @@ void ActivationController::handleMessage(MessageZoom* message)
 	settings->setFontSize(fontSize + (message->zoomIn ? 1 : -1));
 	settings->save();
 
-	MessageStatus(L"Font size: " + std::to_wstring(settings->getFontSize())).dispatch();
+	MessageStatus("Font size: " + std::to_string(settings->getFontSize())).dispatch();
 	MessageRefreshUI().dispatch();
 }

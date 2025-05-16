@@ -16,7 +16,7 @@ void CustomTrailController::clear()
 		m_storageAccess->getAvailableNodeTypes(), m_storageAccess->getAvailableEdgeTypes());
 }
 
-void CustomTrailController::autocomplete(const std::wstring query, bool from)
+void CustomTrailController::autocomplete(const std::string query, bool from)
 {
 	NodeTypeSet nodeTypes = NodeTypeSet::all();
 	nodeTypes.remove(NodeType(NODE_MODULE));

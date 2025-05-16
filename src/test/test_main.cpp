@@ -23,7 +23,7 @@ struct EventListener : Catch2::EventListenerBase
 
 	void testRunStarting(const Catch::TestRunInfo& ) override
 	{
-		FilePath appPath = FilePath(s_argv[0]).getCanonical().getParentDirectory().getParentDirectory().getConcatenated(L"app");
+		FilePath appPath = FilePath(s_argv[0]).getCanonical().getParentDirectory().getParentDirectory().getConcatenated("app");
 		cout << "Setting 'app' directory to " << appPath.str() << endl;
 		setupAppDirectories(appPath);
 

@@ -8,7 +8,7 @@ class FilePath;
 
 namespace utility
 {
-std::wstring mavenGenerateSources(
+std::string mavenGenerateSources(
 	const FilePath& mavenPath, const FilePath& settingsFilePath, const FilePath& projectDirectoryPath);
 bool mavenCopyDependencies(
 	const FilePath& mavenPath,

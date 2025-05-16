@@ -48,9 +48,9 @@ public:
 	void refreshStyle();
 	
 signals:
-	void autocomplete(const std::wstring& query, NodeTypeSet acceptedNodeTypes);
+	void autocomplete(const std::string& query, NodeTypeSet acceptedNodeTypes);
 	void search(const std::vector<SearchMatch>& matches, NodeTypeSet acceptedNodeTypes);
-	void fullTextSearch(const std::wstring& query, bool caseSensitive);
+	void fullTextSearch(const std::string& query, bool caseSensitive);
 	
 public slots:
 	void startSearch();
@@ -94,7 +94,7 @@ private:
 	void layoutElements();
 
 	bool hasSelectedElements() const;
-	std::wstring getSelectedString() const;
+	std::string getSelectedString() const;
 
 	void selectAllElementsWith(bool selected);
 	void selectElementsTo(size_t idx, bool selected);
@@ -108,7 +108,7 @@ private:
 
 	void startFullTextSearch();
 
-	static std::deque<SearchMatch> getMatchesForInput(const std::wstring& text);
+	static std::deque<SearchMatch> getMatchesForInput(const std::string& text);
 
 	NodeTypeSet getMatchAcceptedNodeTypes() const;
 	bool lastMatchIsNoFilter() const;

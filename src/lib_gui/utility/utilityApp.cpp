@@ -34,10 +34,10 @@ std::string getDocumentationLink()
 	return "https://github.com/petermost/Sourcetrail/blob/master/DOCUMENTATION.md";
 }
 
-std::wstring searchPath(const std::wstring& bin, bool& ok)
+std::string searchPath(const std::string& bin, bool& ok)
 {
 	ok = false;
-	std::wstring r = boost::process::search_path(bin).generic_wstring();
+	std::string r = boost::process::search_path(bin).generic_string();
 	if (!r.empty())
 	{
 		ok = true;
@@ -46,7 +46,7 @@ std::wstring searchPath(const std::wstring& bin, bool& ok)
 	return bin;
 }
 
-std::wstring searchPath(const std::wstring& bin)
+std::string searchPath(const std::string& bin)
 {
 	bool ok;
 	return searchPath(bin, ok);
@@ -72,7 +72,7 @@ bool wait_for_process(boost::process::child *process, milliseconds timeout)
 }
 }	 // namespace
 
-ProcessOutput executeProcess(const std::wstring& command, const std::vector<std::wstring>& arguments, const FilePath& workingDirectory,
+ProcessOutput executeProcess(const std::string& command, const std::vector<std::string>& arguments, const FilePath& workingDirectory,
 	const bool waitUntilNoOutput, const milliseconds &timeout, bool logProcessOutput)
 {
 	std::string output;
@@ -106,7 +106,7 @@ ProcessOutput executeProcess(const std::wstring& command, const std::vector<std:
 			process = std::make_shared<boost::process::child>(
 				searchPath(command),
 				boost::process::args(arguments),
-				boost::process::start_dir(workingDirectory.wstr()),
+				boost::process::start_dir(workingDirectory.str()),
 				env,
 				boost::process::std_in.close(),
 				(boost::process::std_out & boost::process::std_err) > ap);
@@ -216,7 +216,7 @@ ProcessOutput executeProcess(const std::wstring& command, const std::vector<std:
 		ProcessOutput ret;
 		ret.error = decodeFromUtf8(e.code().message());
 		ret.exitCode = e.code().value();
-		LOG_ERROR_BARE(L"Process error: " + ret.error);
+		LOG_ERROR_BARE("Process error: " + ret.error);
 
 		return ret;
 	}

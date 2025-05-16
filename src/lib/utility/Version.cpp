@@ -22,9 +22,3 @@ std::string Version::toDisplayString() const
 	return std::to_string(m_majorNumber) + '.' + std::to_string(m_minorNumber) + '.' +
 		std::to_string(m_patchNumber);
 }
-
-std::wstring Version::toDisplayWString() const
-{
-	return std::to_wstring(m_majorNumber) + L'.' + std::to_wstring(m_minorNumber) + L'.' +
-		std::to_wstring(m_patchNumber);
-}

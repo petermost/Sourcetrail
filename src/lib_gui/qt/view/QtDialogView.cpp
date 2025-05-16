@@ -51,16 +51,16 @@ void QtDialogView::clearDialogs()
 	setParentWindow(nullptr);
 }
 
-void QtDialogView::showUnknownProgressDialog(const std::wstring& title, const std::wstring& message)
+void QtDialogView::showUnknownProgressDialog(const std::string& title, const std::string& message)
 {
-	MessageStatus(title + L": " + message, false, true).dispatch();
+	MessageStatus(title + ": " + message, false, true).dispatch();
 
 	m_onQtThread2([=, this]() { showUnknownProgress(title, message, false); });
 }
 
 void QtDialogView::hideUnknownProgressDialog()
 {
-	MessageStatus(L"", false, false).dispatch();
+	MessageStatus("", false, false).dispatch();
 
 	m_onQtThread2([=, this]() { hideUnknownProgress(); });
 
@@ -68,7 +68,7 @@ void QtDialogView::hideUnknownProgressDialog()
 }
 
 void QtDialogView::showProgressDialog(
-	const std::wstring& title, const std::wstring& message, size_t progress)
+	const std::string& title, const std::string& message, size_t progress)
 {
 	m_onQtThread([=, this]() {
 		bool sendStatusMessage = true;
@@ -89,12 +89,12 @@ void QtDialogView::showProgressDialog(
 		if (sendStatusMessage)
 		{
 			MessageStatus(
-				title + L": " + message + L" [" + std::to_wstring(progress) + L"%]", false, true)
+				title + ": " + message + " [" + std::to_string(progress) + "%]", false, true)
 				.dispatch();
 		}
 
-		window->updateTitle(QString::fromStdWString(title));
-		window->updateMessage(QString::fromStdWString(message));
+		window->updateTitle(QString::fromStdString(title));
+		window->updateMessage(QString::fromStdString(message));
 		window->updateProgress(progress);
 
 		setUIBlocked(m_dialogsVisible);
@@ -111,7 +111,7 @@ void QtDialogView::hideProgressDialog()
 			m_windowStack.popWindow();
 		}
 
-		MessageStatus(L"", false, false).dispatch();
+		MessageStatus("", false, false).dispatch();
 
 		setUIBlocked(false);
 	});
@@ -154,7 +154,7 @@ void QtDialogView::startIndexingDialog(
 			std::shared_ptr<QTimer> timer = std::make_shared<QTimer>();
 			timer->setSingleShot(true);
 			connect(timer.get(), &QTimer::timeout, [=, this]() {
-				showUnknownProgress(L"Preparing Indexing", L"Processing Files", true);
+				showUnknownProgress("Preparing Indexing", "Processing Files", true);
 			});
 			timer->start(200);
 
@@ -206,12 +206,12 @@ void QtDialogView::updateIndexingDialog(
 	m_onQtThread([=, this]() {
 		if (!sourcePaths.empty())
 		{
-			std::vector<std::wstring> stati;
+			std::vector<std::string> stati;
 			for (const FilePath& path: sourcePaths)
 			{
 				stati.push_back(
-					L"[" + std::to_wstring(startedFileCount) + L"/" +
-					std::to_wstring(totalFileCount) + L"] Indexing file: " + path.wstr());
+					"[" + std::to_string(startedFileCount) + "/" +
+					std::to_string(totalFileCount) + "] Indexing file: " + path.str());
 			}
 			MessageStatus(stati, false, false, m_dialogsVisible).dispatch();
 		}
@@ -307,18 +307,18 @@ DatabasePolicy QtDialogView::finishedIndexingDialog(
 	return policy;
 }
 
-int QtDialogView::confirm(const std::wstring& message, const std::vector<std::wstring>& options)
+int QtDialogView::confirm(const std::string& message, const std::vector<std::string>& options)
 {
 	int result = -1;
 	m_resultReady = false;
 
 	m_onQtThread2([=, this, &result]() {
 		QtMessageBox msgBox;
-		msgBox.setText(QString::fromStdWString(message));
+		msgBox.setText(QString::fromStdString(message));
 
-		for (const std::wstring& option: options)
+		for (const std::string& option: options)
 		{
-			msgBox.addButton(QString::fromStdWString(option), QtMessageBox::AcceptRole);
+			msgBox.addButton(QString::fromStdString(option), QtMessageBox::AcceptRole);
 		}
 
 		QAbstractButton *clickedButton = msgBox.execModal();
@@ -348,7 +348,7 @@ void QtDialogView::setParentWindow(QtWindow* window)
 	m_onQtThread([=, this]() { m_parentWindow = window; });
 }
 
-void QtDialogView::showUnknownProgress(const std::wstring& title, const std::wstring& message, bool stacked)
+void QtDialogView::showUnknownProgress(const std::string& title, const std::string& message, bool stacked)
 {
 	QtUnknownProgressDialog* window = nullptr;
 
@@ -368,8 +368,8 @@ void QtDialogView::showUnknownProgress(const std::wstring& title, const std::wst
 		window = createWindow<QtUnknownProgressDialog>(m_dialogsHideable);
 	}
 
-	window->updateTitle(QString::fromStdWString(title));
-	window->updateMessage(QString::fromStdWString(message));
+	window->updateTitle(QString::fromStdString(title));
+	window->updateMessage(QString::fromStdString(message));
 
 	setUIBlocked(m_dialogsVisible);
 }
@@ -431,7 +431,7 @@ void QtDialogView::dialogVisibilityChanged(bool visible)
 
 	if (!visible && dynamic_cast<QtIndexingDialog*>(window))
 	{
-		MessageStatus(L"", false, false).dispatch();
+		MessageStatus("", false, false).dispatch();
 	}
 }
 

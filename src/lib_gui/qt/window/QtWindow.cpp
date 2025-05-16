@@ -97,13 +97,13 @@ void QtWindow::updateTitle(const QString& title)
 	}
 }
 
-std::wstring QtWindow::getTitle() const
+std::string QtWindow::getTitle() const
 {
 	if (m_title)
 	{
-		return m_title->text().toStdWString();
+		return m_title->text().toStdString();
 	}
-	return L"";
+	return "";
 }
 
 void QtWindow::updateSubTitle(const QString& subTitle)

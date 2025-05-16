@@ -30,11 +30,11 @@ public:
 	bool dialogsHidden() const override;
 	void clearDialogs() override;
 
-	void showUnknownProgressDialog(const std::wstring& title, const std::wstring& message) override;
+	void showUnknownProgressDialog(const std::string& title, const std::string& message) override;
 	void hideUnknownProgressDialog() override;
 
 	void showProgressDialog(
-		const std::wstring& title, const std::wstring& message, size_t progress) override;
+		const std::string& title, const std::string& message, size_t progress) override;
 	void hideProgressDialog() override;
 
 	void startIndexingDialog(
@@ -65,12 +65,12 @@ public:
 		bool interrupted,
 		bool shallow) override;
 
-	int confirm(const std::wstring& message, const std::vector<std::wstring>& options) override;
+	int confirm(const std::string& message, const std::vector<std::string>& options) override;
 
 	void setParentWindow(QtWindow* window);
 
 private slots:
-	void showUnknownProgress(const std::wstring& title, const std::wstring& message, bool stacked);
+	void showUnknownProgress(const std::string& title, const std::string& message, bool stacked);
 	void hideUnknownProgress();
 
 	void setUIBlocked(bool blocked);

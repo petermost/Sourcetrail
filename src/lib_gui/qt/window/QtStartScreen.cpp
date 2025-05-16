@@ -32,18 +32,18 @@ void QtRecentProjectButton::setProjectPath(const FilePath &projectFilePath)
 {
 	m_projectFilePath = projectFilePath;
 
-	setText(QString::fromStdWString(m_projectFilePath.withoutExtension().fileName()));
+	setText(QString::fromStdString(m_projectFilePath.withoutExtension().fileName()));
 	setFixedWidth(fontMetrics().boundingRect(text()).width() + 45);
 
 	if (m_projectFilePath.exists())
 	{
-		setToolTip(QString::fromStdWString(m_projectFilePath.wstr()));
+		setToolTip(QString::fromStdString(m_projectFilePath.str()));
 
 		setObjectName(QStringLiteral("recentButton"));
 	}
 	else
 	{
-		setToolTip(tr("Couldn't find %1").arg(QString::fromStdWString(m_projectFilePath.wstr())));
+		setToolTip(tr("Couldn't find %1").arg(QString::fromStdString(m_projectFilePath.str())));
 
 		setObjectName(QStringLiteral("recentButtonMissing"));
 	}
@@ -179,7 +179,7 @@ void QtStartScreen::handleButtonClicked()
 		msgBox.setWindowTitle(tr("Missing Project File"));
 		msgBox.setText(tr("<strong>Missing Project File</strong>"));
 		msgBox.setInformativeText(tr("<p>Couldn't find \"%1\"</p><p>Do you want to remove it from recent projects?</p>").arg(button->text()));
-		msgBox.setDetailedText(tr("Couldn't find %1").arg(QString::fromStdWString(recentProjectPath.wstr())));
+		msgBox.setDetailedText(tr("Couldn't find %1").arg(QString::fromStdString(recentProjectPath.str())));
 
 		QPushButton *removeButton = msgBox.addButton(tr("Remove"), QtMessageBox::YesRole);
 		msgBox.addButton(tr("Keep"), QtMessageBox::NoRole);
@@ -205,7 +205,7 @@ void QtStartScreen::removeRecentProjectPath(const FilePath &projectFilePath)
 	vector<FilePath> recentProjects = ApplicationSettings::getInstance()->getRecentProjects();
 	for (auto recentProject = recentProjects.begin(); recentProject != recentProjects.end(); ++recentProject)
 	{
-		if (recentProject->wstr() == projectFilePath.wstr())
+		if (recentProject->str() == projectFilePath.str())
 		{
 			recentProjects.erase(recentProject);
 			ApplicationSettings::getInstance()->setRecentProjects(recentProjects);

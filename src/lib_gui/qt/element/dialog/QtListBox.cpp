@@ -168,17 +168,17 @@ void QtListBox::showEditDialog()
 			m_listName, "Edit the list in plain text. Each line is one item.");
 		m_editDialog->setup();
 
-		std::vector<std::wstring> list;
+		std::vector<std::string> list;
 		for (int i = 0; i < m_list->count(); ++i)
 		{
 			QtListBoxItem* item = dynamic_cast<QtListBoxItem*>(m_list->itemWidget(m_list->item(i)));
 			if (!item->getReadOnly())
 			{
-				list.push_back(item->getText().toStdWString());
+				list.push_back(item->getText().toStdString());
 			}
 		}
 
-		m_editDialog->setText(utility::join(list, L"\n"));
+		m_editDialog->setText(utility::join(list, "\n"));
 
 		connect(
 			m_editDialog.get(), &QtTextEditDialog::canceled, this, &QtListBox::canceledEditDialog);
@@ -199,17 +199,17 @@ void QtListBox::canceledEditDialog()
 
 void QtListBox::savedEditDialog()
 {
-	std::vector<std::wstring> readOnlyLines;
+	std::vector<std::string> readOnlyLines;
 	for (int i = 0; i < m_list->count(); ++i)
 	{
 		QtListBoxItem* item = dynamic_cast<QtListBoxItem*>(m_list->itemWidget(m_list->item(i)));
 		if (item->getReadOnly())
 		{
-			readOnlyLines.push_back(item->getText().toStdWString());
+			readOnlyLines.push_back(item->getText().toStdString());
 		}
 	}
 
-	std::vector<std::wstring> lines = utility::splitToVector(m_editDialog->getText(), L"\n");
+	std::vector<std::string> lines = utility::splitToVector(m_editDialog->getText(), "\n");
 	for (size_t i = 0; i < lines.size(); i++)
 	{
 		lines[i] = utility::trim(lines[i]);
@@ -223,15 +223,15 @@ void QtListBox::savedEditDialog()
 
 	clear();
 
-	for (const std::wstring& line: readOnlyLines)
+	for (const std::string& line: readOnlyLines)
 	{
-		QtListBoxItem* itemWidget = addListBoxItemWithText(QString::fromStdWString(line));
+		QtListBoxItem* itemWidget = addListBoxItemWithText(QString::fromStdString(line));
 		itemWidget->setReadOnly(true);
 	}
 
-	for (const std::wstring& line: lines)
+	for (const std::string& line: lines)
 	{
-		QtListBoxItem* itemWidget = addListBoxItemWithText(QString::fromStdWString(line));
+		QtListBoxItem* itemWidget = addListBoxItemWithText(QString::fromStdString(line));
 		itemWidget->setReadOnly(false);
 	}
 

@@ -34,9 +34,9 @@ public:
 	std::string getTextEncoding() const;
 	void setTextEncoding(const std::string& textEncoding);
 
-	std::wstring getColorSchemeName() const;
+	std::string getColorSchemeName() const;
 	FilePath getColorSchemePath() const;
-	void setColorSchemeName(const std::wstring& colorSchemeName);
+	void setColorSchemeName(const std::string& colorSchemeName);
 
 	int getFontSizeMax() const;
 	void setFontSizeMax(const int fontSizeMax);

@@ -8,18 +8,18 @@
 #include "logging.h"
 #include "utilityString.h"
 
-std::wstring NetworkProtocolHelper::s_divider = L">>";
-std::wstring NetworkProtocolHelper::s_setActiveTokenPrefix = L"setActiveToken";
-std::wstring NetworkProtocolHelper::s_moveCursorPrefix = L"moveCursor";
-std::wstring NetworkProtocolHelper::s_endOfMessageToken = L"<EOM>";
-std::wstring NetworkProtocolHelper::s_createProjectPrefix = L"createProject";
-std::wstring NetworkProtocolHelper::s_createCDBProjectPrefix = L"createCDBProject";
-std::wstring NetworkProtocolHelper::s_createCDBPrefix = L"createCDB";
-std::wstring NetworkProtocolHelper::s_pingPrefix = L"ping";
+std::string NetworkProtocolHelper::s_divider = ">>";
+std::string NetworkProtocolHelper::s_setActiveTokenPrefix = "setActiveToken";
+std::string NetworkProtocolHelper::s_moveCursorPrefix = "moveCursor";
+std::string NetworkProtocolHelper::s_endOfMessageToken = "<EOM>";
+std::string NetworkProtocolHelper::s_createProjectPrefix = "createProject";
+std::string NetworkProtocolHelper::s_createCDBProjectPrefix = "createCDBProject";
+std::string NetworkProtocolHelper::s_createCDBPrefix = "createCDB";
+std::string NetworkProtocolHelper::s_pingPrefix = "ping";
 
-NetworkProtocolHelper::MESSAGE_TYPE NetworkProtocolHelper::getMessageType(const std::wstring& message)
+NetworkProtocolHelper::MESSAGE_TYPE NetworkProtocolHelper::getMessageType(const std::string& message)
 {
-	std::vector<std::wstring> subMessages = divideMessage(message);
+	std::vector<std::string> subMessages = divideMessage(message);
 
 	if (!subMessages.empty())
 	{
@@ -49,9 +49,9 @@ NetworkProtocolHelper::MESSAGE_TYPE NetworkProtocolHelper::getMessageType(const 
 }
 
 NetworkProtocolHelper::SetActiveTokenMessage NetworkProtocolHelper::parseSetActiveTokenMessage(
-	const std::wstring& message)
+	const std::string& message)
 {
-	std::vector<std::wstring> subMessages = divideMessage(message);
+	std::vector<std::string> subMessages = divideMessage(message);
 
 	SetActiveTokenMessage networkMessage;
 
@@ -65,9 +65,9 @@ NetworkProtocolHelper::SetActiveTokenMessage NetworkProtocolHelper::parseSetActi
 			}
 			else
 			{
-				const std::wstring filePath = subMessages[1];
-				const std::wstring row = subMessages[2];
-				const std::wstring column = subMessages[3];
+				const std::string filePath = subMessages[1];
+				const std::string row = subMessages[2];
+				const std::string column = subMessages[3];
 
 				if (!filePath.empty() && !row.empty() && !column.empty() && isDigits(row) &&
 					isDigits(column))
@@ -82,7 +82,7 @@ NetworkProtocolHelper::SetActiveTokenMessage NetworkProtocolHelper::parseSetActi
 		else
 		{
 			LOG_ERROR(
-				L"Failed to parse message, invalid type token: " + subMessages[0] + L". Expected " +
+				"Failed to parse message, invalid type token: " + subMessages[0] + ". Expected " +
 				s_setActiveTokenPrefix);
 		}
 	}
@@ -91,9 +91,9 @@ NetworkProtocolHelper::SetActiveTokenMessage NetworkProtocolHelper::parseSetActi
 }
 
 NetworkProtocolHelper::CreateProjectMessage NetworkProtocolHelper::parseCreateProjectMessage(
-	const std::wstring& message)
+	const std::string& message)
 {
-	std::vector<std::wstring> subMessages = divideMessage(message);
+	std::vector<std::string> subMessages = divideMessage(message);
 
 	NetworkProtocolHelper::CreateProjectMessage networkMessage;
 
@@ -109,7 +109,7 @@ NetworkProtocolHelper::CreateProjectMessage NetworkProtocolHelper::parseCreatePr
 		else
 		{
 			LOG_ERROR(
-				L"Failed to parse message, invalid type token: " + subMessages[0] + L". Expected " +
+				"Failed to parse message, invalid type token: " + subMessages[0] + ". Expected " +
 				s_createProjectPrefix);
 		}
 	}
@@ -118,9 +118,9 @@ NetworkProtocolHelper::CreateProjectMessage NetworkProtocolHelper::parseCreatePr
 }
 
 NetworkProtocolHelper::CreateCDBProjectMessage NetworkProtocolHelper::parseCreateCDBProjectMessage(
-	const std::wstring& message)
+	const std::string& message)
 {
-	std::vector<std::wstring> subMessages = divideMessage(message);
+	std::vector<std::string> subMessages = divideMessage(message);
 
 	NetworkProtocolHelper::CreateCDBProjectMessage networkMessage;
 
@@ -136,7 +136,7 @@ NetworkProtocolHelper::CreateCDBProjectMessage NetworkProtocolHelper::parseCreat
 			{
 				const size_t subMessageCount = subMessages.size();
 
-				const std::wstring cdbPath = subMessages[1];
+				const std::string cdbPath = subMessages[1];
 				if (!cdbPath.empty())
 				{
 					networkMessage.cdbFileLocation = FilePath(cdbPath);
@@ -146,17 +146,17 @@ NetworkProtocolHelper::CreateCDBProjectMessage NetworkProtocolHelper::parseCreat
 					LOG_WARNING("CDB file path is not set.");
 				}
 
-				const std::wstring ideId = subMessages[subMessageCount - 2];
+				const std::string ideId = subMessages[subMessageCount - 2];
 				if (!ideId.empty())
 				{
-					std::wstring nonConstId = ideId;
+					std::string nonConstId = ideId;
 					boost::algorithm::to_lower(nonConstId);
 
 					networkMessage.ideId = nonConstId;
 				}
 				else
 				{
-					LOG_WARNING(L"Failed to parse ide ID string. Is " + ideId);
+					LOG_WARNING("Failed to parse ide ID string. Is " + ideId);
 				}
 
 				if (!networkMessage.cdbFileLocation.empty() && !networkMessage.ideId.empty())
@@ -168,7 +168,7 @@ NetworkProtocolHelper::CreateCDBProjectMessage NetworkProtocolHelper::parseCreat
 		else
 		{
 			LOG_ERROR(
-				L"Failed to parse message, invalid type token: " + subMessages[0] + L". Expected " +
+				"Failed to parse message, invalid type token: " + subMessages[0] + ". Expected " +
 				s_createCDBProjectPrefix);
 		}
 	}
@@ -176,9 +176,9 @@ NetworkProtocolHelper::CreateCDBProjectMessage NetworkProtocolHelper::parseCreat
 	return networkMessage;
 }
 
-NetworkProtocolHelper::PingMessage NetworkProtocolHelper::parsePingMessage(const std::wstring& message)
+NetworkProtocolHelper::PingMessage NetworkProtocolHelper::parsePingMessage(const std::string& message)
 {
-	std::vector<std::wstring> subMessages = divideMessage(message);
+	std::vector<std::string> subMessages = divideMessage(message);
 
 	NetworkProtocolHelper::PingMessage pingMessage;
 
@@ -192,11 +192,11 @@ NetworkProtocolHelper::PingMessage NetworkProtocolHelper::parsePingMessage(const
 			}
 			else
 			{
-				std::wstring ideId = subMessages[1];
+				std::string ideId = subMessages[1];
 
 				if (!ideId.empty())
 				{
-					std::wstring nonConstId = ideId;
+					std::string nonConstId = ideId;
 					boost::algorithm::to_lower(nonConstId);
 
 					pingMessage.ideId = ideId;
@@ -205,14 +205,14 @@ NetworkProtocolHelper::PingMessage NetworkProtocolHelper::parsePingMessage(const
 				}
 				else
 				{
-					LOG_WARNING(L"Failed to parse ide ID string: " + ideId);
+					LOG_WARNING("Failed to parse ide ID string: " + ideId);
 				}
 			}
 		}
 		else
 		{
 			LOG_ERROR(
-				L"Failed to parse message, invalid type token: " + subMessages[0] + L". Expected " +
+				"Failed to parse message, invalid type token: " + subMessages[0] + ". Expected " +
 				s_pingPrefix);
 		}
 	}
@@ -220,14 +220,14 @@ NetworkProtocolHelper::PingMessage NetworkProtocolHelper::parsePingMessage(const
 	return pingMessage;
 }
 
-std::wstring NetworkProtocolHelper::buildSetIDECursorMessage(
+std::string NetworkProtocolHelper::buildSetIDECursorMessage(
 	const FilePath& fileLocation, const unsigned int row, const unsigned int column)
 {
-	std::wstringstream messageStream;
+	std::stringstream messageStream;
 
 	messageStream << s_moveCursorPrefix;
 	messageStream << s_divider;
-	messageStream << fileLocation.wstr();
+	messageStream << fileLocation.str();
 	messageStream << s_divider;
 	messageStream << row;
 	messageStream << s_divider;
@@ -237,9 +237,9 @@ std::wstring NetworkProtocolHelper::buildSetIDECursorMessage(
 	return messageStream.str();
 }
 
-std::wstring NetworkProtocolHelper::buildCreateCDBMessage()
+std::string NetworkProtocolHelper::buildCreateCDBMessage()
 {
-	std::wstringstream messageStream;
+	std::stringstream messageStream;
 
 	messageStream << s_createCDBPrefix;
 	messageStream << s_endOfMessageToken;
@@ -247,9 +247,9 @@ std::wstring NetworkProtocolHelper::buildCreateCDBMessage()
 	return messageStream.str();
 }
 
-std::wstring NetworkProtocolHelper::buildPingMessage()
+std::string NetworkProtocolHelper::buildPingMessage()
 {
-	std::wstringstream messageStream;
+	std::stringstream messageStream;
 
 	messageStream << s_pingPrefix;
 	messageStream << s_divider;
@@ -259,16 +259,16 @@ std::wstring NetworkProtocolHelper::buildPingMessage()
 	return messageStream.str();
 }
 
-std::vector<std::wstring> NetworkProtocolHelper::divideMessage(const std::wstring& message)
+std::vector<std::string> NetworkProtocolHelper::divideMessage(const std::string& message)
 {
-	std::vector<std::wstring> result;
+	std::vector<std::string> result;
 
-	std::wstring msg = message;
+	std::string msg = message;
 	size_t pos = msg.find(s_divider);
 
-	while (pos != std::wstring::npos)
+	while (pos != std::string::npos)
 	{
-		std::wstring subMessage = msg.substr(0, pos);
+		std::string subMessage = msg.substr(0, pos);
 		result.push_back(subMessage);
 		msg = msg.substr(pos + s_divider.size());
 		pos = msg.find(s_divider);
@@ -277,9 +277,9 @@ std::vector<std::wstring> NetworkProtocolHelper::divideMessage(const std::wstrin
 	if (msg.size() > 0)
 	{
 		pos = msg.find(s_endOfMessageToken);
-		if (pos != std::wstring::npos)
+		if (pos != std::string::npos)
 		{
-			std::wstring subMessage = msg.substr(0, pos);
+			std::string subMessage = msg.substr(0, pos);
 			result.push_back(subMessage);
 			msg = msg.substr(pos);
 			result.push_back(msg);
@@ -289,7 +289,7 @@ std::vector<std::wstring> NetworkProtocolHelper::divideMessage(const std::wstrin
 	return result;
 }
 
-bool NetworkProtocolHelper::isDigits(const std::wstring& text)
+bool NetworkProtocolHelper::isDigits(const std::string& text)
 {
-	return (text.find_first_not_of(L"0123456789") == std::wstring::npos);
+	return (text.find_first_not_of("0123456789") == std::string::npos);
 }

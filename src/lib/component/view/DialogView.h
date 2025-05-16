@@ -39,11 +39,11 @@ public:
 	virtual bool dialogsHidden() const;
 	virtual void clearDialogs();
 
-	virtual void showUnknownProgressDialog(const std::wstring& title, const std::wstring& message);
+	virtual void showUnknownProgressDialog(const std::string& title, const std::string& message);
 	virtual void hideUnknownProgressDialog();
 
 	virtual void showProgressDialog(
-		const std::wstring& title, const std::wstring& message, size_t progress);
+		const std::string& title, const std::string& message, size_t progress);
 	virtual void hideProgressDialog();
 
 	virtual void startIndexingDialog(
@@ -74,8 +74,8 @@ public:
 		bool interrupted,
 		bool shallow);
 
-	int confirm(const std::wstring& message);
-	virtual int confirm(const std::wstring& message, const std::vector<std::wstring>& options);
+	int confirm(const std::string& message);
+	virtual int confirm(const std::string& message, const std::vector<std::string>& options);
 
 protected:
 	const UseCase m_useCase;

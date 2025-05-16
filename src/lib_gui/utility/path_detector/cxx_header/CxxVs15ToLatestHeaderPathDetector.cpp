@@ -12,8 +12,8 @@ using namespace std;
 using namespace utility;
 using namespace boost::chrono;
 
-CxxVs15ToLatestHeaderPathDetector::CxxVs15ToLatestHeaderPathDetector(const wstring &versionRange)
-	: PathDetector(utility::encodeToUtf8(getVsWhereProperty(versionRange, L"displayName")))
+CxxVs15ToLatestHeaderPathDetector::CxxVs15ToLatestHeaderPathDetector(const string &versionRange)
+	: PathDetector(utility::encodeToUtf8(getVsWhereProperty(versionRange, "displayName")))
 	, m_versionRange(versionRange)
 {
 }
@@ -23,7 +23,7 @@ std::vector<FilePath> CxxVs15ToLatestHeaderPathDetector::doGetPaths() const
 	std::vector<FilePath> headerSearchPaths;
 
 	{
-		const std::wstring installationPath = getVsWhereProperty(m_versionRange, L"installationPath");
+		const std::string installationPath = getVsWhereProperty(m_versionRange, "installationPath");
 
 		if (!installationPath.empty())
 		{
@@ -31,19 +31,19 @@ std::vector<FilePath> CxxVs15ToLatestHeaderPathDetector::doGetPaths() const
 			if (vsInstallPath.exists())
 			{
 				for (const FilePath& versionPath: FileSystem::getDirectSubDirectories(
-							vsInstallPath.getConcatenated(L"VC/Tools/MSVC")))
+							vsInstallPath.getConcatenated("VC/Tools/MSVC")))
 				{
 					if (versionPath.exists())
 					{
-						headerSearchPaths.push_back(versionPath.getConcatenated(L"include"));
+						headerSearchPaths.push_back(versionPath.getConcatenated("include"));
 						headerSearchPaths.push_back(
-							versionPath.getConcatenated(L"atlmfc/include"));
+							versionPath.getConcatenated("atlmfc/include"));
 					}
 				}
 				headerSearchPaths.push_back(
-					vsInstallPath.getConcatenated(L"VC/Auxiliary/VS/include"));
+					vsInstallPath.getConcatenated("VC/Auxiliary/VS/include"));
 				headerSearchPaths.push_back(
-					vsInstallPath.getConcatenated(L"VC/Auxiliary/VS/UnitTest/include"));
+					vsInstallPath.getConcatenated("VC/Auxiliary/VS/UnitTest/include"));
 			}
 		}
 	}
@@ -63,19 +63,19 @@ std::vector<FilePath> CxxVs15ToLatestHeaderPathDetector::doGetPaths() const
 	return headerSearchPaths;
 }
 
-std::wstring CxxVs15ToLatestHeaderPathDetector::getVsWhereProperty(const std::wstring &versionRange, const std::wstring &propertyName)
+std::string CxxVs15ToLatestHeaderPathDetector::getVsWhereProperty(const std::string &versionRange, const std::string &propertyName)
 {
-	std::wstring propertyValue;
+	std::string propertyValue;
 
 	// vswhere location: https://github.com/microsoft/vswhere#visual-studio-locator
 
 	const std::vector<FilePath> expandedPaths =
-		FilePath(L"%ProgramFiles(x86)%/Microsoft Visual Studio/Installer/vswhere.exe")
+		FilePath("%ProgramFiles(x86)%/Microsoft Visual Studio/Installer/vswhere.exe")
 			.expandEnvironmentVariables();
 	if (!expandedPaths.empty())
 	{
-		const utility::ProcessOutput out = utility::executeProcess(expandedPaths.front().wstr(),
-			{ L"-version", versionRange, L"-property", propertyName },
+		const utility::ProcessOutput out = utility::executeProcess(expandedPaths.front().str(),
+			{ "-version", versionRange, "-property", propertyName },
 			FilePath(), false, milliseconds(10000));
 
 		if (out.exitCode == 0)

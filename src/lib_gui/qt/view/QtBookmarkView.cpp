@@ -22,13 +22,13 @@ void QtBookmarkView::refreshView()
 {
 }
 
-void QtBookmarkView::displayBookmarkCreator(const std::vector<std::wstring>& names, const std::vector<BookmarkCategory>& categories, Id nodeId)
+void QtBookmarkView::displayBookmarkCreator(const std::vector<std::string>& names, const std::vector<BookmarkCategory>& categories, Id nodeId)
 {
 	m_onQtThread([=, this]() 
 	{
 		QtBookmarkCreator* bookmarkCreator = new QtBookmarkCreator(&m_controllerProxy, getMainWindowforMainView(getViewLayout()));
 
-		std::wstring displayName;
+		std::string displayName;
 
 		for (unsigned int i = 0; i < names.size(); i++)
 		{
@@ -36,7 +36,7 @@ void QtBookmarkView::displayBookmarkCreator(const std::vector<std::wstring>& nam
 
 			if (i < names.size() - 1)
 			{
-				displayName += L"; ";
+				displayName += "; ";
 			}
 		}
 

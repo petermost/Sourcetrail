@@ -20,7 +20,7 @@ private:
 		const FilePath& relativeFilePath, bool allowMultipleResults);
 
 	FilePath m_rootPath;
-	std::unordered_map<std::wstring, std::set<FilePath>> m_files;
+	std::unordered_map<std::string, std::set<FilePath>> m_files;
 };
 
 #endif	  // FILE_TREE_H

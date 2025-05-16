@@ -40,7 +40,7 @@ std::vector<FilePath> QtPathListBox::getPathsAsDisplayed() const
 	for (int i = 0; i < m_list->count(); ++i)
 	{
 		QtListBoxItem* widget = dynamic_cast<QtListBoxItem*>(m_list->itemWidget(m_list->item(i)));
-		paths.push_back(FilePath(widget->getText().toStdWString()));
+		paths.push_back(FilePath(widget->getText().toStdString()));
 	}
 	return paths;
 }
@@ -65,7 +65,7 @@ void QtPathListBox::addPaths(const std::vector<FilePath>& list, bool readOnly)
 {
 	for (const FilePath& path: list)
 	{
-		QtListBoxItem* item = addListBoxItemWithText(QString::fromStdWString(path.wstr()));
+		QtListBoxItem* item = addListBoxItemWithText(QString::fromStdString(path.str()));
 		item->setReadOnly(readOnly);
 	}
 }
@@ -87,9 +87,9 @@ void QtPathListBox::dropEvent(QDropEvent* event)
 {
 	for (const QUrl &url : event->mimeData()->urls())
 	{
-		FilePath path(url.toLocalFile().toStdWString());
+		FilePath path(url.toLocalFile().toStdString());
 		makeRelativeIfShorter(path);
-		addListBoxItemWithText(QString::fromStdWString(path.wstr()));
+		addListBoxItemWithText(QString::fromStdString(path.str()));
 	}
 }
 

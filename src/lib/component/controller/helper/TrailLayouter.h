@@ -35,7 +35,7 @@ private:
 	{
 		Id id;
 		int level;
-		std::wstring name;
+		std::string name;
 
 		Vec2i pos;
 		Vec2i size;

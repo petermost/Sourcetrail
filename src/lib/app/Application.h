@@ -51,8 +51,8 @@ public:
 
 	bool hasGUI();
 
-	int handleDialog(const std::wstring& message);
-	int handleDialog(const std::wstring& message, const std::vector<std::wstring>& options);
+	int handleDialog(const std::string& message);
+	int handleDialog(const std::string& message, const std::vector<std::string>& options);
 	std::shared_ptr<DialogView> getDialogView(DialogView::UseCase useCase);
 
 	void updateHistoryMenu(std::shared_ptr<MessageBase> message);

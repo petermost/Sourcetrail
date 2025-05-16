@@ -80,7 +80,7 @@ void setupLogging()
 
 	std::shared_ptr<FileLogger> fileLogger = std::make_shared<FileLogger>();
 	fileLogger->setLogLevel(Logger::LOG_ALL);
-	fileLogger->deleteLogFiles(FileLogger::generateDatedFileName(L"log", L"", -30));
+	fileLogger->deleteLogFiles(FileLogger::generateDatedFileName("log", "", -30));
 	logManager->addLogger(fileLogger);
 }
 
@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
 		std::cout << "ERROR: Please run Sourcetrail via the Sourcetrail.sh script!" << std::endl;
 	}
 
-	MessageStatus(std::wstring(L"Starting Sourcetrail version ") + version.toDisplayWString())
+	MessageStatus(std::string("Starting Sourcetrail version ") + version.toDisplayString())
 		.dispatch();
 
 	commandline::CommandLineParser commandLineParser(version.toDisplayString());
@@ -156,7 +156,7 @@ int main(int argc, char* argv[])
 
 		if (commandLineParser.hasError())
 		{
-			std::wcout << commandLineParser.getError() << std::endl;
+			std::cout << commandLineParser.getError() << std::endl;
 		}
 		else
 		{
@@ -189,8 +189,8 @@ int main(int argc, char* argv[])
 
 		addLanguagePackages();
 
-		utility::loadFontsFromDirectory(ResourcePaths::getFontsDirectoryPath(), L".otf");
-		utility::loadFontsFromDirectory(ResourcePaths::getFontsDirectoryPath(), L".ttf");
+		utility::loadFontsFromDirectory(ResourcePaths::getFontsDirectoryPath(), ".otf");
+		utility::loadFontsFromDirectory(ResourcePaths::getFontsDirectoryPath(), ".ttf");
 
 		if (commandLineParser.hasError())
 		{

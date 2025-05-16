@@ -115,7 +115,7 @@ private:
 	bool m_shift = false;
 	bool m_ctrl = false;
 
-	std::wstring m_clipboardNodeName;
+	std::string m_clipboardNodeName;
 	Id m_openInTabNodeId;
 	Id m_hideNodeId;
 	Id m_hideEdgeId;

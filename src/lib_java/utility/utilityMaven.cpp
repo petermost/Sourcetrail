@@ -49,16 +49,16 @@ void fetchDirectories(
 			path.concatenate(toAppend);
 		}
 		pathList.push_back(path);
-		LOG_INFO(L"Found directory \"" + path.wstr() + L"\".");
+		LOG_INFO("Found directory \"" + path.str() + "\".");
 	}
 }
 
-std::wstring getErrorMessageFromMavenOutput(std::shared_ptr<const TextAccess> mavenOutput)
+std::string getErrorMessageFromMavenOutput(std::shared_ptr<const TextAccess> mavenOutput)
 {
 	const std::string errorPrefix = "[ERROR]";
 	const std::string fatalPrefix = "[FATAL]";
 
-	std::wstring errorMessage;
+	std::string errorMessage;
 
 	for (const std::string& line: mavenOutput->getAllLines())
 	{
@@ -77,19 +77,19 @@ std::wstring getErrorMessageFromMavenOutput(std::shared_ptr<const TextAccess> ma
 
 	if (!errorMessage.empty())
 	{
-		errorMessage = L"The following error occurred while executing a Maven command:\n\n" +
+		errorMessage = "The following error occurred while executing a Maven command:\n\n" +
 			errorMessage;
 	}
 
 	return errorMessage;
 }
 
-std::vector<std::wstring> getMavenArgs(const FilePath& settingsFilePath)
+std::vector<std::string> getMavenArgs(const FilePath& settingsFilePath)
 {
-	std::vector<std::wstring> args;
+	std::vector<std::string> args;
 	if (!settingsFilePath.empty() && settingsFilePath.exists())
 	{
-		args.push_back(L"--settings \"" + settingsFilePath.wstr() + L"\"");
+		args.push_back("--settings \"" + settingsFilePath.str() + "\"");
 	}
 	return args;
 }
@@ -98,20 +98,20 @@ std::vector<std::wstring> getMavenArgs(const FilePath& settingsFilePath)
 
 namespace utility
 {
-std::wstring mavenGenerateSources(
+std::string mavenGenerateSources(
 	const FilePath& mavenPath, const FilePath& settingsFilePath, const FilePath& projectDirectoryPath)
 {
 	utility::setJavaHomeVariableIfNotExists();
 
 	auto args = getMavenArgs(settingsFilePath);
-	args.push_back(L"generate-sources");
+	args.push_back("generate-sources");
 
 	std::shared_ptr<TextAccess> outputAccess = TextAccess::createFromString(utility::encodeToUtf8(
-		utility::executeProcess(mavenPath.wstr(), args, projectDirectoryPath, true, milliseconds(60000)).output));
+		utility::executeProcess(mavenPath.str(), args, projectDirectoryPath, true, milliseconds(60000)).output));
 
 	if (outputAccess->isEmpty())
 	{
-		return L"Sourcetrail was unable to locate Maven on this machine.\n"
+		return "Sourcetrail was unable to locate Maven on this machine.\n"
 			   "Please make sure to provide the correct Maven Path in the preferences.";
 	}
 
@@ -127,13 +127,13 @@ bool mavenCopyDependencies(
 	utility::setJavaHomeVariableIfNotExists();
 
 	auto args = getMavenArgs(settingsFilePath);
-	args.push_back(L"dependency:copy-dependencies");
-	args.push_back(L"-DoutputDirectory=" + outputDirectoryPath.wstr());
+	args.push_back("dependency:copy-dependencies");
+	args.push_back("-DoutputDirectory=" + outputDirectoryPath.str());
 
 	std::shared_ptr<TextAccess> outputAccess = TextAccess::createFromString(utility::encodeToUtf8(
-		utility::executeProcess(mavenPath.wstr(), args, projectDirectoryPath, true, milliseconds(60000)).output));
+		utility::executeProcess(mavenPath.str(), args, projectDirectoryPath, true, milliseconds(60000)).output));
 
-	const std::wstring errorMessage = getErrorMessageFromMavenOutput(outputAccess);
+	const std::string errorMessage = getErrorMessageFromMavenOutput(outputAccess);
 	if (!errorMessage.empty())
 	{
 		MessageStatus(errorMessage, true, false).dispatch();
@@ -156,13 +156,13 @@ std::vector<FilePath> mavenGetAllDirectoriesFromEffectivePom(
 	FilePath outputPath = outputDirectoryPath.getConcatenated(FilePath("/effective-pom.xml"));
 
 	auto args = getMavenArgs(settingsFilePath);
-	args.push_back(L"help:effective-pom");
-	args.push_back(L"-Doutput=" + outputPath.wstr());
+	args.push_back("help:effective-pom");
+	args.push_back("-Doutput=" + outputPath.str());
 
 	std::shared_ptr<TextAccess> outputAccess = TextAccess::createFromString(utility::encodeToUtf8(
-		utility::executeProcess(mavenPath.wstr(), args, projectDirectoryPath, true, milliseconds(60000)).output));
+		utility::executeProcess(mavenPath.str(), args, projectDirectoryPath, true, milliseconds(60000)).output));
 
-	const std::wstring errorMessage = getErrorMessageFromMavenOutput(outputAccess);
+	const std::string errorMessage = getErrorMessageFromMavenOutput(outputAccess);
 	if (!errorMessage.empty())
 	{
 		MessageStatus(errorMessage, true, false).dispatch();
@@ -191,12 +191,12 @@ std::vector<FilePath> mavenGetAllDirectoriesFromEffectivePom(
 		uncheckedDirectories,
 		xmlAccess,
 		utility::createVectorFromElements<std::string>("project", "build", "directory"),
-		FilePath(L"generated-sources"));
+		FilePath("generated-sources"));
 	fetchDirectories(
 		uncheckedDirectories,
 		xmlAccess,
 		utility::createVectorFromElements<std::string>("projects", "project", "build", "directory"),
-		FilePath(L"generated-sources"));
+		FilePath("generated-sources"));
 
 	if (addTestDirectories)
 	{
@@ -214,13 +214,13 @@ std::vector<FilePath> mavenGetAllDirectoriesFromEffectivePom(
 			uncheckedDirectories,
 			xmlAccess,
 			utility::createVectorFromElements<std::string>("project", "build", "directory"),
-			FilePath(L"generated-test-sources"));
+			FilePath("generated-test-sources"));
 		fetchDirectories(
 			uncheckedDirectories,
 			xmlAccess,
 			utility::createVectorFromElements<std::string>(
 				"projects", "project", "build", "directory"),
-			FilePath(L"generated-test-sources"));
+			FilePath("generated-test-sources"));
 	}
 
 	std::vector<FilePath> directories;

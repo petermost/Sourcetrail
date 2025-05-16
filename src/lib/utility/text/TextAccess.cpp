@@ -144,7 +144,7 @@ std::vector<std::string> TextAccess::readFile(const FilePath& filePath)
 
 		if (srcFile.fail())
 		{
-			LOG_ERROR(L"Could not open file " + filePath.wstr());
+			LOG_ERROR("Could not open file " + filePath.str());
 			return result;
 		}
 
@@ -204,7 +204,7 @@ std::vector<std::string> TextAccess::splitStringByLines(const std::string& text)
 	return result;
 }
 
-TextAccess::TextAccess(): m_filePath(L"") {}
+TextAccess::TextAccess(): m_filePath("") {}
 
 bool TextAccess::checkIndexInRange(const unsigned int index) const
 {

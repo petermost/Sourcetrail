@@ -33,7 +33,7 @@ void deleteAllContents(const FilePath& tempPath)
 
 std::shared_ptr<TestStorage> parseCode(std::string code)
 {
-	const FilePath rootPath = FilePath(L"data/PythonIndexerTestSuite/temp/").makeAbsolute();
+	const FilePath rootPath = FilePath("data/PythonIndexerTestSuite/temp/").makeAbsolute();
 
 	if (!rootPath.exists())
 	{
@@ -42,8 +42,8 @@ std::shared_ptr<TestStorage> parseCode(std::string code)
 
 	deleteAllContents(rootPath);
 
-	const FilePath sourceFilePath = rootPath.getConcatenated(L"test.py");
-	const FilePath tempDbPath = rootPath.getConcatenated(L"temp.srctrldb");
+	const FilePath sourceFilePath = rootPath.getConcatenated("test.py");
+	const FilePath tempDbPath = rootPath.getConcatenated("temp.srctrldb");
 
 	{
 		std::ofstream codeFile;
@@ -56,15 +56,15 @@ std::shared_ptr<TestStorage> parseCode(std::string code)
 		const std::set<FilePath> indexedPaths = {rootPath};
 		const std::set<FilePathFilter> excludeFilters;
 		const std::set<FilePathFilter> includeFilters;
-		const FilePath workingDirectory(L".");
+		const FilePath workingDirectory(".");
 
-		std::vector<std::wstring> args;
-		args.push_back(L"index");
-		args.push_back(L"--source-file-path");
-		args.push_back(L"%{SOURCE_FILE_PATH}");
-		args.push_back(L"--database-file-path");
-		args.push_back(L"%{DATABASE_FILE_PATH}");
-		args.push_back(L"--shallow");
+		std::vector<std::string> args;
+		args.push_back("index");
+		args.push_back("--source-file-path");
+		args.push_back("%{SOURCE_FILE_PATH}");
+		args.push_back("--database-file-path");
+		args.push_back("%{DATABASE_FILE_PATH}");
+		args.push_back("--shallow");
 
 		std::shared_ptr<IndexerCommandCustom> indexerCommand = std::make_shared<IndexerCommandCustom>(
 			INDEXER_COMMAND_PYTHON,
@@ -72,11 +72,11 @@ std::shared_ptr<TestStorage> parseCode(std::string code)
 				.getConcatenated(ResourcePaths::getPythonIndexerFilePath())
 				.makeAbsolute()
 				.makeCanonical()
-				.wstr(),
+				.str(),
 			args,
 			rootPath,
 			tempDbPath,
-			std::to_wstring(SqliteIndexStorage::getStorageVersion()),
+			std::to_string(SqliteIndexStorage::getStorageVersion()),
 			sourceFilePath,
 			true);
 
@@ -124,13 +124,13 @@ TEST_CASE("python post processing regards class name in call context when adding
 		"		pass\n");
 
 	REQUIRE(storage->calls.size() == 1);
-	REQUIRE(utility::containsElement<std::wstring>(
-		storage->calls, L"test.A1.__init__ -> test.A.__init__"));
+	REQUIRE(utility::containsElement<std::string>(
+		storage->calls, "test.A1.__init__ -> test.A.__init__"));
 
-	REQUIRE(!utility::containsElement<std::wstring>(
-		storage->calls, L"test.A1.__init__ -> test.A1.__init__"));
-	REQUIRE(!utility::containsElement<std::wstring>(
-		storage->calls, L"test.A1.__init__ -> test.B.__init__"));
+	REQUIRE(!utility::containsElement<std::string>(
+		storage->calls, "test.A1.__init__ -> test.A1.__init__"));
+	REQUIRE(!utility::containsElement<std::string>(
+		storage->calls, "test.A1.__init__ -> test.B.__init__"));
 }
 
 TEST_CASE("python post processing regards super() in call context when adding ambiguous edges")
@@ -149,13 +149,13 @@ TEST_CASE("python post processing regards super() in call context when adding am
 		"		pass\n");
 
 	REQUIRE(storage->calls.size() == 2);
-	REQUIRE(utility::containsElement<std::wstring>(
-		storage->calls, L"test.A1.__init__ -> test.A.__init__"));
+	REQUIRE(utility::containsElement<std::string>(
+		storage->calls, "test.A1.__init__ -> test.A.__init__"));
 
-	REQUIRE(!utility::containsElement<std::wstring>(
-		storage->calls, L"test.A1.__init__ -> test.A1.__init__"));
-	REQUIRE(!utility::containsElement<std::wstring>(
-		storage->calls, L"test.A1.__init__ -> test.B.__init__"));
+	REQUIRE(!utility::containsElement<std::string>(
+		storage->calls, "test.A1.__init__ -> test.A1.__init__"));
+	REQUIRE(!utility::containsElement<std::string>(
+		storage->calls, "test.A1.__init__ -> test.B.__init__"));
 }
 
 #endif	  // BUILD_PYTHON_LANGUAGE_PACKAGE

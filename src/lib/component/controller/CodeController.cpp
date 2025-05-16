@@ -116,7 +116,7 @@ void CodeController::handleMessage(MessageActivateOverview* message)
 	statsSnippet.endLineNumber = 1;
 
 	statsSnippet.locationFile = std::make_shared<SourceLocationFile>(
-		FilePath(), L"", true, true, true);
+		FilePath(), "", true, true, true);
 
 	std::vector<std::string> description = getProjectDescription(statsSnippet.locationFile.get());
 
@@ -228,23 +228,23 @@ void CodeController::handleMessage(MessageActivateTokens* message)
 		size_t fileCount = m_collection->getSourceLocationFileCount();
 		size_t referenceCount = m_collection->getSourceLocationCount();
 
-		std::wstring status;
+		std::string status;
 		for (const SearchMatch& match: message->getSearchMatches())
 		{
-			status += L"Activate \"" + match.name + L"\": ";
+			status += "Activate \"" + match.name + "\": ";
 			// TODO (petermost): MSVC warns about unreachable code
 			break;
 		}
 
-		status += std::to_wstring(message->tokenIds.size()) + L" ";
-		status += (message->tokenIds.size() == 1 ? L"result" : L"results");
+		status += std::to_string(message->tokenIds.size()) + " ";
+		status += (message->tokenIds.size() == 1 ? "result" : "results");
 
 		if (fileCount > 0)
 		{
-			status += L" with " + std::to_wstring(referenceCount) + L" ";
-			status += (referenceCount == 1 ? L"reference" : L"references");
-			status += L" in " + std::to_wstring(fileCount) + L" ";
-			status += (fileCount == 1 ? L"file" : L"files");
+			status += " with " + std::to_string(referenceCount) + " ";
+			status += (referenceCount == 1 ? "reference" : "references");
+			status += " in " + std::to_string(fileCount) + " ";
+			status += (fileCount == 1 ? "file" : "files");
 		}
 
 		MessageStatus(status).dispatch();
@@ -462,8 +462,8 @@ void CodeController::handleMessage(MessageScrollToLine* message)
 		false);
 
 	MessageStatus(
-		L"Showing source location: " + message->filePath.wstr() + L" : " +
-		std::to_wstring(message->line))
+		"Showing source location: " + message->filePath.str() + " : " +
+		std::to_string(message->line))
 		.dispatch();
 }
 
@@ -835,11 +835,11 @@ std::vector<CodeSnippetParams> CodeController::getSnippetsForFile(
 
 		if (params.titleId == 0 && params.startLineNumber > 1)
 		{
-			params.title = activeSourceLocations->getFilePath().wstr();
+			params.title = activeSourceLocations->getFilePath().str();
 		}
 		else if (params.footerId == 0 && params.endLineNumber < lineCount)
 		{
-			params.footer = activeSourceLocations->getFilePath().wstr();
+			params.footer = activeSourceLocations->getFilePath().str();
 		}
 
 		for (const std::string& line: textAccess->getLines(
@@ -941,7 +941,7 @@ std::vector<std::string> CodeController::getProjectDescription(SourceLocationFil
 				break;
 			}
 
-			std::wstring serializedName = utility::decodeFromUtf8(
+			std::string serializedName = utility::decodeFromUtf8(
 				line.substr(posA + 1, posB - posA - 1));
 
 			NameHierarchy nameHierarchy = NameHierarchy::deserialize(serializedName);

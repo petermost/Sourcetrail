@@ -4,7 +4,7 @@
 #include "logging.h"
 #include "tracing.h"
 
-void FullTextSearchIndex::addFile(Id fileId, const std::wstring& fileContent)
+void FullTextSearchIndex::addFile(Id fileId, const std::string& fileContent)
 {
 	if (fileContent.empty())
 	{
@@ -24,7 +24,7 @@ void FullTextSearchIndex::addFile(Id fileId, const std::wstring& fileContent)
 	}
 }
 
-std::vector<FullTextSearchResult> FullTextSearchIndex::searchForTerm(const std::wstring& term) const
+std::vector<FullTextSearchResult> FullTextSearchIndex::searchForTerm(const std::string& term) const
 {
 	TRACE();
 

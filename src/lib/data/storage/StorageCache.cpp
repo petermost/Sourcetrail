@@ -83,7 +83,7 @@ std::shared_ptr<SourceLocationCollection> StorageCache::getErrorSourceLocations(
 
 	if (m_useErrorCache)
 	{
-		std::map<std::wstring, bool> fileIndexed;
+		std::map<std::string, bool> fileIndexed;
 		for (const ErrorInfo& error: m_cachedErrors)
 		{
 			fileIndexed.emplace(error.filePath, error.indexed);
@@ -92,7 +92,7 @@ std::shared_ptr<SourceLocationCollection> StorageCache::getErrorSourceLocations(
 		collection->forEachSourceLocationFile([&](std::shared_ptr<SourceLocationFile> file) {
 			file->setIsComplete(false);
 
-			auto it = fileIndexed.find(file->getFilePath().wstr());
+			auto it = fileIndexed.find(file->getFilePath().str());
 			if (it != fileIndexed.end())
 			{
 				file->setIsIndexed(it->second);

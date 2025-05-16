@@ -38,7 +38,7 @@ void StatusController::handleMessage(MessageStatus* message)
 
 	std::vector<Status> stati;
 
-	for (const std::wstring& status: message->stati())
+	for (const std::string& status: message->stati())
 	{
 		stati.push_back(Status(status, message->isError));
 	}

@@ -631,7 +631,7 @@ void CxxAstVisitorComponentIndexer::visitUsingDirectiveDecl(clang::UsingDirectiv
 					getAstVisitor()
 						->getCanonicalFilePathCache()
 						->getCanonicalFilePath(location.fileId)
-						.wstr(),
+						.str(),
 					NAME_DELIMITER_FILE)),
 			location);
 	}
@@ -652,7 +652,7 @@ void CxxAstVisitorComponentIndexer::visitUsingDecl(clang::UsingDecl* d)
 					getAstVisitor()
 						->getCanonicalFilePathCache()
 						->getCanonicalFilePath(location.fileId)
-						.wstr(),
+						.str(),
 					NAME_DELIMITER_FILE)),
 			location);
 	}
@@ -1053,12 +1053,12 @@ ParseLocation CxxAstVisitorComponentIndexer::getParseLocation(const clang::Sourc
 	return getAstVisitor()->getParseLocation(sourceRange);
 }
 
-std::wstring CxxAstVisitorComponentIndexer::getLocalSymbolName(const clang::SourceLocation& loc) const
+std::string CxxAstVisitorComponentIndexer::getLocalSymbolName(const clang::SourceLocation& loc) const
 {
 	const ParseLocation location = getParseLocation(loc);
 	return getAstVisitor()->getCanonicalFilePathCache()->getCanonicalFilePath(location.fileId).fileName() +
-		L"<" + std::to_wstring(location.startLineNumber) + L":" +
-		std::to_wstring(location.startColumnNumber) + L">";
+		"<" + std::to_string(location.startLineNumber) + ":" +
+		std::to_string(location.startColumnNumber) + ">";
 }
 
 ReferenceKind CxxAstVisitorComponentIndexer::consumeDeclRefContextKind()
@@ -1085,7 +1085,7 @@ Id CxxAstVisitorComponentIndexer::getOrCreateSymbolId(const clang::NamedDecl* de
 		return it->second;
 	}
 
-	NameHierarchy symbolName(L"global", NAME_DELIMITER_UNKNOWN);
+	NameHierarchy symbolName("global", NAME_DELIMITER_UNKNOWN);
 	if (decl)
 	{
 		std::unique_ptr<CxxDeclName> declName =
@@ -1096,13 +1096,13 @@ Id CxxAstVisitorComponentIndexer::getOrCreateSymbolId(const clang::NamedDecl* de
 
 			// TODO: replace duplicate main definition fix with better solution
 			if (dynamic_cast<CxxFunctionDeclName*>(declName.get()) && symbolName.size() == 1 &&
-				symbolName.back().getName() == L"main")
+				symbolName.back().getName() == "main")
 			{
 				NameElement::Signature sig = symbolName.back().getSignature();
 				symbolName.pop();
 				symbolName.push(NameElement(
-					L".:main:." +
-						getAstVisitor()->getCanonicalFilePathCache()->getDeclarationFilePath(decl).wstr(),
+					".:main:." +
+						getAstVisitor()->getCanonicalFilePathCache()->getDeclarationFilePath(decl).str(),
 					sig.getPrefix(),
 					sig.getPostfix()));
 			}
@@ -1122,7 +1122,7 @@ Id CxxAstVisitorComponentIndexer::getOrCreateSymbolId(const clang::Type* type)
 		return it->second;
 	}
 
-	NameHierarchy symbolName(L"global", NAME_DELIMITER_UNKNOWN);
+	NameHierarchy symbolName("global", NAME_DELIMITER_UNKNOWN);
 	if (type)
 	{
 		std::unique_ptr<CxxTypeName> typeName =

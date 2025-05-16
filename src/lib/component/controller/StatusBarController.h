@@ -47,7 +47,7 @@ private:
 	void handleMessage(MessageRefresh* message) override;
 	void handleMessage(MessageStatus* message) override;
 
-	void setStatus(const std::wstring& status, bool isError, bool showLoader);
+	void setStatus(const std::string& status, bool isError, bool showLoader);
 
 	StorageAccess* m_storageAccess;
 };

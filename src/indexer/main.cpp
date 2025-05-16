@@ -92,8 +92,8 @@ int main(int argc, char* argv[])
 	appSettings->load(UserPaths::getAppSettingsFilePath());
 	LogManager::getInstance()->setLoggingEnabled(appSettings->getLoggingEnabled());
 
-	LOG_INFO(L"sharedDataPath: " + AppPath::getSharedDataDirectoryPath().wstr());
-	LOG_INFO(L"userDataPath: " + UserPaths::getUserDataDirectoryPath().wstr());
+	LOG_INFO("sharedDataPath: " + AppPath::getSharedDataDirectoryPath().str());
+	LOG_INFO("userDataPath: " + UserPaths::getUserDataDirectoryPath().str());
 
 
 #if BUILD_CXX_LANGUAGE_PACKAGE

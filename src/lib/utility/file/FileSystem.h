@@ -12,13 +12,13 @@ class FileSystem
 {
 public:
 	static std::vector<FilePath> getFilePathsFromDirectory(
-		const FilePath& path, const std::vector<std::wstring>& extensions = {});
+		const FilePath& path, const std::vector<std::string>& extensions = {});
 
 	static FileInfo getFileInfoForPath(const FilePath& filePath);
 
 	static std::vector<FileInfo> getFileInfosFromPaths(
 		const std::vector<FilePath>& paths,
-		const std::vector<std::wstring>& fileExtensions,
+		const std::vector<std::string>& fileExtensions,
 		bool followSymLinks = true);
 
 	static std::set<FilePath> getSymLinkedDirectories(const FilePath& path);

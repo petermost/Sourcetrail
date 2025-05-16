@@ -99,19 +99,19 @@ public:
 	std::vector<StorageEdge> getEdgesByTargetsType(const std::vector<Id>& targetIds, int type) const;
 
 	StorageNode getNodeById(Id id) const;
-	StorageNode getNodeBySerializedName(const std::wstring& serializedName) const;
+	StorageNode getNodeBySerializedName(const std::string& serializedName) const;
 	
 	std::vector<NodeKind> getAvailableNodeTypes() const;
 	std::vector<Edge::EdgeType> getAvailableEdgeTypes() const;
 
-	StorageFile getFileByPath(const std::wstring& filePath) const;
+	StorageFile getFileByPath(const std::string& filePath) const;
 
 	std::vector<StorageFile> getFilesByPaths(const std::vector<FilePath>& filePaths) const;
-	std::shared_ptr<TextAccess> getFileContentByPath(const std::wstring& filePath) const;
+	std::shared_ptr<TextAccess> getFileContentByPath(const std::string& filePath) const;
 	std::shared_ptr<TextAccess> getFileContentById(Id fileId) const;
 
 	void setFileIndexed(Id fileId, bool indexed);
-	void setFileCompleteIfNoError(Id fileId, const std::wstring& filePath, bool complete);
+	void setFileCompleteIfNoError(Id fileId, const std::string& filePath, bool complete);
 	void setNodeType(int type, Id nodeId);
 
 	std::shared_ptr<SourceLocationFile> getSourceLocationsForFile(
@@ -265,10 +265,10 @@ private:
 	void forEach(const std::string& query, std::function<void(StorageType&&)> func) const;
 
 	LowMemoryStringMap<std::string, Id> m_tempNodeNameIndex;
-	LowMemoryStringMap<std::wstring, Id> m_tempWNodeNameIndex;
+	LowMemoryStringMap<std::string, Id> m_tempWNodeNameIndex;
 	std::map<Id, int> m_tempNodeTypes;
 	std::map<StorageEdgeData, Id> m_tempEdgeIndex;
-	std::map<std::wstring, std::map<std::wstring, Id>> m_tempLocalSymbolIndex;
+	std::map<std::string, std::map<std::string, Id>> m_tempLocalSymbolIndex;
 	std::map<Id, std::map<TempSourceLocation, Id>> m_tempSourceLocationIndices;
 
 	template <typename StorageType>

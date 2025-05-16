@@ -2,7 +2,7 @@
 
 #include <QCursor>
 
-QtGraphNodeText::QtGraphNodeText(const std::wstring& name, int fontSizeDiff)
+QtGraphNodeText::QtGraphNodeText(const std::string& name, int fontSizeDiff)
 	: m_fontSizeDiff(fontSizeDiff)
 {
 	this->setCursor(Qt::ArrowCursor);

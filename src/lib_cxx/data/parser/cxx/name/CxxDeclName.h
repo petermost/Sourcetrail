@@ -11,18 +11,18 @@
 class CxxDeclName: public CxxName
 {
 public:
-	CxxDeclName(std::wstring name);
+	CxxDeclName(std::string name);
 
-	CxxDeclName(std::wstring name, std::vector<std::wstring> templateParameterNames);
+	CxxDeclName(std::string name, std::vector<std::string> templateParameterNames);
 
 	NameHierarchy toNameHierarchy() const override;
 
-	const std::wstring& getName() const;
-	const std::vector<std::wstring>& getTemplateParameterNames() const;
+	const std::string& getName() const;
+	const std::vector<std::string>& getTemplateParameterNames() const;
 
 private:
-	const std::wstring m_name;
-	const std::vector<std::wstring> m_templateParameterNames;
+	const std::string m_name;
+	const std::vector<std::string> m_templateParameterNames;
 };
 
 #endif	  // CXX_DECL_NAME_H

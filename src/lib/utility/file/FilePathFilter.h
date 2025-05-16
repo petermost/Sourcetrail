@@ -12,26 +12,26 @@ public:
 	template<typename ContainerType>
 	static bool areMatching(const ContainerType& filters, const FilePath& filePath);
 
-	explicit FilePathFilter(const std::wstring& filterString);
+	explicit FilePathFilter(const std::string& filterString);
 
-	std::wstring wstr() const;
+	std::string str() const;
 
 	bool isMatching(const FilePath& filePath) const;
-	bool isMatching(const std::wstring& fileStr) const;
+	bool isMatching(const std::string& fileStr) const;
 
 	bool operator<(const FilePathFilter& other) const;
 
 private:
-	static std::wregex convertFilterStringToRegex(const std::wstring& filterString);
+	static std::regex convertFilterStringToRegex(const std::string& filterString);
 
-	std::wstring m_filterString;
-	std::wregex m_filterRegex;
+	std::string m_filterString;
+	std::regex m_filterRegex;
 };
 
 template<typename ContainerType>
 bool FilePathFilter::areMatching(const ContainerType& filters, const FilePath& filePath)
 {
-	const std::wstring fileStr = filePath.wstr();
+	const std::string fileStr = filePath.str();
 
 	for (const FilePathFilter& filter: filters)
 	{

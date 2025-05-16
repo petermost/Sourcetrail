@@ -13,8 +13,8 @@ struct CodeSnippetParams
 	size_t startLineNumber = 0;
 	size_t endLineNumber = 0;
 
-	std::wstring title;
-	std::wstring footer;
+	std::string title;
+	std::string footer;
 	std::string code;
 
 	Id titleId = 0;

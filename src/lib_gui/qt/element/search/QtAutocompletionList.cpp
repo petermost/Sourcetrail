@@ -46,13 +46,13 @@ QVariant QtAutocompletionModel::data(const QModelIndex& index, int role) const
 	switch (index.column())
 	{
 	case 0:
-		return QString::fromStdWString(match.name);
+		return QString::fromStdString(match.name);
 	case 1:
-		return QString::fromStdWString(match.text);
+		return QString::fromStdString(match.text);
 	case 2:
-		return QString::fromStdWString(match.subtext);
+		return QString::fromStdString(match.subtext);
 	case 3:
-		return QString::fromStdWString(match.typeName);
+		return QString::fromStdString(match.typeName);
 	case 4:
 	{
 		QList<QVariant> indices;
@@ -80,7 +80,7 @@ const SearchMatch* QtAutocompletionModel::getSearchMatchAt(int idx) const
 
 QString QtAutocompletionModel::longestText() const
 {
-	std::wstring str;
+	std::string str;
 	for (const SearchMatch& match: m_matchList)
 	{
 		if (match.text.size() > str.size())
@@ -88,12 +88,12 @@ QString QtAutocompletionModel::longestText() const
 			str = match.text;
 		}
 	}
-	return QString::fromStdWString(str);
+	return QString::fromStdString(str);
 }
 
 QString QtAutocompletionModel::longestSubText() const
 {
-	std::wstring str;
+	std::string str;
 	for (const SearchMatch& match: m_matchList)
 	{
 		if (match.subtext.size() > str.size())
@@ -101,12 +101,12 @@ QString QtAutocompletionModel::longestSubText() const
 			str = match.subtext;
 		}
 	}
-	return QString::fromStdWString(str);
+	return QString::fromStdString(str);
 }
 
 QString QtAutocompletionModel::longestType() const
 {
-	std::wstring str;
+	std::string str;
 	for (const SearchMatch& match: m_matchList)
 	{
 		if (match.typeName.size() > str.size())
@@ -114,7 +114,7 @@ QString QtAutocompletionModel::longestType() const
 			str = match.typeName;
 		}
 	}
-	return QString::fromStdWString(str);
+	return QString::fromStdString(str);
 }
 
 

@@ -18,7 +18,7 @@ public:
 		setSchedulerId(TabIds::currentTab());
 	}
 
-	void print(std::wostream& os) const override
+	void print(std::ostream& os) const override
 	{
 		os << nodeId;
 	}

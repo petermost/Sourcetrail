@@ -23,7 +23,7 @@ namespace utility
 {
 std::shared_ptr<Task> createBuildPchTask(
 	const SourceGroupSettingsWithCxxPchOptions* settings,
-	std::vector<std::wstring> compilerFlags,
+	std::vector<std::string> compilerFlags,
 	std::shared_ptr<StorageProvider> storageProvider,
 	std::shared_ptr<DialogView> dialogView)
 {
@@ -38,27 +38,27 @@ std::shared_ptr<Task> createBuildPchTask(
 	if (!pchInputFilePath.exists())
 	{
 		LOG_ERROR(
-			L"Precompiled header input file \"" + pchInputFilePath.wstr() + L"\" does not exist.");
+			"Precompiled header input file \"" + pchInputFilePath.str() + "\" does not exist.");
 		return std::make_shared<TaskLambda>([]() {});
 	}
 
 	const FilePath pchOutputFilePath = pchDependenciesDirectoryPath
 										   .getConcatenated(pchInputFilePath.fileName())
-										   .replaceExtension(L"pch");
+										   .replaceExtension("pch");
 
 	utility::removeIncludePchFlag(compilerFlags);
-	compilerFlags.push_back(pchInputFilePath.wstr());
-	compilerFlags.push_back(L"-emit-pch");
-	compilerFlags.push_back(L"-o");
-	compilerFlags.push_back(pchOutputFilePath.wstr());
+	compilerFlags.push_back(pchInputFilePath.str());
+	compilerFlags.push_back("-emit-pch");
+	compilerFlags.push_back("-o");
+	compilerFlags.push_back(pchOutputFilePath.str());
 
 	return std::make_shared<TaskLambda>(
 		[dialogView, storageProvider, pchInputFilePath, pchOutputFilePath, compilerFlags]() {
 			dialogView->showUnknownProgressDialog(
-				L"Preparing Indexing", L"Processing Precompiled Headers");
+				"Preparing Indexing", "Processing Precompiled Headers");
 			LOG_INFO(
-				L"Generating precompiled header output for input file \"" +
-				pchInputFilePath.wstr() + L"\" at location \"" + pchOutputFilePath.wstr() + L"\"");
+				"Generating precompiled header output for input file \"" +
+				pchInputFilePath.str() + "\" at location \"" + pchOutputFilePath.str() + "\"");
 
 			CxxParser::initializeLLVM();
 
@@ -85,7 +85,7 @@ std::shared_ptr<Task> createBuildPchTask(
 
 			CxxCompilationDatabaseSingle compilationDatabase(pchCommand);
 			clang::tooling::ClangTool tool(
-				compilationDatabase, {utility::encodeToUtf8(pchInputFilePath.wstr())});
+				compilationDatabase, {utility::encodeToUtf8(pchInputFilePath.str())});
 			GeneratePCHAction* action = new GeneratePCHAction(client, canonicalFilePathCache);
 
 			llvm::IntrusiveRefCntPtr<clang::DiagnosticOptions> options =
@@ -113,7 +113,7 @@ std::shared_ptr<clang::tooling::JSONCompilationDatabase> loadCDB(
 	std::shared_ptr<clang::tooling::JSONCompilationDatabase> cdb =
 		std::shared_ptr<clang::tooling::JSONCompilationDatabase>(
 			clang::tooling::JSONCompilationDatabase::loadFromFile(
-				utility::encodeToUtf8(cdbPath.wstr()),
+				utility::encodeToUtf8(cdbPath.str()),
 				errorString,
 				clang::tooling::JSONCommandLineSyntax::AutoDetect));
 
@@ -151,23 +151,23 @@ bool containsIncludePchFlag(const std::vector<std::string>& args)
 	return false;
 }
 
-std::vector<std::wstring> getWithRemoveIncludePchFlag(const std::vector<std::wstring>& args)
+std::vector<std::string> getWithRemoveIncludePchFlag(const std::vector<std::string>& args)
 {
-	std::vector<std::wstring> ret = args;
+	std::vector<std::string> ret = args;
 	removeIncludePchFlag(ret);
 	return ret;
 }
 
-void removeIncludePchFlag(std::vector<std::wstring>& args)
+void removeIncludePchFlag(std::vector<std::string>& args)
 {
-	const std::wstring includePchPrefix = L"-include-pch";
+	const std::string includePchPrefix = "-include-pch";
 	for (size_t i = 0; i < args.size(); i++)
 	{
-		const std::wstring arg = utility::trim(args[i]);
-		if (utility::isPrefix<std::wstring>(includePchPrefix, arg))
+		const std::string arg = utility::trim(args[i]);
+		if (utility::isPrefix<std::string>(includePchPrefix, arg))
 		{
 			if (i + 1 < args.size() &&
-				!utility::isPrefix<std::wstring>(L"-", utility::trim(args[i + 1])) &&
+				!utility::isPrefix<std::string>("-", utility::trim(args[i + 1])) &&
 				arg == includePchPrefix)
 			{
 				args.erase(args.begin() + i + 1);
@@ -178,7 +178,7 @@ void removeIncludePchFlag(std::vector<std::wstring>& args)
 	}
 }
 
-std::vector<std::wstring> getIncludePchFlags(const SourceGroupSettingsWithCxxPchOptions* settings)
+std::vector<std::string> getIncludePchFlags(const SourceGroupSettingsWithCxxPchOptions* settings)
 {
 	const FilePath pchInputFilePath = settings->getPchInputFilePathExpandedAndAbsolute();
 	const FilePath pchDependenciesDirectoryPath = settings->getPchDependenciesDirectoryPath();
@@ -187,9 +187,9 @@ std::vector<std::wstring> getIncludePchFlags(const SourceGroupSettingsWithCxxPch
 	{
 		const FilePath pchOutputFilePath = pchDependenciesDirectoryPath
 											   .getConcatenated(pchInputFilePath.fileName())
-											   .replaceExtension(L"pch");
+											   .replaceExtension("pch");
 
-		return {L"-fallow-pch-with-compiler-errors", L"-include-pch", pchOutputFilePath.wstr()};
+		return {"-fallow-pch-with-compiler-errors", "-include-pch", pchOutputFilePath.str()};
 	}
 
 	return {};

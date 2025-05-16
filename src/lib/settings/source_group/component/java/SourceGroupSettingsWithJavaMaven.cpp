@@ -6,7 +6,7 @@
 
 FilePath SourceGroupSettingsWithJavaMaven::getMavenDependenciesDirectoryPath() const
 {
-	return getSourceGroupDependenciesDirectoryPath().concatenate(L"maven");
+	return getSourceGroupDependenciesDirectoryPath().concatenate("maven");
 }
 
 FilePath SourceGroupSettingsWithJavaMaven::getMavenProjectFilePath() const
@@ -65,15 +65,15 @@ bool SourceGroupSettingsWithJavaMaven::equals(const SourceGroupSettingsBase* oth
 void SourceGroupSettingsWithJavaMaven::load(const ConfigManager* config, const std::string& key)
 {
 	setMavenProjectFilePath(
-		config->getValueOrDefault(key + "/maven/project_file_path", FilePath(L"")));
+		config->getValueOrDefault(key + "/maven/project_file_path", FilePath("")));
 	setMavenSettingsFilePath(
-		config->getValueOrDefault(key + "/maven/settings_file_path", FilePath(L"")));
+		config->getValueOrDefault(key + "/maven/settings_file_path", FilePath("")));
 	setShouldIndexMavenTests(config->getValueOrDefault(key + "/maven/should_index_tests", false));
 }
 
 void SourceGroupSettingsWithJavaMaven::save(ConfigManager* config, const std::string& key)
 {
-	config->setValue(key + "/maven/project_file_path", getMavenProjectFilePath().wstr());
-	config->setValue(key + "/maven/settings_file_path", getMavenSettingsFilePath().wstr());
+	config->setValue(key + "/maven/project_file_path", getMavenProjectFilePath().str());
+	config->setValue(key + "/maven/settings_file_path", getMavenSettingsFilePath().str());
 	config->setValue(key + "/maven/should_index_tests", getShouldIndexMavenTests());
 }

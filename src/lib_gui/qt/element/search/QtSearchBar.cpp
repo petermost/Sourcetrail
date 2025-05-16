@@ -105,7 +105,7 @@ void QtSearchBar::homeButtonClicked()
 	MessageActivateOverview().dispatch();
 }
 
-void QtSearchBar::requestAutocomplete(const std::wstring& query, NodeTypeSet acceptedNodeTypes)
+void QtSearchBar::requestAutocomplete(const std::string& query, NodeTypeSet acceptedNodeTypes)
 {
 	MessageSearchAutocomplete(query, acceptedNodeTypes).dispatch();
 }
@@ -115,7 +115,7 @@ void QtSearchBar::requestSearch(const std::vector<SearchMatch>& matches, NodeTyp
 	MessageSearch(matches, acceptedNodeTypes).dispatch();
 }
 
-void QtSearchBar::requestFullTextSearch(const std::wstring& query, bool caseSensitive)
+void QtSearchBar::requestFullTextSearch(const std::string& query, bool caseSensitive)
 {
 	MessageActivateFullTextSearch(query, caseSensitive).dispatch();
 }

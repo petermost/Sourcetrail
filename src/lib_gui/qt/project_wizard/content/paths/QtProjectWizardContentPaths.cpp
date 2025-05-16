@@ -71,7 +71,7 @@ bool QtProjectWizardContentPaths::check()
 			{
 				if (!expandedPath.exists())
 				{
-					missingPaths.append(QString::fromStdWString(expandedPath.wstr() + L"\n"));
+					missingPaths.append(QString::fromStdString(expandedPath.str() + "\n"));
 				}
 				else
 				{

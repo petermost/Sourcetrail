@@ -21,14 +21,14 @@ public:
 	static std::string getXmlElementName();
 	static std::shared_ptr<Compiler> create(const TiXmlElement* element);
 
-	const std::vector<std::wstring>& getOptions() const;
-	const std::vector<std::wstring>& getDirectories() const;
+	const std::vector<std::string>& getOptions() const;
+	const std::vector<std::string>& getDirectories() const;
 
 private:
 	Compiler() = default;
 
-	std::vector<std::wstring> m_options;
-	std::vector<std::wstring> m_directories;
+	std::vector<std::string> m_options;
+	std::vector<std::string> m_directories;
 };
 }	 // namespace Codeblocks
 

@@ -93,7 +93,7 @@ void MessageQueue::processMessage(std::shared_ptr<MessageBase> message, bool asN
 {
 	if (message->isLogged())
 	{
-		LOG_INFO_BARE(L"send " + message->str());
+		LOG_INFO_BARE("send " + message->str());
 	}
 
 	if (m_sendMessagesAsTasks && message->sendAsTask())

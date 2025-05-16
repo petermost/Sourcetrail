@@ -50,7 +50,7 @@ public:
 private:
 	SourceLocationFile* createSourceLocationFile(
 		const FilePath& filePath,
-		const std::wstring& language = L"",
+		const std::string& language = "",
 		bool isWhole = false,
 		bool isComplete = false,
 		bool isIndexed = false);
@@ -58,6 +58,6 @@ private:
 	std::map<FilePath, std::shared_ptr<SourceLocationFile>> m_files;
 };
 
-std::wostream& operator<<(std::wostream& ostream, const SourceLocationCollection& base);
+std::ostream& operator<<(std::ostream& ostream, const SourceLocationCollection& base);
 
 #endif	  // SOURCE_LOCATION_COLLECTION_H

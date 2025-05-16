@@ -71,8 +71,8 @@ public:
 
 	bool isFocusable() const;
 
-	std::wstring getName() const;
-	void setName(const std::wstring& name);
+	std::string getName() const;
+	void setName(const std::string& name);
 
 	void addComponent(const std::shared_ptr<QtGraphNodeComponent>& component);
 
@@ -87,7 +87,7 @@ public:
 
 	void showNodeRecursive();
 
-	void matchNameRecursive(const std::wstring& query, std::vector<QtGraphNode*>* matchedNodes);
+	void matchNameRecursive(const std::string& query, std::vector<QtGraphNode*>* matchedNodes);
 	void removeNameMatch();
 	void setActiveMatch(bool active);
 
@@ -123,7 +123,7 @@ protected:
 
 	void notifyEdgesAfterMove();
 
-	virtual void matchName(const std::wstring& query, std::vector<QtGraphNode*>* matchedNodes);
+	virtual void matchName(const std::string& query, std::vector<QtGraphNode*>* matchedNodes);
 
 	void setStyle(const GraphViewStyle::NodeStyle& style);
 

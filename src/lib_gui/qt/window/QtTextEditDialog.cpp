@@ -13,14 +13,14 @@ QSize QtTextEditDialog::sizeHint() const
 	return QSize(550, 550);
 }
 
-void QtTextEditDialog::setText(const std::wstring& text)
+void QtTextEditDialog::setText(const std::string& text)
 {
-	m_text->setPlainText(QString::fromStdWString(text));
+	m_text->setPlainText(QString::fromStdString(text));
 }
 
-std::wstring QtTextEditDialog::getText()
+std::string QtTextEditDialog::getText()
 {
-	return m_text->toPlainText().toStdWString();
+	return m_text->toPlainText().toStdString();
 }
 
 void QtTextEditDialog::setReadOnly(bool readOnly)

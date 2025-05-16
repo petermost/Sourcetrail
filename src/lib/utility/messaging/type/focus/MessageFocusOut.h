@@ -21,11 +21,11 @@ public:
 		return "MessageFocusOut";
 	}
 
-	void print(std::wostream& os) const override
+	void print(std::ostream& os) const override
 	{
 		for (const Id& id: tokenIds)
 		{
-			os << id << L" ";
+			os << id << " ";
 		}
 	}
 

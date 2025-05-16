@@ -54,16 +54,16 @@ void QtProjectWizardContentProjectData::populate(QGridLayout* layout, int& row)
 
 void QtProjectWizardContentProjectData::load()
 {
-	m_projectName->setText(QString::fromStdWString(m_projectSettings->getProjectName()));
+	m_projectName->setText(QString::fromStdString(m_projectSettings->getProjectName()));
 	m_projectFileLocation->setText(
-		QString::fromStdWString(m_projectSettings->getProjectDirectoryPath().wstr()));
+		QString::fromStdString(m_projectSettings->getProjectDirectoryPath().str()));
 }
 
 void QtProjectWizardContentProjectData::save()
 {
 	m_projectSettings->setProjectFilePath(
-		m_projectName->text().toStdWString(),
-		FilePath(m_projectFileLocation->getText().toStdWString()));
+		m_projectName->text().toStdString(),
+		FilePath(m_projectFileLocation->getText().toStdString()));
 }
 
 bool QtProjectWizardContentProjectData::check()
@@ -96,7 +96,7 @@ bool QtProjectWizardContentProjectData::check()
 	}
 
 	std::vector<FilePath> paths =
-		FilePath(m_projectFileLocation->getText().toStdWString()).expandEnvironmentVariables();
+		FilePath(m_projectFileLocation->getText().toStdString()).expandEnvironmentVariables();
 	if (paths.size() != 1)
 	{
 		QtMessageBox msgBox(m_window);

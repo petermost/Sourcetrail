@@ -83,7 +83,7 @@ int LogManagerImplementation::getLoggerCount() const
 }
 
 void LogManagerImplementation::logInfo(
-	const std::wstring& message,
+	const std::string& message,
 	const std::string& file,
 	const std::string& function,
 	const unsigned int line)
@@ -97,7 +97,7 @@ void LogManagerImplementation::logInfo(
 }
 
 void LogManagerImplementation::logWarning(
-	const std::wstring& message,
+	const std::string& message,
 	const std::string& file,
 	const std::string& function,
 	const unsigned int line)
@@ -111,7 +111,7 @@ void LogManagerImplementation::logWarning(
 }
 
 void LogManagerImplementation::logError(
-	const std::wstring& message,
+	const std::string& message,
 	const std::string& file,
 	const std::string& function,
 	const unsigned int line)

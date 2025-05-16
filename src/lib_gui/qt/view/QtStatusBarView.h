@@ -20,10 +20,10 @@ public:
 	void refreshView() override;
 
 	// StatusBar view implementation
-	void showMessage(const std::wstring& message, bool isError, bool showLoader) override;
+	void showMessage(const std::string& message, bool isError, bool showLoader) override;
 	void setErrorCount(ErrorCountInfo errorCount) override;
 
-	void showIdeStatus(const std::wstring& message) override;
+	void showIdeStatus(const std::string& message) override;
 
 	void showIndexingProgress(size_t progressPercent) override;
 	void hideIndexingProgress() override;

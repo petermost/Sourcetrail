@@ -2,7 +2,7 @@
 
 using namespace std;
 
-wostream &operator << (wostream &stream, RefreshMode mode)
+ostream &operator << (ostream &stream, RefreshMode mode)
 {
 	return stream << static_cast<int>(mode);
 }

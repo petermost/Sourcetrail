@@ -9,13 +9,13 @@ struct StorageBookmarkedNodeData
 {
 	StorageBookmarkedNodeData(): bookmarkId(BookmarkId::NONE) {}
 
-	StorageBookmarkedNodeData(BookmarkId bookmarkId, const std::wstring& serializedNodeName)
+	StorageBookmarkedNodeData(BookmarkId bookmarkId, const std::string& serializedNodeName)
 		: bookmarkId(bookmarkId), serializedNodeName(serializedNodeName)
 	{
 	}
 
 	BookmarkId bookmarkId;
-	std::wstring serializedNodeName;
+	std::string serializedNodeName;
 };
 
 struct StorageBookmarkedNode: public StorageBookmarkedNodeData
@@ -27,7 +27,7 @@ struct StorageBookmarkedNode: public StorageBookmarkedNodeData
 	{
 	}
 
-	StorageBookmarkedNode(Id id, BookmarkId bookmarkId, const std::wstring& serializedNodeName)
+	StorageBookmarkedNode(Id id, BookmarkId bookmarkId, const std::string& serializedNodeName)
 		: StorageBookmarkedNodeData(bookmarkId, serializedNodeName), id(id)
 	{
 	}

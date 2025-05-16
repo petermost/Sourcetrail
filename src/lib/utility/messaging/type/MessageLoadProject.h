@@ -27,11 +27,11 @@ public:
 		return "MessageLoadProject";
 	}
 
-	void print(std::wostream& os) const override
+	void print(std::ostream& os) const override
 	{
-		os << projectSettingsFilePath.wstr();
-		os << L", settingsChanged: " << std::boolalpha << settingsChanged;
-		os << L", refreshMode: " << refreshMode;
+		os << projectSettingsFilePath.str();
+		os << ", settingsChanged: " << std::boolalpha << settingsChanged;
+		os << ", refreshMode: " << refreshMode;
 	}
 
 	const FilePath projectSettingsFilePath;

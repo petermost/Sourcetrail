@@ -131,11 +131,11 @@ std::shared_ptr<Project> Project::load(std::shared_ptr<TextAccess> xmlAccess)
 }
 
 std::set<FilePath> Project::getAllSourceFilePathsCanonical(
-	const std::vector<std::wstring>& sourceExtensions) const
+	const std::vector<std::string>& sourceExtensions) const
 {
-	const std::set<std::wstring> lowerSourceExtensions = utility::toSet(
-		utility::convert<std::wstring, std::wstring>(
-			sourceExtensions, [](const std::wstring& e) { return utility::toLowerCase(e); }));
+	const std::set<std::string> lowerSourceExtensions = utility::toSet(
+		utility::convert<std::string, std::string>(
+			sourceExtensions, [](const std::string& e) { return utility::toLowerCase(e); }));
 
 	std::set<FilePath> filePaths;
 	std::set<FilePath> nonTargetFilePaths;
@@ -168,7 +168,7 @@ std::set<FilePath> Project::getAllSourceFilePathsCanonical(
 
 std::set<FilePath> Project::getAllCxxHeaderSearchPathsCanonical() const
 {
-	std::set<std::wstring> usedTargetNames;
+	std::set<std::string> usedTargetNames;
 	for (const std::shared_ptr<Unit> &unit : m_units) {
 		if (unit && unit->getCompile())
 		{
@@ -185,7 +185,7 @@ std::set<FilePath> Project::getAllCxxHeaderSearchPathsCanonical() const
 		{
 			if (std::shared_ptr<const Compiler> compiler = target->getCompiler())
 			{
-				for (const std::wstring& directory: compiler->getDirectories())
+				for (const std::string& directory: compiler->getDirectories())
 				{
 					FilePath path(directory);
 					if (path.isAbsolute())
@@ -203,10 +203,10 @@ std::vector<std::shared_ptr<IndexerCommandCxx>> Project::getIndexerCommands(
 	std::shared_ptr<const SourceGroupSettingsCxxCodeblocks> sourceGroupSettings,
 	std::shared_ptr<const ApplicationSettings> appSettings) const
 {
-	const std::set<std::wstring> lowerSourceExtensions = utility::toSet(
-		utility::convert<std::wstring, std::wstring>(
+	const std::set<std::string> lowerSourceExtensions = utility::toSet(
+		utility::convert<std::string, std::string>(
 			sourceGroupSettings->getSourceExtensions(),
-			[](const std::wstring& e) { return utility::toLowerCase(e); }));
+			[](const std::string& e) { return utility::toLowerCase(e); }));
 
 	const std::set<FilePath> indexedHeaderPaths = utility::toSet(
 		sourceGroupSettings->getIndexedHeaderPathsExpandedAndAbsolute());
@@ -222,8 +222,8 @@ std::vector<std::shared_ptr<IndexerCommandCxx>> Project::getIndexerCommands(
 		sourceGroupSettings->getFrameworkSearchPathsExpandedAndAbsolute(),
 		appSettings->getFrameworkSearchPathsExpanded());
 
-	OrderedCache<std::wstring, std::vector<std::wstring>> optionsCache([&](const std::wstring& targetName) {
-		std::vector<std::wstring> compilerFlags;
+	OrderedCache<std::string, std::vector<std::string>> optionsCache([&](const std::string& targetName) {
+		std::vector<std::string> compilerFlags;
 		for (const std::shared_ptr<Target> &target : m_targets) {
 			if (target && target->getTitle() == targetName)
 			{
@@ -231,7 +231,7 @@ std::vector<std::shared_ptr<IndexerCommandCxx>> Project::getIndexerCommands(
 				{
 					compilerFlags = utility::concat(
 						IndexerCommandCxx::getCompilerFlagsForSystemHeaderSearchPaths(
-							utility::convert<std::wstring, FilePath>(compiler->getDirectories())),
+							utility::convert<std::string, FilePath>(compiler->getDirectories())),
 						compiler->getOptions());
 					break;
 				}
@@ -263,7 +263,7 @@ std::vector<std::shared_ptr<IndexerCommandCxx>> Project::getIndexerCommands(
 			continue;
 		}
 
-		std::wstring languageStandard;
+		std::string languageStandard;
 		switch (unit->getCompilerVar())
 		{
 		case COMPILER_VAR_C:
@@ -285,14 +285,14 @@ std::vector<std::shared_ptr<IndexerCommandCxx>> Project::getIndexerCommands(
 				std::set<FilePathFilter>(),
 				sourceGroupSettings->getCodeblocksProjectPathExpandedAndAbsolute().getParentDirectory(),
 				utility::concat(
-					optionsCache.getValue(L""),
-					std::vector<std::wstring>(
+					optionsCache.getValue(""),
+					std::vector<std::string>(
 						{IndexerCommandCxx::getCompilerFlagLanguageStandard(languageStandard),
-						 filePath.wstr()}))));
+						 filePath.str()}))));
 			continue;
 		}
 
-		for (const std::wstring& targetName: unit->getTargetNames())
+		for (const std::string& targetName: unit->getTargetNames())
 		{
 			indexerCommands.push_back(std::make_shared<IndexerCommandCxx>(
 				filePath,
@@ -302,9 +302,9 @@ std::vector<std::shared_ptr<IndexerCommandCxx>> Project::getIndexerCommands(
 				sourceGroupSettings->getCodeblocksProjectPathExpandedAndAbsolute().getParentDirectory(),
 				utility::concat(
 					optionsCache.getValue(targetName),
-					std::vector<std::wstring>(
+					std::vector<std::string>(
 						{IndexerCommandCxx::getCompilerFlagLanguageStandard(languageStandard),
-						 filePath.wstr()}))));
+						 filePath.str()}))));
 		}
 	}
 

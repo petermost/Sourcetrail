@@ -14,34 +14,34 @@ public:
 	{
 	public:
 		Signature();
-		Signature(std::wstring prefix, std::wstring postfix);
+		Signature(std::string prefix, std::string postfix);
 
-		std::wstring qualifyName(const std::wstring& name) const;
+		std::string qualifyName(const std::string& name) const;
 		bool isValid() const;
 
-		const std::wstring& getPrefix() const;
-		const std::wstring& getPostfix() const;
-		std::wstring getParameterString() const;
+		const std::string& getPrefix() const;
+		const std::string& getPostfix() const;
+		std::string getParameterString() const;
 
 	private:
-		std::wstring m_prefix;
-		std::wstring m_postfix;
+		std::string m_prefix;
+		std::string m_postfix;
 	};
 
-	NameElement(std::wstring name);
-	NameElement(std::wstring name, std::wstring prefix, std::wstring postfix);
+	NameElement(std::string name);
+	NameElement(std::string name, std::string prefix, std::string postfix);
 	~NameElement();
 
-	const std::wstring& getName() const;
-	std::wstring getNameWithSignature() const;
-	std::wstring getNameWithSignatureParameters() const;
+	const std::string& getName() const;
+	std::string getNameWithSignature() const;
+	std::string getNameWithSignatureParameters() const;
 
 	bool hasSignature() const;
 	const Signature& getSignature() const;
-	void setSignature(std::wstring prefix, std::wstring postfix);
+	void setSignature(std::string prefix, std::string postfix);
 
 private:
-	std::wstring m_name;
+	std::string m_name;
 	Signature m_signature;
 };
 

@@ -230,7 +230,7 @@ bool QtGraphView::isVisible() const
 	return QtViewWidgetWrapper::getWidgetOfView(this)->isVisible();
 }
 
-void QtGraphView::findMatches(ScreenSearchSender* sender, const std::wstring& query)
+void QtGraphView::findMatches(ScreenSearchSender* sender, const std::string& query)
 {
 	m_onQtThread([sender, query, this]() {
 		m_matchedNodes.clear();
@@ -972,7 +972,7 @@ void QtGraphView::switchToNewGraphData()
 
 	if (m_oldGraph && m_oldGraph->getTrailMode() != Graph::TRAIL_NONE)
 	{
-		MessageStatus(L"Finished graph display").dispatch();
+		MessageStatus("Finished graph display").dispatch();
 	}
 }
 

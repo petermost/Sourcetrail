@@ -16,8 +16,8 @@
 #include "utility.h"
 #include "utilityString.h"
 
-const std::wstring BookmarkController::s_edgeSeparatorToken = L" => ";
-const std::wstring BookmarkController::s_defaultCategoryName = L"default";
+const std::string BookmarkController::s_edgeSeparatorToken = " => ";
+const std::string BookmarkController::s_defaultCategoryName = "default";
 
 BookmarkController::BookmarkController(StorageAccess* storageAccess)
 	: m_storageAccess(storageAccess)
@@ -62,7 +62,7 @@ void BookmarkController::displayBookmarksFor(
 }
 
 void BookmarkController::createBookmark(
-	const std::wstring& name, const std::wstring& comment, const std::wstring& category, Id nodeId)
+	const std::string& name, const std::string& comment, const std::string& category, Id nodeId)
 {
 	LOG_INFO("Attempting to create new bookmark");
 
@@ -119,7 +119,7 @@ void BookmarkController::createBookmark(
 }
 
 void BookmarkController::editBookmark(
-	BookmarkId bookmarkId, const std::wstring& name, const std::wstring& comment, const std::wstring& category)
+	BookmarkId bookmarkId, const std::string& name, const std::string& comment, const std::string& category)
 {
 	LOG_INFO_STREAM(<< "Attempting to update Bookmark " << bookmarkId);
 
@@ -167,7 +167,7 @@ void BookmarkController::deleteBookmarkForActiveTokens()
 {
 	if (std::shared_ptr<Bookmark> bookmark = getBookmarkForActiveToken(TabIds::currentTab()))
 	{
-		LOG_INFO(L"Deleting bookmark " + bookmark->getName());
+		LOG_INFO("Deleting bookmark " + bookmark->getName());
 
 		m_storageAccess->removeBookmark(bookmark->getId());
 
@@ -379,7 +379,7 @@ void BookmarkController::handleMessage(MessageIndexingFinished*  /*message*/)
 	update();
 }
 
-std::vector<std::wstring> BookmarkController::getActiveTokenDisplayNames() const
+std::vector<std::string> BookmarkController::getActiveTokenDisplayNames() const
 {
 	if (m_activeEdgeIds[TabIds::currentTab()].size() > 0)
 	{
@@ -391,9 +391,9 @@ std::vector<std::wstring> BookmarkController::getActiveTokenDisplayNames() const
 	}
 }
 
-std::vector<std::wstring> BookmarkController::getDisplayNamesForNodeId(Id nodeId) const
+std::vector<std::string> BookmarkController::getDisplayNamesForNodeId(Id nodeId) const
 {
-	return std::vector<std::wstring>({getNodeDisplayName(nodeId)});
+	return std::vector<std::string>({getNodeDisplayName(nodeId)});
 }
 
 std::vector<BookmarkCategory> BookmarkController::getAllBookmarkCategories() const
@@ -492,9 +492,9 @@ std::vector<std::shared_ptr<Bookmark>> BookmarkController::getBookmarks(
 	return bookmarks;
 }
 
-std::vector<std::wstring> BookmarkController::getActiveNodeDisplayNames() const
+std::vector<std::string> BookmarkController::getActiveNodeDisplayNames() const
 {
-	std::vector<std::wstring> names;
+	std::vector<std::string> names;
 	for (Id nodeId: m_activeNodeIds[TabIds::currentTab()])
 	{
 		names.push_back(getNodeDisplayName(nodeId));
@@ -502,20 +502,20 @@ std::vector<std::wstring> BookmarkController::getActiveNodeDisplayNames() const
 	return names;
 }
 
-std::vector<std::wstring> BookmarkController::getActiveEdgeDisplayNames() const
+std::vector<std::string> BookmarkController::getActiveEdgeDisplayNames() const
 {
-	std::vector<std::wstring> activeEdgeDisplayNames;
+	std::vector<std::string> activeEdgeDisplayNames;
 	for (Id activeEdgeId: m_activeEdgeIds[TabIds::currentTab()])
 	{
 		const StorageEdge activeEdge = m_storageAccess->getEdgeById(activeEdgeId);
-		const std::wstring sourceDisplayName = getNodeDisplayName(activeEdge.sourceNodeId);
-		const std::wstring targetDisplayName = getNodeDisplayName(activeEdge.targetNodeId);
+		const std::string sourceDisplayName = getNodeDisplayName(activeEdge.sourceNodeId);
+		const std::string targetDisplayName = getNodeDisplayName(activeEdge.targetNodeId);
 		activeEdgeDisplayNames.push_back(sourceDisplayName + s_edgeSeparatorToken + targetDisplayName);
 	}
 	return activeEdgeDisplayNames;
 }
 
-std::wstring BookmarkController::getNodeDisplayName(const Id nodeId) const
+std::string BookmarkController::getNodeDisplayName(const Id nodeId) const
 {
 	NodeType type = m_storageAccess->getNodeTypeForNodeWithId(nodeId);
 	NameHierarchy nameHierarchy = m_storageAccess->getNameHierarchyForNodeId(nodeId);
@@ -651,8 +651,8 @@ bool BookmarkController::bookmarkDateCompare(
 bool BookmarkController::bookmarkNameCompare(
 	const std::shared_ptr<Bookmark> a, const std::shared_ptr<Bookmark> b)
 {
-	std::wstring aName = a->getName();
-	std::wstring bName = b->getName();
+	std::string aName = a->getName();
+	std::string bName = b->getName();
 
 	aName = utility::toLowerCase(aName);
 	bName = utility::toLowerCase(bName);
@@ -660,11 +660,11 @@ bool BookmarkController::bookmarkNameCompare(
 	unsigned int i = 0;
 	while (i < aName.length() && i < bName.length())
 	{
-		if (std::towlower(aName[i]) < std::towlower(bName[i]))
+		if (std::tolower(aName[i]) < std::tolower(bName[i]))
 		{
 			return true;
 		}
-		else if (std::towlower(aName[i]) > std::towlower(bName[i]))
+		else if (std::tolower(aName[i]) > std::tolower(bName[i]))
 		{
 			return false;
 		}

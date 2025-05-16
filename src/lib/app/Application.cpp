@@ -106,7 +106,7 @@ std::string Application::getUUID()
 
 void Application::loadSettings()
 {
-	MessageStatus(L"Load settings: " + UserPaths::getAppSettingsFilePath().wstr()).dispatch();
+	MessageStatus("Load settings: " + UserPaths::getAppSettingsFilePath().str()).dispatch();
 
 	std::shared_ptr<ApplicationSettings> settings = ApplicationSettings::getInstance();
 	settings->load(UserPaths::getAppSettingsFilePath());
@@ -117,7 +117,7 @@ void Application::loadSettings()
 	{
 		auto *fileLogger = dynamic_cast<FileLogger*>(logger);
 		fileLogger->setLogDirectory(settings->getLogDirectoryPath());
-		fileLogger->setFileName(FileLogger::generateDatedFileName(L"log"));
+		fileLogger->setFileName(FileLogger::generateDatedFileName("log"));
 	}
 
 	loadStyle(settings->getColorSchemePath());
@@ -174,12 +174,12 @@ bool Application::hasGUI()
 	return m_hasGUI;
 }
 
-int Application::handleDialog(const std::wstring& message)
+int Application::handleDialog(const std::string& message)
 {
 	return getDialogView(DialogView::UseCase::GENERAL)->confirm(message);
 }
 
-int Application::handleDialog(const std::wstring& message, const std::vector<std::wstring>& options)
+int Application::handleDialog(const std::string& message, const std::vector<std::string>& options)
 {
 	return getDialogView(DialogView::UseCase::GENERAL)->confirm(message, options);
 }
@@ -216,7 +216,7 @@ void Application::handleMessage(MessageCloseProject*  /*message*/)
 {
 	if (m_project && m_project->isIndexing())
 	{
-		MessageStatus(L"Cannot close the project while indexing.", true, false).dispatch();
+		MessageStatus("Cannot close the project while indexing.", true, false).dispatch();
 		return;
 	}
 
@@ -253,7 +253,7 @@ void Application::handleMessage(MessageLoadProject* message)
 
 	if (m_project && m_project->isIndexing())
 	{
-		MessageStatus(L"Cannot load another project while indexing.", true, false).dispatch();
+		MessageStatus("Cannot load another project while indexing.", true, false).dispatch();
 		return;
 	}
 
@@ -267,7 +267,7 @@ void Application::handleMessage(MessageLoadProject* message)
 	}
 	else
 	{
-		MessageStatus(L"Loading Project: " + projectSettingsFilePath.wstr(), false, true).dispatch();
+		MessageStatus("Loading Project: " + projectSettingsFilePath.str(), false, true).dispatch();
 
 		m_project.reset();
 
@@ -297,7 +297,7 @@ void Application::handleMessage(MessageLoadProject* message)
 			else
 			{
 				LOG_ERROR_STREAM(<< "Failed to load project.");
-				MessageStatus(L"Failed to load project: " + projectSettingsFilePath.wstr(), true)
+				MessageStatus("Failed to load project: " + projectSettingsFilePath.str(), true)
 					.dispatch();
 			}
 
@@ -305,24 +305,24 @@ void Application::handleMessage(MessageLoadProject* message)
 		}
 		catch (CppSQLite3Exception& e)
 		{
-			const std::wstring message = L"Failed to load project at \"" +
-										 projectSettingsFilePath.wstr() + L"\" with sqlite exception: " +
+			const std::string message = "Failed to load project at \"" +
+										 projectSettingsFilePath.str() + "\" with sqlite exception: " +
 										 utility::decodeFromUtf8(e.errorMessage());
 			LOG_ERROR(message);
 			MessageStatus(message, true).dispatch();
 		}
 		catch (std::exception& e)
 		{
-			const std::wstring message = L"Failed to load project at \"" +
-				projectSettingsFilePath.wstr() + L"\" with exception: " +
+			const std::string message = "Failed to load project at \"" +
+				projectSettingsFilePath.str() + "\" with exception: " +
 				utility::decodeFromUtf8(e.what());
 			LOG_ERROR(message);
 			MessageStatus(message, true).dispatch();
 		}
 		catch (...)
 		{
-			const std::wstring message = L"Failed to load project at \"" +
-				projectSettingsFilePath.wstr() + L"\" with unknown exception.";
+			const std::string message = "Failed to load project at \"" +
+				projectSettingsFilePath.str() + "\" with unknown exception.";
 			LOG_ERROR(message);
 			MessageStatus(message, true).dispatch();
 		}
@@ -362,7 +362,7 @@ void Application::handleMessage(MessageRefreshUI* message)
 
 void Application::handleMessage(MessageSwitchColorScheme* message)
 {
-	MessageStatus(L"Switch color scheme: " + message->colorSchemePath.wstr()).dispatch();
+	MessageStatus("Switch color scheme: " + message->colorSchemePath.str()).dispatch();
 
 	loadStyle(message->colorSchemePath);
 	MessageRefreshUI().noStyleReload().dispatch();
@@ -479,7 +479,7 @@ void Application::updateTitle()
 {
 	if (m_hasGUI)
 	{
-		std::wstring title = L"Sourcetrail";
+		std::string title = "Sourcetrail";
 
 		if (m_project)
 		{
@@ -487,7 +487,7 @@ void Application::updateTitle()
 
 			if (!projectPath.empty())
 			{
-				title += L" - " + projectPath.fileName();
+				title += " - " + projectPath.fileName();
 			}
 		}
 
@@ -497,18 +497,18 @@ void Application::updateTitle()
 
 bool Application::checkSharedMemory()
 {
-	std::wstring error = utility::decodeFromUtf8(SharedMemory::checkSharedMemory(getUUID()));
+	std::string error = utility::decodeFromUtf8(SharedMemory::checkSharedMemory(getUUID()));
 	if (error.size())
 	{
 		MessageStatus(
-			L"Error on accessing shared memory. Indexing not possible. "
+			"Error on accessing shared memory. Indexing not possible. "
 			"Please restart computer or run as admin: " +
 				error,
 			true)
 			.dispatch();
 		handleDialog(
-			L"There was an error accessing shared memory on your computer: " + error +
-			L"\n\n"
+			"There was an error accessing shared memory on your computer: " + error +
+			"\n\n"
 			"Project indexing is not possible. Please restart your computer or try running "
 			"Sourcetrail as admin.");
 		return false;

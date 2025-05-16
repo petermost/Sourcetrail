@@ -38,12 +38,12 @@ void QtProjectWizardContentPathCxxPch::populate(QGridLayout* layout, int& row)
 
 void QtProjectWizardContentPathCxxPch::load()
 {
-	m_picker->setText(QString::fromStdWString(m_settingsCxxPch->getPchInputFilePath().wstr()));
+	m_picker->setText(QString::fromStdString(m_settingsCxxPch->getPchInputFilePath().str()));
 }
 
 void QtProjectWizardContentPathCxxPch::save()
 {
-	m_settingsCxxPch->setPchInputFilePathFilePath(FilePath(m_picker->getText().toStdWString()));
+	m_settingsCxxPch->setPchInputFilePathFilePath(FilePath(m_picker->getText().toStdString()));
 }
 
 bool QtProjectWizardContentPathCxxPch::check()

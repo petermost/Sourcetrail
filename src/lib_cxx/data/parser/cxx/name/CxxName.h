@@ -18,7 +18,7 @@ public:
 	void setParent(std::shared_ptr<CxxName> parent);
 	std::shared_ptr<CxxName> getParent() const;
 
-	static std::wstring getTemplateSuffix(const std::vector<std::wstring>& elements);
+	static std::string getTemplateSuffix(const std::vector<std::string>& elements);
 
 	virtual NameHierarchy toNameHierarchy() const = 0;
 

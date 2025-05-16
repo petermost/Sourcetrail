@@ -10,7 +10,7 @@ FileRegister::FileRegister(
 	: m_currentPath(currentPath)
 	, m_indexedPaths(indexedPaths)
 	, m_excludeFilters(excludeFilters)
-	, m_hasFilePathCache([&](const std::wstring& f) {
+	, m_hasFilePathCache([&](const std::string& f) {
 		const FilePath filePath(f);
 		bool ret = false;
 
@@ -55,5 +55,5 @@ FileRegister::~FileRegister() = default;
 
 bool FileRegister::hasFilePath(const FilePath& filePath) const
 {
-	return m_hasFilePathCache.getValue(filePath.wstr());
+	return m_hasFilePathCache.getValue(filePath.str());
 }

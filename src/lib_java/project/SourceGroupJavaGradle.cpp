@@ -43,11 +43,11 @@ std::vector<FilePath> SourceGroupJavaGradle::doGetClassPath() const
 	if (m_settings->getGradleDependenciesDirectoryPath().exists())
 	{
 		std::vector<FilePath> gradleJarPaths = FileSystem::getFilePathsFromDirectory(
-			m_settings->getGradleDependenciesDirectoryPath(), {L".jar"});
+			m_settings->getGradleDependenciesDirectoryPath(), {".jar"});
 
 		for (const FilePath& gradleJarPath: gradleJarPaths)
 		{
-			LOG_INFO(L"Adding jar to classpath: " + gradleJarPath.wstr());
+			LOG_INFO("Adding jar to classpath: " + gradleJarPath.str());
 		}
 
 		utility::append(classPath, gradleJarPaths);
@@ -79,7 +79,7 @@ bool SourceGroupJavaGradle::prepareGradleData()
 		ScopedFunctor dialogHider([&dialogView]() { dialogView->hideUnknownProgressDialog(); });
 
 		dialogView->showUnknownProgressDialog(
-			L"Preparing Project", L"Gradle\nExporting Dependencies");
+			"Preparing Project", "Gradle\nExporting Dependencies");
 
 		bool success = utility::gradleCopyDependencies(
 			projectRootPath,
@@ -100,7 +100,7 @@ std::vector<FilePath> SourceGroupJavaGradle::doGetAllSourcePaths() const
 		std::shared_ptr<DialogView> dialogView = Application::getInstance()->getDialogView(
 			DialogView::UseCase::PROJECT_SETUP);
 		dialogView->showUnknownProgressDialog(
-			L"Preparing Project", L"Gradle\nFetching Source Directories");
+			"Preparing Project", "Gradle\nFetching Source Directories");
 
 		const FilePath projectRootPath =
 			m_settings->getGradleProjectFilePathExpandedAndAbsolute().getParentDirectory();

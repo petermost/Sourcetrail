@@ -162,7 +162,7 @@ std::vector<StorageBookmarkedEdge> SqliteBookmarkStorage::getAllBookmarkedEdges(
 }
 
 void SqliteBookmarkStorage::updateBookmark(
-	const BookmarkId bookmarkId, const std::wstring& name, const std::wstring& comment, const Id categoryId)
+	const BookmarkId bookmarkId, const std::string& name, const std::string& comment, const Id categoryId)
 {
 	executeStatement(
 		"UPDATE bookmark SET name = '" + utility::encodeToUtf8(name) +
@@ -180,7 +180,7 @@ std::vector<StorageBookmarkCategory> SqliteBookmarkStorage::getAllBookmarkCatego
 	return doGetAll<StorageBookmarkCategory>("");
 }
 
-StorageBookmarkCategory SqliteBookmarkStorage::getBookmarkCategoryByName(const std::wstring& name) const
+StorageBookmarkCategory SqliteBookmarkStorage::getBookmarkCategoryByName(const std::string& name) const
 {
 	return doGetFirst<StorageBookmarkCategory>(
 		"WHERE name == '" + utility::encodeToUtf8(name) + "'");

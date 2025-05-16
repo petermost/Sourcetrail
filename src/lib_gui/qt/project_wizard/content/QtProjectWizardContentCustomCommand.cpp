@@ -27,14 +27,14 @@ void QtProjectWizardContentCustomCommand::populate(QGridLayout* layout, int& row
 		"<ul>"
 		"<li><b>%{SOURCE_FILE_PATH}</b> - Path to each source file (mandatory)</li>"
 		"<li><b>%{DATABASE_FILE_PATH}</b> - Path to database file: \"" +
-			QString::fromStdWString(m_settings->getProjectSettings()->getTempDBFilePath().wstr()) +
+			QString::fromStdString(m_settings->getProjectSettings()->getTempDBFilePath().str()) +
 			"\"</li>"
 			"<li><b>%{DATABASE_VERSION}</b> - Database version used by this Sourcetrail version: "
 			"\"" +
 			QString::number(SqliteIndexStorage::getStorageVersion()) +
 			"\"</li>"
 			"<li><b>%{PROJECT_FILE_PATH}</b> - Path to project file: \"" +
-			QString::fromStdWString(m_settings->getProjectSettings()->getProjectFilePath().wstr()) +
+			QString::fromStdString(m_settings->getProjectSettings()->getProjectFilePath().str()) +
 			"\"</li>"
 			"</ul>",
 		layout,
@@ -57,13 +57,13 @@ void QtProjectWizardContentCustomCommand::populate(QGridLayout* layout, int& row
 
 void QtProjectWizardContentCustomCommand::load()
 {
-	m_customCommand->setText(QString::fromStdWString(m_settings->getCustomCommand()));
+	m_customCommand->setText(QString::fromStdString(m_settings->getCustomCommand()));
 	m_runInParallel->setChecked(m_settings->getRunInParallel());
 }
 
 void QtProjectWizardContentCustomCommand::save()
 {
-	m_settings->setCustomCommand(m_customCommand->text().toStdWString());
+	m_settings->setCustomCommand(m_customCommand->text().toStdString());
 	m_settings->setRunInParallel(m_runInParallel->isChecked());
 }
 
@@ -77,7 +77,7 @@ bool QtProjectWizardContentCustomCommand::check()
 		return false;
 	}
 
-	if (m_customCommand->text().toStdWString().find(L"%{SOURCE_FILE_PATH}") == std::wstring::npos)
+	if (m_customCommand->text().toStdString().find("%{SOURCE_FILE_PATH}") == std::string::npos)
 	{
 		QtMessageBox msgBox(m_window);
 		msgBox.setText(QStringLiteral("The variable %{SOURCE_FILE_PATH} is missing in the custom command."));

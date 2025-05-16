@@ -68,7 +68,7 @@ private:
 	ParseLocation getParseLocation(const clang::SourceLocation& loc) const;
 	ParseLocation getParseLocation(const clang::SourceRange& sourceRange) const;
 
-	std::wstring getLocalSymbolName(const clang::SourceLocation& loc) const;
+	std::string getLocalSymbolName(const clang::SourceLocation& loc) const;
 
 	ReferenceKind consumeDeclRefContextKind();
 

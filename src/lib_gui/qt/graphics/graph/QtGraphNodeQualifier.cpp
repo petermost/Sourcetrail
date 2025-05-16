@@ -26,7 +26,7 @@ QtGraphNodeQualifier::QtGraphNodeQualifier(const NameHierarchy& name): m_qualifi
 
 	m_name = new QGraphicsSimpleTextItem(this);
 	m_name->setFont(font);
-	m_name->setText(QString::fromStdWString(name.getQualifiedName()));
+	m_name->setText(QString::fromStdString(name.getQualifiedName()));
 }
 
 QtGraphNodeQualifier::~QtGraphNodeQualifier() = default;

@@ -205,7 +205,7 @@ void QtErrorView::addErrors(
 void QtErrorView::setErrorId(Id errorId)
 {
 	m_onQtThread([=, this]() {
-		QList<QStandardItem*> items = m_model->findItems(QString::fromStdWString(to_wstring(errorId)), 
+		QList<QStandardItem*> items = m_model->findItems(QString::fromStdString(to_string(errorId)), 
 			Qt::MatchExactly, Column::ID);
 
 		if (items.size() == 1)
@@ -309,11 +309,11 @@ void QtErrorView::addErrorToTable(const ErrorInfo& error)
 	m_model->item(rowNumber, Column::TYPE)->setIcon(s_errorIcon);
 
 	m_model->setItem(
-		rowNumber, Column::MESSAGE, new QStandardItem(QString::fromStdWString(error.message)));
+		rowNumber, Column::MESSAGE, new QStandardItem(QString::fromStdString(error.message)));
 
 	m_model->setItem(
-		rowNumber, Column::FILE, new QStandardItem(QString::fromStdWString(error.filePath)));
-	m_model->item(rowNumber, Column::FILE)->setToolTip(QString::fromStdWString(error.filePath));
+		rowNumber, Column::FILE, new QStandardItem(QString::fromStdString(error.filePath)));
+	m_model->item(rowNumber, Column::FILE)->setToolTip(QString::fromStdString(error.filePath));
 
 	item = new QStandardItem();
 	item->setData(QVariant(qlonglong(error.lineNumber)), Qt::DisplayRole);
@@ -327,9 +327,9 @@ void QtErrorView::addErrorToTable(const ErrorInfo& error)
 	m_model->setItem(
 		rowNumber,
 		Column::TRANSLATION_UNIT,
-		new QStandardItem(QString::fromStdWString(error.translationUnit)));
+		new QStandardItem(QString::fromStdString(error.translationUnit)));
 	m_model->item(rowNumber, Column::TRANSLATION_UNIT)
-		->setToolTip(QString::fromStdWString(error.translationUnit));
+		->setToolTip(QString::fromStdString(error.translationUnit));
 }
 
 QCheckBox* QtErrorView::createFilterCheckbox(const QString& name, bool checked, QBoxLayout* layout)

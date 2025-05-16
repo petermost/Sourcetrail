@@ -51,14 +51,14 @@ QtBookmarkCategory::QtBookmarkCategory(ControllerProxy<BookmarkController>* cont
 
 QtBookmarkCategory::~QtBookmarkCategory() = default;
 
-void QtBookmarkCategory::setName(const std::wstring& name)
+void QtBookmarkCategory::setName(const std::string& name)
 {
-	m_name->setText(QString::fromStdWString(name));
+	m_name->setText(QString::fromStdString(name));
 }
 
-std::wstring QtBookmarkCategory::getName() const
+std::string QtBookmarkCategory::getName() const
 {
-	return m_name->text().toStdWString();
+	return m_name->text().toStdString();
 }
 
 void QtBookmarkCategory::setId(const Id id)

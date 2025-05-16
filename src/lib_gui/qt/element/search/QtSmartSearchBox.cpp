@@ -53,7 +53,7 @@ void QtSmartSearchBox::startSearch()
 			}
 			else
 			{
-				QString text = QString::fromStdWString(match.name);
+				QString text = QString::fromStdString(match.name);
 				if (m_supportsFullTextSearch &&
 					!text.startsWith(SearchMatch::FULLTEXT_SEARCH_CHARACTER))
 				{
@@ -199,14 +199,14 @@ bool QtSmartSearchBox::event(QEvent* event)
 				}
 				else if (m_highlightedMatch.hasChildren && m_highlightedMatch.tokenNames.size() != 0)
 				{
-					setEditText(QString::fromStdWString(
+					setEditText(QString::fromStdString(
 						m_highlightedMatch.getFullName() +
 						m_highlightedMatch.tokenNames[0].getDelimiter()));
 					requestAutoCompletions();
 				}
 				else
 				{
-					setEditText(QString::fromStdWString(m_highlightedMatch.getFullName()));
+					setEditText(QString::fromStdString(m_highlightedMatch.getFullName()));
 					requestAutoCompletions();
 				}
 				return true;
@@ -468,9 +468,9 @@ void QtSmartSearchBox::keyPressEvent(QKeyEvent* event)
 	{
 		if (hasSelectedElements())
 		{
-			std::wstring str = getSelectedString();
+			std::string str = getSelectedString();
 			deleteSelectedElements();
-			QApplication::clipboard()->setText(QString::fromStdWString(str));
+			QApplication::clipboard()->setText(QString::fromStdString(str));
 			return;
 		}
 	}
@@ -478,8 +478,8 @@ void QtSmartSearchBox::keyPressEvent(QKeyEvent* event)
 	{
 		if (hasSelectedElements())
 		{
-			std::wstring str = getSelectedString();
-			QApplication::clipboard()->setText(QString::fromStdWString(str));
+			std::string str = getSelectedString();
+			QApplication::clipboard()->setText(QString::fromStdString(str));
 			return;
 		}
 	}
@@ -594,7 +594,7 @@ void QtSmartSearchBox::onTextEdited(const QString& text)
 	bool matchesChanged = false;
 
 	SearchMatch match;
-	std::deque<SearchMatch> matches = getMatchesForInput(text.toStdWString());
+	std::deque<SearchMatch> matches = getMatchesForInput(text.toStdString());
 
 	while (!matches.empty())
 	{
@@ -611,7 +611,7 @@ void QtSmartSearchBox::onTextEdited(const QString& text)
 
 	if (matchesChanged)
 	{
-		setEditText(QString::fromStdWString(match.getFullName()));
+		setEditText(QString::fromStdString(match.getFullName()));
 		updateElements();
 	}
 	else
@@ -789,7 +789,7 @@ bool QtSmartSearchBox::editTextToElement()
 {
 	if (!text().isEmpty())
 	{
-		addMatch(SearchMatch(text().toStdWString()));
+		addMatch(SearchMatch(text().toStdString()));
 		clearLineEdit();
 		updateElements();
 
@@ -813,7 +813,7 @@ SearchMatch QtSmartSearchBox::editElement(QtSearchElement* element)
 	SearchMatch match = m_matches[m_cursorIndex];
 	m_matches.erase(m_matches.begin() + m_cursorIndex);
 
-	setEditText(QString::fromStdWString(match.getFullName()));
+	setEditText(QString::fromStdString(match.getFullName()));
 	updateElements();
 
 	return match;
@@ -833,14 +833,14 @@ void QtSmartSearchBox::updateElements()
 
 	for (const SearchMatch& match: m_matches)
 	{
-		std::wstring name = match.getFullName();
-		name = utility::replace(name, L"&", L"&&");
+		std::string name = match.getFullName();
+		name = utility::replace(name, "&", "&&");
 		if (match.isFilterCommand())
 		{
-			name += L':';
+			name += ':';
 		}
 
-		QtSearchElement* element = new QtSearchElement(QString::fromStdWString(name), this);
+		QtSearchElement* element = new QtSearchElement(QString::fromStdString(name), this);
 		element->setObjectName(QStringLiteral("search_box_element"));
 		m_elements.push_back(element);
 		
@@ -858,7 +858,7 @@ void QtSmartSearchBox::updateElements()
 		}
 		else
 		{
-			const std::wstring typeName = match.getSearchTypeName();
+			const std::string typeName = match.getSearchTypeName();
 			
 			backgroundColor = scheme->getSearchTypeColor(utility::encodeToUtf8(typeName), "fill");
 			backgroundHoverColor = scheme->getSearchTypeColor(utility::encodeToUtf8(typeName), "fill", "hover");
@@ -979,9 +979,9 @@ bool QtSmartSearchBox::hasSelectedElements() const
 	return false;
 }
 
-std::wstring QtSmartSearchBox::getSelectedString() const
+std::string QtSmartSearchBox::getSelectedString() const
 {
-	std::wstring str;
+	std::string str;
 	for (size_t i = 0; i < m_elements.size(); i++)
 	{
 		if (m_elements[i]->isChecked())
@@ -1071,7 +1071,7 @@ void QtSmartSearchBox::requestAutoCompletions()
 {
 	if (!text().isEmpty() && !text().startsWith(SearchMatch::FULLTEXT_SEARCH_CHARACTER))
 	{
-		emit autocomplete(text().toStdWString(), getMatchAcceptedNodeTypes());
+		emit autocomplete(text().toStdString(), getMatchAcceptedNodeTypes());
 	}
 	else
 	{
@@ -1090,7 +1090,7 @@ void QtSmartSearchBox::startFullTextSearch()
 		return;
 
 	// Cut of first search character:
-	std::wstring term = text().toStdWString().substr(1);
+	std::string term = text().toStdString().substr(1);
 	if (term.empty())
 		return;
 
@@ -1107,7 +1107,7 @@ void QtSmartSearchBox::startFullTextSearch()
 	emit fullTextSearch(term, caseSensitive);
 }
 
-std::deque<SearchMatch> QtSmartSearchBox::getMatchesForInput(const std::wstring& text) 
+std::deque<SearchMatch> QtSmartSearchBox::getMatchesForInput(const std::string& text) 
 {
 	std::deque<SearchMatch> matches;
 	if (!text.empty())

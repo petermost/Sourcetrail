@@ -26,8 +26,8 @@ struct FullTextSearchFile
 class FullTextSearchIndex
 {
 public:
-	void addFile(Id fileId, const std::wstring& file);
-	std::vector<FullTextSearchResult> searchForTerm(const std::wstring& term) const;
+	void addFile(Id fileId, const std::string& file);
+	std::vector<FullTextSearchResult> searchForTerm(const std::string& term) const;
 
 	size_t fileCount() const;
 

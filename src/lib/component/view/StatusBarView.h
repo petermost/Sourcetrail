@@ -13,10 +13,10 @@ public:
 	~StatusBarView() override = default;
 
 	std::string getName() const override;
-	virtual void showMessage(const std::wstring& message, bool isError, bool showLoader) = 0;
+	virtual void showMessage(const std::string& message, bool isError, bool showLoader) = 0;
 	virtual void setErrorCount(ErrorCountInfo errorCount) = 0;
 
-	virtual void showIdeStatus(const std::wstring& message) = 0;
+	virtual void showIdeStatus(const std::string& message) = 0;
 
 	virtual void showIndexingProgress(size_t progressPercent) = 0;
 	virtual void hideIndexingProgress() = 0;

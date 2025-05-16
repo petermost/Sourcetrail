@@ -20,6 +20,6 @@ enum class AccessKind
 template <>
 AccessKind intToEnum(int value);
 
-std::wstring accessKindToString(AccessKind t);
+std::string accessKindToString(AccessKind t);
 
 #endif	  // ACCESS_KIND_H

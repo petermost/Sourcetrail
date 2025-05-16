@@ -7,7 +7,7 @@ class QtGraphNodeText: public QtGraphNode
 {
 	Q_OBJECT
 public:
-	QtGraphNodeText(const std::wstring& name, int fontSizeDiff);
+	QtGraphNodeText(const std::string& name, int fontSizeDiff);
 	~QtGraphNodeText() override;
 
 	// QtGraphNode implementation

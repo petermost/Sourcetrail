@@ -26,12 +26,12 @@ bool SourceGroupCxxCdb::prepareIndexing()
 	FilePath cdbPath = m_settings->getCompilationDatabasePathExpandedAndAbsolute();
 	if (!cdbPath.empty() && !cdbPath.exists())
 	{
-		std::wstring error =
-			L"Can't refresh project. The compilation database of the project does not exist "
-			L"anymore: " +
-			cdbPath.wstr();
+		std::string error =
+			"Can't refresh project. The compilation database of the project does not exist "
+			"anymore: " +
+			cdbPath.str();
 		MessageStatus(error, true).dispatch();
-		Application::getInstance()->handleDialog(error, {L"Ok"});
+		Application::getInstance()->handleDialog(error, {"Ok"});
 		return false;
 	}
 	return true;
@@ -88,10 +88,10 @@ std::shared_ptr<IndexerCommandProvider> SourceGroupCxxCdb::getIndexerCommandProv
 		return provider;
 	}
 
-	std::vector<std::wstring> compilerFlags = getBaseCompilerFlags();
+	std::vector<std::string> compilerFlags = getBaseCompilerFlags();
 	utility::append(compilerFlags, m_settings->getCompilerFlags());
 
-	const std::vector<std::wstring> includePchFlags = utility::getIncludePchFlags(m_settings.get());
+	const std::vector<std::string> includePchFlags = utility::getIncludePchFlags(m_settings.get());
 
 	const std::set<FilePath> indexedHeaderPaths = utility::toSet(
 		m_settings->getIndexedHeaderPathsExpandedAndAbsolute());
@@ -115,7 +115,7 @@ std::shared_ptr<IndexerCommandProvider> SourceGroupCxxCdb::getIndexerCommandProv
 		if (info.filesToIndex.find(sourcePath) != info.filesToIndex.end() &&
 			sourceFilePaths.find(sourcePath) != sourceFilePaths.end())
 		{
-			std::vector<std::wstring> cdbFlags = utility::convert<std::string, std::wstring>(
+			std::vector<std::string> cdbFlags = utility::convert<std::string, std::string>(
 				command.CommandLine, [](const std::string& s) { return utility::decodeFromUtf8(s); });
 
 			utility::removeIncludePchFlag(cdbFlags);
@@ -154,7 +154,7 @@ std::shared_ptr<Task> SourceGroupCxxCdb::getPreIndexTask(
 		return std::make_shared<TaskLambda>([]() {});
 	}
 
-	std::vector<std::wstring> compilerFlags;
+	std::vector<std::string> compilerFlags;
 
 	if (m_settings->getUseCompilerFlags())
 	{
@@ -197,8 +197,8 @@ std::shared_ptr<Task> SourceGroupCxxCdb::getPreIndexTask(
 
 					if (info.invocation.find("\"-x\" \"c++\""))
 					{
-						compilerFlags.push_back(L"-x");
-						compilerFlags.push_back(L"c++");
+						compilerFlags.push_back("-x");
+						compilerFlags.push_back("c++");
 					}
 					break;
 				}
@@ -228,9 +228,9 @@ std::shared_ptr<const SourceGroupSettings> SourceGroupCxxCdb::getSourceGroupSett
 	return m_settings;
 }
 
-std::vector<std::wstring> SourceGroupCxxCdb::getBaseCompilerFlags() const
+std::vector<std::string> SourceGroupCxxCdb::getBaseCompilerFlags() const
 {
-	std::vector<std::wstring> compilerFlags;
+	std::vector<std::string> compilerFlags;
 
 	std::shared_ptr<ApplicationSettings> appSettings = ApplicationSettings::getInstance();
 

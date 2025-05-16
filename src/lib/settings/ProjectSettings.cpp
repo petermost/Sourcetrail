@@ -27,10 +27,10 @@
 #	include "SourceGroupSettingsPythonEmpty.h"
 #endif	  // BUILD_PYTHON_LANGUAGE_PACKAGE
 
-const std::wstring ProjectSettings::PROJECT_FILE_EXTENSION = L".srctrlprj";
-const std::wstring ProjectSettings::BOOKMARK_DB_FILE_EXTENSION = L".srctrlbm";
-const std::wstring ProjectSettings::INDEX_DB_FILE_EXTENSION = L".srctrldb";
-const std::wstring ProjectSettings::TEMP_INDEX_DB_FILE_EXTENSION = L".srctrldb_tmp";
+const std::string ProjectSettings::PROJECT_FILE_EXTENSION = ".srctrlprj";
+const std::string ProjectSettings::BOOKMARK_DB_FILE_EXTENSION = ".srctrlbm";
+const std::string ProjectSettings::INDEX_DB_FILE_EXTENSION = ".srctrldb";
+const std::string ProjectSettings::TEMP_INDEX_DB_FILE_EXTENSION = ".srctrldb_tmp";
 
 const size_t ProjectSettings::VERSION = 8;
 
@@ -132,14 +132,14 @@ FilePath ProjectSettings::getProjectFilePath() const
 	return getFilePath();
 }
 
-void ProjectSettings::setProjectFilePath(std::wstring projectName, const FilePath& projectFileLocation)
+void ProjectSettings::setProjectFilePath(std::string projectName, const FilePath& projectFileLocation)
 {
-	setFilePath(projectFileLocation.getConcatenated(L"/" + projectName + PROJECT_FILE_EXTENSION));
+	setFilePath(projectFileLocation.getConcatenated("/" + projectName + PROJECT_FILE_EXTENSION));
 }
 
 FilePath ProjectSettings::getDependenciesDirectoryPath() const
 {
-	return getProjectDirectoryPath().concatenate(L"sourcetrail_dependencies");
+	return getProjectDirectoryPath().concatenate("sourcetrail_dependencies");
 }
 
 FilePath ProjectSettings::getDBFilePath() const
@@ -157,7 +157,7 @@ FilePath ProjectSettings::getBookmarkDBFilePath() const
 	return getFilePath().replaceExtension(BOOKMARK_DB_FILE_EXTENSION);
 }
 
-std::wstring ProjectSettings::getProjectName() const
+std::string ProjectSettings::getProjectName() const
 {
 	return getFilePath().withoutExtension().fileName();
 }

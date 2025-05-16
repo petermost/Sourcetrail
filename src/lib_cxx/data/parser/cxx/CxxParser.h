@@ -28,7 +28,7 @@ class CxxParser: public Parser
 {
 public:
 	static std::vector<std::string> getCommandlineArgumentsEssential(
-		const std::vector<std::wstring>& compilerFlags);
+		const std::vector<std::string>& compilerFlags);
 	static void initializeLLVM();
 
 	CxxParser(
@@ -38,9 +38,9 @@ public:
 
 	void buildIndex(std::shared_ptr<IndexerCommandCxx> indexerCommand);
 	void buildIndex(
-		const std::wstring& fileName,
+		const std::string& fileName,
 		std::shared_ptr<TextAccess> fileContent,
-		std::vector<std::wstring> compilerFlags = {});
+		std::vector<std::string> compilerFlags = {});
 
 private:
 	void runTool(

@@ -115,7 +115,7 @@ QtCustomTrailView::QtCustomTrailView(ViewLayout* viewLayout)
 		connect(
 			m_searchBoxFrom,
 			&QtSmartSearchBox::autocomplete,
-			[this](const std::wstring& query, NodeTypeSet  /*acceptedNodeTypes*/) {
+			[this](const std::string& query, NodeTypeSet  /*acceptedNodeTypes*/) {
 				m_controllerProxy.executeAsTaskWithArgs(
 					&CustomTrailController::autocomplete, query, true);
 			});
@@ -123,7 +123,7 @@ QtCustomTrailView::QtCustomTrailView(ViewLayout* viewLayout)
 		connect(
 			m_searchBoxTo,
 			&QtSmartSearchBox::autocomplete,
-			[this](const std::wstring& query, NodeTypeSet  /*acceptedNodeTypes*/) {
+			[this](const std::string& query, NodeTypeSet  /*acceptedNodeTypes*/) {
 				m_controllerProxy.executeAsTaskWithArgs(
 					&CustomTrailController::autocomplete, query, false);
 			});
@@ -259,7 +259,7 @@ QtCustomTrailView::QtCustomTrailView(ViewLayout* viewLayout)
 
 		for (Edge::EdgeType t: edgeTypes)
 		{
-			edgeFilters.push_back(QString::fromStdWString(Edge::getReadableTypeString(t)));
+			edgeFilters.push_back(QString::fromStdString(Edge::getReadableTypeString(t)));
 			edgeColors.push_back(QColor(scheme->getEdgeTypeColor(t).c_str()));
 		}
 
@@ -386,7 +386,7 @@ void QtCustomTrailView::setAvailableNodeAndEdgeTypes(NodeKindMask nodeTypes, Edg
 			}
 
 			bool enabled = nodeTypes &
-				getNodeKindForReadableNodeKindString(filter->text().toStdWString());
+				getNodeKindForReadableNodeKindString(filter->text().toStdString());
 			filter->setEnabled(enabled);
 			filter->setVisible(enabled);
 		}
@@ -401,7 +401,7 @@ void QtCustomTrailView::setAvailableNodeAndEdgeTypes(NodeKindMask nodeTypes, Edg
 			else
 			{
 				enabled = edgeTypes &
-					Edge::getTypeForReadableTypeString(filter->text().toStdWString());
+					Edge::getTypeForReadableTypeString(filter->text().toStdString());
 			}
 
 			filter->setEnabled(enabled);
@@ -588,7 +588,7 @@ NodeKindMask QtCustomTrailView::getCheckedNodeTypes() const
 	{
 		if (filter->isEnabled() && filter->isChecked() && filter != m_nodeNonIndexed)
 		{
-			nodeTypes |= getNodeKindForReadableNodeKindString(filter->text().toStdWString());
+			nodeTypes |= getNodeKindForReadableNodeKindString(filter->text().toStdString());
 		}
 	}
 	return nodeTypes;
@@ -601,7 +601,7 @@ Edge::TypeMask QtCustomTrailView::getCheckedEdgeTypes() const
 	{
 		if (filter->isEnabled() && filter->isChecked() && filter != m_edgeMember)
 		{
-			Edge::EdgeType type = Edge::getTypeForReadableTypeString(filter->text().toStdWString());
+			Edge::EdgeType type = Edge::getTypeForReadableTypeString(filter->text().toStdString());
 			edgeTypes |= type;
 		}
 	}

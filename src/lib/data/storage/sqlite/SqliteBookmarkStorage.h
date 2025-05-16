@@ -30,10 +30,10 @@ public:
 	std::vector<StorageBookmarkedEdge> getAllBookmarkedEdges() const;
 	
 	void updateBookmark(
-		const BookmarkId bookmarkId, const std::wstring& name, const std::wstring& comment, const Id categoryId);
+		const BookmarkId bookmarkId, const std::string& name, const std::string& comment, const Id categoryId);
 
 	std::vector<StorageBookmarkCategory> getAllBookmarkCategories() const;
-	StorageBookmarkCategory getBookmarkCategoryByName(const std::wstring& name) const;
+	StorageBookmarkCategory getBookmarkCategoryByName(const std::string& name) const;
 
 private:
 	static const size_t s_storageVersion;

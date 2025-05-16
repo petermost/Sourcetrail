@@ -111,11 +111,11 @@ private:
 		std::function<bool(const DummyNode::BundleInfo&, const Node*)> matcher,
 		size_t count,
 		bool countConnectedNodes,
-		const std::wstring& name);
+		const std::string& name);
 	static std::shared_ptr<DummyNode> bundleNodesMatching(
 		std::list<std::shared_ptr<DummyNode>>& nodes,
 		std::function<bool(const DummyNode*)> matcher,
-		const std::wstring& name);
+		const std::string& name);
 	std::shared_ptr<DummyNode> bundleByType(
 		std::list<std::shared_ptr<DummyNode>>& nodes,
 		const NodeType& type,
@@ -149,7 +149,7 @@ private:
 		MessageBase* message,
 		GraphView::GraphParams params,
 		bool withCharacterIndex,
-		const std::wstring& groupName);
+		const std::string& groupName);
 	void buildGraph(MessageBase* message, GraphView::GraphParams params);
 
 	void forEachDummyNodeRecursive(std::function<void(DummyNode*)> func);

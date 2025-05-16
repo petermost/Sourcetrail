@@ -11,14 +11,14 @@ CxxHeaderPathDetector::CxxHeaderPathDetector(const std::string& compilerName)
 
 std::vector<FilePath> CxxHeaderPathDetector::doGetPaths() const
 {
-	std::vector<std::wstring> paths = utility::getCxxHeaderPaths(m_compilerName);
+	std::vector<std::string> paths = utility::getCxxHeaderPaths(m_compilerName);
 	std::vector<FilePath> headerSearchPaths;
 
-	for (const std::wstring& path: paths)
+	for (const std::string& path: paths)
 	{
-		if (!utility::isPostfix<std::wstring>(L" (framework directory)", path) &&
+		if (!utility::isPostfix<std::string>(" (framework directory)", path) &&
 			FilePath(path).getCanonical().exists() &&
-			!FilePath(path).getCanonical().getConcatenated(L"/stdarg.h").exists())
+			!FilePath(path).getCanonical().getConcatenated("/stdarg.h").exists())
 		{
 			headerSearchPaths.push_back(FilePath(path).makeCanonical());
 		}

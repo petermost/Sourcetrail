@@ -12,16 +12,16 @@ using namespace utility;
 TEST_CASE("file manager has added file paths after first fetch")
 {
 	std::vector<FilePath> sourcePaths;
-	sourcePaths.push_back(FilePath(L"./data/FileManagerTestSuite/src/"));
-	sourcePaths.push_back(FilePath(L"./data/FileManagerTestSuite/include/"));
+	sourcePaths.push_back(FilePath("./data/FileManagerTestSuite/src/"));
+	sourcePaths.push_back(FilePath("./data/FileManagerTestSuite/include/"));
 	std::vector<FilePath> headerPaths;
 	std::vector<FilePathFilter> excludeFilters;
 
 	std::vector<FilePath> filePaths = FileSystem::getFilePathsFromDirectory(
-		FilePath(L"./data/FileManagerTestSuite/src/"));
+		FilePath("./data/FileManagerTestSuite/src/"));
 	REQUIRE(filePaths.size() == 3);
 
-	std::vector<std::wstring> sourceExtensions;
+	std::vector<std::string> sourceExtensions;
 	for (const FilePath &p : filePaths) {
 		sourceExtensions.push_back(p.extension());
 	}

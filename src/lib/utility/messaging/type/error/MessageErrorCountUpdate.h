@@ -19,10 +19,10 @@ public:
 		setSendAsTask(false);
 	}
 
-	void print(std::wostream& os) const override
+	void print(std::ostream& os) const override
 	{
-		os << errorCount.total << '/' << errorCount.fatal << L" - " << newErrors.size()
-		   << L" new errors";
+		os << errorCount.total << '/' << errorCount.fatal << " - " << newErrors.size()
+		   << " new errors";
 	}
 
 	const ErrorCountInfo errorCount;

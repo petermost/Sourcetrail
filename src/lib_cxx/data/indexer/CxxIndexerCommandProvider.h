@@ -44,14 +44,14 @@ private:
 
 	std::map<Id, FilePath> m_idsToIndexedPaths;
 	std::map<FilePath, Id> m_indexedPathsToIds;
-	std::map<Id, std::wstring> m_idsToExcludeFilters;
-	std::map<std::wstring, Id> m_excludeFiltersToIds;
-	std::map<Id, std::wstring> m_idsToIncludeFilters;
-	std::map<std::wstring, Id> m_includeFiltersToIds;
+	std::map<Id, std::string> m_idsToExcludeFilters;
+	std::map<std::string, Id> m_excludeFiltersToIds;
+	std::map<Id, std::string> m_idsToIncludeFilters;
+	std::map<std::string, Id> m_includeFiltersToIds;
 	std::map<Id, FilePath> m_idsToWorkingDirectories;
 	std::map<FilePath, Id> m_workingDirectoriesToIds;
-	std::map<Id, std::wstring> m_idsToCompilerFlags;
-	std::unordered_map<std::wstring, Id> m_compilerFlagsToIds;
+	std::map<Id, std::string> m_idsToCompilerFlags;
+	std::unordered_map<std::string, Id> m_compilerFlagsToIds;
 };
 
 #endif	  // CXX_INDEXER_COMMAND_PROVIDER_H

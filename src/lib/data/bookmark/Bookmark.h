@@ -33,8 +33,8 @@ public:
 
 	Bookmark(
 		const BookmarkId bookmarkId,
-		const std::wstring& name,
-		const std::wstring& comment,
+		const std::string& name,
+		const std::string& comment,
 		const TimeStamp& timeStamp,
 		const BookmarkCategory& category);
 
@@ -44,8 +44,8 @@ public:
 	bool isValid() const;
 	
 	BookmarkId getId() const;
-	std::wstring getName() const;
-	std::wstring getComment() const;
+	std::string getName() const;
+	std::string getComment() const;
 	TimeStamp getTimeStamp() const;
 	BookmarkCategory getCategory() const;
 
@@ -53,8 +53,8 @@ private:
 	bool m_isValid = false;
 	
 	const BookmarkId m_bookmarkId;
-	const std::wstring m_name;
-	const std::wstring m_comment;
+	const std::string m_name;
+	const std::string m_comment;
 	const TimeStamp m_timeStamp;
 	const BookmarkCategory m_category;
 };

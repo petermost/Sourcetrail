@@ -16,8 +16,8 @@ struct StorageBookmarkedEdgeData
 
 	StorageBookmarkedEdgeData(
 		BookmarkId bookmarkId,
-		const std::wstring& serializedSourceNodeName,
-		const std::wstring& serializedTargetNodeName,
+		const std::string& serializedSourceNodeName,
+		const std::string& serializedTargetNodeName,
 		int edgeType,
 		bool sourceNodeActive)
 		: bookmarkId(bookmarkId)
@@ -29,8 +29,8 @@ struct StorageBookmarkedEdgeData
 	}
 
 	BookmarkId bookmarkId;
-	std::wstring serializedSourceNodeName;
-	std::wstring serializedTargetNodeName;
+	std::string serializedSourceNodeName;
+	std::string serializedTargetNodeName;
 	int edgeType;
 	bool sourceNodeActive;
 };
@@ -47,8 +47,8 @@ struct StorageBookmarkedEdge: public StorageBookmarkedEdgeData
 	StorageBookmarkedEdge(
 		Id id,
 		BookmarkId bookmarkId,
-		const std::wstring& serializedSourceNodeName,
-		const std::wstring& serializedTargetNodeName,
+		const std::string& serializedSourceNodeName,
+		const std::string& serializedTargetNodeName,
 		int edgeType,
 		bool sourceNodeActive)
 		: StorageBookmarkedEdgeData(

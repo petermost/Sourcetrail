@@ -30,11 +30,11 @@ bool SourceGroupSettingsWithCxxCdbPath::equals(const SourceGroupSettingsBase* ot
 void SourceGroupSettingsWithCxxCdbPath::load(const ConfigManager* config, const std::string& key)
 {
 	setCompilationDatabasePath(
-		config->getValueOrDefault(key + "/build_file_path/compilation_db_path", FilePath(L"")));
+		config->getValueOrDefault(key + "/build_file_path/compilation_db_path", FilePath("")));
 }
 
 void SourceGroupSettingsWithCxxCdbPath::save(ConfigManager* config, const std::string& key)
 {
 	config->setValue(
-		key + "/build_file_path/compilation_db_path", getCompilationDatabasePath().wstr());
+		key + "/build_file_path/compilation_db_path", getCompilationDatabasePath().str());
 }

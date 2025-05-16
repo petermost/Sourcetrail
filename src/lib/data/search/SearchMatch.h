@@ -31,43 +31,43 @@ struct SearchMatch
 		COMMAND_LEGEND
 	};
 
-	static void log(const std::vector<SearchMatch>& matches, const std::wstring& query);
+	static void log(const std::vector<SearchMatch>& matches, const std::string& query);
 
-	static std::wstring getSearchTypeName(SearchType type);
-	static std::wstring searchMatchesToString(const std::vector<SearchMatch>& matches);
+	static std::string getSearchTypeName(SearchType type);
+	static std::string searchMatchesToString(const std::vector<SearchMatch>& matches);
 
 	static SearchMatch createCommand(CommandType type);
 	static std::vector<SearchMatch> createCommandsForNodeTypes(NodeTypeSet types);
-	static std::wstring getCommandName(CommandType type);
+	static std::string getCommandName(CommandType type);
 
 	static const char FULLTEXT_SEARCH_CHARACTER = '?';
 
 	SearchMatch();
-	SearchMatch(const std::wstring& query);
+	SearchMatch(const std::string& query);
 
 	bool operator<(const SearchMatch& other) const;
 	bool operator==(const SearchMatch& other) const;
 
-	static size_t getTextSizeForSorting(const std::wstring* str);
+	static size_t getTextSizeForSorting(const std::string* str);
 
 	bool isValid() const;
 	bool isFilterCommand() const;
 
-	void print(std::wostream& ostream) const;
+	void print(std::ostream& ostream) const;
 
-	std::wstring getFullName() const;
-	std::wstring getSearchTypeName() const;
+	std::string getFullName() const;
+	std::string getSearchTypeName() const;
 	CommandType getCommandType() const;
 
-	std::wstring name;
+	std::string name;
 
-	std::wstring text;
-	std::wstring subtext;
+	std::string text;
+	std::string subtext;
 
 	std::vector<Id> tokenIds;
 	std::vector<NameHierarchy> tokenNames;
 
-	std::wstring typeName;
+	std::string typeName;
 
 	NodeType nodeType;
 	SearchType searchType;

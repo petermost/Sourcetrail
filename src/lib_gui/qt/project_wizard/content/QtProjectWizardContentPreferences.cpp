@@ -26,7 +26,7 @@ QtProjectWizardContentPreferences::QtProjectWizardContentPreferences(QtProjectWi
 	: QtProjectWizardContent(window)
 {
 	m_colorSchemePaths = FileSystem::getFilePathsFromDirectory(
-		ResourcePaths::getColorSchemesDirectoryPath(), {L".xml"});
+		ResourcePaths::getColorSchemesDirectoryPath(), {".xml"});
 }
 
 QtProjectWizardContentPreferences::~QtProjectWizardContentPreferences()
@@ -91,7 +91,7 @@ void QtProjectWizardContentPreferences::populate(QGridLayout* layout, int& row)
 	{
 		m_colorSchemes->insertItem(
 			static_cast<int>(i),
-			QString::fromStdWString(m_colorSchemePaths[i].withoutExtension().fileName()));
+			QString::fromStdString(m_colorSchemePaths[i].withoutExtension().fileName()));
 	}
 	connect(
 		m_colorSchemes,
@@ -501,7 +501,7 @@ void QtProjectWizardContentPreferences::load()
 	m_verboseIndexerLoggingEnabled->setEnabled(m_loggingEnabled->isChecked());
 	if (m_logPath)
 	{
-		m_logPath->setText(QString::fromStdWString(appSettings->getLogDirectoryPath().wstr()));
+		m_logPath->setText(QString::fromStdString(appSettings->getLogDirectoryPath().str()));
 	}
 
 	m_sourcetrailPort->setText(QString::number(appSettings->getSourcetrailPort()));
@@ -514,14 +514,14 @@ void QtProjectWizardContentPreferences::load()
 
 	if (m_javaPath)
 	{
-		m_javaPath->setText(QString::fromStdWString(appSettings->getJavaPath().wstr()));
+		m_javaPath->setText(QString::fromStdString(appSettings->getJavaPath().str()));
 	}
 
 	m_jreSystemLibraryPaths->setPaths(appSettings->getJreSystemLibraryPaths());
 
 	if (m_mavenPath)
 	{
-		m_mavenPath->setText(QString::fromStdWString(appSettings->getMavenPath().wstr()));
+		m_mavenPath->setText(QString::fromStdString(appSettings->getMavenPath().str()));
 	}
 
 	m_pythonPostProcessing->setChecked(appSettings->getPythonPostProcessingEnabled());
@@ -564,15 +564,15 @@ void QtProjectWizardContentPreferences::save()
 
 	appSettings->setLoggingEnabled(m_loggingEnabled->isChecked());
 	appSettings->setVerboseIndexerLoggingEnabled(m_verboseIndexerLoggingEnabled->isChecked());
-	if (m_logPath && m_logPath->getText().toStdWString() != appSettings->getLogDirectoryPath().wstr())
+	if (m_logPath && m_logPath->getText().toStdString() != appSettings->getLogDirectoryPath().str())
 	{
-		appSettings->setLogDirectoryPath(FilePath((m_logPath->getText() + '/').toStdWString()));
+		appSettings->setLogDirectoryPath(FilePath((m_logPath->getText() + '/').toStdString()));
 		Logger* logger = LogManager::getInstance()->getLoggerByType("FileLogger");
 		if (logger)
 		{
 			auto *fileLogger = dynamic_cast<FileLogger*>(logger);
 			fileLogger->setLogDirectory(appSettings->getLogDirectoryPath());
-			fileLogger->setFileName(FileLogger::generateDatedFileName(L"log"));
+			fileLogger->setFileName(FileLogger::generateDatedFileName("log"));
 		}
 	}
 
@@ -589,14 +589,14 @@ void QtProjectWizardContentPreferences::save()
 
 	if (m_javaPath)
 	{
-		appSettings->setJavaPath(FilePath(m_javaPath->getText().toStdWString()));
+		appSettings->setJavaPath(FilePath(m_javaPath->getText().toStdString()));
 	}
 
 	appSettings->setJreSystemLibraryPaths(m_jreSystemLibraryPaths->getPathsAsAbsolute());
 
 	if (m_mavenPath)
 	{
-		appSettings->setMavenPath(FilePath(m_mavenPath->getText().toStdWString()));
+		appSettings->setMavenPath(FilePath(m_mavenPath->getText().toStdString()));
 	}
 
 	appSettings->setPythonPostProcessingEnabled(m_pythonPostProcessing->isChecked());
@@ -621,7 +621,7 @@ void QtProjectWizardContentPreferences::javaPathDetectionClicked()
 		m_javaPathDetectorBox->currentText().toStdString());
 	if (!paths.empty())
 	{
-		m_javaPath->setText(QString::fromStdWString(paths.front().wstr()));
+		m_javaPath->setText(QString::fromStdString(paths.front().str()));
 	}
 }
 
@@ -639,7 +639,7 @@ void QtProjectWizardContentPreferences::mavenPathDetectionClicked()
 		m_mavenPathDetectorBox->currentText().toStdString());
 	if (!paths.empty())
 	{
-		m_mavenPath->setText(QString::fromStdWString(paths.front().wstr()));
+		m_mavenPath->setText(QString::fromStdString(paths.front().str()));
 	}
 }
 

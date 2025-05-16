@@ -19,8 +19,8 @@ class QtBookmarkCreator: public QtBookmarkWindow
 public:
 	QtBookmarkCreator(ControllerProxy<BookmarkController>* controllerProxy, QWidget* parent = nullptr, BookmarkId bookmarkId = BookmarkId::NONE);
 	
-	void setDisplayName(const std::wstring& name);
-	void setComment(const std::wstring& comment);
+	void setDisplayName(const std::string& name);
+	void setComment(const std::string& comment);
 	
 	void setBookmarkCategories(const std::vector<BookmarkCategory>& categories);
 	void setCurrentBookmarkCategory(const BookmarkCategory& category);

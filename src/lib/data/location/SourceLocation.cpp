@@ -207,26 +207,26 @@ bool SourceLocation::isFullTextSearchMatch() const
 	return m_type == LocationType::FULLTEXT_SEARCH;
 }
 
-std::wostream& operator<<(std::wostream& ostream, const SourceLocation& location)
+std::ostream& operator<<(std::ostream& ostream, const SourceLocation& location)
 {
 	if (location.isStartLocation())
 	{
-		ostream << L'<';
+		ostream << '<';
 	}
 
-	ostream << location.getColumnNumber() << L":[ ";
+	ostream << location.getColumnNumber() << ":[ ";
 	for (Id tokenId: location.getTokenIds())
 	{
-		ostream << L'\b' << tokenId << L' ';
+		ostream << '\b' << tokenId << ' ';
 	}
 
-	ostream << L"\b]";
+	ostream << "\b]";
 
 	if (location.isEndLocation())
 	{
-		ostream << L'>';
+		ostream << '>';
 	}
 
-	ostream << L' ';
+	ostream << ' ';
 	return ostream;
 }

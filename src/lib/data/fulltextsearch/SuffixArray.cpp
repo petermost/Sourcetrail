@@ -15,9 +15,9 @@ int SuffixArray::cmp(const struct suffix& a, const struct suffix& b)
 									: (a.rank[0] < b.rank[0] ? 1 : 0);
 }
 
-SuffixArray::SuffixArray(const std::wstring& text): m_text(text)
+SuffixArray::SuffixArray(const std::string& text): m_text(text)
 {
-	std::transform(m_text.begin(), m_text.end(), m_text.begin(), ::towlower);
+	std::transform(m_text.begin(), m_text.end(), m_text.begin(), ::tolower);
 	m_array = buildSuffixArray();
 	m_lcp = buildLCP();
 }
@@ -28,8 +28,8 @@ void SuffixArray::printArray() const
 	printArr(m_array);
 	for (size_t i = 0; i < m_array.size(); i++)
 	{
-		std::wstring suffix = m_text.substr(m_array[i]);
-		std::wcout << i << ": \"" << suffix << "\"" << std::endl;
+		std::string suffix = m_text.substr(m_array[i]);
+		std::cout << i << ": \"" << suffix << "\"" << std::endl;
 	}
 }
 
@@ -39,8 +39,8 @@ void SuffixArray::printLCP() const
 	printArr(m_lcp);
 	for (size_t i = 0; i < m_array.size(); i++)
 	{
-		std::wstring prefix = m_text.substr(m_array[i], m_lcp[i]);
-		std::wcout << i << ": \"" << prefix << "\"" << std::endl;
+		std::string prefix = m_text.substr(m_array[i], m_lcp[i]);
+		std::cout << i << ": \"" << prefix << "\"" << std::endl;
 	}
 }
 
@@ -84,10 +84,10 @@ std::vector<int> SuffixArray::buildLCP()
 	return lcp;
 }
 
-std::vector<int> SuffixArray::searchForTerm(const std::wstring& searchTerm) const
+std::vector<int> SuffixArray::searchForTerm(const std::string& searchTerm) const
 {
-	std::wstring term = searchTerm;
-	std::transform(term.begin(), term.end(), term.begin(), ::towlower);
+	std::string term = searchTerm;
+	std::transform(term.begin(), term.end(), term.begin(), ::tolower);
 
 	const int termLength = static_cast<int>(term.length());
 	const int textLength = static_cast<int>(m_text.length());

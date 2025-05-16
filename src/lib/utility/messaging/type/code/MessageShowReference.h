@@ -19,9 +19,9 @@ public:
 		return "MessageShowReference";
 	}
 
-	void print(std::wostream& os) const override
+	void print(std::ostream& os) const override
 	{
-		os << L"index: " << refIndex << L" token: " << tokenId << L" location: " << locationId;
+		os << "index: " << refIndex << " token: " << tokenId << " location: " << locationId;
 	}
 
 	const size_t refIndex;

@@ -104,7 +104,7 @@ TEST_CASE("textAccessString all lines")
 
 TEST_CASE("textAccessFile constructor")
 {
-	FilePath filePath(L"data/TextAccessTestSuite/text.txt");
+	FilePath filePath("data/TextAccessTestSuite/text.txt");
 
 	std::shared_ptr<TextAccess> textAccess = TextAccess::createFromFile(filePath);
 
@@ -113,7 +113,7 @@ TEST_CASE("textAccessFile constructor")
 
 TEST_CASE("textAccessFile lines count")
 {
-	FilePath filePath(L"data/TextAccessTestSuite/text.txt");
+	FilePath filePath("data/TextAccessTestSuite/text.txt");
 	unsigned int lineCount = 7;
 
 	std::shared_ptr<TextAccess> textAccess = TextAccess::createFromFile(filePath);
@@ -123,7 +123,7 @@ TEST_CASE("textAccessFile lines count")
 
 TEST_CASE("textAccessFile lines content")
 {
-	FilePath filePath(L"data/TextAccessTestSuite/text.txt");
+	FilePath filePath("data/TextAccessTestSuite/text.txt");
 
 	std::shared_ptr<TextAccess> textAccess = TextAccess::createFromFile(filePath);
 	std::vector<std::string> lines = textAccess->getLines(1, 4);
@@ -143,7 +143,7 @@ TEST_CASE("textAccessFile lines content")
 
 TEST_CASE("textAccessFile get filePath")
 {
-	FilePath filePath(L"data/TextAccessTestSuite/text.txt");
+	FilePath filePath("data/TextAccessTestSuite/text.txt");
 	std::shared_ptr<TextAccess> textAccess = TextAccess::createFromFile(filePath);
 
 	REQUIRE(textAccess->getFilePath() == filePath);

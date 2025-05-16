@@ -9,24 +9,24 @@ QtStringListBox::QtStringListBox(QWidget* parent, const QString& listName)
 {
 }
 
-std::vector<std::wstring> QtStringListBox::getStrings()
+std::vector<std::string> QtStringListBox::getStrings()
 {
-	std::vector<std::wstring> strings;
+	std::vector<std::string> strings;
 	for (int i = 0; i < m_list->count(); ++i)
 	{
 		QtListBoxItem* widget = dynamic_cast<QtListBoxItem*>(m_list->itemWidget(m_list->item(i)));
-		strings.push_back(widget->getText().toStdWString());
+		strings.push_back(widget->getText().toStdString());
 	}
 	return strings;
 }
 
-void QtStringListBox::setStrings(const std::vector<std::wstring>& strings, bool readOnly)
+void QtStringListBox::setStrings(const std::vector<std::string>& strings, bool readOnly)
 {
 	clear();
 
-	for (const std::wstring& str: strings)
+	for (const std::string& str: strings)
 	{
-		QtListBoxItem* itemWidget = addListBoxItemWithText(QString::fromStdWString(str));
+		QtListBoxItem* itemWidget = addListBoxItemWithText(QString::fromStdString(str));
 		itemWidget->setReadOnly(readOnly);
 	}
 }

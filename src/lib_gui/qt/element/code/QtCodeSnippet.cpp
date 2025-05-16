@@ -35,11 +35,11 @@ QtCodeSnippet::QtCodeSnippet(const CodeSnippetParams& params, QtCodeNavigator* n
 		m_titleDots = m_dots.back();
 		if (m_titleId == 0)	   // title is a file path
 		{
-			m_title->setText(QString::fromStdWString(FilePath(m_titleString).fileName()));
+			m_title->setText(QString::fromStdString(FilePath(m_titleString).fileName()));
 		}
 		else
 		{
-			m_title->setText(QString::fromStdWString(m_titleString));
+			m_title->setText(QString::fromStdString(m_titleString));
 		}
 		connect(m_title, &QPushButton::clicked, this, &QtCodeSnippet::clickedTitle);
 	}
@@ -54,11 +54,11 @@ QtCodeSnippet::QtCodeSnippet(const CodeSnippetParams& params, QtCodeNavigator* n
 		m_footerDots = m_dots.back();
 		if (m_footerId == 0)	// footer is a file path
 		{
-			m_footer->setText(QString::fromStdWString(FilePath(m_footerString).fileName()));
+			m_footer->setText(QString::fromStdString(FilePath(m_footerString).fileName()));
 		}
 		else
 		{
-			m_footer->setText(QString::fromStdWString(m_footerString));
+			m_footer->setText(QString::fromStdString(m_footerString));
 		}
 		connect(m_footer, &QPushButton::clicked, this, &QtCodeSnippet::clickedFooter);
 	}
@@ -150,7 +150,7 @@ std::string QtCodeSnippet::getCode() const
 }
 
 void QtCodeSnippet::findScreenMatches(
-	const std::wstring& query, std::vector<std::pair<QtCodeArea*, Id>>* screenMatches)
+	const std::string& query, std::vector<std::pair<QtCodeArea*, Id>>* screenMatches)
 {
 	m_codeArea->findScreenMatches(query, screenMatches);
 }

@@ -296,7 +296,7 @@ View* QtMainWindow::findFloatingView(const std::string& name) const
 void QtMainWindow::loadLayout()
 {
 	QSettings settings(
-		QString::fromStdWString(UserPaths::getWindowSettingsFilePath().wstr()), QSettings::IniFormat);
+		QString::fromStdString(UserPaths::getWindowSettingsFilePath().str()), QSettings::IniFormat);
 
 	settings.beginGroup(QStringLiteral("MainWindow"));
 	resize(settings.value(QStringLiteral("size"), QSize(600, 400)).toSize());
@@ -313,7 +313,7 @@ void QtMainWindow::loadLayout()
 void QtMainWindow::loadDockWidgetLayout()
 {
 	QSettings settings(
-		QString::fromStdWString(UserPaths::getWindowSettingsFilePath().wstr()), QSettings::IniFormat);
+		QString::fromStdString(UserPaths::getWindowSettingsFilePath().str()), QSettings::IniFormat);
 	this->restoreState(settings.value(QStringLiteral("DOCK_LOCATIONS")).toByteArray());
 
 	for (DockWidget dock: m_dockWidgets)
@@ -333,7 +333,7 @@ void QtMainWindow::loadWindow(bool showStartWindow)
 void QtMainWindow::saveLayout()
 {
 	QSettings settings(
-		QString::fromStdWString(UserPaths::getWindowSettingsFilePath().wstr()), QSettings::IniFormat);
+		QString::fromStdString(UserPaths::getWindowSettingsFilePath().str()), QSettings::IniFormat);
 
 	settings.beginGroup(QStringLiteral("MainWindow"));
 	settings.setValue(QStringLiteral("maximized"), isMaximized());
@@ -556,16 +556,16 @@ void QtMainWindow::showLicenses()
 void QtMainWindow::showDataFolder()
 {
 	QDesktopServices::openUrl(QUrl(
-		QString::fromStdWString(
-			L"file:///" + UserPaths::getUserDataDirectoryPath().makeCanonical().wstr()),
+		QString::fromStdString(
+			"file:///" + UserPaths::getUserDataDirectoryPath().makeCanonical().str()),
 		QUrl::TolerantMode));
 }
 
 void QtMainWindow::showLogFolder()
 {
 	QDesktopServices::openUrl(QUrl(
-		QString::fromStdWString(
-			L"file:///" + ApplicationSettings::getInstance()->getLogDirectoryPath().wstr()),
+		QString::fromStdString(
+			"file:///" + ApplicationSettings::getInstance()->getLogDirectoryPath().str()),
 		QUrl::TolerantMode));
 }
 
@@ -630,7 +630,7 @@ void QtMainWindow::openProject()
 
 	if (!fileName.isEmpty())
 	{
-		MessageLoadProject(FilePath(fileName.toStdWString())).dispatch();
+		MessageLoadProject(FilePath(fileName.toStdString())).dispatch();
 		m_windowStack.clearWindows();
 	}
 }
@@ -763,7 +763,7 @@ void QtMainWindow::resetWindowLayout()
 {
 	FileSystem::remove(UserPaths::getWindowSettingsFilePath());
 	FileSystem::copyFile(
-		ResourcePaths::getFallbackDirectoryPath().concatenate(L"window_settings.ini"),
+		ResourcePaths::getFallbackDirectoryPath().concatenate("window_settings.ini"),
 		UserPaths::getWindowSettingsFilePath());
 	loadDockWidgetLayout();
 }
@@ -773,7 +773,7 @@ void QtMainWindow::openRecentProject()
 	QAction* action = qobject_cast<QAction*>(sender());
 	if (action)
 	{
-		MessageLoadProject(FilePath(action->data().toString().toStdWString())).dispatch();
+		MessageLoadProject(FilePath(action->data().toString().toStdString())).dispatch();
 		m_windowStack.clearWindows();
 	}
 }
@@ -792,8 +792,8 @@ void QtMainWindow::updateRecentProjectsMenu()
 		if (project.exists())
 		{
 			QAction* recentProject = new QAction(this);
-			recentProject->setText(QString::fromStdWString(project.fileName()));
-			recentProject->setData(QString::fromStdWString(project.wstr()));
+			recentProject->setText(QString::fromStdString(project.fileName()));
+			recentProject->setData(QString::fromStdString(project.str()));
 			connect(recentProject, &QAction::triggered, this, &QtMainWindow::openRecentProject);
 			m_recentProjectsMenu->addAction(recentProject);
 		}
@@ -968,10 +968,10 @@ void QtMainWindow::setupHistoryMenu()
 		}
 
 		const SearchMatch match = msg->getSearchMatches()[0];
-		const std::wstring name = utility::elide(match.getFullName(), utility::ELIDE_RIGHT, 50);
+		const std::string name = utility::elide(match.getFullName(), utility::ELIDE_RIGHT, 50);
 
 		QAction* action = new QAction();
-		action->setText(QString::fromStdWString(name));
+		action->setText(QString::fromStdString(name));
 		action->setData(QVariant(int(i)));
 
 		connect(action, &QAction::triggered, this, &QtMainWindow::openHistoryAction);
@@ -997,10 +997,10 @@ void QtMainWindow::setupBookmarksMenu()
 	for (size_t i = 0; i < m_bookmarks.size(); i++)
 	{
 		Bookmark* bookmark = m_bookmarks[i].get();
-		std::wstring name = utility::elide(bookmark->getName(), utility::ELIDE_RIGHT, 50);
+		std::string name = utility::elide(bookmark->getName(), utility::ELIDE_RIGHT, 50);
 
 		QAction* action = new QAction();
-		action->setText(QString::fromStdWString(name));
+		action->setText(QString::fromStdString(name));
 		action->setData(QVariant(int(i)));
 
 		connect(action, &QAction::triggered, this, &QtMainWindow::activateBookmarkAction);

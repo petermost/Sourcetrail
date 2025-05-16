@@ -69,6 +69,6 @@ private:
 	const bool m_isStart;
 };
 
-std::wostream& operator<<(std::wostream& ostream, const SourceLocation& location);
+std::ostream& operator<<(std::ostream& ostream, const SourceLocation& location);
 
 #endif	  // SOURCE_LOCATION_H

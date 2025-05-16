@@ -13,8 +13,8 @@ enum class GroupType
 	INHERITANCE
 };
 
-std::wstring groupTypeToString(GroupType type);
-GroupType stringToGroupType(const std::wstring& value);
+std::string groupTypeToString(GroupType type);
+GroupType stringToGroupType(const std::string& value);
 
 enum class GroupLayout
 {

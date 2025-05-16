@@ -17,11 +17,11 @@ bool isInFiles(const std::set<FilePath>& files, const FilePath& filename)
 }
 */
 
-bool isInFileInfos(const std::vector<FileInfo>& infos, const std::wstring& filename)
+bool isInFileInfos(const std::vector<FileInfo>& infos, const std::string& filename)
 {
 	for (const FileInfo& info: infos)
 	{
-		if (info.path.getAbsolute().wstr() == FilePath(filename).getCanonical().wstr())
+		if (info.path.getAbsolute().str() == FilePath(filename).getCanonical().str())
 		{
 			return true;
 		}
@@ -31,12 +31,12 @@ bool isInFileInfos(const std::vector<FileInfo>& infos, const std::wstring& filen
 }
 
 bool isInFileInfos(
-	const std::vector<FileInfo>& infos, const std::wstring& filename, const std::wstring& filename2)
+	const std::vector<FileInfo>& infos, const std::string& filename, const std::string& filename2)
 {
 	for (const FileInfo& info: infos)
 	{
-		if (info.path.wstr() == FilePath(filename).getCanonical().wstr() ||
-			info.path.wstr() == FilePath(filename2).getCanonical().wstr())
+		if (info.path.str() == FilePath(filename).getCanonical().str() ||
+			info.path.str() == FilePath(filename2).getCanonical().str())
 		{
 			return true;
 		}
@@ -49,41 +49,41 @@ bool isInFileInfos(
 
 TEST_CASE("find cpp files")
 {
-	std::vector<std::wstring> cppFiles = utility::convert<FilePath, std::wstring>(
-		FileSystem::getFilePathsFromDirectory(FilePath(L"data/FileSystemTestSuite"), {L".cpp"}),
-		[](const FilePath& filePath) { return filePath.wstr(); });
+	std::vector<std::string> cppFiles = utility::convert<FilePath, std::string>(
+		FileSystem::getFilePathsFromDirectory(FilePath("data/FileSystemTestSuite"), {".cpp"}),
+		[](const FilePath& filePath) { return filePath.str(); });
 
 	REQUIRE(cppFiles.size() == 4);
-	REQUIRE(utility::containsElement<std::wstring>(cppFiles, L"data/FileSystemTestSuite/main.cpp"));
-	REQUIRE(utility::containsElement<std::wstring>(
-		cppFiles, L"data/FileSystemTestSuite/Settings/sample.cpp"));
+	REQUIRE(utility::containsElement<std::string>(cppFiles, "data/FileSystemTestSuite/main.cpp"));
+	REQUIRE(utility::containsElement<std::string>(
+		cppFiles, "data/FileSystemTestSuite/Settings/sample.cpp"));
 	REQUIRE(
-		utility::containsElement<std::wstring>(cppFiles, L"data/FileSystemTestSuite/src/main.cpp"));
+		utility::containsElement<std::string>(cppFiles, "data/FileSystemTestSuite/src/main.cpp"));
 	REQUIRE(
-		utility::containsElement<std::wstring>(cppFiles, L"data/FileSystemTestSuite/src/test.cpp"));
+		utility::containsElement<std::string>(cppFiles, "data/FileSystemTestSuite/src/test.cpp"));
 }
 
 TEST_CASE("find h files")
 {
-	std::vector<std::wstring> headerFiles = utility::convert<FilePath, std::wstring>(
-		FileSystem::getFilePathsFromDirectory(FilePath(L"data/FileSystemTestSuite"), {L".h"}),
-		[](const FilePath& filePath) { return filePath.wstr(); });
+	std::vector<std::string> headerFiles = utility::convert<FilePath, std::string>(
+		FileSystem::getFilePathsFromDirectory(FilePath("data/FileSystemTestSuite"), {".h"}),
+		[](const FilePath& filePath) { return filePath.str(); });
 
 	REQUIRE(headerFiles.size() == 3);
-	REQUIRE(utility::containsElement<std::wstring>(
-		headerFiles, L"data/FileSystemTestSuite/tictactoe.h"));
-	REQUIRE(utility::containsElement<std::wstring>(
-		headerFiles, L"data/FileSystemTestSuite/Settings/player.h"));
-	REQUIRE(utility::containsElement<std::wstring>(
-		headerFiles, L"data/FileSystemTestSuite/src/test.h"));
+	REQUIRE(utility::containsElement<std::string>(
+		headerFiles, "data/FileSystemTestSuite/tictactoe.h"));
+	REQUIRE(utility::containsElement<std::string>(
+		headerFiles, "data/FileSystemTestSuite/Settings/player.h"));
+	REQUIRE(utility::containsElement<std::string>(
+		headerFiles, "data/FileSystemTestSuite/src/test.h"));
 }
 
 TEST_CASE("find all source files")
 {
-	std::vector<std::wstring> sourceFiles = utility::convert<FilePath, std::wstring>(
+	std::vector<std::string> sourceFiles = utility::convert<FilePath, std::string>(
 		FileSystem::getFilePathsFromDirectory(
-			FilePath(L"data/FileSystemTestSuite"), {L".h", L".hpp", L".cpp"}),
-		[](const FilePath& filePath) { return filePath.wstr(); });
+			FilePath("data/FileSystemTestSuite"), {".h", ".hpp", ".cpp"}),
+		[](const FilePath& filePath) { return filePath.str(); });
 
 	REQUIRE(sourceFiles.size() == 8);
 }
@@ -93,14 +93,14 @@ TEST_CASE("find file infos ignore symlinks")
 	ASSERT_SYMLINK_PLATFORM();
 
 	std::vector<FilePath> directoryPaths;
-	directoryPaths.push_back(FilePath(L"./data/FileSystemTestSuite/src"));
+	directoryPaths.push_back(FilePath("./data/FileSystemTestSuite/src"));
 
 	std::vector<FileInfo> files = FileSystem::getFileInfosFromPaths(
-		directoryPaths, {L".h", L".hpp", L".cpp"}, false);
+		directoryPaths, {".h", ".hpp", ".cpp"}, false);
 
 	REQUIRE(files.size() == 2);
-	REQUIRE(isInFileInfos(files, L"./data/FileSystemTestSuite/src/test.cpp"));
-	REQUIRE(isInFileInfos(files, L"./data/FileSystemTestSuite/src/test.h"));
+	REQUIRE(isInFileInfos(files, "./data/FileSystemTestSuite/src/test.cpp"));
+	REQUIRE(isInFileInfos(files, "./data/FileSystemTestSuite/src/test.h"));
 }
 
 TEST_CASE("find file infos follow symlinks")
@@ -108,32 +108,32 @@ TEST_CASE("find file infos follow symlinks")
 	ASSERT_SYMLINK_PLATFORM();
 
 	std::vector<FilePath> directoryPaths;
-	directoryPaths.push_back(FilePath(L"./data/FileSystemTestSuite/src"));
+	directoryPaths.push_back(FilePath("./data/FileSystemTestSuite/src"));
 
 	std::vector<FileInfo> files = FileSystem::getFileInfosFromPaths(
-		directoryPaths, {L".h", L".hpp", L".cpp"}, true);
+		directoryPaths, {".h", ".hpp", ".cpp"}, true);
 
 	REQUIRE(files.size() == 5);
 	REQUIRE(isInFileInfos(
 		files,
-		L"./data/FileSystemTestSuite/src/Settings/player.h",
-		L"./data/FileSystemTestSuite/player.h"));
+		"./data/FileSystemTestSuite/src/Settings/player.h",
+		"./data/FileSystemTestSuite/player.h"));
 	REQUIRE(isInFileInfos(
 		files,
-		L"./data/FileSystemTestSuite/src/Settings/sample.cpp",
-		L"./data/FileSystemTestSuite/sample.cpp"));
+		"./data/FileSystemTestSuite/src/Settings/sample.cpp",
+		"./data/FileSystemTestSuite/sample.cpp"));
 	REQUIRE(isInFileInfos(
 		files,
-		L"./data/FileSystemTestSuite/src/main.cpp",
-		L"./data/FileSystemTestSuite/src/Settings/src/main.cpp"));
+		"./data/FileSystemTestSuite/src/main.cpp",
+		"./data/FileSystemTestSuite/src/Settings/src/main.cpp"));
 	REQUIRE(isInFileInfos(
 		files,
-		L"./data/FileSystemTestSuite/src/test.cpp",
-		L"./data/FileSystemTestSuite/src/Settings/src/test.cpp"));
+		"./data/FileSystemTestSuite/src/test.cpp",
+		"./data/FileSystemTestSuite/src/Settings/src/test.cpp"));
 	REQUIRE(isInFileInfos(
 		files,
-		L"./data/FileSystemTestSuite/src/test.h",
-		L"./data/FileSystemTestSuite/src/Settings/src/test.h"));
+		"./data/FileSystemTestSuite/src/test.h",
+		"./data/FileSystemTestSuite/src/Settings/src/test.h"));
 }
 
 TEST_CASE("find symlinked directories")

@@ -6,14 +6,14 @@
 class CxxVs15ToLatestHeaderPathDetector: public PathDetector
 {
 public:
-	CxxVs15ToLatestHeaderPathDetector(const std::wstring &versionRange);
+	CxxVs15ToLatestHeaderPathDetector(const std::string &versionRange);
 
 private:
-	const std::wstring m_versionRange;
+	const std::string m_versionRange;
 
 	std::vector<FilePath> doGetPaths() const override;
 
-	static std::wstring getVsWhereProperty(const std::wstring &versionRange, const std::wstring &propertyName);
+	static std::string getVsWhereProperty(const std::string &versionRange, const std::string &propertyName);
 };
 
 #endif

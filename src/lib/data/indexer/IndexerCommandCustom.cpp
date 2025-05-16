@@ -11,11 +11,11 @@ IndexerCommandType IndexerCommandCustom::getStaticIndexerCommandType()
 }
 
 IndexerCommandCustom::IndexerCommandCustom(
-	const std::wstring& command,
-	const std::vector<std::wstring>& arguments,
+	const std::string& command,
+	const std::vector<std::string>& arguments,
 	const FilePath& projectFilePath,
 	const FilePath& databaseFilePath,
-	const std::wstring& databaseVersion,
+	const std::string& databaseVersion,
 	const FilePath& sourceFilePath,
 	bool runInParallel)
 	: IndexerCommand(sourceFilePath)
@@ -31,11 +31,11 @@ IndexerCommandCustom::IndexerCommandCustom(
 
 IndexerCommandCustom::IndexerCommandCustom(
 	IndexerCommandType type,
-	const std::wstring& command,
-	const std::vector<std::wstring>& arguments,
+	const std::string& command,
+	const std::vector<std::string>& arguments,
 	const FilePath& projectFilePath,
 	const FilePath& databaseFilePath,
-	const std::wstring& databaseVersion,
+	const std::string& databaseVersion,
 	const FilePath& sourceFilePath,
 	bool runInParallel)
 	: IndexerCommand(sourceFilePath)
@@ -71,15 +71,15 @@ void IndexerCommandCustom::setDatabaseFilePath(const FilePath& databaseFilePath)
 	m_databaseFilePath = databaseFilePath;
 }
 
-std::wstring IndexerCommandCustom::getCommand() const
+std::string IndexerCommandCustom::getCommand() const
 {
 	return replaceVariables(m_command);
 }
 
-std::vector<std::wstring> IndexerCommandCustom::getArguments() const
+std::vector<std::string> IndexerCommandCustom::getArguments() const
 {
-	std::vector<std::wstring> args;
-	for (const std::wstring& argument: m_arguments)
+	std::vector<std::string> args;
+	for (const std::string& argument: m_arguments)
 	{
 		args.push_back(replaceVariables(argument));
 	}
@@ -96,13 +96,13 @@ QJsonObject IndexerCommandCustom::doSerialize() const
 	QJsonObject jsonObject = IndexerCommand::doSerialize();
 
 	{
-		jsonObject["command"] = QString::fromStdWString(m_command);
+		jsonObject["command"] = QString::fromStdString(m_command);
 	}
 	{
 		QJsonArray argumentsArray;
-		for (const std::wstring& argument: m_arguments)
+		for (const std::string& argument: m_arguments)
 		{
-			argumentsArray.append(QString::fromStdWString(argument));
+			argumentsArray.append(QString::fromStdString(argument));
 		}
 		jsonObject["arguments"] = argumentsArray;
 	}
@@ -113,11 +113,11 @@ QJsonObject IndexerCommandCustom::doSerialize() const
 	return jsonObject;
 }
 
-std::wstring IndexerCommandCustom::replaceVariables(std::wstring s) const
+std::string IndexerCommandCustom::replaceVariables(std::string s) const
 {
-	s = utility::replace(s, L"%{PROJECT_FILE_PATH}", m_projectFilePath.wstr());
-	s = utility::replace(s, L"%{DATABASE_FILE_PATH}", m_databaseFilePath.wstr());
-	s = utility::replace(s, L"%{DATABASE_VERSION}", m_databaseVersion);
-	s = utility::replace(s, L"%{SOURCE_FILE_PATH}", getSourceFilePath().wstr());
+	s = utility::replace(s, "%{PROJECT_FILE_PATH}", m_projectFilePath.str());
+	s = utility::replace(s, "%{DATABASE_FILE_PATH}", m_databaseFilePath.str());
+	s = utility::replace(s, "%{DATABASE_VERSION}", m_databaseVersion);
+	s = utility::replace(s, "%{SOURCE_FILE_PATH}", getSourceFilePath().str());
 	return s;
 }

@@ -85,11 +85,6 @@ template <>
 std::vector<std::string> toStrings(const std::vector<FilePath>& d);
 
 template <typename T>
-std::vector<std::wstring> toWStrings(const std::vector<T>& d);
-template <>
-std::vector<std::wstring> toWStrings(const std::vector<FilePath>& d);
-
-template <typename T>
 bool isPermutation(const std::vector<T>& a, const std::vector<T>& b)
 {
 	return (a.size() == b.size() && std::is_permutation(a.begin(), a.end(), b.begin()));
@@ -315,21 +310,7 @@ template <>
 inline std::vector<std::string> utility::toStrings<FilePath>(const std::vector<FilePath>& d)
 {
 	return convert<FilePath, std::string>(
-		d, [](const FilePath& fp) { return utility::encodeToUtf8(fp.wstr()); });
-}
-
-template <typename T>
-std::vector<std::wstring> utility::toWStrings(const std::vector<T>& d)
-{
-	using std::to_wstring;
-
-	return convert(d, [](T t) { return to_wstring(t); });
-}
-
-template <>
-inline std::vector<std::wstring> utility::toWStrings<FilePath>(const std::vector<FilePath>& d)
-{
-	return convert<FilePath, std::wstring>(d, [](const FilePath& fp) { return fp.wstr(); });
+		d, [](const FilePath& fp) { return utility::encodeToUtf8(fp.str()); });
 }
 
 #endif	  // UTILITY_H

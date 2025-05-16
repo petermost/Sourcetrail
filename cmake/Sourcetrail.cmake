@@ -8,6 +8,8 @@ endfunction()
 function(setGccTargetOptions targetName)
 	target_compile_options(${targetName}
 		PRIVATE
+			-finput-charset=UTF-8
+			
 			-pipe
 
 			# Will lead to a failure in "cxx parser finds braces with closing bracket in macro" !!!
@@ -77,6 +79,8 @@ endfunction()
 function(setClangTargetOptions targetName)
 	target_compile_options(${targetName}
 		PRIVATE
+			-finput-charset=UTF-8
+
 			-pipe
 
 			# Will lead to a failure in "cxx parser finds braces with closing bracket in macro" !!!
@@ -117,6 +121,8 @@ endfunction()
 function(setMsvcTargetOptions targetName)
 	target_compile_options(${targetName}
 		PRIVATE
+			/utf-8
+			
 			/nologo
 			/MP
 			/W4
@@ -159,6 +165,9 @@ function(setMsvcTargetOptions targetName)
 		PUBLIC
 			WIN32_LEAN_AND_MEAN
 
+			UNICODE  # For Windows header
+			_UNICODE # For CRT header
+			
 			# Target Windows 10:
 			WINVER=0x0A00
 			_WIN32_WINNT=0x0A00

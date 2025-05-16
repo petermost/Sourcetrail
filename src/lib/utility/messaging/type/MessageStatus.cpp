@@ -3,16 +3,16 @@
 #include "utilityString.h"
 
 MessageStatus::MessageStatus(
-	const std::wstring& status, bool isError, bool showLoader, bool showInStatusBar)
+	const std::string& status, bool isError, bool showLoader, bool showInStatusBar)
 	: isError(isError), showLoader(showLoader), showInStatusBar(showInStatusBar)
 {
-	m_stati.push_back(utility::replace(status, L"\n", L" "));
+	m_stati.push_back(utility::replace(status, "\n", " "));
 
 	setSendAsTask(false);
 }
 
 MessageStatus::MessageStatus(
-	const std::vector<std::wstring>& stati, bool isError, bool showLoader, bool showInStatusBar)
+	const std::vector<std::string>& stati, bool isError, bool showLoader, bool showInStatusBar)
 	: isError(isError), showLoader(showLoader), showInStatusBar(showInStatusBar), m_stati(stati)
 {
 	setSendAsTask(false);
@@ -23,40 +23,40 @@ const std::string MessageStatus::getStaticType()
 	return "MessageStatus";
 }
 
-const std::vector<std::wstring>& MessageStatus::stati() const
+const std::vector<std::string>& MessageStatus::stati() const
 {
 	return m_stati;
 }
 
-std::wstring MessageStatus::status() const
+std::string MessageStatus::status() const
 {
 	if (m_stati.size())
 	{
 		return m_stati[0];
 	}
 
-	return L"";
+	return "";
 }
 
-void MessageStatus::print(std::wostream& os) const
+void MessageStatus::print(std::ostream& os) const
 {
-	for (const std::wstring& status: m_stati)
+	for (const std::string& status: m_stati)
 	{
 		os << status;
 
 		if (m_stati.size() > 1)
 		{
-			os << L" - ";
+			os << " - ";
 		}
 	}
 
 	if (isError)
 	{
-		os << L" - error";
+		os << " - error";
 	}
 
 	if (showLoader)
 	{
-		os << L" - loading";
+		os << " - loading";
 	}
 }

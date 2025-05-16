@@ -97,12 +97,12 @@ public:
 		return m_keepContent;
 	}
 
-	virtual void print(std::wostream& os) const = 0;
+	virtual void print(std::ostream& os) const = 0;
 
-	std::wstring str() const
+	std::string str() const
 	{
-		std::wstringstream ss;
-		ss << utility::decodeFromUtf8(getType()) << L" ";
+		std::stringstream ss;
+		ss << utility::decodeFromUtf8(getType()) << " ";
 		print(ss);
 		return ss.str();
 	}

@@ -13,7 +13,6 @@ public:
 	Version(int major, int minor, int patch);
 
 	std::string toDisplayString() const;
-	std::wstring toDisplayWString() const;
 
 private:
 	static Version s_version;

@@ -40,17 +40,17 @@ public:
 		return type == Edge::EDGE_BUNDLED_EDGES;
 	}
 
-	std::wstring getFullName() const
+	std::string getFullName() const
 	{
-		std::wstring name = Edge::getReadableTypeString(type) + L":";
-		name += sourceNameHierarchy.getQualifiedNameWithSignature() + L"->";
+		std::string name = Edge::getReadableTypeString(type) + ":";
+		name += sourceNameHierarchy.getQualifiedNameWithSignature() + "->";
 		name += targetNameHierarchy.getQualifiedNameWithSignature();
 		return name;
 	}
 
-	void print(std::wostream& os) const override
+	void print(std::ostream& os) const override
 	{
-		os << tokenId << L" - " << getFullName();
+		os << tokenId << " - " << getFullName();
 	}
 
 	const Id tokenId;

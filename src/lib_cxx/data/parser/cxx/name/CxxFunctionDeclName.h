@@ -11,8 +11,8 @@ class CxxFunctionDeclName: public CxxDeclName
 {
 public:
 	CxxFunctionDeclName(
-		std::wstring name,
-		std::vector<std::wstring> templateParameterNames,
+		std::string name,
+		std::vector<std::string> templateParameterNames,
 		std::unique_ptr<CxxTypeName> returnTypeName,
 		std::vector<std::unique_ptr<CxxTypeName>> parameterTypeNames,
 		const bool isConst,

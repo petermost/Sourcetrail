@@ -31,8 +31,8 @@ void QtProjectWizardContentPathsExclude::load()
 			std::dynamic_pointer_cast<SourceGroupSettingsWithExcludeFilters>(
 				m_settings))	// FIXME: pass msettings as required type
 	{
-		m_list->setPaths(utility::convert<std::wstring, FilePath>(
-			settings->getExcludeFilterStrings(), [](const std::wstring& s) { return FilePath(s); }));
+		m_list->setPaths(utility::convert<std::string, FilePath>(
+			settings->getExcludeFilterStrings(), [](const std::string& s) { return FilePath(s); }));
 	}
 }
 
@@ -42,6 +42,6 @@ void QtProjectWizardContentPathsExclude::save()
 			std::dynamic_pointer_cast<SourceGroupSettingsWithExcludeFilters>(
 				m_settings))	// FIXME: pass msettings as required type
 	{
-		settings->setExcludeFilterStrings(utility::toWStrings(m_list->getPathsAsDisplayed()));
+		settings->setExcludeFilterStrings(utility::toStrings(m_list->getPathsAsDisplayed()));
 	}
 }

@@ -17,19 +17,19 @@ public:
 
 	struct Modifier
 	{
-		Modifier(std::wstring symbol);
+		Modifier(std::string symbol);
 
-		const std::wstring symbol;
+		const std::string symbol;
 		CxxQualifierFlags qualifierFlags;
 	};
 
-	CxxTypeName(std::wstring name);
+	CxxTypeName(std::string name);
 
-	CxxTypeName(std::wstring name, std::vector<std::wstring> templateArguments);
+	CxxTypeName(std::string name, std::vector<std::string> templateArguments);
 
 	CxxTypeName(
-		std::wstring name,
-		std::vector<std::wstring> templateArguments,
+		std::string name,
+		std::vector<std::string> templateArguments,
 		std::shared_ptr<CxxName> parent);
 
 	NameHierarchy toNameHierarchy() const override;
@@ -37,11 +37,11 @@ public:
 	void addQualifier(const CxxQualifierFlags::QualifierType qualifier);
 	void addModifier(Modifier modifier);
 
-	std::wstring toString() const;
+	std::string toString() const;
 
 private:
-	const std::wstring m_name;
-	const std::vector<std::wstring> m_templateArguments;
+	const std::string m_name;
+	const std::vector<std::string> m_templateArguments;
 
 	CxxQualifierFlags m_qualifierFlags;
 	std::vector<Modifier> m_modifiers;

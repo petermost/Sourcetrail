@@ -57,8 +57,8 @@ bool ApplicationSettings::load(const FilePath& filePath, bool readOnly)
 		std::make_shared<SettingsMigrationLambda>(
 			[](const SettingsMigration* migration, Settings* settings)
 			{
-				std::wstring colorSchemePathString = migration->getValueFromSettings<std::wstring>(
-					settings, "application/color_scheme", L"");
+				std::string colorSchemePathString = migration->getValueFromSettings<std::string>(
+					settings, "application/color_scheme", "");
 				if (!colorSchemePathString.empty())
 				{
 					FilePath colorSchemePath(colorSchemePathString);
@@ -103,7 +103,7 @@ bool ApplicationSettings::load(const FilePath& filePath, bool readOnly)
 				std::vector<FilePath> newCxxHeaderSearchPaths;
 				for (const FilePath& path: cxxHeaderSearchPaths)
 				{
-					if (path.getCanonical().getConcatenated(L"/stdarg.h").exists() &&
+					if (path.getCanonical().getConcatenated("/stdarg.h").exists() &&
 						path.str().find("data/cxx/include") != std::string::npos)
 					{
 						continue;
@@ -203,16 +203,16 @@ void ApplicationSettings::setShowDirectoryInCodeFileTitle(bool showDirectory)
 	setValue<bool>("application/directory_in_code_title", showDirectory);
 }
 
-std::wstring ApplicationSettings::getColorSchemeName() const
+std::string ApplicationSettings::getColorSchemeName() const
 {
-	return getValue<std::wstring>("application/color_scheme", L"bright");
+	return getValue<std::string>("application/color_scheme", "bright");
 }
 
 FilePath ApplicationSettings::getColorSchemePath() const
 {
-	FilePath defaultPath(ResourcePaths::getColorSchemesDirectoryPath().concatenate(L"bright.xml"));
+	FilePath defaultPath(ResourcePaths::getColorSchemesDirectoryPath().concatenate("bright.xml"));
 	FilePath path(
-		ResourcePaths::getColorSchemesDirectoryPath().concatenate(getColorSchemeName() + L".xml"));
+		ResourcePaths::getColorSchemesDirectoryPath().concatenate(getColorSchemeName() + ".xml"));
 
 	if (path != defaultPath && !path.exists())
 	{
@@ -222,7 +222,7 @@ FilePath ApplicationSettings::getColorSchemePath() const
 	return path;
 }
 
-void ApplicationSettings::setColorSchemeName(const std::wstring& colorSchemeName)
+void ApplicationSettings::setColorSchemeName(const std::string& colorSchemeName)
 {
 	setValue("application/color_scheme", colorSchemeName);
 }
@@ -290,12 +290,12 @@ void ApplicationSettings::setGraphControlsVisible(bool visible)
 GroupType ApplicationSettings::getGraphGrouping() const
 {
 	return stringToGroupType(
-		getValue<std::wstring>("application/graph_grouping", groupTypeToString(GroupType::NONE)));
+		getValue<std::string>("application/graph_grouping", groupTypeToString(GroupType::NONE)));
 }
 
 void ApplicationSettings::setGraphGrouping(GroupType type)
 {
-	setValue<std::wstring>("application/graph_grouping", groupTypeToString(type));
+	setValue<std::string>("application/graph_grouping", groupTypeToString(type));
 }
 
 int ApplicationSettings::getScreenAutoScaling() const
@@ -340,13 +340,13 @@ void ApplicationSettings::setVerboseIndexerLoggingEnabled(bool value)
 
 FilePath ApplicationSettings::getLogDirectoryPath() const
 {
-	return FilePath(getValue<std::wstring>(
-		"application/log_directory_path", UserPaths::getLogDirectoryPath().getAbsolute().wstr()));
+	return FilePath(getValue<std::string>(
+		"application/log_directory_path", UserPaths::getLogDirectoryPath().getAbsolute().str()));
 }
 
 void ApplicationSettings::setLogDirectoryPath(const FilePath& path)
 {
-	setValue<std::wstring>("application/log_directory_path", path.wstr());
+	setValue<std::string>("application/log_directory_path", path.str());
 }
 
 void ApplicationSettings::setLogFilter(int mask)
@@ -392,12 +392,12 @@ void ApplicationSettings::setMultiProcessIndexingEnabled(bool enabled)
 
 FilePath ApplicationSettings::getJavaPath() const
 {
-	return FilePath(getValue<std::wstring>("indexing/java/java_path", L""));
+	return FilePath(getValue<std::string>("indexing/java/java_path", ""));
 }
 
 void ApplicationSettings::setJavaPath(const FilePath& path)
 {
-	setValue<std::wstring>("indexing/java/java_path", path.wstr());
+	setValue<std::string>("indexing/java/java_path", path.str());
 }
 
 bool ApplicationSettings::getHasPrefilledJavaPath() const
@@ -438,12 +438,12 @@ void ApplicationSettings::setHasPrefilledJreSystemLibraryPaths(bool v)
 
 FilePath ApplicationSettings::getMavenPath() const
 {
-	return FilePath(getValue<std::wstring>("indexing/java/maven_path", L""));
+	return FilePath(getValue<std::string>("indexing/java/maven_path", ""));
 }
 
 void ApplicationSettings::setMavenPath(const FilePath& path)
 {
-	setValue<std::wstring>("indexing/java/maven_path", path.wstr());
+	setValue<std::string>("indexing/java/maven_path", path.str());
 }
 
 bool ApplicationSettings::getHasPrefilledMavenPath() const
@@ -594,12 +594,12 @@ void ApplicationSettings::setSeenErrorHelpMessage(bool seen)
 
 FilePath ApplicationSettings::getLastFilepickerLocation() const
 {
-	return FilePath(getValue<std::wstring>("user/last_filepicker_location", L""));
+	return FilePath(getValue<std::string>("user/last_filepicker_location", ""));
 }
 
 void ApplicationSettings::setLastFilepickerLocation(const FilePath& path)
 {
-	setValue<std::wstring>("user/last_filepicker_location", path.wstr());
+	setValue<std::string>("user/last_filepicker_location", path.str());
 }
 
 float ApplicationSettings::getGraphZoomLevel() const

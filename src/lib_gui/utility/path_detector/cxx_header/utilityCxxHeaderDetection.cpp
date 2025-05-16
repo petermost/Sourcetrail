@@ -27,7 +27,7 @@ FilePath getWindowsSdkRootPathUsingRegistry(Platform::Architecture architecture,
 	QSettings expressKey(key, QSettings::NativeFormat);	  // NativeFormat means from Registry on Windows.
 	QString value = expressKey.value(QStringLiteral("InstallationFolder")).toString();
 
-	FilePath path(value.toStdWString());
+	FilePath path(value.toStdString());
 	if (path.exists())
 	{
 		return path;
@@ -37,20 +37,20 @@ FilePath getWindowsSdkRootPathUsingRegistry(Platform::Architecture architecture,
 
 }
 
-std::vector<std::wstring> getCxxHeaderPaths(const std::string& compilerName)
+std::vector<std::string> getCxxHeaderPaths(const std::string& compilerName)
 {
-	std::vector<std::wstring> paths;
+	std::vector<std::string> paths;
 
 	const utility::ProcessOutput out = utility::executeProcess(
-		utility::decodeFromUtf8(compilerName), {L"-x", L"c++", L"-v", L"-E", L"/dev/null"});
+		utility::decodeFromUtf8(compilerName), {"-x", "c++", "-v", "-E", "/dev/null"});
 	if (out.exitCode == 0)
 	{
-		std::wstring standardHeaders = utility::substrBetween<std::wstring>(
-			out.output, L"#include <...> search starts here:\n", L"\nEnd of search list");
+		std::string standardHeaders = utility::substrBetween<std::string>(
+			out.output, "#include <...> search starts here:\n", "\nEnd of search list");
 
 		if (!standardHeaders.empty())
 		{
-			for (const std::wstring& s: utility::splitToVector(standardHeaders, L'\n'))
+			for (const std::string& s: utility::splitToVector(standardHeaders, '\n'))
 			{
 				paths.push_back(utility::trim(s));
 			}
@@ -72,11 +72,11 @@ std::vector<FilePath> getWindowsSdkHeaderSearchPaths(Platform::Architecture arch
 			architecture, windowsSdkVersions[i]);
 		if (sdkPath.exists())
 		{
-			const FilePath sdkIncludePath = sdkPath.getConcatenated(L"include/");
+			const FilePath sdkIncludePath = sdkPath.getConcatenated("include/");
 			if (sdkIncludePath.exists())
 			{
 				bool usingSubdirectories = false;
-				for (const std::wstring& subDirectory: {L"shared"s, L"um"s, L"winrt"s})
+				for (const std::string& subDirectory: {"shared"s, "um"s, "winrt"s})
 				{
 					const FilePath sdkSubdirectory = sdkIncludePath.getConcatenated(subDirectory);
 					if (sdkSubdirectory.exists())
@@ -99,9 +99,9 @@ std::vector<FilePath> getWindowsSdkHeaderSearchPaths(Platform::Architecture arch
 		if (sdkPath.exists())
 		{
 			for (const FilePath& versionPath:
-				 FileSystem::getDirectSubDirectories(sdkPath.getConcatenated(L"include/")))
+				 FileSystem::getDirectSubDirectories(sdkPath.getConcatenated("include/")))
 			{
-				const FilePath ucrtPath = versionPath.getConcatenated(L"ucrt");
+				const FilePath ucrtPath = versionPath.getConcatenated("ucrt");
 				if (ucrtPath.exists())
 				{
 					headerSearchPaths.push_back(ucrtPath);

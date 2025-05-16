@@ -9,7 +9,7 @@
 class MessageSearchAutocomplete: public Message<MessageSearchAutocomplete>
 {
 public:
-	MessageSearchAutocomplete(const std::wstring& query, NodeTypeSet acceptedNodeTypes)
+	MessageSearchAutocomplete(const std::string& query, NodeTypeSet acceptedNodeTypes)
 		: query(query), acceptedNodeTypes(acceptedNodeTypes)
 	{
 		setSchedulerId(TabIds::currentTab());
@@ -20,22 +20,22 @@ public:
 		return "MessageSearchAutocomplete";
 	}
 
-	void print(std::wostream& os) const override
+	void print(std::ostream& os) const override
 	{
-		os << query << L"[";
+		os << query << "[";
 		std::vector<Id> nodeTypeIds = acceptedNodeTypes.getNodeTypeIds();
 		for (size_t i = 0; i < nodeTypeIds.size(); i++)
 		{
 			if (i != 0)
 			{
-				os << L", ";
+				os << ", ";
 			}
-			os << to_wstring(nodeTypeIds[i]);
+			os << to_string(nodeTypeIds[i]);
 		}
-		os << L"]";
+		os << "]";
 	}
 
-	const std::wstring query;
+	const std::string query;
 	const NodeTypeSet acceptedNodeTypes;
 };
 

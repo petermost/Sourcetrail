@@ -3,17 +3,17 @@
 #include "ConfigManager.h"
 #include "ToolVersionSupport.h"
 
-std::wstring SourceGroupSettingsWithCStandard::getDefaultCStandard()
+std::string SourceGroupSettingsWithCStandard::getDefaultCStandard()
 {
 	return ClangVersionSupport::getLatestCStandard();
 }
 
-std::vector<std::wstring> SourceGroupSettingsWithCStandard::getAvailableCStandards()
+std::vector<std::string> SourceGroupSettingsWithCStandard::getAvailableCStandards()
 {
 	return ClangVersionSupport::getAvailableCStandards();
 }
 
-std::wstring SourceGroupSettingsWithCStandard::getCStandard() const
+std::string SourceGroupSettingsWithCStandard::getCStandard() const
 {
 	if (m_cStandard.empty())
 	{
@@ -22,7 +22,7 @@ std::wstring SourceGroupSettingsWithCStandard::getCStandard() const
 	return m_cStandard;
 }
 
-void SourceGroupSettingsWithCStandard::setCStandard(const std::wstring& standard)
+void SourceGroupSettingsWithCStandard::setCStandard(const std::string& standard)
 {
 	m_cStandard = standard;
 }
@@ -38,7 +38,7 @@ bool SourceGroupSettingsWithCStandard::equals(const SourceGroupSettingsBase* oth
 
 void SourceGroupSettingsWithCStandard::load(const ConfigManager* config, const std::string& key)
 {
-	setCStandard(config->getValueOrDefault<std::wstring>(key + "/c_standard", L""));
+	setCStandard(config->getValueOrDefault<std::string>(key + "/c_standard", ""));
 }
 
 void SourceGroupSettingsWithCStandard::save(ConfigManager* config, const std::string& key)

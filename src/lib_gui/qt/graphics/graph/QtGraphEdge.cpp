@@ -403,13 +403,13 @@ void QtGraphEdge::coFocusIn()
 
 			if (isAmbiguous())
 			{
-				info.title = L"ambiguous " + info.title;
+				info.title = "ambiguous " + info.title;
 			}
 
 			if (type == Edge::EDGE_BUNDLED_EDGES &&
 				m_direction == TokenComponentBundledEdges::DIRECTION_NONE)
 			{
-				info.title = L"bidirectional " + info.title;
+				info.title = "bidirectional " + info.title;
 			}
 
 			if (type == Edge::EDGE_BUNDLED_EDGES)
@@ -425,7 +425,7 @@ void QtGraphEdge::coFocusIn()
 					getData()->getComponent<TokenComponentInheritanceChain>();
 				if (componentInheritance && componentInheritance->inheritanceEdgeIds.size() > 1)
 				{
-					info.title = L"multi-level " + info.title;
+					info.title = "multi-level " + info.title;
 				}
 			}
 

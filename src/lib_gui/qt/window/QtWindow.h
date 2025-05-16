@@ -28,7 +28,7 @@ public:
 	bool isScrollAble() const;
 
 	void updateTitle(const QString& title);
-	std::wstring getTitle() const;
+	std::string getTitle() const;
 	void updateSubTitle(const QString& subTitle);
 
 	void updateNextButton(const QString& text);

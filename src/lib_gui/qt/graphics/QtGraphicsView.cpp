@@ -454,7 +454,7 @@ void QtGraphicsView::wheelEvent(QWheelEvent* event)
 void QtGraphicsView::contextMenuEvent(QContextMenuEvent* event)
 {
 	m_openInTabNodeId = 0;
-	m_clipboardNodeName = L"";
+	m_clipboardNodeName = "";
 	m_collapseNodeId = 0;
 	m_expandNodeId = 0;
 	m_hideNodeId = 0;
@@ -689,15 +689,15 @@ void QtGraphicsView::exportGraph()
 			QStringLiteral("Save image"),
 			FilePath(),
 			QStringLiteral("PNG (*.png);;JPEG (*.JPEG);;BMP Files (*.bmp);;SVG (*.svg)"))
-			.toStdWString());
+			.toStdString());
 
-	if (filePath.extension() == L".svg")
+	if (filePath.extension() == ".svg")
 	{
 		QSvgGenerator svgGen;
-		svgGen.setFileName(QString::fromStdWString(filePath.wstr()));
+		svgGen.setFileName(QString::fromStdString(filePath.str()));
 		svgGen.setSize(scene()->sceneRect().size().toSize());
 		svgGen.setViewBox(QRect(QPoint(0, 0), scene()->sceneRect().size().toSize()));
-		svgGen.setTitle(QString::fromStdWString(filePath.withoutExtension().fileName()));
+		svgGen.setTitle(QString::fromStdString(filePath.withoutExtension().fileName()));
 		svgGen.setDescription(QStringLiteral("Graph exported from Sourcetrail") + QChar(0x00AE));
 
 		QPainter painter(&svgGen);
@@ -723,7 +723,7 @@ void QtGraphicsView::exportGraph()
 	}
 	else if (!filePath.empty())
 	{
-		toQImage().save(QString::fromStdWString(filePath.wstr()));
+		toQImage().save(QString::fromStdString(filePath.str()));
 	}
 }
 
@@ -734,7 +734,7 @@ void QtGraphicsView::copyGraph()
 
 void QtGraphicsView::copyNodeName()
 {
-	QApplication::clipboard()->setText(QString::fromStdWString(m_clipboardNodeName));
+	QApplication::clipboard()->setText(QString::fromStdString(m_clipboardNodeName));
 }
 
 void QtGraphicsView::collapseNode()

@@ -27,7 +27,7 @@ QtListBox* QtPathListBoxItem::getListBox()
 
 void QtPathListBoxItem::handleButtonPress()
 {
-	FilePath path(getText().toStdWString());
+	FilePath path(getText().toStdString());
 	m_listBox->makeAbsolute(path);
 
 	QStringList list;
@@ -48,16 +48,16 @@ void QtPathListBoxItem::handleButtonPress()
 
 	if (!list.isEmpty())
 	{
-		FilePath path(list.at(0).toStdWString());
+		FilePath path(list.at(0).toStdString());
 		m_listBox->makeRelativeIfShorter(path);
-		setText(QString::fromStdWString(path.wstr()));
+		setText(QString::fromStdString(path.str()));
 	}
 
 	for (int i = 1; i < list.size(); i++)
 	{
-		FilePath path(list.at(i).toStdWString());
+		FilePath path(list.at(i).toStdString());
 		m_listBox->makeRelativeIfShorter(path);
-		getListBox()->addListBoxItemWithText(QString::fromStdWString(path.wstr()));
+		getListBox()->addListBoxItemWithText(QString::fromStdString(path.str()));
 	}
 
 	selectItem();

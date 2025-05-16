@@ -46,12 +46,12 @@ std::shared_ptr<Compiler> Compiler::create(const TiXmlElement* element)
 	return compiler;
 }
 
-const std::vector<std::wstring>& Compiler::getOptions() const
+const std::vector<std::string>& Compiler::getOptions() const
 {
 	return m_options;
 }
 
-const std::vector<std::wstring>& Compiler::getDirectories() const
+const std::vector<std::string>& Compiler::getDirectories() const
 {
 	return m_directories;
 }

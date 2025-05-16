@@ -10,7 +10,7 @@ struct StorageErrorData
 {
 	StorageErrorData():  fatal(false), indexed(false) {}
 
-	StorageErrorData(std::wstring message, std::wstring translationUnit, bool fatal, bool indexed)
+	StorageErrorData(std::string message, std::string translationUnit, bool fatal, bool indexed)
 		: message(std::move(message))
 		, translationUnit(std::move(translationUnit))
 		, fatal(fatal)
@@ -38,8 +38,8 @@ struct StorageErrorData
 		}
 	}
 
-	std::wstring message;
-	std::wstring translationUnit;
+	std::string message;
+	std::string translationUnit;
 	bool fatal;
 	bool indexed;
 };
@@ -50,7 +50,7 @@ struct StorageError: public StorageErrorData
 
 	StorageError(Id id, const StorageErrorData& data): StorageErrorData(data), id(id) {}
 
-	StorageError(Id id, std::wstring message, std::wstring translationUnit, bool fatal, bool indexed)
+	StorageError(Id id, std::string message, std::string translationUnit, bool fatal, bool indexed)
 		: StorageErrorData(std::move(message), std::move(translationUnit), fatal, indexed), id(id)
 	{
 	}

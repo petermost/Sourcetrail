@@ -19,7 +19,7 @@ namespace utility
 void setWidgetBackgroundColor(QWidget *widget, const std::string &color);
 void setWidgetRetainsSpaceWhenHidden(QWidget *widget);
 
-void loadFontsFromDirectory(const FilePath &path, const std::wstring &extension = L".otf");
+void loadFontsFromDirectory(const FilePath &path, const std::string &extension = ".otf");
 
 QPixmap colorizePixmap(const QPixmap &pixmap, QColor color);
 QIcon createButtonIcon(const FilePath &iconPath, const std::string &colorId);

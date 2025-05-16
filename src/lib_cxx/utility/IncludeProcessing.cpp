@@ -31,7 +31,7 @@ std::vector<IncludeDirective> IncludeProcessing::getUnresolvedIncludeDirectives(
 	const size_t desiredQuantileCount,
 	std::function<void(float)> progress)
 {
-	std::unordered_set<std::wstring> processedFilePaths;
+	std::unordered_set<std::string> processedFilePaths;
 	std::set<IncludeDirective, IncludeDirectiveComparator> unresolvedIncludeDirectives;
 
 	std::vector<std::vector<FilePath>> parts = utility::splitToEquallySizedParts(
@@ -77,7 +77,7 @@ std::set<FilePath> IncludeProcessing::getHeaderSearchDirectories(
 	}
 
 	std::set<FilePath> headerSearchDirectories;
-	std::unordered_set<std::wstring> processedFilePaths;
+	std::unordered_set<std::string> processedFilePaths;
 	std::vector<std::vector<FilePath>> parts = utility::splitToEquallySizedParts(
 		utility::toVector(sourceFilePaths), desiredQuantileCount);
 
@@ -93,7 +93,7 @@ std::set<FilePath> IncludeProcessing::getHeaderSearchDirectories(
 				unprocessedFilePaths.begin(),
 				unprocessedFilePaths.end(),
 				std::inserter(processedFilePaths, processedFilePaths.begin()),
-				[](const FilePath& p) { return p.getAbsolute().wstr(); });
+				[](const FilePath& p) { return p.getAbsolute().str(); });
 
 			std::set<FilePath> unprocessedFilePathsForNextIteration;
 
@@ -128,7 +128,7 @@ std::set<FilePath> IncludeProcessing::getHeaderSearchDirectories(
 					if (foundIncludedPath.exists())
 					{
 						foundIncludedPath.makeCanonical();
-						if (processedFilePaths.find(foundIncludedPath.wstr()) ==
+						if (processedFilePaths.find(foundIncludedPath.str()) ==
 							processedFilePaths.end())
 						{
 							unprocessedFilePathsForNextIteration.insert(foundIncludedPath);
@@ -164,20 +164,20 @@ std::vector<IncludeDirective> IncludeProcessing::getIncludeDirectives(
 	const std::vector<std::string> lines = textAccess->getAllLines();
 	for (unsigned i = 0; i < lines.size(); i++)
 	{
-		const std::wstring line = codec.decode(lines[i]);
-		const std::wstring lineTrimmedToHash = utility::trim(line);
-		if (utility::isPrefix<std::wstring>(L"#", lineTrimmedToHash))
+		const std::string line = codec.decode(lines[i]);
+		const std::string lineTrimmedToHash = utility::trim(line);
+		if (utility::isPrefix<std::string>("#", lineTrimmedToHash))
 		{
-			const std::wstring lineTrimmedToInclude = utility::trim(lineTrimmedToHash.substr(1));
-			if (utility::isPrefix<std::wstring>(L"include", lineTrimmedToInclude))
+			const std::string lineTrimmedToInclude = utility::trim(lineTrimmedToHash.substr(1));
+			if (utility::isPrefix<std::string>("include", lineTrimmedToInclude))
 			{
-				std::wstring includeString = utility::substrBetween<std::wstring>(
-					lineTrimmedToInclude, L"<", L">");
+				std::string includeString = utility::substrBetween<std::string>(
+					lineTrimmedToInclude, "<", ">");
 				bool usesBrackets = true;
 				if (includeString.empty())
 				{
-					includeString = utility::substrBetween<std::wstring>(
-						lineTrimmedToInclude, L"\"", L"\"");
+					includeString = utility::substrBetween<std::string>(
+						lineTrimmedToInclude, "\"", "\"");
 					usesBrackets = false;
 				}
 
@@ -196,7 +196,7 @@ std::vector<IncludeDirective> IncludeProcessing::getIncludeDirectives(
 
 std::vector<IncludeDirective> IncludeProcessing::doGetUnresolvedIncludeDirectives(
 	std::set<FilePath> filePathsToProcess,
-	std::unordered_set<std::wstring>& processedFilePaths,
+	std::unordered_set<std::string>& processedFilePaths,
 	const std::set<FilePath>& indexedPaths,
 	const std::set<FilePath>& headerSearchDirectories)
 {
@@ -208,7 +208,7 @@ std::vector<IncludeDirective> IncludeProcessing::doGetUnresolvedIncludeDirective
 			filePathsToProcess.begin(),
 			filePathsToProcess.end(),
 			std::inserter(processedFilePaths, processedFilePaths.begin()),
-			[](const FilePath& p) { return p.getAbsolute().makeCanonical().wstr(); });
+			[](const FilePath& p) { return p.getAbsolute().makeCanonical().str(); });
 
 		std::set<FilePath> filePathsToProcessForNextIteration;
 
@@ -222,7 +222,7 @@ std::vector<IncludeDirective> IncludeProcessing::doGetUnresolvedIncludeDirective
 				{
 					unresolvedIncludeDirectives.push_back(includeDirective);
 				}
-				else if (processedFilePaths.find(resolvedIncludePath.wstr()) == processedFilePaths.end())
+				else if (processedFilePaths.find(resolvedIncludePath.str()) == processedFilePaths.end())
 				{
 					for (const FilePath& indexedPath: indexedPaths)
 					{

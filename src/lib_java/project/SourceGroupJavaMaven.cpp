@@ -45,11 +45,11 @@ std::vector<FilePath> SourceGroupJavaMaven::doGetClassPath() const
 	if (m_settings && m_settings->getMavenDependenciesDirectoryPath().exists())
 	{
 		std::vector<FilePath> mavenJarPaths = FileSystem::getFilePathsFromDirectory(
-			m_settings->getMavenDependenciesDirectoryPath(), {L".jar"});
+			m_settings->getMavenDependenciesDirectoryPath(), {".jar"});
 
 		for (const FilePath& mavenJarPath: mavenJarPaths)
 		{
-			LOG_INFO(L"Adding jar to classpath: " + mavenJarPath.wstr());
+			LOG_INFO("Adding jar to classpath: " + mavenJarPath.str());
 		}
 
 		utility::append(classPath, mavenJarPaths);
@@ -80,11 +80,11 @@ bool SourceGroupJavaMaven::prepareMavenData()
 		std::shared_ptr<DialogView> dialogView = Application::getInstance()->getDialogView(
 			DialogView::UseCase::PROJECT_SETUP);
 		dialogView->showUnknownProgressDialog(
-			L"Preparing Project", L"Maven\nGenerating Source Files");
+			"Preparing Project", "Maven\nGenerating Source Files");
 
 		ScopedFunctor dialogHider([&dialogView]() { dialogView->hideUnknownProgressDialog(); });
 
-		const std::wstring errorMessage = utility::mavenGenerateSources(
+		const std::string errorMessage = utility::mavenGenerateSources(
 			mavenPath, mavenSettingsPath, projectRootPath);
 		if (!errorMessage.empty())
 		{
@@ -94,7 +94,7 @@ bool SourceGroupJavaMaven::prepareMavenData()
 		}
 
 		dialogView->showUnknownProgressDialog(
-			L"Preparing Project", L"Maven\nExporting Dependencies");
+			"Preparing Project", "Maven\nExporting Dependencies");
 
 		bool success = utility::mavenCopyDependencies(
 			mavenPath,
@@ -116,7 +116,7 @@ std::vector<FilePath> SourceGroupJavaMaven::doGetAllSourcePaths() const
 		std::shared_ptr<DialogView> dialogView = Application::getInstance()->getDialogView(
 			DialogView::UseCase::PROJECT_SETUP);
 		dialogView->showUnknownProgressDialog(
-			L"Preparing Project", L"Maven\nFetching Source Directories");
+			"Preparing Project", "Maven\nFetching Source Directories");
 
 		const FilePath mavenPath(ApplicationSettings::getInstance()->getMavenPath());
 		const FilePath mavenSettingsPath = m_settings->getMavenSettingsFilePathExpandedAndAbsolute();

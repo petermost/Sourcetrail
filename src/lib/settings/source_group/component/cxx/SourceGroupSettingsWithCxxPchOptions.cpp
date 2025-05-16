@@ -6,7 +6,7 @@
 
 FilePath SourceGroupSettingsWithCxxPchOptions::getPchDependenciesDirectoryPath() const
 {
-	return getSourceGroupDependenciesDirectoryPath().concatenate(L"pch");
+	return getSourceGroupDependenciesDirectoryPath().concatenate("pch");
 }
 
 FilePath SourceGroupSettingsWithCxxPchOptions::getPchInputFilePath() const
@@ -39,14 +39,14 @@ bool SourceGroupSettingsWithCxxPchOptions::equals(const SourceGroupSettingsBase*
 void SourceGroupSettingsWithCxxPchOptions::load(const ConfigManager* config, const std::string& key)
 {
 	setPchInputFilePathFilePath(
-		config->getValueOrDefault(key + "/pch_input_file_path", FilePath(L"")));
-	setPchFlags(config->getValuesOrDefaults(key + "/pch_flags/pch_flag", std::vector<std::wstring>()));
+		config->getValueOrDefault(key + "/pch_input_file_path", FilePath("")));
+	setPchFlags(config->getValuesOrDefaults(key + "/pch_flags/pch_flag", std::vector<std::string>()));
 	setUseCompilerFlags(config->getValueOrDefault(key + "/pch_flags/use_compiler_flags", false));
 }
 
 void SourceGroupSettingsWithCxxPchOptions::save(ConfigManager* config, const std::string& key)
 {
-	config->setValue(key + "/pch_input_file_path", getPchInputFilePath().wstr());
+	config->setValue(key + "/pch_input_file_path", getPchInputFilePath().str());
 	config->setValues(key + "/pch_flags/pch_flag", getPchFlags());
 	config->setValue(key + "/pch_flags/use_compiler_flags", getUseCompilerFlags());
 }
@@ -61,12 +61,12 @@ void SourceGroupSettingsWithCxxPchOptions::setUseCompilerFlags(bool useCompilerF
 	m_useCompilerFlags = useCompilerFlags;
 }
 
-std::vector<std::wstring> SourceGroupSettingsWithCxxPchOptions::getPchFlags() const
+std::vector<std::string> SourceGroupSettingsWithCxxPchOptions::getPchFlags() const
 {
 	return m_pchFlags;
 }
 
-void SourceGroupSettingsWithCxxPchOptions::setPchFlags(const std::vector<std::wstring>& pchFlags)
+void SourceGroupSettingsWithCxxPchOptions::setPchFlags(const std::vector<std::string>& pchFlags)
 {
 	m_pchFlags = pchFlags;
 }

@@ -6,7 +6,7 @@
 class SourceGroupSettingsWithSourceExtensionsEmpty: public SourceGroupSettingsWithSourceExtensions
 {
 private:
-	std::vector<std::wstring> getDefaultSourceExtensions() const override
+	std::vector<std::string> getDefaultSourceExtensions() const override
 	{
 		return {};
 	}

@@ -14,10 +14,10 @@ public:
 
 	TextCodec(const std::string& name);
 
-	std::wstring decode(const std::string &str);
-	std::string encode(const std::wstring &str);
+	std::string decode(const std::string &encodedString);
+	std::string encode(const std::string &decodedString);
 
-	int encodedSize(const QString &str);
+	int encodedSize(const QString &decodedString);
 
 	bool isValid() const;
 	std::string getName() const;

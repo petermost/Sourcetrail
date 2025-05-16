@@ -5,9 +5,9 @@
 #include "NodeTypeSet.h"
 #include "logging.h"
 
-void SearchMatch::log(const std::vector<SearchMatch>& matches, const std::wstring& query)
+void SearchMatch::log(const std::vector<SearchMatch>& matches, const std::string& query)
 {
-	std::wstringstream ss;
+	std::stringstream ss;
 	ss << std::endl << matches.size() << " matches for \"" << query << "\":" << std::endl;
 
 	for (const SearchMatch& match: matches)
@@ -18,33 +18,33 @@ void SearchMatch::log(const std::vector<SearchMatch>& matches, const std::wstrin
 	LOG_INFO(ss.str());
 }
 
-std::wstring SearchMatch::getSearchTypeName(SearchType type)
+std::string SearchMatch::getSearchTypeName(SearchType type)
 {
 	switch (type)
 	{
 	case SEARCH_NONE:
-		return L"none";
+		return "none";
 	case SEARCH_TOKEN:
-		return L"token";
+		return "token";
 	case SEARCH_COMMAND:
-		return L"command";
+		return "command";
 	case SEARCH_OPERATOR:
-		return L"operator";
+		return "operator";
 	case SEARCH_FULLTEXT:
-		return L"fulltext";
+		return "fulltext";
 	}
 
-	return L"none";
+	return "none";
 }
 
-std::wstring SearchMatch::searchMatchesToString(const std::vector<SearchMatch>& matches)
+std::string SearchMatch::searchMatchesToString(const std::vector<SearchMatch>& matches)
 {
-	std::wstringstream ss;
+	std::stringstream ss;
 
 	for (const SearchMatch& match: matches)
 	{
-		ss << L'@' << match.getFullName() << L':'
-		   << getReadableNodeKindWString(match.nodeType.getKind()) << L' ';
+		ss << '@' << match.getFullName() << ':'
+		   << getReadableNodeKindString(match.nodeType.getKind()) << ' ';
 	}
 
 	return ss.str();
@@ -55,7 +55,7 @@ SearchMatch SearchMatch::createCommand(CommandType type)
 	SearchMatch match;
 	match.name = getCommandName(type);
 	match.text = match.name;
-	match.typeName = L"command";
+	match.typeName = "command";
 	match.searchType = SEARCH_COMMAND;
 	return match;
 }
@@ -67,9 +67,9 @@ std::vector<SearchMatch> SearchMatch::createCommandsForNodeTypes(NodeTypeSet typ
 	for (const NodeType& type: types.getNodeTypes())
 	{
 		SearchMatch match;
-		match.name = type.getReadableTypeWString();
+		match.name = type.getReadableTypeString();
 		match.text = match.name;
-		match.typeName = L"filter";
+		match.typeName = "filter";
 		match.searchType = SEARCH_COMMAND;
 		match.nodeType = type;
 		matches.push_back(match);
@@ -78,21 +78,21 @@ std::vector<SearchMatch> SearchMatch::createCommandsForNodeTypes(NodeTypeSet typ
 	return matches;
 }
 
-std::wstring SearchMatch::getCommandName(CommandType type)
+std::string SearchMatch::getCommandName(CommandType type)
 {
 	switch (type)
 	{
 	case COMMAND_ALL:
-		return L"overview";
+		return "overview";
 	case COMMAND_ERROR:
-		return L"error";
+		return "error";
 	case COMMAND_NODE_FILTER:
-		return L"node_filter";
+		return "node_filter";
 	case COMMAND_LEGEND:
-		return L"legend";
+		return "legend";
 	}
 
-	return L"none";
+	return "none";
 }
 
 SearchMatch::SearchMatch()
@@ -100,7 +100,7 @@ SearchMatch::SearchMatch()
 {
 }
 
-SearchMatch::SearchMatch(const std::wstring& query)
+SearchMatch::SearchMatch(const std::string& query)
 	: name(query)
 	, text(query)
 	,
@@ -124,8 +124,8 @@ bool SearchMatch::operator<(const SearchMatch& other) const
 		return false;
 	}
 
-	const std::wstring* str = &text;
-	const std::wstring* otherStr = &other.text;
+	const std::string* str = &text;
+	const std::string* otherStr = &other.text;
 	if (*str == *otherStr)
 	{
 		str = &name;
@@ -156,9 +156,9 @@ bool SearchMatch::operator<(const SearchMatch& other) const
 	// lower case
 	for (size_t i = 0; i < str->size(); i++)
 	{
-		if (towlower(str->at(i)) != towlower(otherStr->at(i)))
+		if (tolower(str->at(i)) != tolower(otherStr->at(i)))
 		{
-			return towlower(str->at(i)) < towlower(otherStr->at(i));
+			return tolower(str->at(i)) < tolower(otherStr->at(i));
 		}
 		else
 		{
@@ -182,11 +182,11 @@ bool SearchMatch::operator==(const SearchMatch& other) const
 	return text == other.text && searchType == other.searchType;
 }
 
-size_t SearchMatch::getTextSizeForSorting(const std::wstring* str)
+size_t SearchMatch::getTextSizeForSorting(const std::string* str)
 {
 	// check if templated symbol and only use size up to template stuff
-	size_t pos = str->find(L'<');
-	if (pos != std::wstring::npos)
+	size_t pos = str->find('<');
+	if (pos != std::string::npos)
 	{
 		return pos;
 	}
@@ -204,24 +204,24 @@ bool SearchMatch::isFilterCommand() const
 	return searchType == SEARCH_COMMAND && getCommandType() == COMMAND_NODE_FILTER;
 }
 
-void SearchMatch::print(std::wostream& ostream) const
+void SearchMatch::print(std::ostream& ostream) const
 {
-	ostream << name << std::endl << L'\t';
+	ostream << name << std::endl << '\t';
 	size_t i = 0;
 	for (size_t index: indices)
 	{
 		while (i < index)
 		{
 			i++;
-			ostream << L' ';
+			ostream << ' ';
 		}
-		ostream << L'^';
+		ostream << '^';
 		i++;
 	}
 	ostream << std::endl;
 }
 
-std::wstring SearchMatch::getFullName() const
+std::string SearchMatch::getFullName() const
 {
 	if (searchType == SEARCH_TOKEN && nodeType.isFile())
 	{
@@ -231,22 +231,22 @@ std::wstring SearchMatch::getFullName() const
 	return name;
 }
 
-std::wstring SearchMatch::getSearchTypeName() const
+std::string SearchMatch::getSearchTypeName() const
 {
 	return getSearchTypeName(searchType);
 }
 
 SearchMatch::CommandType SearchMatch::getCommandType() const
 {
-	if (name == L"overview")
+	if (name == "overview")
 	{
 		return COMMAND_ALL;
 	}
-	else if (name == L"error")
+	else if (name == "error")
 	{
 		return COMMAND_ERROR;
 	}
-	else if (name == L"legend")
+	else if (name == "legend")
 	{
 		return COMMAND_LEGEND;
 	}

@@ -25,7 +25,7 @@ public:
 		return "MessageFocusChanged";
 	}
 
-	void print(std::wostream& os) const override
+	void print(std::ostream& os) const override
 	{
 		switch (type)
 		{

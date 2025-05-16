@@ -14,7 +14,7 @@ public:
 	ParserClientImpl(std::shared_ptr<IntermediateStorage> storage);
 
 	Id recordFile(const FilePath& filePath, bool indexed) override;
-	void recordFileLanguage(Id fileId, const std::wstring& languageIdentifier) override;
+	void recordFileLanguage(Id fileId, const std::string& languageIdentifier) override;
 
 	Id recordSymbol(const NameHierarchy& symbolName) override;
 	void recordSymbolKind(Id symbolId, SymbolKind symbolKind) override;
@@ -27,12 +27,12 @@ public:
 		Id contextSymbolId,
 		const ParseLocation& location) override;
 
-	void recordLocalSymbol(const std::wstring& name, const ParseLocation& location) override;
+	void recordLocalSymbol(const std::string& name, const ParseLocation& location) override;
 	void recordLocation(Id elementId, const ParseLocation& location, ParseLocationType type) override;
 	void recordComment(const ParseLocation& location) override;
 
 	void recordError(
-		const std::wstring& message,
+		const std::string& message,
 		bool fatal,
 		bool indexed,
 		const FilePath& translationUnit,
@@ -50,7 +50,7 @@ private:
 	void addSourceLocation(Id elementId, const ParseLocation& location, LocationType type);
 
 	std::shared_ptr<IntermediateStorage> m_storage;
-	std::map<std::wstring, Id> m_fileIdMap;
+	std::map<std::string, Id> m_fileIdMap;
 };
 
 #endif	  // PARSER_CLIENT_IMPL_H

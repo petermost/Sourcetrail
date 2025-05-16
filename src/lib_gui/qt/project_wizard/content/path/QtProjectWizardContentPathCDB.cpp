@@ -24,7 +24,7 @@ QtProjectWizardContentPathCDB::QtProjectWizardContentPathCDB(
 		"will stay up to date with changes in the compilation database on every refresh.<br />"
 		"<br />"
 		"You can make use of environment variables with ${ENV_VAR}.");
-	setFileEndings({L".json"});
+	setFileEndings({".json"});
 	setIsRequired(true);
 }
 
@@ -66,14 +66,14 @@ void QtProjectWizardContentPathCDB::populate(QGridLayout* layout, int& row)
 
 void QtProjectWizardContentPathCDB::load()
 {
-	m_picker->setText(QString::fromStdWString(m_settings->getCompilationDatabasePath().wstr()));
+	m_picker->setText(QString::fromStdString(m_settings->getCompilationDatabasePath().str()));
 
 	refresh();
 }
 
 void QtProjectWizardContentPathCDB::save()
 {
-	m_settings->setCompilationDatabasePath(FilePath(m_picker->getText().toStdWString()));
+	m_settings->setCompilationDatabasePath(FilePath(m_picker->getText().toStdString()));
 }
 
 void QtProjectWizardContentPathCDB::refresh()
@@ -127,7 +127,7 @@ void QtProjectWizardContentPathCDB::pickedPath()
 void QtProjectWizardContentPathCDB::onPickerTextChanged(const QString& text)
 {
 	const FilePath cdbPath = utility::getExpandedAndAbsolutePath(
-		FilePath(text.toStdWString()), m_settings->getProjectDirectoryPath());
+		FilePath(text.toStdString()), m_settings->getProjectDirectoryPath());
 	if (!cdbPath.empty() && cdbPath.exists() &&
 		cdbPath != m_settings->getCompilationDatabasePathExpandedAndAbsolute())
 	{

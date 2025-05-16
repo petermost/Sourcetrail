@@ -91,7 +91,7 @@ void QtBookmark::setBookmark(const std::shared_ptr<Bookmark> bookmark)
 	{
 		m_bookmark = bookmark;
 
-		m_activateButton->setText(QString::fromStdWString(m_bookmark->getName()));
+		m_activateButton->setText(QString::fromStdString(m_bookmark->getName()));
 
 		if (!m_bookmark->isValid())
 		{
@@ -101,7 +101,7 @@ void QtBookmark::setBookmark(const std::shared_ptr<Bookmark> bookmark)
 
 		if (m_bookmark->getComment().length() > 0)
 		{
-			m_comment->setText(QString::fromStdWString(m_bookmark->getComment()));
+			m_comment->setText(QString::fromStdString(m_bookmark->getComment()));
 			m_toggleCommentButton->show();
 		}
 		else
@@ -167,7 +167,7 @@ void QtBookmark::resizeEvent(QResizeEvent*  /*event*/)
 		return;
 	}
 
-	m_activateButton->setText(QString::fromStdWString(m_bookmark->getName()));
+	m_activateButton->setText(QString::fromStdString(m_bookmark->getName()));
 	QTimer::singleShot(10, this, &QtBookmark::elideButtonText);
 }
 
@@ -228,7 +228,7 @@ void QtBookmark::deleteClicked()
 void QtBookmark::elideButtonText()
 {
 	m_activateButton->setText(m_activateButton->fontMetrics().elidedText(
-		QString::fromStdWString(m_bookmark->getName()),
+		QString::fromStdString(m_bookmark->getName()),
 		Qt::ElideMiddle,
 		m_activateButton->width() - 16));
 }

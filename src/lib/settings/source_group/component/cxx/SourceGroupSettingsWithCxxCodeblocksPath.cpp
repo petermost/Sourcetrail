@@ -31,10 +31,10 @@ bool SourceGroupSettingsWithCxxCodeblocksPath::equals(const SourceGroupSettingsB
 void SourceGroupSettingsWithCxxCodeblocksPath::load(const ConfigManager* config, const std::string& key)
 {
 	setCodeblocksProjectPath(
-		config->getValueOrDefault(key + "/codeblocks_project_path", FilePath(L"")));
+		config->getValueOrDefault(key + "/codeblocks_project_path", FilePath("")));
 }
 
 void SourceGroupSettingsWithCxxCodeblocksPath::save(ConfigManager* config, const std::string& key)
 {
-	config->setValue(key + "/codeblocks_project_path", getCodeblocksProjectPath().wstr());
+	config->setValue(key + "/codeblocks_project_path", getCodeblocksProjectPath().str());
 }

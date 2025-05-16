@@ -58,7 +58,7 @@ std::unique_ptr<CxxTypeName> CxxTypeNameResolver::getName(const clang::Type* typ
 			if (declName)
 			{
 				return std::make_unique<CxxTypeName>(
-					declName->getName(), std::vector<std::wstring>(), declName->getParent());
+					declName->getName(), std::vector<std::string>(), declName->getParent());
 			}
 			break;
 		}
@@ -68,7 +68,7 @@ std::unique_ptr<CxxTypeName> CxxTypeNameResolver::getName(const clang::Type* typ
 			std::unique_ptr<CxxTypeName> typeName = getName(type->getPointeeType());
 			if (typeName)
 			{
-				typeName->addModifier(CxxTypeName::Modifier(L"*"));
+				typeName->addModifier(CxxTypeName::Modifier("*"));
 			}
 			return typeName;
 		}
@@ -81,7 +81,7 @@ std::unique_ptr<CxxTypeName> CxxTypeNameResolver::getName(const clang::Type* typ
 				clang::dyn_cast<clang::ArrayType>(type)->getElementType());
 			if (typeName)
 			{
-				typeName->addModifier(CxxTypeName::Modifier(L"[]"));
+				typeName->addModifier(CxxTypeName::Modifier("[]"));
 			}
 			return typeName;
 		}
@@ -90,7 +90,7 @@ std::unique_ptr<CxxTypeName> CxxTypeNameResolver::getName(const clang::Type* typ
 			std::unique_ptr<CxxTypeName> typeName = getName(type->getPointeeType());
 			if (typeName)
 			{
-				typeName->addModifier(CxxTypeName::Modifier(L"&"));
+				typeName->addModifier(CxxTypeName::Modifier("&"));
 			}
 			return typeName;
 		}
@@ -99,7 +99,7 @@ std::unique_ptr<CxxTypeName> CxxTypeNameResolver::getName(const clang::Type* typ
 			std::unique_ptr<CxxTypeName> typeName = getName(type->getPointeeType());
 			if (typeName)
 			{
-				typeName->addModifier(CxxTypeName::Modifier(L"&&"));
+				typeName->addModifier(CxxTypeName::Modifier("&&"));
 			}
 			return typeName;
 		}
@@ -128,7 +128,7 @@ std::unique_ptr<CxxTypeName> CxxTypeNameResolver::getName(const clang::Type* typ
 
 			return std::make_unique<CxxTypeName>(
 				utility::decodeFromUtf8(type->getAs<clang::BuiltinType>()->getName(pp).str()),
-				std::vector<std::wstring>());
+				std::vector<std::string>());
 		}
 		case clang::Type::TemplateSpecialization:
 		{
@@ -157,7 +157,7 @@ std::unique_ptr<CxxTypeName> CxxTypeNameResolver::getName(const clang::Type* typ
 
 				if (declName)
 				{
-					std::vector<std::wstring> templateArguments;
+					std::vector<std::string> templateArguments;
 					CxxTemplateArgumentNameResolver resolver(this);
 					resolver.ignoreContextDecl(templateSpecializationType->getTemplateName()
 												   .getAsTemplateDecl()
@@ -208,7 +208,7 @@ std::unique_ptr<CxxTypeName> CxxTypeNameResolver::getName(const clang::Type* typ
 				dependentType->getQualifier());
 			return std::make_unique<CxxTypeName>(
 				utility::decodeFromUtf8(dependentType->getIdentifier()->getName().str()),
-				std::vector<std::wstring>(),
+				std::vector<std::string>(),
 				std::move(specifierName));
 		}
 		case clang::Type::DependentTemplateSpecialization:
@@ -218,7 +218,7 @@ std::unique_ptr<CxxTypeName> CxxTypeNameResolver::getName(const clang::Type* typ
 			std::unique_ptr<CxxName> specifierName = CxxSpecifierNameResolver(this).getName(
 				dependentType->getQualifier());
 
-			std::vector<std::wstring> templateArguments;
+			std::vector<std::string> templateArguments;
 			CxxTemplateArgumentNameResolver resolver(this);
 			for (const clang::TemplateArgument &templateArgument : dependentType->template_arguments())
 			{
@@ -248,14 +248,14 @@ std::unique_ptr<CxxTypeName> CxxTypeNameResolver::getName(const clang::Type* typ
 				switch (autoType->getKeyword())
 				{
 					case AutoTypeKeyword::Auto:
-						return make_unique<CxxTypeName>(L"auto");
+						return make_unique<CxxTypeName>("auto");
 					case AutoTypeKeyword::DecltypeAuto:
-						return make_unique<CxxTypeName>(L"decltype(auto)");
+						return make_unique<CxxTypeName>("decltype(auto)");
 					case AutoTypeKeyword::GNUAutoType:
-						return make_unique<CxxTypeName>(L"__auto_type"); // GNU C extension
+						return make_unique<CxxTypeName>("__auto_type"); // GNU C extension
 					default:
 						LOG_WARNING("Unknown auto type keyword encountered");
-						return make_unique<CxxTypeName>(L"auto");
+						return make_unique<CxxTypeName>("auto");
 				}
 			}
 		}
@@ -267,19 +267,19 @@ std::unique_ptr<CxxTypeName> CxxTypeNameResolver::getName(const clang::Type* typ
 		{
 			const clang::FunctionProtoType* protoType = clang::dyn_cast<clang::FunctionProtoType>(
 				type);
-			std::wstring nameString =
+			std::string nameString =
 				CxxTypeName::makeUnsolvedIfNull(getName(protoType->getReturnType()))->toString();
-			nameString += L"(";
+			nameString += "(";
 			for (unsigned i = 0; i < protoType->getNumParams(); i++)
 			{
 				if (i != 0)
 				{
-					nameString += L", ";
+					nameString += ", ";
 				}
 				nameString +=
 					CxxTypeName::makeUnsolvedIfNull(getName(protoType->getParamType(i)))->toString();
 			}
-			nameString += L")";
+			nameString += ")";
 
 			return std::make_unique<CxxTypeName>(std::move(nameString));
 		}
@@ -297,7 +297,7 @@ std::unique_ptr<CxxTypeName> CxxTypeNameResolver::getName(const clang::Type* typ
 			clang::SmallString<64> Buf;
 			llvm::raw_svector_ostream StrOS(Buf);
 			clang::QualType::print(type, clang::Qualifiers(), StrOS, pp, clang::Twine());
-			std::wstring nameString = utility::decodeFromUtf8(StrOS.str().str());
+			std::string nameString = utility::decodeFromUtf8(StrOS.str().str());
 
 			return std::make_unique<CxxTypeName>(std::move(nameString));
 		}

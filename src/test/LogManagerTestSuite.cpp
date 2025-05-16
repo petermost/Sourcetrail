@@ -16,9 +16,9 @@ public:
 	int getWarningCount() const;
 	int getErrorCount() const;
 
-	std::wstring getLastInfo() const;
-	std::wstring getLastWarning() const;
-	std::wstring getLastError() const;
+	std::string getLastInfo() const;
+	std::string getLastWarning() const;
+	std::string getLastError() const;
 
 private:
 	void logInfo(const LogMessage& message) override;
@@ -29,9 +29,9 @@ private:
 	int m_logWarningCount = 0;
 	int m_logErrorCount = 0;
 
-	std::wstring m_lastInfo;
-	std::wstring m_lastWarning;
-	std::wstring m_lastError;
+	std::string m_lastInfo;
+	std::string m_lastWarning;
+	std::string m_lastError;
 };
 
 TestLogger::TestLogger()
@@ -63,17 +63,17 @@ int TestLogger::getErrorCount() const
 	return m_logErrorCount;
 }
 
-std::wstring TestLogger::getLastInfo() const
+std::string TestLogger::getLastInfo() const
 {
 	return m_lastInfo;
 }
 
-std::wstring TestLogger::getLastWarning() const
+std::string TestLogger::getLastWarning() const
 {
 	return m_lastWarning;
 }
 
-std::wstring TestLogger::getLastError() const
+std::string TestLogger::getLastError() const
 {
 	return m_lastError;
 }
@@ -121,7 +121,7 @@ void addAndRemoveTestLogger(
 
 void logSomeMessages(
 	LogManagerImplementation* logManagerImplementation,
-	const std::wstring& message,
+	const std::string& message,
 	const unsigned int messageCount)
 {
 	for (unsigned int i = 0; i < messageCount; i++)
@@ -165,13 +165,13 @@ TEST_CASE("logger logs message")
 {
 	LogManagerImplementation logManagerImplementation;
 
-	const std::wstring log = L"test";
+	const std::string log = "test";
 	std::shared_ptr<TestLogger> logger = std::make_shared<TestLogger>();
 
 	logManagerImplementation.addLogger(logger);
 	logManagerImplementation.logInfo(log, __FILE__, __FUNCTION__, __LINE__);
 	const int logCount = logger->getMessageCount();
-	const std::wstring lastLog = logger->getLastInfo();
+	const std::string lastLog = logger->getLastInfo();
 
 	REQUIRE(1 == logCount);
 	REQUIRE(log == lastLog);
@@ -181,14 +181,14 @@ TEST_CASE("logger logs warning")
 {
 	LogManagerImplementation logManagerImplementation;
 
-	const std::wstring log = L"test";
+	const std::string log = "test";
 	std::shared_ptr<TestLogger> logger = std::make_shared<TestLogger>();
 
 	logManagerImplementation.addLogger(logger);
 
 	logManagerImplementation.logWarning(log, __FILE__, __FUNCTION__, __LINE__);
 	const int logCount = logger->getWarningCount();
-	const std::wstring lastLog = logger->getLastWarning();
+	const std::string lastLog = logger->getLastWarning();
 
 	REQUIRE(1 == logCount);
 	REQUIRE(log == lastLog);
@@ -198,14 +198,14 @@ TEST_CASE("logger logs error")
 {
 	LogManagerImplementation logManagerImplementation;
 
-	std::wstring log = L"test";
+	std::string log = "test";
 	std::shared_ptr<TestLogger> logger = std::make_shared<TestLogger>();
 
 	logManagerImplementation.addLogger(logger);
 
 	logManagerImplementation.logError(log, __FILE__, __FUNCTION__, __LINE__);
 	const int logCount = logger->getErrorCount();
-	const std::wstring lastLog = logger->getLastError();
+	const std::string lastLog = logger->getLastError();
 
 	REQUIRE(1 == logCount);
 	REQUIRE(log == lastLog);
@@ -215,9 +215,9 @@ TEST_CASE("logger logs only logs of defined log level")
 {
 	LogManagerImplementation logManagerImplementation;
 
-	std::wstring info = L"info";
-	std::wstring warning = L"warning";
-	std::wstring error = L"error";
+	std::string info = "info";
+	std::string warning = "warning";
+	std::string error = "error";
 
 	std::shared_ptr<TestLogger> logger = std::make_shared<TestLogger>();
 
@@ -269,7 +269,7 @@ TEST_CASE("logger logs threaded")
 {
 	LogManagerImplementation logManagerImplementation;
 
-	std::wstring log = L"foo";
+	std::string log = "foo";
 	int messageCount = 100;
 	std::shared_ptr<TestLogger> logger = std::make_shared<TestLogger>();
 	logManagerImplementation.addLogger(logger);

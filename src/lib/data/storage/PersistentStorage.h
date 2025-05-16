@@ -110,19 +110,19 @@ public:
 	StorageEdge getEdgeById(Id edgeId) const override;
 
 	std::shared_ptr<SourceLocationCollection> getFullTextSearchLocations(
-		const std::wstring& searchTerm, bool caseSensitive) const override;
+		const std::string& searchTerm, bool caseSensitive) const override;
 
 	std::vector<SearchMatch> getAutocompletionMatches(
-		const std::wstring& query, NodeTypeSet acceptedNodeTypes, bool acceptCommands) const override;
+		const std::string& query, NodeTypeSet acceptedNodeTypes, bool acceptCommands) const override;
 	std::vector<SearchMatch> getAutocompletionSymbolMatches(
-		const std::wstring& query,
+		const std::string& query,
 		const NodeTypeSet& acceptedNodeTypes,
 		size_t maxResultsCount,
 		size_t maxBestScoredResultsLength) const;
 	std::vector<SearchMatch> getAutocompletionFileMatches(
-		const std::wstring& query, size_t maxResultsCount) const;
+		const std::string& query, size_t maxResultsCount) const;
 	std::vector<SearchMatch> getAutocompletionCommandMatches(
-		const std::wstring& query, NodeTypeSet acceptedNodeTypes) const;
+		const std::string& query, NodeTypeSet acceptedNodeTypes) const;
 	std::vector<SearchMatch> getSearchMatchesForTokenIds(const std::vector<Id>& elementIds) const override;
 
 	std::shared_ptr<Graph> getGraphForAll() const override;
@@ -177,13 +177,13 @@ public:
 	
 	void addNodeBookmark(const NodeBookmark& bookmark) override;
 	void addEdgeBookmark(const EdgeBookmark& bookmark) override;
-	Id addBookmarkCategory(const std::wstring& categoryName) override;
+	Id addBookmarkCategory(const std::string& categoryName) override;
 
 	void updateBookmark(
 		const BookmarkId bookmarkId,
-		const std::wstring& name,
-		const std::wstring& comment,
-		const std::wstring& categoryName) override;
+		const std::string& name,
+		const std::string& comment,
+		const std::string& categoryName) override;
 	void removeBookmark(const BookmarkId bookmarkId) override;
 	void removeBookmarkCategory(const Id id) override;
 
@@ -218,7 +218,7 @@ private:
 	FilePath getFileNodePath(Id fileId) const;
 	bool getFileNodeComplete(Id fileId) const;
 	bool getFileNodeIndexed(Id fileId) const;
-	std::wstring getFileNodeLanguage(Id fileId) const;
+	std::string getFileNodeLanguage(Id fileId) const;
 
 	std::unordered_map<Id, std::set<Id>> getFileIdToIncludingFileIdMap() const;
 	std::unordered_map<Id, std::set<Id>> getFileIdToIncludedFileIdMap() const;
@@ -281,7 +281,7 @@ private:
 	std::map<Id, FilePath> m_fileNodePaths;
 	std::map<Id, bool> m_fileNodeComplete;
 	std::unordered_map<Id, bool> m_fileNodeIndexed;
-	std::map<Id, std::wstring> m_fileNodeLanguage;
+	std::map<Id, std::string> m_fileNodeLanguage;
 
 	std::unordered_map<Id, DefinitionKind> m_symbolDefinitionKinds;
 	std::map<Id, Id> m_memberEdgeIdOrderMap;

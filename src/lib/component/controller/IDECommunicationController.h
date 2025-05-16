@@ -31,7 +31,7 @@ public:
 	virtual void stopListening() = 0;
 	virtual bool isListening() const = 0;
 
-	void handleIncomingMessage(const std::wstring& message);
+	void handleIncomingMessage(const std::string& message);
 
 	bool getEnabled() const;
 	void setEnabled(const bool enabled);
@@ -49,7 +49,7 @@ private:
 	void handleMessage(MessageIDECreateCDB* message) override;
 	void handleMessage(MessageMoveIDECursor* message) override;
 	void handleMessage(MessagePluginPortChange* message) override;
-	virtual void sendMessage(const std::wstring& message) const = 0;
+	virtual void sendMessage(const std::string& message) const = 0;
 
 	StorageAccess* m_storageAccess;
 

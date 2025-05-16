@@ -465,11 +465,11 @@ QRectF QtCodeArea::getLineRectForLineNumber(size_t lineNumber) const
 }
 
 void QtCodeArea::findScreenMatches(
-	const std::wstring& query, std::vector<std::pair<QtCodeArea*, Id>>* screenMatches)
+	const std::string& query, std::vector<std::pair<QtCodeArea*, Id>>* screenMatches)
 {
 	TextCodec codec(ApplicationSettings::getInstance()->getTextEncoding());
 	// remove carriage return
-	const std::wstring& code = utility::toLowerCase(
+	const std::string& code = utility::toLowerCase(
 		codec.decode(utility::replace(getCode(), "\r", "")));
 	size_t pos = 0;
 	while (pos != std::string::npos)
@@ -903,10 +903,10 @@ void QtCodeArea::mouseMoveEvent(QMouseEvent* event)
 			{
 				if (annotation->locationType == LocationType::ERROR && annotation->tokenIds.size())
 				{
-					std::wstring errorMessage = m_navigator->getErrorMessageForId(
+					std::string errorMessage = m_navigator->getErrorMessageForId(
 						*annotation->tokenIds.begin());
 					QToolTip::showText(
-						QMouseEvent_globalPos(event), QString::fromStdWString(errorMessage), this);
+						QMouseEvent_globalPos(event), QString::fromStdString(errorMessage), this);
 
 					QtCodeField::focusTokenIds({*annotation->tokenIds.begin()});
 					viewport()->setCursor(Qt::PointingHandCursor);

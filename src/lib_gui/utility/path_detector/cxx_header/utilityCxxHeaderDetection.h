@@ -9,7 +9,7 @@
 
 namespace utility
 {
-std::vector<std::wstring> getCxxHeaderPaths(const std::string& compilerName);
+std::vector<std::string> getCxxHeaderPaths(const std::string& compilerName);
 
 std::vector<FilePath> getWindowsSdkHeaderSearchPaths(Platform::Architecture architecture);
 }

@@ -445,7 +445,7 @@ public:
 
 	// GraphNode
 	const Node* data = nullptr;
-	std::wstring name;
+	std::string name;
 
 	bool active = false;
 	bool connected = false;

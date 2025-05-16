@@ -6,9 +6,9 @@
 class SourceGroupSettingsWithSourceExtensionsCxx: public SourceGroupSettingsWithSourceExtensions
 {
 private:
-	std::vector<std::wstring> getDefaultSourceExtensions() const override
+	std::vector<std::string> getDefaultSourceExtensions() const override
 	{
-		return {L".c", L".cpp", L".cxx", L".cc"};
+		return {".c", ".cpp", ".cxx", ".cc"};
 	}
 };
 

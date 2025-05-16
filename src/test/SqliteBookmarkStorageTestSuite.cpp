@@ -5,7 +5,7 @@
 
 TEST_CASE("add bookmarks")
 {
-	FilePath databasePath(L"data/SQLiteTestSuite/bookmarkTest.sqlite");
+	FilePath databasePath("data/SQLiteTestSuite/bookmarkTest.sqlite");
 	int bookmarkCount = 4;
 	int result = -1;
 	{
@@ -16,9 +16,9 @@ TEST_CASE("add bookmarks")
 		for (int i = 0; i < bookmarkCount; i++)
 		{
 			const Id categoryId =
-				storage.addBookmarkCategory(StorageBookmarkCategoryData(L"test category")).id;
+				storage.addBookmarkCategory(StorageBookmarkCategoryData("test category")).id;
 			storage.addBookmark(StorageBookmarkData(
-				L"test bookmark", L"test comment", TimeStamp::now().toString(), categoryId));
+				"test bookmark", "test comment", TimeStamp::now().toString(), categoryId));
 		}
 
 		result = static_cast<int>(storage.getAllBookmarks().size());
@@ -31,7 +31,7 @@ TEST_CASE("add bookmarks")
 
 TEST_CASE("add bookmarked node")
 {
-	FilePath databasePath(L"data/SQLiteTestSuite/bookmarkTest.sqlite");
+	FilePath databasePath("data/SQLiteTestSuite/bookmarkTest.sqlite");
 	int bookmarkCount = 4;
 	int result = -1;
 	{
@@ -39,12 +39,12 @@ TEST_CASE("add bookmarked node")
 		SqliteBookmarkStorage storage(databasePath);
 		storage.setup();
 
-		const Id categoryId = storage.addBookmarkCategory(StorageBookmarkCategoryData(L"test category")).id;
-		const BookmarkId bookmarkId = storage.addBookmark(StorageBookmarkData(L"test bookmark", L"test comment", TimeStamp::now().toString(), categoryId)).bookmarkId;
+		const Id categoryId = storage.addBookmarkCategory(StorageBookmarkCategoryData("test category")).id;
+		const BookmarkId bookmarkId = storage.addBookmark(StorageBookmarkData("test bookmark", "test comment", TimeStamp::now().toString(), categoryId)).bookmarkId;
 
 		for (int i = 0; i < bookmarkCount; i++)
 		{
-			storage.addBookmarkedNode(StorageBookmarkedNodeData(bookmarkId, L"test name"));
+			storage.addBookmarkedNode(StorageBookmarkedNodeData(bookmarkId, "test name"));
 		}
 
 		result = static_cast<int>(storage.getAllBookmarkedNodes().size());
@@ -57,16 +57,16 @@ TEST_CASE("add bookmarked node")
 
 TEST_CASE("remove bookmark also removes bookmarked node")
 {
-	FilePath databasePath(L"data/SQLiteTestSuite/bookmarkTest.sqlite");
+	FilePath databasePath("data/SQLiteTestSuite/bookmarkTest.sqlite");
 	int result = -1;
 	{
 		FileSystem::remove(databasePath);
 		SqliteBookmarkStorage storage(databasePath);
 		storage.setup();
 
-		const Id categoryId = storage.addBookmarkCategory(StorageBookmarkCategoryData(L"test category")).id;
-		const BookmarkId bookmarkId = storage.addBookmark(StorageBookmarkData( L"test bookmark", L"test comment", TimeStamp::now().toString(), categoryId)).bookmarkId;
-		storage.addBookmarkedNode(StorageBookmarkedNodeData(bookmarkId, L"test name"));
+		const Id categoryId = storage.addBookmarkCategory(StorageBookmarkCategoryData("test category")).id;
+		const BookmarkId bookmarkId = storage.addBookmark(StorageBookmarkData( "test bookmark", "test comment", TimeStamp::now().toString(), categoryId)).bookmarkId;
+		storage.addBookmarkedNode(StorageBookmarkedNodeData(bookmarkId, "test name"));
 
 		storage.removeBookmark(bookmarkId);
 
@@ -80,10 +80,10 @@ TEST_CASE("remove bookmark also removes bookmarked node")
 
 TEST_CASE("edit nodeBookmark")
 {
-	FilePath databasePath(L"data/SQLiteTestSuite/bookmarkTest.sqlite");
+	FilePath databasePath("data/SQLiteTestSuite/bookmarkTest.sqlite");
 
-	const std::wstring updatedName = L"updated name";
-	const std::wstring updatedComment = L"updated comment";
+	const std::string updatedName = "updated name";
+	const std::string updatedComment = "updated comment";
 
 	StorageBookmark storageBookmark;
 	{
@@ -91,9 +91,9 @@ TEST_CASE("edit nodeBookmark")
 		SqliteBookmarkStorage storage(databasePath);
 		storage.setup();
 
-		const Id categoryId = storage.addBookmarkCategory(StorageBookmarkCategoryData(L"test category")).id;
-		const BookmarkId bookmarkId = storage.addBookmark(StorageBookmarkData(L"test bookmark", L"test comment", TimeStamp::now().toString(), categoryId)).bookmarkId;
-		storage.addBookmarkedNode(StorageBookmarkedNodeData(bookmarkId, L"test name"));
+		const Id categoryId = storage.addBookmarkCategory(StorageBookmarkCategoryData("test category")).id;
+		const BookmarkId bookmarkId = storage.addBookmark(StorageBookmarkData("test bookmark", "test comment", TimeStamp::now().toString(), categoryId)).bookmarkId;
+		storage.addBookmarkedNode(StorageBookmarkedNodeData(bookmarkId, "test name"));
 
 		storage.updateBookmark(bookmarkId, updatedName, updatedComment, categoryId);
 

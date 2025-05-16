@@ -69,9 +69,9 @@ SourceLocation* SourceLocationCollection::addSourceLocation(
 		(startLineNumber == endLineNumber && startColumnNumber > endColumnNumber))
 	{
 		LOG_ERROR(
-			L"SourceLocation has wrong boundaries: " + filePath.wstr() + L" " +
-			std::to_wstring(startLineNumber) + L":" + std::to_wstring(startColumnNumber) + L" " +
-			std::to_wstring(endLineNumber) + L":" + std::to_wstring(endColumnNumber));
+			"SourceLocation has wrong boundaries: " + filePath.str() + " " +
+			std::to_string(startLineNumber) + ":" + std::to_string(startColumnNumber) + " " +
+			std::to_string(endLineNumber) + ":" + std::to_string(endColumnNumber));
 		return nullptr;
 	}
 
@@ -140,7 +140,7 @@ void SourceLocationCollection::forEachSourceLocation(std::function<void(SourceLo
 }
 
 SourceLocationFile* SourceLocationCollection::createSourceLocationFile(
-	const FilePath& filePath, const std::wstring& language, bool isWhole, bool isComplete, bool isIndexed)
+	const FilePath& filePath, const std::string& language, bool isWhole, bool isComplete, bool isIndexed)
 {
 	SourceLocationFile* file = getSourceLocationFileByPath(filePath).get();
 	if (file)
@@ -154,9 +154,9 @@ SourceLocationFile* SourceLocationCollection::createSourceLocationFile(
 	return filePtr.get();
 }
 
-std::wostream& operator<<(std::wostream& ostream, const SourceLocationCollection& base)
+std::ostream& operator<<(std::ostream& ostream, const SourceLocationCollection& base)
 {
-	ostream << L"Locations:\n";
+	ostream << "Locations:\n";
 	base.forEachSourceLocationFile(
 		[&ostream](std::shared_ptr<SourceLocationFile> f) { ostream << *f; });
 	return ostream;

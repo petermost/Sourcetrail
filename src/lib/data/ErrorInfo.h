@@ -19,11 +19,11 @@ struct ErrorInfo
 
 	ErrorInfo(
 		Id id,
-		std::wstring message,
-		std::wstring filePath,
+		std::string message,
+		std::string filePath,
 		size_t lineNumber,
 		size_t columnNumber,
-		std::wstring translationUnit,
+		std::string translationUnit,
 		bool fatal,
 		bool indexed)
 		: id(id)
@@ -39,13 +39,13 @@ struct ErrorInfo
 
 	Id id;
 
-	std::wstring message;
+	std::string message;
 
-	std::wstring filePath;
+	std::string filePath;
 	size_t lineNumber;
 	size_t columnNumber;
 
-	std::wstring translationUnit;
+	std::string translationUnit;
 	bool fatal;
 	bool indexed;
 };

@@ -9,19 +9,9 @@ ostream &operator << (ostream &os, const Id id)
 	return os << static_cast<Id::type>(id);
 }
 
-wostream &operator << (wostream &os, const Id id)
-{
-	return os << static_cast<Id::type>(id);
-}
-
 string to_string(const Id id)
 {
 	return std::to_string(static_cast<Id::type>(id));
-}
-
-wstring to_wstring(const Id id)
-{
-	return std::to_wstring(static_cast<Id::type>(id));
 }
 
 namespace std

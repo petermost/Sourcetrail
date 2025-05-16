@@ -5,19 +5,19 @@
 
 #include "utilityString.h"
 
-std::wstring IndexerCommand::serialize(std::shared_ptr<const IndexerCommand> indexerCommand, bool compact)
+std::string IndexerCommand::serialize(std::shared_ptr<const IndexerCommand> indexerCommand, bool compact)
 {
 	QJsonDocument jsonDocument(indexerCommand->doSerialize());
 	return QString::fromUtf8(
 			   jsonDocument.toJson(compact ? QJsonDocument::Compact : QJsonDocument::Indented))
-		.toStdWString();
+		.toStdString();
 }
 
 IndexerCommand::IndexerCommand(const FilePath& sourceFilePath): m_sourceFilePath(sourceFilePath) {}
 
 size_t IndexerCommand::getByteSize(size_t  /*stringSize*/) const
 {
-	return utility::encodeToUtf8(m_sourceFilePath.wstr()).size();
+	return utility::encodeToUtf8(m_sourceFilePath.str()).size();
 }
 
 const FilePath& IndexerCommand::getSourceFilePath() const
@@ -34,7 +34,7 @@ QJsonObject IndexerCommand::doSerialize() const
 			indexerCommandTypeToString(getIndexerCommandType()));
 	}
 	{
-		jsonObject["source_file_path"] = QString::fromStdWString(m_sourceFilePath.wstr());
+		jsonObject["source_file_path"] = QString::fromStdString(m_sourceFilePath.str());
 	}
 
 	return jsonObject;

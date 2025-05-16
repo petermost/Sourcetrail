@@ -1,8 +1,8 @@
 #include "CxxVariableDeclName.h"
 
 CxxVariableDeclName::CxxVariableDeclName(
-	std::wstring name,
-	std::vector<std::wstring> templateParameterNames,
+	std::string name,
+	std::vector<std::string> templateParameterNames,
 	std::unique_ptr<CxxTypeName> typeName,
 	bool isStatic)
 	: CxxDeclName(std::move(name), std::move(templateParameterNames))
@@ -13,14 +13,14 @@ CxxVariableDeclName::CxxVariableDeclName(
 
 NameHierarchy CxxVariableDeclName::toNameHierarchy() const
 {
-	std::wstring signaturePrefix;
+	std::string signaturePrefix;
 	if (m_isStatic)
 	{
-		signaturePrefix += L"static ";
+		signaturePrefix += "static ";
 	}
 	signaturePrefix += m_typeName->toString();
 
 	NameHierarchy ret = CxxDeclName::toNameHierarchy();
-	ret.back().setSignature(std::move(signaturePrefix), L"");
+	ret.back().setSignature(std::move(signaturePrefix), "");
 	return ret;
 }

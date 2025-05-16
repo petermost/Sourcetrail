@@ -32,7 +32,7 @@ void InterprocessIndexingStatusManager::startIndexingSourceFile(const FilePath& 
 	if (indexingFilesPtr)
 	{
 		SharedMemory::String fileStr(access.getAllocator());
-		fileStr = utility::encodeToUtf8(filePath.wstr()).c_str();
+		fileStr = utility::encodeToUtf8(filePath.str()).c_str();
 		indexingFilesPtr->push_back(fileStr);
 	}
 
@@ -76,7 +76,7 @@ void InterprocessIndexingStatusManager::startIndexingSourceFile(const FilePath& 
 		}
 
 		SharedMemory::String str(access.getAllocator());
-		str = utility::encodeToUtf8(filePath.wstr()).c_str();
+		str = utility::encodeToUtf8(filePath.str()).c_str();
 
 		it = currentFilesPtr->insert(std::pair(getProcessId(), str)).first;
 		it->second = str;

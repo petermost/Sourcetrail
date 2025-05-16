@@ -15,8 +15,8 @@ public:
 	FilePath getPchInputFilePathExpandedAndAbsolute() const;
 	void setPchInputFilePathFilePath(const FilePath& path);
 
-	std::vector<std::wstring> getPchFlags() const;
-	void setPchFlags(const std::vector<std::wstring>& pchFlags);
+	std::vector<std::string> getPchFlags() const;
+	void setPchFlags(const std::vector<std::string>& pchFlags);
 
 	bool getUseCompilerFlags() const;
 	void setUseCompilerFlags(bool useCompilerFlags);
@@ -29,7 +29,7 @@ protected:
 
 private:
 	FilePath m_pchInputFilePath;
-	std::vector<std::wstring> m_pchFlags;
+	std::vector<std::string> m_pchFlags;
 	bool m_useCompilerFlags = true;
 };
 

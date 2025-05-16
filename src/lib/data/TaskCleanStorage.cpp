@@ -21,7 +21,7 @@ TaskCleanStorage::TaskCleanStorage(
 void TaskCleanStorage::doEnter(std::shared_ptr<Blackboard>  /*blackboard*/)
 {
 	m_dialogView->showUnknownProgressDialog(
-		L"Clearing Files", std::to_wstring(m_filePaths.size()) + L" Files");
+		"Clearing Files", std::to_string(m_filePaths.size()) + " Files");
 
 	m_start = TimeStamp::now();
 
@@ -45,7 +45,7 @@ Task::TaskState TaskCleanStorage::doUpdate(std::shared_ptr<Blackboard>  /*blackb
 
 		storage->clearFileElements(m_filePaths, [=, this](int progress) {
 			m_dialogView->showProgressDialog(
-				L"Clearing", std::to_wstring(m_filePaths.size()) + L" Files", progress);
+				"Clearing", std::to_string(m_filePaths.size()) + " Files", progress);
 		});
 	}
 

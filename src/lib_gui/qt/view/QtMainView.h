@@ -54,7 +54,7 @@ public:
 	void refreshUIState(bool isAfterIndexing) override;
 
 	void hideStartScreen() override;
-	void setTitle(const std::wstring& title) override;
+	void setTitle(const std::string& title) override;
 	void activateWindow() override;
 
 	void updateRecentProjectMenu() override;

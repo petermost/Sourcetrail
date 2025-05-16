@@ -4,10 +4,7 @@
 
 using namespace std;
 
-namespace
-{
-
-constexpr array AVAILABLE_ENCODINGS = {
+static constexpr array AVAILABLE_ENCODINGS = {
 	QStringConverter::Encoding::Utf8,
 	QStringConverter::Encoding::Utf16,
 	QStringConverter::Encoding::Utf16LE,
@@ -19,8 +16,6 @@ constexpr array AVAILABLE_ENCODINGS = {
 	QStringConverter::Encoding::System
 };
 static_assert(AVAILABLE_ENCODINGS.size() == QStringConverter::Encoding::LastEncoding + 1, "Encoding missing");
-
-}
 
 QStringList TextCodec::availableCodecs()
 {
@@ -39,28 +34,25 @@ TextCodec::TextCodec(const string &name)
 {
 }
 
-wstring TextCodec::decode(const string &str)
-{
-	if (m_decoder.isValid())
-		return static_cast<QString>(m_decoder.decode(str.c_str())).toStdWString();
-	else
-		return QString::fromStdString(str).toStdWString();
-}
-
-string TextCodec::encode(const wstring &str)
+string TextCodec::decode(const string &encodedString)
 {
 	if (m_encoder.isValid())
-		return static_cast<QByteArray>(m_encoder.encode(QString::fromStdWString(str))).toStdString();
+		return static_cast<QString>(m_decoder.decode(encodedString)).toStdString();
 	else
-		return QString::fromStdWString(str).toStdString();
+		return encodedString;
 }
 
-int TextCodec::encodedSize(const QString &str)
+string TextCodec::encode(const string &decodedString)
 {
 	if (m_encoder.isValid())
-		return static_cast<QByteArray>(m_encoder.encode(str)).size();
+		return static_cast<QByteArray>(m_encoder.encode(QString::fromStdString(decodedString))).toStdString();
 	else
-		return str.toUtf8().size();
+		return decodedString;
+}
+
+int TextCodec::encodedSize(const QString &decodedString)
+{
+	return encode(decodedString.toStdString()).size();
 }
 
 bool TextCodec::isValid() const

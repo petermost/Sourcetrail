@@ -42,7 +42,7 @@ public:
 	void removeResponder(ScreenSearchResponder* responder) override;
 	void clearMatches() override;
 
-	void search(const std::wstring& query, const std::set<std::string>& responderNames);
+	void search(const std::string& query, const std::set<std::string>& responderNames);
 	void activateMatch(bool next);
 
 private:

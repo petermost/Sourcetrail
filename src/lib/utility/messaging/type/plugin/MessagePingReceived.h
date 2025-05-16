@@ -13,7 +13,7 @@ public:
 		return "MessagePingReceived";
 	}
 
-	std::wstring ideName;
+	std::string ideName;
 };
 
 #endif	  // MESSAGE_PING_RECEIVED_H

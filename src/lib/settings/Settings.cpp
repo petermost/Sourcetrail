@@ -36,7 +36,7 @@ bool Settings::load(const FilePath& filePath, bool readOnly)
 	{
 		clear();
 		m_filePath = filePath;
-		LOG_WARNING(L"File for Settings not found: " + filePath.wstr());
+		LOG_WARNING("File for Settings not found: " + filePath.str());
 		return false;
 	}
 }
@@ -65,7 +65,7 @@ bool Settings::save()
 
 	if (!success)
 	{
-		LOG_WARNING(L"Settings were not saved: " + m_filePath.wstr());
+		LOG_WARNING("Settings were not saved: " + m_filePath.str());
 	}
 
 	return success;
@@ -112,7 +112,7 @@ void Settings::setFilePath(const FilePath& filePath)
 std::vector<FilePath> Settings::getPathValues(const std::string& key) const
 {
 	std::vector<FilePath> paths;
-	for (const std::wstring& value: getValues<std::wstring>(key, {}))
+	for (const std::string& value: getValues<std::string>(key, {}))
 	{
 		paths.push_back(FilePath(value));
 	}
@@ -121,10 +121,10 @@ std::vector<FilePath> Settings::getPathValues(const std::string& key) const
 
 bool Settings::setPathValues(const std::string& key, const std::vector<FilePath>& paths)
 {
-	std::vector<std::wstring> values;
+	std::vector<std::string> values;
 	for (const FilePath& path: paths)
 	{
-		values.push_back(path.wstr());
+		values.push_back(path.str());
 	}
 
 	return setValues(key, values);

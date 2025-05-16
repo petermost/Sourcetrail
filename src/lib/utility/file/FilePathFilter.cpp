@@ -1,21 +1,21 @@
 #include "FilePathFilter.h"
 
-FilePathFilter::FilePathFilter(const std::wstring& filterString)
+FilePathFilter::FilePathFilter(const std::string& filterString)
 	: m_filterString(filterString), m_filterRegex(convertFilterStringToRegex(filterString))
 {
 }
 
-std::wstring FilePathFilter::wstr() const
+std::string FilePathFilter::str() const
 {
 	return m_filterString;
 }
 
 bool FilePathFilter::isMatching(const FilePath& filePath) const
 {
-	return isMatching(filePath.wstr());
+	return isMatching(filePath.str());
 }
 
-bool FilePathFilter::isMatching(const std::wstring& fileStr) const
+bool FilePathFilter::isMatching(const std::string& fileStr) const
 {
 	return std::regex_match(fileStr, m_filterRegex);
 }
@@ -25,79 +25,79 @@ bool FilePathFilter::operator<(const FilePathFilter& other) const
 	return m_filterString.compare(other.m_filterString) < 0;
 }
 
-std::wregex FilePathFilter::convertFilterStringToRegex(const std::wstring& filterString)
+std::regex FilePathFilter::convertFilterStringToRegex(const std::string& filterString)
 {
-	std::wstring regexFilterString = filterString;
+	std::string regexFilterString = filterString;
 
 	{
-		std::wregex regex(L"[\\\\/]");
-		regexFilterString = std::regex_replace(regexFilterString, regex, L"[\\\\/]");
+		std::regex regex("[\\\\/]");
+		regexFilterString = std::regex_replace(regexFilterString, regex, "[\\\\/]");
 	}
 
 	{
-		std::wregex regex(L"([^\\\\])([^/])([\\]])");
-		regexFilterString = std::regex_replace(regexFilterString, regex, L"$1$2[\\]]");
+		std::regex regex("([^\\\\])([^/])([\\]])");
+		regexFilterString = std::regex_replace(regexFilterString, regex, "$1$2[\\]]");
 	}
 
 	{
-		std::wregex regex(L"([\\[])([^\\\\])");
-		regexFilterString = std::regex_replace(regexFilterString, regex, L"[\\[]$2");
+		std::regex regex("([\\[])([^\\\\])");
+		regexFilterString = std::regex_replace(regexFilterString, regex, "[\\[]$2");
 	}
 
 	{
-		std::wregex regex(L"[\\(]");
-		regexFilterString = std::regex_replace(regexFilterString, regex, L"[\\(]");
+		std::regex regex("[\\(]");
+		regexFilterString = std::regex_replace(regexFilterString, regex, "[\\(]");
 	}
 
 	{
-		std::wregex regex(L"[\\)]");
-		regexFilterString = std::regex_replace(regexFilterString, regex, L"[\\)]");
+		std::regex regex("[\\)]");
+		regexFilterString = std::regex_replace(regexFilterString, regex, "[\\)]");
 	}
 
 	{
-		std::wregex regex(L"[\\{]");
-		regexFilterString = std::regex_replace(regexFilterString, regex, L"[\\{]");
+		std::regex regex("[\\{]");
+		regexFilterString = std::regex_replace(regexFilterString, regex, "[\\{]");
 	}
 
 	{
-		std::wregex regex(L"[\\}]");
-		regexFilterString = std::regex_replace(regexFilterString, regex, L"[\\}]");
+		std::regex regex("[\\}]");
+		regexFilterString = std::regex_replace(regexFilterString, regex, "[\\}]");
 	}
 
 	{
-		std::wregex regex(L"[\\+]");
-		regexFilterString = std::regex_replace(regexFilterString, regex, L"[\\+]");
+		std::regex regex("[\\+]");
+		regexFilterString = std::regex_replace(regexFilterString, regex, "[\\+]");
 	}
 
 	{
-		std::wregex regex(L"[\\-]");
-		regexFilterString = std::regex_replace(regexFilterString, regex, L"[\\-]");
+		std::regex regex("[\\-]");
+		regexFilterString = std::regex_replace(regexFilterString, regex, "[\\-]");
 	}
 
 	{
-		std::wregex regex(L"[\\$]");
-		regexFilterString = std::regex_replace(regexFilterString, regex, L"[\\$]");
+		std::regex regex("[\\$]");
+		regexFilterString = std::regex_replace(regexFilterString, regex, "[\\$]");
 	}
 
 	{
-		std::wregex regex(L"[\\.]");
-		regexFilterString = std::regex_replace(regexFilterString, regex, L"[\\.]");
+		std::regex regex("[\\.]");
+		regexFilterString = std::regex_replace(regexFilterString, regex, "[\\.]");
 	}
 
 	{
-		std::wregex regex(L"[\\^]");
-		regexFilterString = std::regex_replace(regexFilterString, regex, L"[\\^]");
+		std::regex regex("[\\^]");
+		regexFilterString = std::regex_replace(regexFilterString, regex, "[\\^]");
 	}
 
 	{
-		std::wregex regex(L"[\\*][\\*]");
-		regexFilterString = std::regex_replace(regexFilterString, regex, L".{0,}");
+		std::regex regex("[\\*][\\*]");
+		regexFilterString = std::regex_replace(regexFilterString, regex, ".{0,}");
 	}
 
 	{
-		std::wregex regex(L"[\\*]");
-		regexFilterString = std::regex_replace(regexFilterString, regex, L"[^\\\\/]*");
+		std::regex regex("[\\*]");
+		regexFilterString = std::regex_replace(regexFilterString, regex, "[^\\\\/]*");
 	}
 
-	return std::wregex(regexFilterString, std::regex::optimize);
+	return std::regex(regexFilterString, std::regex::optimize);
 }

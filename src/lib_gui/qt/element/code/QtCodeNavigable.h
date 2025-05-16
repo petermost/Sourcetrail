@@ -37,7 +37,7 @@ public:
 	virtual void onWindowFocus() = 0;
 
 	virtual void findScreenMatches(
-		const std::wstring& query, std::vector<std::pair<QtCodeArea*, Id>>* screenMatches) = 0;
+		const std::string& query, std::vector<std::pair<QtCodeArea*, Id>>* screenMatches) = 0;
 
 	virtual void setFocus(Id locationId) = 0;
 	virtual void setFocusOnTop() = 0;

@@ -14,7 +14,7 @@
 QtGraphNodeData::QtGraphNodeData(
 	GraphFocusHandler* focusHandler,
 	const Node* data,
-	const std::wstring& name,
+	const std::string& name,
 	bool childVisible,
 	bool hasQualifier,
 	bool isInteractive)
@@ -105,16 +105,16 @@ void QtGraphNodeData::hoverEnterEvent(QGraphicsSceneHoverEvent*  /*event*/)
 	if (!m_isInteractive)
 	{
 		TooltipInfo info;
-		info.title = getReadableNodeKindWString(m_data->getType().getKind());
+		info.title = getReadableNodeKindString(m_data->getType().getKind());
 		info.offset = Vec2i(10, 20);
 
 		if (!m_data->isDefined())
 		{
-			info.title = L"non-indexed " + info.title;
+			info.title = "non-indexed " + info.title;
 		}
 		else if (m_data->isImplicit())
 		{
-			info.title = L"implicit " + info.title;
+			info.title = "implicit " + info.title;
 		}
 
 		MessageTooltipShow msg(info, TOOLTIP_ORIGIN_GRAPH);

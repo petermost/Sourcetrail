@@ -8,29 +8,29 @@
 class SourceGroupSettingsWithCxxCrossCompilationOptions: public SourceGroupSettingsComponent
 {
 public:
-	static std::vector<std::wstring> getAvailableArchTypes();
-	static std::vector<std::wstring> getAvailableVendorTypes();
-	static std::vector<std::wstring> getAvailableOsTypes();
-	static std::vector<std::wstring> getAvailableEnvironmentTypes();
+	static std::vector<std::string> getAvailableArchTypes();
+	static std::vector<std::string> getAvailableVendorTypes();
+	static std::vector<std::string> getAvailableOsTypes();
+	static std::vector<std::string> getAvailableEnvironmentTypes();
 
 	~SourceGroupSettingsWithCxxCrossCompilationOptions() override = default;
 
 	bool getTargetOptionsEnabled() const;
 	void setTargetOptionsEnabled(bool targetOptionsEnabled);
 
-	std::wstring getTargetArch() const;
-	void setTargetArch(const std::wstring& arch);
+	std::string getTargetArch() const;
+	void setTargetArch(const std::string& arch);
 
-	std::wstring getTargetVendor() const;
-	void setTargetVendor(const std::wstring& vendor);
+	std::string getTargetVendor() const;
+	void setTargetVendor(const std::string& vendor);
 
-	std::wstring getTargetSys() const;
-	void setTargetSys(const std::wstring& sys);
+	std::string getTargetSys() const;
+	void setTargetSys(const std::string& sys);
 
-	std::wstring getTargetAbi() const;
-	void setTargetAbi(const std::wstring& abi);
+	std::string getTargetAbi() const;
+	void setTargetAbi(const std::string& abi);
 
-	std::wstring getTargetFlag() const;
+	std::string getTargetFlag() const;
 
 protected:
 	bool equals(const SourceGroupSettingsBase* other) const override;
@@ -40,10 +40,10 @@ protected:
 
 private:
 	bool m_targetOptionsEnabled = false;
-	std::wstring m_targetArch;
-	std::wstring m_targetVendor;
-	std::wstring m_targetSys;
-	std::wstring m_targetAbi;
+	std::string m_targetArch;
+	std::string m_targetVendor;
+	std::string m_targetSys;
+	std::string m_targetAbi;
 };
 
 #endif	  // SOURCE_GROUP_SETTINGS_WITH_CXX_CROSS_COMPILATION_OPTIONS_H

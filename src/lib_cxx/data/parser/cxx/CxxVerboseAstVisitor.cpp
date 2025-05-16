@@ -42,7 +42,7 @@ bool CxxVerboseAstVisitor::TraverseDecl(clang::Decl* d)
 		if (m_currentFilePath != currentFilePath)
 		{
 			m_currentFilePath = currentFilePath;
-			LOG_INFO_BARE(L"Indexer - Traversing \"" + currentFilePath.wstr() + L"\"");
+			LOG_INFO_BARE("Indexer - Traversing \"" + currentFilePath.str() + "\"");
 		}
 
 		LOG_INFO_STREAM_BARE(<< "Indexer - " << stream.str());

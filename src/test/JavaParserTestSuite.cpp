@@ -23,7 +23,7 @@ namespace
 {
 std::string setupJavaEnvironmentFactory()
 {
-	return utility::prepareJavaEnvironment(FilePath(L"../app/data/java/"));
+	return utility::prepareJavaEnvironment(FilePath("../app/data/java/"));
 }
 
 std::shared_ptr<TestStorage> parseCode(std::string code, bool /*logErrors*/ = true)
@@ -32,7 +32,7 @@ std::shared_ptr<TestStorage> parseCode(std::string code, bool /*logErrors*/ = tr
 
 	std::shared_ptr<IntermediateStorage> storage = std::make_shared<IntermediateStorage>();
 	JavaParser parser(std::make_shared<ParserClientImpl>(storage), std::make_shared<IndexerStateInfo>());
-	parser.buildIndex(FilePath(L"input.java"), TextAccess::createFromString(code));
+	parser.buildIndex(FilePath("input.java"), TextAccess::createFromString(code));
 
 	return TestStorage::create(storage);
 }
@@ -43,9 +43,9 @@ std::shared_ptr<TestStorage> parseCode(std::string code, bool /*logErrors*/ = tr
 
 TEST_CASE("java parser finds all jar dependencies")
 {
-	for (const std::wstring& jarName: utility::getRequiredJarNames())
+	for (const std::string& jarName: utility::getRequiredJarNames())
 	{
-		FilePath jarPath = FilePath(L"../app/data/java/lib/").concatenate(jarName);
+		FilePath jarPath = FilePath("../app/data/java/lib/").concatenate(jarName);
 		REQUIRE_MESSAGE("Jar dependency path does not exist: " + jarPath.str(), jarPath.exists());
 	}
 }
@@ -70,7 +70,7 @@ TEST_CASE("java parser finds package declaration", JAVA_TAG)
 {
 	std::shared_ptr<TestStorage> client = parseCode("package foo;\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(client->packages, L"foo <1:9 1:11>"));
+	REQUIRE(utility::containsElement<std::string>(client->packages, "foo <1:9 1:11>"));
 }
 
 TEST_CASE("java parser finds anotation declaration in defaut package", JAVA_TAG)
@@ -80,8 +80,8 @@ TEST_CASE("java parser finds anotation declaration in defaut package", JAVA_TAG)
 		"{\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->annotations, L"public SampleAnnotation <1:1 <1:19 1:34> 3:1>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->annotations, "public SampleAnnotation <1:1 <1:19 1:34> 3:1>"));
 }
 
 TEST_CASE("java parser finds anotation member declaration", JAVA_TAG)
@@ -92,8 +92,8 @@ TEST_CASE("java parser finds anotation member declaration", JAVA_TAG)
 		"	public int value() default 0;\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->fields, L"public int SampleAnnotation.value <3:13 3:17>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->fields, "public int SampleAnnotation.value <3:13 3:17>"));
 }
 
 TEST_CASE("java parser finds class declaration in default package", JAVA_TAG)
@@ -104,7 +104,7 @@ TEST_CASE("java parser finds class declaration in default package", JAVA_TAG)
 		"}\n");
 
 	REQUIRE(
-		utility::containsElement<std::wstring>(client->classes, L"public A <1:1 <1:14 1:14> 3:1>"));
+		utility::containsElement<std::string>(client->classes, "public A <1:1 <1:14 1:14> 3:1>"));
 }
 
 TEST_CASE("java parser finds interface declaration in default package", JAVA_TAG)
@@ -114,8 +114,8 @@ TEST_CASE("java parser finds interface declaration in default package", JAVA_TAG
 		"{\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->interfaces, L"public A <1:1 <1:18 1:18> 3:1>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->interfaces, "public A <1:1 <1:18 1:18> 3:1>"));
 }
 
 TEST_CASE("java parser finds record declaration in default package", JAVA_TAG)
@@ -125,7 +125,7 @@ TEST_CASE("java parser finds record declaration in default package", JAVA_TAG)
 		"{\n"
 		"}\n");
 
-	REQUIRE(containsElement(client->records, L"public A <1:1 <1:15 1:15> 3:1>"s));
+	REQUIRE(containsElement(client->records, "public A <1:1 <1:15 1:15> 3:1>"s));
 }
 
 TEST_CASE("java parser finds record declaration in named package", JAVA_TAG)
@@ -136,7 +136,7 @@ TEST_CASE("java parser finds record declaration in named package", JAVA_TAG)
 		"{\n"
 		"}\n");
 
-	REQUIRE(containsElement(client->records, L"public foo.A <2:1 <2:15 2:15> 4:1>"s));
+	REQUIRE(containsElement(client->records, "public foo.A <2:1 <2:15 2:15> 4:1>"s));
 }
 
 TEST_CASE("java parser finds record declaration in nested named package", JAVA_TAG)
@@ -147,7 +147,7 @@ TEST_CASE("java parser finds record declaration in nested named package", JAVA_T
 		"{\n"
 		"}\n");
 
-	REQUIRE(containsElement(client->records, L"public foo.bar.A <2:1 <2:15 2:15> 4:1>"s));
+	REQUIRE(containsElement(client->records, "public foo.bar.A <2:1 <2:15 2:15> 4:1>"s));
 }
 
 TEST_CASE("java parser finds class declaration in named package", JAVA_TAG)
@@ -158,8 +158,8 @@ TEST_CASE("java parser finds class declaration in named package", JAVA_TAG)
 		"{\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->classes, L"public foo.A <2:1 <2:14 2:14> 4:1>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->classes, "public foo.A <2:1 <2:14 2:14> 4:1>"));
 }
 
 TEST_CASE("java parser finds class declaration in nested named package", JAVA_TAG)
@@ -170,8 +170,8 @@ TEST_CASE("java parser finds class declaration in nested named package", JAVA_TA
 		"{\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->classes, L"public foo.bar.A <2:1 <2:14 2:14> 4:1>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->classes, "public foo.bar.A <2:1 <2:14 2:14> 4:1>"));
 }
 
 TEST_CASE("java parser finds enum declaration in named package", JAVA_TAG)
@@ -182,8 +182,8 @@ TEST_CASE("java parser finds enum declaration in named package", JAVA_TAG)
 		"{\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->enums, L"public foo.A <2:1 <2:13 2:13> 4:1>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->enums, "public foo.A <2:1 <2:13 2:13> 4:1>"));
 }
 
 TEST_CASE("java parser finds enum constant declaration", JAVA_TAG)
@@ -196,7 +196,7 @@ TEST_CASE("java parser finds enum constant declaration", JAVA_TAG)
 		"}\n");
 
 	REQUIRE(
-		utility::containsElement<std::wstring>(client->enumConstants, L"foo.A.A_TEST <4:2 4:7>"));
+		utility::containsElement<std::string>(client->enumConstants, "foo.A.A_TEST <4:2 4:7>"));
 }
 
 TEST_CASE("java parser finds constructor declaration without parameters", JAVA_TAG)
@@ -210,8 +210,8 @@ TEST_CASE("java parser finds constructor declaration without parameters", JAVA_T
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->methods, L"public foo.A.A() <4:2 <4:2 <4:9 4:9> 4:11> 6:2>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->methods, "public foo.A.A() <4:2 <4:2 <4:9 4:9> 4:11> 6:2>"));
 }
 
 TEST_CASE("java parser finds method declaration with custom type in signature", JAVA_TAG)
@@ -225,8 +225,8 @@ TEST_CASE("java parser finds method declaration with custom type in signature", 
 		"	};\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->methods, L"public void foo.A.bar(foo.A) <4:2 <4:2 <4:14 4:16> 4:21> 6:2>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->methods, "public void foo.A.bar(foo.A) <4:2 <4:2 <4:14 4:16> 4:21> 6:2>"));
 }
 
 TEST_CASE("java parser finds anonymous class declaration", JAVA_TAG)
@@ -242,8 +242,8 @@ TEST_CASE("java parser finds anonymous class declaration", JAVA_TAG)
 		"	};\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->classes, L"foo.A.bar.anonymous class (input.java<7:17>) <7:17 <7:17 7:17> 7:19>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->classes, "foo.A.bar.anonymous class (input.java<7:17>) <7:17 <7:17 7:17> 7:19>"));
 }
 
 TEST_CASE("java parser finds method declaration in anonymous class", JAVA_TAG)
@@ -264,10 +264,10 @@ TEST_CASE("java parser finds method declaration in anonymous class", JAVA_TAG)
 		"	};\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
+	REQUIRE(utility::containsElement<std::string>(
 		client->methods,
-		L"public void foo.A.bar.anonymous class (input.java<10:3>).foo() <11:4 <11:4 <11:16 11:18> "
-		L"11:20> 11:23>"));
+		"public void foo.A.bar.anonymous class (input.java<10:3>).foo() <11:4 <11:4 <11:16 11:18> "
+		"11:20> 11:23>"));
 }
 
 TEST_CASE("java parser finds method declaration with static keyword in signature", JAVA_TAG)
@@ -281,8 +281,8 @@ TEST_CASE("java parser finds method declaration with static keyword in signature
 		"	};\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->methods, L"public static void foo.A.bar() <4:2 <4:2 <4:21 4:23> 4:25> 6:2>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->methods, "public static void foo.A.bar() <4:2 <4:2 <4:21 4:23> 4:25> 6:2>"));
 }
 
 TEST_CASE("java parser finds field declaration with initial assignment", JAVA_TAG)
@@ -295,7 +295,7 @@ TEST_CASE("java parser finds field declaration with initial assignment", JAVA_TA
 		"}\n");
 
 	REQUIRE(
-		utility::containsElement<std::wstring>(client->fields, L"default int foo.A.bar <4:6 4:8>"));
+		utility::containsElement<std::string>(client->fields, "default int foo.A.bar <4:6 4:8>"));
 }
 
 TEST_CASE("java parser finds public access specifier in field declaration", JAVA_TAG)
@@ -307,8 +307,8 @@ TEST_CASE("java parser finds public access specifier in field declaration", JAVA
 		"	public int bar;\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->fields, L"public int foo.A.bar <4:13 4:15>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->fields, "public int foo.A.bar <4:13 4:15>"));
 }
 
 TEST_CASE("java parser finds protected access specifier in field declaration", JAVA_TAG)
@@ -320,8 +320,8 @@ TEST_CASE("java parser finds protected access specifier in field declaration", J
 		"	protected int bar;\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->fields, L"protected int foo.A.bar <4:16 4:18>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->fields, "protected int foo.A.bar <4:16 4:18>"));
 }
 
 TEST_CASE("java parser finds private access specifier in field declaration", JAVA_TAG)
@@ -333,8 +333,8 @@ TEST_CASE("java parser finds private access specifier in field declaration", JAV
 		"	private int bar;\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->fields, L"private int foo.A.bar <4:14 4:16>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->fields, "private int foo.A.bar <4:14 4:16>"));
 }
 
 TEST_CASE("java parser finds static keyword in field declaration", JAVA_TAG)
@@ -346,8 +346,8 @@ TEST_CASE("java parser finds static keyword in field declaration", JAVA_TAG)
 		"	static int bar;\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->fields, L"default static int foo.A.bar <4:13 4:15>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->fields, "default static int foo.A.bar <4:13 4:15>"));
 }
 
 TEST_CASE("java parser finds declaration of method parameter", JAVA_TAG)
@@ -362,7 +362,7 @@ TEST_CASE("java parser finds declaration of method parameter", JAVA_TAG)
 		"}\n");
 
 	REQUIRE(
-		utility::containsElement<std::wstring>(client->localSymbols, L"foo.A.bar<0> <4:15 4:15>"));
+		utility::containsElement<std::string>(client->localSymbols, "foo.A.bar<0> <4:15 4:15>"));
 }
 
 TEST_CASE("java parser finds declaration of local variable", JAVA_TAG)
@@ -377,7 +377,7 @@ TEST_CASE("java parser finds declaration of local variable", JAVA_TAG)
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(client->localSymbols, L"foo.A.bar<0> <6:7 6:7>"));
+	REQUIRE(utility::containsElement<std::string>(client->localSymbols, "foo.A.bar<0> <6:7 6:7>"));
 }
 
 TEST_CASE("java parser finds declaration of type parameter of class", JAVA_TAG)
@@ -387,7 +387,7 @@ TEST_CASE("java parser finds declaration of type parameter of class", JAVA_TAG)
 		"{\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(client->typeParameters, L"A<T>.T <1:17 1:17>"));
+	REQUIRE(utility::containsElement<std::string>(client->typeParameters, "A<T>.T <1:17 1:17>"));
 }
 
 TEST_CASE("java parser finds declaration of type parameter of method", JAVA_TAG)
@@ -401,7 +401,7 @@ TEST_CASE("java parser finds declaration of type parameter of method", JAVA_TAG)
 		"}\n");
 
 	REQUIRE(
-		utility::containsElement<std::wstring>(client->typeParameters, L"A.foo<T>.T <3:10 3:10>"));
+		utility::containsElement<std::string>(client->typeParameters, "A.foo<T>.T <3:10 3:10>"));
 }
 
 TEST_CASE("java parser finds field of interface to be implicitly static", JAVA_TAG)
@@ -412,8 +412,8 @@ TEST_CASE("java parser finds field of interface to be implicitly static", JAVA_T
 		"	int b = 5;\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->fields, L"default static int A.b <3:6 3:6>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->fields, "default static int A.b <3:6 3:6>"));
 }
 
 TEST_CASE("java parser finds line comment", JAVA_TAG)
@@ -422,7 +422,7 @@ TEST_CASE("java parser finds line comment", JAVA_TAG)
 		"// this is a line comment\n"
 		"package foo;\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(client->comments, L"comment <1:1 1:25>"));
+	REQUIRE(utility::containsElement<std::string>(client->comments, "comment <1:1 1:25>"));
 }
 
 TEST_CASE("java parser finds block comment", JAVA_TAG)
@@ -431,23 +431,23 @@ TEST_CASE("java parser finds block comment", JAVA_TAG)
 		"/* this is a line comment*/\n"
 		"package foo;\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(client->comments, L"comment <1:1 1:27>"));
+	REQUIRE(utility::containsElement<std::string>(client->comments, "comment <1:1 1:27>"));
 }
 
 TEST_CASE("java parser finds missing semicolon as parse error", JAVA_TAG)
 {
 	std::shared_ptr<TestStorage> client = parseCode("package foo\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->errors, L"Syntax error on token \"foo\", ; expected after this token <1:9 1:9>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->errors, "Syntax error on token \"foo\", ; expected after this token <1:9 1:9>"));
 }
 
 TEST_CASE("java parser finds missing import as error", JAVA_TAG)
 {
 	std::shared_ptr<TestStorage> client = parseCode("import foo;\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->errors, L"The import foo cannot be resolved <1:8 1:8>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->errors, "The import foo cannot be resolved <1:8 1:8>"));
 }
 
 
@@ -465,8 +465,8 @@ TEST_CASE("java parser finds class declaration nested in class", JAVA_TAG)
 		"	}\n"
 		"};\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->classes, L"public foo.bar.A.B <4:2 <4:15 4:15> 6:2>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->classes, "public foo.bar.A.B <4:2 <4:15 4:15> 6:2>"));
 }
 
 TEST_CASE("java parser finds class declaration nested in method", JAVA_TAG)
@@ -483,8 +483,8 @@ TEST_CASE("java parser finds class declaration nested in method", JAVA_TAG)
 		"	};\n"
 		"};\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->classes, L"default foo.bar.A.bar.B <6:3 <6:9 6:9> 8:3>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->classes, "default foo.bar.A.bar.B <6:3 <6:9 6:9> 8:3>"));
 }
 
 
@@ -510,7 +510,7 @@ TEST_CASE("java parser finds qualifier location of import declaration", JAVA_TAG
 {
 	std::shared_ptr<TestStorage> client = parseCode("import foo.bar;\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(client->qualifiers, L"foo <1:8 1:10>"));
+	REQUIRE(utility::containsElement<std::string>(client->qualifiers, "foo <1:8 1:10>"));
 }
 
 TEST_CASE("java parser finds qualifier location of simple type", JAVA_TAG)
@@ -525,8 +525,8 @@ TEST_CASE("java parser finds qualifier location of simple type", JAVA_TAG)
 		"	};\n"
 		"};\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(client->qualifiers, L"foo <6:3 6:5>"));
-	REQUIRE(utility::containsElement<std::wstring>(client->qualifiers, L"foo.bar <6:7 6:9>"));
+	REQUIRE(utility::containsElement<std::string>(client->qualifiers, "foo <6:3 6:5>"));
+	REQUIRE(utility::containsElement<std::string>(client->qualifiers, "foo.bar <6:7 6:9>"));
 }
 
 TEST_CASE("java parser finds qualifier location of field access", JAVA_TAG)
@@ -543,7 +543,7 @@ TEST_CASE("java parser finds qualifier location of field access", JAVA_TAG)
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(client->qualifiers, L"foo.X <8:3 8:6>"));
+	REQUIRE(utility::containsElement<std::string>(client->qualifiers, "foo.X <8:3 8:6>"));
 }
 
 TEST_CASE("java parser finds qualifier location of super field access", JAVA_TAG)
@@ -563,9 +563,9 @@ TEST_CASE("java parser finds qualifier location of super field access", JAVA_TAG
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(client->qualifiers, L"foo.B <11:3 11:3>"));
+	REQUIRE(utility::containsElement<std::string>(client->qualifiers, "foo.B <11:3 11:3>"));
 
-	REQUIRE(utility::containsElement<std::wstring>(client->qualifiers, L"foo.A <11:5 11:9>"));
+	REQUIRE(utility::containsElement<std::string>(client->qualifiers, "foo.A <11:5 11:9>"));
 }
 
 TEST_CASE("java parser finds qualifier location of this expression", JAVA_TAG)
@@ -582,7 +582,7 @@ TEST_CASE("java parser finds qualifier location of this expression", JAVA_TAG)
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(client->qualifiers, L"foo.A <8:9 8:9>"));
+	REQUIRE(utility::containsElement<std::string>(client->qualifiers, "foo.A <8:9 8:9>"));
 }
 
 TEST_CASE("java parser finds qualifier location of method invocation", JAVA_TAG)
@@ -597,9 +597,9 @@ TEST_CASE("java parser finds qualifier location of method invocation", JAVA_TAG)
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(client->qualifiers, L"foo <6:3 6:5>"));
+	REQUIRE(utility::containsElement<std::string>(client->qualifiers, "foo <6:3 6:5>"));
 
-	REQUIRE(utility::containsElement<std::wstring>(client->qualifiers, L"foo.X <6:7 6:7>"));
+	REQUIRE(utility::containsElement<std::string>(client->qualifiers, "foo.X <6:7 6:7>"));
 }
 
 TEST_CASE("java parser finds qualifier location of method invocation on this", JAVA_TAG)
@@ -614,7 +614,7 @@ TEST_CASE("java parser finds qualifier location of method invocation on this", J
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(client->qualifiers, L"foo.X <6:3 6:6>"));
+	REQUIRE(utility::containsElement<std::string>(client->qualifiers, "foo.X <6:3 6:6>"));
 }
 
 TEST_CASE("java parser finds qualifier location of super method invocation", JAVA_TAG)
@@ -639,13 +639,13 @@ TEST_CASE("java parser finds qualifier location of super method invocation", JAV
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(client->qualifiers, L"foo <15:4 15:6>"));
+	REQUIRE(utility::containsElement<std::string>(client->qualifiers, "foo <15:4 15:6>"));
 
-	REQUIRE(utility::containsElement<std::wstring>(client->qualifiers, L"foo.X <15:8 15:8>"));
+	REQUIRE(utility::containsElement<std::string>(client->qualifiers, "foo.X <15:8 15:8>"));
 
-	REQUIRE(utility::containsElement<std::wstring>(client->qualifiers, L"foo.X.B <15:10 15:10>"));
+	REQUIRE(utility::containsElement<std::string>(client->qualifiers, "foo.X.B <15:10 15:10>"));
 
-	REQUIRE(utility::containsElement<std::wstring>(client->qualifiers, L"foo.X.A <15:12 15:16>"));
+	REQUIRE(utility::containsElement<std::string>(client->qualifiers, "foo.X.A <15:12 15:16>"));
 }
 
 TEST_CASE("java parser finds qualifier location of creation reference", JAVA_TAG)
@@ -668,9 +668,9 @@ TEST_CASE("java parser finds qualifier location of creation reference", JAVA_TAG
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(client->qualifiers, L"A <14:20 14:20>"));
+	REQUIRE(utility::containsElement<std::string>(client->qualifiers, "A <14:20 14:20>"));
 
-	REQUIRE(utility::containsElement<std::wstring>(client->qualifiers, L"A.Bar <14:22 14:24>"));
+	REQUIRE(utility::containsElement<std::string>(client->qualifiers, "A.Bar <14:22 14:24>"));
 }
 
 TEST_CASE("java parser finds qualifier location of expression method reference", JAVA_TAG)
@@ -696,7 +696,7 @@ TEST_CASE("java parser finds qualifier location of expression method reference",
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(client->qualifiers, L"A.B <17:20 17:20>"));
+	REQUIRE(utility::containsElement<std::string>(client->qualifiers, "A.B <17:20 17:20>"));
 }
 
 TEST_CASE("java parser finds qualifier location of super method reference", JAVA_TAG)
@@ -719,7 +719,7 @@ TEST_CASE("java parser finds qualifier location of super method reference", JAVA
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(client->qualifiers, L"A.B <13:21 13:25>"));
+	REQUIRE(utility::containsElement<std::string>(client->qualifiers, "A.B <13:21 13:25>"));
 }
 
 TEST_CASE("java parser finds qualifier location of class instance creation", JAVA_TAG)
@@ -737,7 +737,7 @@ TEST_CASE("java parser finds qualifier location of class instance creation", JAV
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(client->qualifiers, L"A <8:14 8:14>"));
+	REQUIRE(utility::containsElement<std::string>(client->qualifiers, "A <8:14 8:14>"));
 }
 
 
@@ -756,8 +756,8 @@ TEST_CASE("java parser finds usage of marker annotation", JAVA_TAG)
 		"{\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->annotationUses, L"Foo -> SampleAnnotation <5:2 5:17>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->annotationUses, "Foo -> SampleAnnotation <5:2 5:17>"));
 }
 
 TEST_CASE("java parser finds usage of single member annotation", JAVA_TAG)
@@ -773,8 +773,8 @@ TEST_CASE("java parser finds usage of single member annotation", JAVA_TAG)
 		"{\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->annotationUses, L"Foo -> SampleAnnotation <6:2 6:17>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->annotationUses, "Foo -> SampleAnnotation <6:2 6:17>"));
 }
 
 TEST_CASE("java parser finds usage of normal annotation", JAVA_TAG)
@@ -791,8 +791,8 @@ TEST_CASE("java parser finds usage of normal annotation", JAVA_TAG)
 		"{\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->annotationUses, L"Foo -> SampleAnnotation <7:2 7:17>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->annotationUses, "Foo -> SampleAnnotation <7:2 7:17>"));
 }
 
 TEST_CASE("java parser finds usage of normal annotation member in initialization", JAVA_TAG)
@@ -809,8 +809,8 @@ TEST_CASE("java parser finds usage of normal annotation member in initialization
 		"{\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->usages, L"Foo -> int SampleAnnotation.a <7:19 7:19>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->usages, "Foo -> int SampleAnnotation.a <7:19 7:19>"));
 }
 
 TEST_CASE("java parser finds inheritance using extends keyword", JAVA_TAG)
@@ -825,8 +825,8 @@ TEST_CASE("java parser finds inheritance using extends keyword", JAVA_TAG)
 		"{\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->inheritances, L"foo.B -> foo.A <6:24 6:24>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->inheritances, "foo.B -> foo.A <6:24 6:24>"));
 }
 
 TEST_CASE("java parser finds inheritance using implements keyword", JAVA_TAG)
@@ -841,8 +841,8 @@ TEST_CASE("java parser finds inheritance using implements keyword", JAVA_TAG)
 		"{\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->inheritances, L"foo.B -> foo.A <6:27 6:27>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->inheritances, "foo.B -> foo.A <6:27 6:27>"));
 }
 
 TEST_CASE("java parser finds inheritance of anonymous class declaration", JAVA_TAG)
@@ -862,8 +862,8 @@ TEST_CASE("java parser finds inheritance of anonymous class declaration", JAVA_T
 		"	};\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->inheritances, L"A.foo.anonymous class (input.java<10:3>) -> A.Base <9:16 9:19>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->inheritances, "A.foo.anonymous class (input.java<10:3>) -> A.Base <9:16 9:19>"));
 }
 
 TEST_CASE("java parser finds usage of string for var type", JAVA_TAG)
@@ -876,7 +876,7 @@ TEST_CASE("java parser finds usage of string for var type", JAVA_TAG)
 		"	}\n"
 		"}\n");
 
-	REQUIRE(containsElement(client->typeUses, L"void A.foo() -> java.lang.String <4:3 4:5>"s));
+	REQUIRE(containsElement(client->typeUses, "void A.foo() -> java.lang.String <4:3 4:5>"s));
 }
 
 TEST_CASE("java parser finds type parameter in signature of method", JAVA_TAG)
@@ -889,10 +889,10 @@ TEST_CASE("java parser finds type parameter in signature of method", JAVA_TAG)
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeUses, L"A<java.lang.Void> A<T>.foo(A<java.lang.Void>) -> A<T> <3:9 3:9>"));
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeUses, L"A<java.lang.Void> A<T>.foo(A<java.lang.Void>) -> A<T> <3:21 3:21>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeUses, "A<java.lang.Void> A<T>.foo(A<java.lang.Void>) -> A<T> <3:9 3:9>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeUses, "A<java.lang.Void> A<T>.foo(A<java.lang.Void>) -> A<T> <3:21 3:21>"));
 }
 
 TEST_CASE("parser finds usage of type defined in base class", JAVA_TAG)
@@ -908,8 +908,8 @@ TEST_CASE("parser finds usage of type defined in base class", JAVA_TAG)
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeUses, L"Foo.Base.X Foo.Derived.x -> Foo.Base.X <7:10 7:10>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeUses, "Foo.Base.X Foo.Derived.x -> Foo.Base.X <7:10 7:10>"));
 }
 
 TEST_CASE("java parser finds correct location of qualified type usage", JAVA_TAG)
@@ -927,7 +927,7 @@ TEST_CASE("java parser finds correct location of qualified type usage", JAVA_TAG
 		"}\n");
 
 	REQUIRE(
-		utility::containsElement<std::wstring>(client->typeUses, L"void A.bar() -> A.B <8:5 8:5>"));
+		utility::containsElement<std::string>(client->typeUses, "void A.bar() -> A.B <8:5 8:5>"));
 }
 
 TEST_CASE("java parser finds type argument of parameterized type", JAVA_TAG)
@@ -942,11 +942,11 @@ TEST_CASE("java parser finds type argument of parameterized type", JAVA_TAG)
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeArguments, L"A<T> -> java.lang.Void <6:5 6:8>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeArguments, "A<T> -> java.lang.Void <6:5 6:8>"));
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeUses, L"void B.foo() -> java.lang.Void <6:5 6:8>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeUses, "void B.foo() -> java.lang.Void <6:5 6:8>"));
 }
 
 TEST_CASE("java parser finds type argument of method invocation", JAVA_TAG)
@@ -963,11 +963,11 @@ TEST_CASE("java parser finds type argument of method invocation", JAVA_TAG)
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeArguments, L"static void foo.X.foo() -> java.lang.Void <8:10 8:13>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeArguments, "static void foo.X.foo() -> java.lang.Void <8:10 8:13>"));
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeUses, L"static void foo.X.bar() -> java.lang.Void <8:10 8:13>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeUses, "static void foo.X.bar() -> java.lang.Void <8:10 8:13>"));
 }
 
 TEST_CASE("java parser finds type argument of super method invocation", JAVA_TAG)
@@ -992,11 +992,11 @@ TEST_CASE("java parser finds type argument of super method invocation", JAVA_TAG
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeArguments, L"void foo.X.A.bar() -> java.lang.Void <15:11 15:14>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeArguments, "void foo.X.A.bar() -> java.lang.Void <15:11 15:14>"));
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeUses, L"void foo.X.B.bar() -> java.lang.Void <15:11 15:14>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeUses, "void foo.X.B.bar() -> java.lang.Void <15:11 15:14>"));
 }
 
 TEST_CASE("java parser finds type argument of constructor invocation", JAVA_TAG)
@@ -1015,11 +1015,11 @@ TEST_CASE("java parser finds type argument of constructor invocation", JAVA_TAG)
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeArguments, L"foo.Bar.Bar() -> java.lang.Void <10:4 10:7>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeArguments, "foo.Bar.Bar() -> java.lang.Void <10:4 10:7>"));
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeUses, L"foo.Bar.Bar(int) -> java.lang.Void <10:4 10:7>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeUses, "foo.Bar.Bar(int) -> java.lang.Void <10:4 10:7>"));
 }
 
 TEST_CASE("java parser finds type argument of super constructor invocation", JAVA_TAG)
@@ -1040,11 +1040,11 @@ TEST_CASE("java parser finds type argument of super constructor invocation", JAV
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeArguments, L"A.Base.Base() -> java.lang.Void <11:5 11:8>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeArguments, "A.Base.Base() -> java.lang.Void <11:5 11:8>"));
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeUses, L"A.Derived.Derived() -> java.lang.Void <11:5 11:8>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeUses, "A.Derived.Derived() -> java.lang.Void <11:5 11:8>"));
 }
 
 TEST_CASE("java parser finds type argument of creation reference", JAVA_TAG)
@@ -1067,11 +1067,11 @@ TEST_CASE("java parser finds type argument of creation reference", JAVA_TAG)
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeArguments, L"A.B.B() -> java.lang.Void <14:24 14:27>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeArguments, "A.B.B() -> java.lang.Void <14:24 14:27>"));
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeUses, L"void A.foo() -> java.lang.Void <14:24 14:27>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeUses, "void A.foo() -> java.lang.Void <14:24 14:27>"));
 }
 
 TEST_CASE("java parser finds type argument of expression method reference", JAVA_TAG)
@@ -1094,11 +1094,11 @@ TEST_CASE("java parser finds type argument of expression method reference", JAVA
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeArguments, L"static void A.bar() -> java.lang.Void <14:24 14:27>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeArguments, "static void A.bar() -> java.lang.Void <14:24 14:27>"));
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeUses, L"void A.foo() -> java.lang.Void <14:24 14:27>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeUses, "void A.foo() -> java.lang.Void <14:24 14:27>"));
 }
 
 TEST_CASE("java parser finds type argument of super method reference", JAVA_TAG)
@@ -1121,11 +1121,11 @@ TEST_CASE("java parser finds type argument of super method reference", JAVA_TAG)
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeArguments, L"void A.B.bar<T>() -> java.lang.Void <13:29 13:32>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeArguments, "void A.B.bar<T>() -> java.lang.Void <13:29 13:32>"));
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeUses, L"void A.C.foo() -> java.lang.Void <13:29 13:32>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeUses, "void A.C.foo() -> java.lang.Void <13:29 13:32>"));
 }
 
 TEST_CASE("java parser finds type argument of type method reference", JAVA_TAG)
@@ -1140,8 +1140,8 @@ TEST_CASE("java parser finds type argument of type method reference", JAVA_TAG)
 
 	// currently we cannot record the typeArguments of array type methods
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeUses, L"void A.foo() -> java.lang.Void <4:29 4:32>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeUses, "void A.foo() -> java.lang.Void <4:29 4:32>"));
 }
 
 TEST_CASE("java parser finds type argument of class instance creation", JAVA_TAG)
@@ -1161,11 +1161,11 @@ TEST_CASE("java parser finds type argument of class instance creation", JAVA_TAG
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeArguments, L"A.B.B<T>() -> java.lang.Void <10:15 10:18>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeArguments, "A.B.B<T>() -> java.lang.Void <10:15 10:18>"));
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeUses, L"void A.B.bar() -> java.lang.Void <10:15 10:18>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeUses, "void A.B.bar() -> java.lang.Void <10:15 10:18>"));
 }
 
 TEST_CASE("java parser finds super method invocation", JAVA_TAG)
@@ -1190,8 +1190,8 @@ TEST_CASE("java parser finds super method invocation", JAVA_TAG)
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->calls, L"void foo.X.B.bar() -> void foo.X.A.bar() <15:10 15:12>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->calls, "void foo.X.B.bar() -> void foo.X.A.bar() <15:10 15:12>"));
 }
 
 TEST_CASE("java parser finds constructor invocation", JAVA_TAG)
@@ -1210,8 +1210,8 @@ TEST_CASE("java parser finds constructor invocation", JAVA_TAG)
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->calls, L"foo.Bar.Bar(int) -> foo.Bar.Bar() <10:3 10:6>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->calls, "foo.Bar.Bar(int) -> foo.Bar.Bar() <10:3 10:6>"));
 }
 
 TEST_CASE("java parser finds super constructor invocation", JAVA_TAG)
@@ -1232,8 +1232,8 @@ TEST_CASE("java parser finds super constructor invocation", JAVA_TAG)
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->calls, L"A.Derived.Derived() -> A.Base.Base() <11:4 11:8>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->calls, "A.Derived.Derived() -> A.Base.Base() <11:4 11:8>"));
 }
 
 TEST_CASE("java parser finds invocation of method of anonymous class", JAVA_TAG)
@@ -1254,10 +1254,10 @@ TEST_CASE("java parser finds invocation of method of anonymous class", JAVA_TAG)
 		"	};\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
+	REQUIRE(utility::containsElement<std::string>(
 		client->calls,
-		L"void Main.anonymous class (input.java<6:40>).foo() -> void Main.anonymous class "
-		L"(input.java<6:40>).bar() <8:4 8:6>"));
+		"void Main.anonymous class (input.java<6:40>).foo() -> void Main.anonymous class "
+		"(input.java<6:40>).bar() <8:4 8:6>"));
 }
 
 TEST_CASE("java parser finds overridden method with same signature", JAVA_TAG)
@@ -1274,8 +1274,8 @@ TEST_CASE("java parser finds overridden method with same signature", JAVA_TAG)
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->overrides, L"void Main.C.foo(int) -> void Main.Interfaze.foo(int) <7:15 7:17>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->overrides, "void Main.C.foo(int) -> void Main.Interfaze.foo(int) <7:15 7:17>"));
 }
 
 TEST_CASE("java parser finds overridden method with generic signature", JAVA_TAG)
@@ -1292,10 +1292,10 @@ TEST_CASE("java parser finds overridden method with generic signature", JAVA_TAG
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
+	REQUIRE(utility::containsElement<std::string>(
 		client->overrides,
-		L"void Main<X>.C.foo(Main<X>.X) -> void Main<X>.Interfaze<T>.foo(Main<X>.Interfaze<T>.T) "
-		L"<7:15 7:17>"));
+		"void Main<X>.C.foo(Main<X>.X) -> void Main<X>.Interfaze<T>.foo(Main<X>.Interfaze<T>.T) "
+		"<7:15 7:17>"));
 }
 
 TEST_CASE("java parser finds method usage for creation reference", JAVA_TAG)
@@ -1318,8 +1318,8 @@ TEST_CASE("java parser finds method usage for creation reference", JAVA_TAG)
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->usages, L"void A.foo() -> A.B.B() <14:23 14:25>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->usages, "void A.foo() -> A.B.B() <14:23 14:25>"));
 }
 
 TEST_CASE("java parser finds method usage for expression method reference", JAVA_TAG)
@@ -1345,8 +1345,8 @@ TEST_CASE("java parser finds method usage for expression method reference", JAVA
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->usages, L"void A.foo() -> void A.B.bar() <17:23 17:25>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->usages, "void A.foo() -> void A.B.bar() <17:23 17:25>"));
 }
 
 TEST_CASE("java parser finds method usage for super method reference", JAVA_TAG)
@@ -1369,8 +1369,8 @@ TEST_CASE("java parser finds method usage for super method reference", JAVA_TAG)
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->usages, L"void A.C.foo() -> void A.B.bar() <13:28 13:30>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->usages, "void A.C.foo() -> void A.B.bar() <13:28 13:30>"));
 }
 
 TEST_CASE("java parser finds no method usage for type method reference", JAVA_TAG)
@@ -1423,8 +1423,8 @@ TEST_CASE("java parser finds usage of field with same name as method parameter",
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->usages, L"foo.X.X(int) -> int foo.X.t <7:8 7:8>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->usages, "foo.X.X(int) -> int foo.X.t <7:8 7:8>"));
 }
 
 TEST_CASE("java parser does not confuse method name with field name", JAVA_TAG)
@@ -1440,8 +1440,8 @@ TEST_CASE("java parser does not confuse method name with field name", JAVA_TAG)
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->usages, L"void foo.X.foo() -> int foo.X.foo <7:8 7:10>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->usages, "void foo.X.foo() -> int foo.X.foo <7:8 7:10>"));
 }
 
 TEST_CASE("java parser finds assignment of method parameter", JAVA_TAG)
@@ -1456,7 +1456,7 @@ TEST_CASE("java parser finds assignment of method parameter", JAVA_TAG)
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(client->localSymbols, L"foo.A.bar<0> <6:3 6:3>"));
+	REQUIRE(utility::containsElement<std::string>(client->localSymbols, "foo.A.bar<0> <6:3 6:3>"));
 }
 
 TEST_CASE("java parser finds assignment of local variable", JAVA_TAG)
@@ -1472,7 +1472,7 @@ TEST_CASE("java parser finds assignment of local variable", JAVA_TAG)
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(client->localSymbols, L"foo.A.bar<0> <7:3 7:3>"));
+	REQUIRE(utility::containsElement<std::string>(client->localSymbols, "foo.A.bar<0> <7:3 7:3>"));
 }
 
 TEST_CASE("java parser finds scope of class declaration", JAVA_TAG)
@@ -1483,9 +1483,9 @@ TEST_CASE("java parser finds scope of class declaration", JAVA_TAG)
 		"}\n");
 
 	REQUIRE(
-		utility::containsElement<std::wstring>(client->localSymbols, L"input.java<2:1> <2:1 2:1>"));
+		utility::containsElement<std::string>(client->localSymbols, "input.java<2:1> <2:1 2:1>"));
 	REQUIRE(
-		utility::containsElement<std::wstring>(client->localSymbols, L"input.java<2:1> <3:1 3:1>"));
+		utility::containsElement<std::string>(client->localSymbols, "input.java<2:1> <3:1 3:1>"));
 }
 
 TEST_CASE("java parser finds scope of enum declaration", JAVA_TAG)
@@ -1496,9 +1496,9 @@ TEST_CASE("java parser finds scope of enum declaration", JAVA_TAG)
 		"}\n");
 
 	REQUIRE(
-		utility::containsElement<std::wstring>(client->localSymbols, L"input.java<2:1> <2:1 2:1>"));
+		utility::containsElement<std::string>(client->localSymbols, "input.java<2:1> <2:1 2:1>"));
 	REQUIRE(
-		utility::containsElement<std::wstring>(client->localSymbols, L"input.java<2:1> <3:1 3:1>"));
+		utility::containsElement<std::string>(client->localSymbols, "input.java<2:1> <3:1 3:1>"));
 }
 
 TEST_CASE("java parser finds scope of constructor declaration", JAVA_TAG)
@@ -1512,9 +1512,9 @@ TEST_CASE("java parser finds scope of constructor declaration", JAVA_TAG)
 		"}\n");
 
 	REQUIRE(
-		utility::containsElement<std::wstring>(client->localSymbols, L"input.java<4:2> <4:2 4:2>"));
+		utility::containsElement<std::string>(client->localSymbols, "input.java<4:2> <4:2 4:2>"));
 	REQUIRE(
-		utility::containsElement<std::wstring>(client->localSymbols, L"input.java<4:2> <5:2 5:2>"));
+		utility::containsElement<std::string>(client->localSymbols, "input.java<4:2> <5:2 5:2>"));
 }
 
 TEST_CASE("java parser finds scope of method declaration", JAVA_TAG)
@@ -1528,9 +1528,9 @@ TEST_CASE("java parser finds scope of method declaration", JAVA_TAG)
 		"}\n");
 
 	REQUIRE(
-		utility::containsElement<std::wstring>(client->localSymbols, L"input.java<4:2> <4:2 4:2>"));
+		utility::containsElement<std::string>(client->localSymbols, "input.java<4:2> <4:2 4:2>"));
 	REQUIRE(
-		utility::containsElement<std::wstring>(client->localSymbols, L"input.java<4:2> <5:2 5:2>"));
+		utility::containsElement<std::string>(client->localSymbols, "input.java<4:2> <5:2 5:2>"));
 }
 
 TEST_CASE("java parser finds scope of switch statement", JAVA_TAG)
@@ -1549,9 +1549,9 @@ TEST_CASE("java parser finds scope of switch statement", JAVA_TAG)
 		"}\n");
 
 	REQUIRE(
-		utility::containsElement<std::wstring>(client->localSymbols, L"input.java<6:3> <6:3 6:3>"));
+		utility::containsElement<std::string>(client->localSymbols, "input.java<6:3> <6:3 6:3>"));
 	REQUIRE(
-		utility::containsElement<std::wstring>(client->localSymbols, L"input.java<6:3> <9:3 9:3>"));
+		utility::containsElement<std::string>(client->localSymbols, "input.java<6:3> <9:3 9:3>"));
 }
 
 TEST_CASE("java parser finds scope of block statement", JAVA_TAG)
@@ -1567,9 +1567,9 @@ TEST_CASE("java parser finds scope of block statement", JAVA_TAG)
 		"}\n");
 
 	REQUIRE(
-		utility::containsElement<std::wstring>(client->localSymbols, L"input.java<5:3> <5:3 5:3>"));
+		utility::containsElement<std::string>(client->localSymbols, "input.java<5:3> <5:3 5:3>"));
 	REQUIRE(
-		utility::containsElement<std::wstring>(client->localSymbols, L"input.java<5:3> <6:3 6:3>"));
+		utility::containsElement<std::string>(client->localSymbols, "input.java<5:3> <6:3 6:3>"));
 }
 
 TEST_CASE("java parser finds scope of array initialization list", JAVA_TAG)
@@ -1580,10 +1580,10 @@ TEST_CASE("java parser finds scope of array initialization list", JAVA_TAG)
 		"	private int[] array = {1, 2};\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->localSymbols, L"input.java<3:24> <3:24 3:24>"));
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->localSymbols, L"input.java<3:24> <3:29 3:29>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->localSymbols, "input.java<3:24> <3:24 3:24>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->localSymbols, "input.java<3:24> <3:29 3:29>"));
 }
 
 TEST_CASE("java parser finds scope of anonymous class declaration", JAVA_TAG)
@@ -1603,10 +1603,10 @@ TEST_CASE("java parser finds scope of anonymous class declaration", JAVA_TAG)
 		"	};\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->localSymbols, L"input.java<10:3> <10:3 10:3>"));
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->localSymbols, L"input.java<10:3> <11:3 11:3>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->localSymbols, "input.java<10:3> <10:3 10:3>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->localSymbols, "input.java<10:3> <11:3 11:3>"));
 }
 
 TEST_CASE("java parser finds usage of type parameter of class", JAVA_TAG)
@@ -1617,8 +1617,8 @@ TEST_CASE("java parser finds usage of type parameter of class", JAVA_TAG)
 		"	T t;\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeUses, L"A<T>.T A<T>.t -> A<T>.T <3:2 3:2>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeUses, "A<T>.T A<T>.t -> A<T>.T <3:2 3:2>"));
 }
 
 TEST_CASE("java parser finds usage of type parameter of method", JAVA_TAG)
@@ -1629,8 +1629,8 @@ TEST_CASE("java parser finds usage of type parameter of method", JAVA_TAG)
 		"	public <T> void foo(T t){};\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeUses, L"void A.foo<T>(T) -> A.foo<T>.T <3:22 3:22>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeUses, "void A.foo<T>(T) -> A.foo<T>.T <3:22 3:22>"));
 }
 
 TEST_CASE("java parser finds correct location of generic type usage", JAVA_TAG)
@@ -1641,8 +1641,8 @@ TEST_CASE("java parser finds correct location of generic type usage", JAVA_TAG)
 		"	A<Void> t;\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeUses, L"A<java.lang.Void> A<T>.t -> A<T> <3:2 3:2>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeUses, "A<java.lang.Void> A<T>.t -> A<T> <3:2 3:2>"));
 }
 
 TEST_CASE("java parser finds bound type of type parameter", JAVA_TAG)
@@ -1652,8 +1652,8 @@ TEST_CASE("java parser finds bound type of type parameter", JAVA_TAG)
 		"{\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->typeUses, L"A<T>.T -> java.lang.Void <1:27 1:30>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->typeUses, "A<T>.T -> java.lang.Void <1:27 1:30>"));
 }
 
 TEST_CASE("java parser supports java 14 switch expression", JAVA_TAG)
@@ -1676,8 +1676,8 @@ TEST_CASE("java parser supports java 14 switch expression", JAVA_TAG)
 		"	}\n"
 		"}\n");
 
-	REQUIRE(utility::containsElement<std::wstring>(
-		client->usages, L"void foo.Foo.foo() -> foo.Foo.FruitType.PEAR <12:9 12:12>"));
+	REQUIRE(utility::containsElement<std::string>(
+		client->usages, "void foo.Foo.foo() -> foo.Foo.FruitType.PEAR <12:9 12:12>"));
 }
 
 

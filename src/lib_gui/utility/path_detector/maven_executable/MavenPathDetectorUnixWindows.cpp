@@ -12,7 +12,7 @@ std::vector<FilePath> MavenPathDetectorUnixWindows::doGetPaths() const
 	std::vector<FilePath> paths;
 
 	bool ok;
-	FilePath mavenPath(utility::searchPath(L"mvn", ok));
+	FilePath mavenPath(utility::searchPath("mvn", ok));
 	if (ok && !mavenPath.empty() && mavenPath.exists())
 	{
 		paths.push_back(mavenPath);

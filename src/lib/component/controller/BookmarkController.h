@@ -36,8 +36,8 @@ public:
 	void displayBookmarksFor(Bookmark::BookmarkFilter filter, Bookmark::BookmarkOrder order);
 	void undisplayBookmarks();
 	
-	void createBookmark(const std::wstring& name, const std::wstring& comment, const std::wstring& category, Id nodeId);
-	void editBookmark(BookmarkId bookmarkId, const std::wstring& name, const std::wstring& comment, const std::wstring& category);
+	void createBookmark(const std::string& name, const std::string& comment, const std::string& category, Id nodeId);
+	void editBookmark(BookmarkId bookmarkId, const std::string& name, const std::string& comment, const std::string& category);
 	
 	void deleteBookmark(BookmarkId bookmarkId);
 	void deleteBookmarkCategory(Id categoryId);
@@ -77,8 +77,8 @@ private:
 	void handleMessage(MessageBookmarkEdit* message) override;
 	void handleMessage(MessageIndexingFinished* message) override;
 
-	std::vector<std::wstring> getActiveTokenDisplayNames() const;
-	std::vector<std::wstring> getDisplayNamesForNodeId(Id nodeId) const;
+	std::vector<std::string> getActiveTokenDisplayNames() const;
+	std::vector<std::string> getDisplayNamesForNodeId(Id nodeId) const;
 
 	std::vector<BookmarkCategory> getAllBookmarkCategories() const;
 	
@@ -92,9 +92,9 @@ private:
 	std::vector<std::shared_ptr<EdgeBookmark>> getAllEdgeBookmarks() const;
 	std::vector<std::shared_ptr<Bookmark>> getBookmarks(Bookmark::BookmarkFilter filter, Bookmark::BookmarkOrder order) const;
 
-	std::vector<std::wstring> getActiveNodeDisplayNames() const;
-	std::vector<std::wstring> getActiveEdgeDisplayNames() const;
-	std::wstring getNodeDisplayName(const Id id) const;
+	std::vector<std::string> getActiveNodeDisplayNames() const;
+	std::vector<std::string> getActiveEdgeDisplayNames() const;
+	std::string getNodeDisplayName(const Id id) const;
 
 	static std::vector<std::shared_ptr<Bookmark>> getFilteredBookmarks(const std::vector<std::shared_ptr<Bookmark>>& bookmarks, Bookmark::BookmarkFilter filter);
 	static std::vector<std::shared_ptr<Bookmark>> getOrderedBookmarks(const std::vector<std::shared_ptr<Bookmark>>& bookmarks, Bookmark::BookmarkOrder order);
@@ -108,8 +108,8 @@ private:
 
 	void update();
 
-	static const std::wstring s_edgeSeparatorToken;
-	static const std::wstring s_defaultCategoryName;
+	static const std::string s_edgeSeparatorToken;
+	static const std::string s_defaultCategoryName;
 
 	StorageAccess* m_storageAccess;
 	mutable BookmarkCache m_bookmarkCache;

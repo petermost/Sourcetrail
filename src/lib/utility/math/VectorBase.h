@@ -91,7 +91,6 @@ public:
 	bool operator!=(const VectorBase<U, N>& other) const;
 
 	std::string toString() const;
-	std::wstring toWString() const;
 
 protected:
 	T m_values[N];
@@ -437,21 +436,6 @@ std::string VectorBase<T, N>::toString() const
 		result << m_values[i] << ", ";
 	}
 	result << m_values[N - 1] << "]";
-
-	return result.str();
-}
-
-template <class T, unsigned int N>
-std::wstring VectorBase<T, N>::toWString() const
-{
-	std::wstringstream result;
-	result << L"[";
-
-	for (unsigned int i = 0; i < N - 1; i++)
-	{
-		result << m_values[i] << L", ";
-	}
-	result << m_values[N - 1] << L"]";
 
 	return result.str();
 }

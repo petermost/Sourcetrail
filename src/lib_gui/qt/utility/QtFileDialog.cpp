@@ -15,7 +15,7 @@ using namespace std;
 QStringList QtFileDialog::getFileNamesAndDirectories(QWidget* parent, const FilePath& path)
 {
 	const QString dir = getDir(
-		QString::fromStdWString((path.isDirectory() ? path : path.getParentDirectory()).wstr()));
+		QString::fromStdString((path.isDirectory() ? path : path.getParentDirectory()).str()));
 
 	unique_ptr<QFileDialog> dialog = (utility::Platform::isMac() ? make_unique<QFileDialog>(parent) : make_unique<QtFilesAndDirectoriesDialog>(parent));
 
@@ -49,7 +49,7 @@ QStringList QtFileDialog::getFileNamesAndDirectories(QWidget* parent, const File
 QString QtFileDialog::getExistingDirectory(QWidget* parent, const QString& caption, const FilePath& dir)
 {
 	const QString dirPath = QFileDialog::getExistingDirectory(
-		parent, caption, getDir(QString::fromStdWString(dir.wstr())));
+		parent, caption, getDir(QString::fromStdString(dir.str())));
 	saveFilePickerLocation(FilePath(dirPath.toStdString()));
 	return dirPath;
 }
@@ -58,7 +58,7 @@ QString QtFileDialog::getOpenFileName(
 	QWidget* parent, const QString& caption, const FilePath& dir, const QString& filter)
 {
 	const QString filePath = QFileDialog::getOpenFileName(
-		parent, caption, getDir(QString::fromStdWString(dir.wstr())), filter);
+		parent, caption, getDir(QString::fromStdString(dir.str())), filter);
 	const FilePath dirPath = FilePath(filePath.toStdString()).getParentDirectory();
 	saveFilePickerLocation(dirPath);
 	return filePath;
@@ -70,7 +70,7 @@ QString QtFileDialog::showSaveFileDialog(
 	// Workaround for: "QFileDialog::getSaveFileName() does not append the file extension of the selected filter (QWidget-based, non-native)"
 	// https://bugreports.qt.io/browse/QTBUG-27186
 
-	QFileDialog dialog(parent, title, getDir(QString::fromStdWString(directory.wstr())), filter);
+	QFileDialog dialog(parent, title, getDir(QString::fromStdString(directory.str())), filter);
 	dialog.setWindowModality(Qt::WindowModal);
 	dialog.setAcceptMode(QFileDialog::AcceptSave);
 

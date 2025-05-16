@@ -19,8 +19,8 @@ public:
 	QtBookmarkCategory(ControllerProxy<BookmarkController>* controllerProxy);
 	~QtBookmarkCategory() override;
 
-	void setName(const std::wstring& name);
-	std::wstring getName() const;
+	void setName(const std::string& name);
+	std::string getName() const;
 
 	void setId(const Id id);
 	Id getId() const;

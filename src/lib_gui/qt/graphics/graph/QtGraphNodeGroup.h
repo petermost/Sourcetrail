@@ -14,7 +14,7 @@ public:
 	QtGraphNodeGroup(
 		GraphFocusHandler* focusHandler,
 		Id tokenId,
-		const std::wstring& name,
+		const std::string& name,
 		GroupType type,
 		bool interactive);
 	~QtGraphNodeGroup() override;

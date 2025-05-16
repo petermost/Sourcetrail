@@ -179,7 +179,7 @@ void QtScreenSearchBox::findMatches()
 			}
 		}
 
-		controller->search(m_searchBox->text().toLower().toStdWString(), responderNames);
+		controller->search(m_searchBox->text().toLower().toStdString(), responderNames);
 	});
 }
 

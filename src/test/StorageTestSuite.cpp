@@ -12,7 +12,7 @@ class TestStorage: public PersistentStorage
 {
 public:
 	TestStorage()
-		: PersistentStorage(FilePath(L"data/test.sqlite"), FilePath(L"data/testBookmarks.sqlite"))
+		: PersistentStorage(FilePath("data/test.sqlite"), FilePath("data/testBookmarks.sqlite"))
 	{
 		clear();
 	}
@@ -35,10 +35,10 @@ ParseLocation validLocation(Id locationId = 0)
 }
 */
 
-NameHierarchy createNameHierarchy(std::wstring s)
+NameHierarchy createNameHierarchy(std::string s)
 {
 	NameHierarchy nameHierarchy(NAME_DELIMITER_CXX);
-	for (const std::wstring &element :
+	for (const std::string &element :
 		 utility::splitToVector(s, nameDelimiterTypeToString(NAME_DELIMITER_CXX))) {
 		nameHierarchy.push(element);
 	}
@@ -46,10 +46,10 @@ NameHierarchy createNameHierarchy(std::wstring s)
 }
 
 /*
-NameHierarchy createFunctionNameHierarchy(std::wstring ret, std::wstring name, std::wstring parameters)
+NameHierarchy createFunctionNameHierarchy(std::string ret, std::string name, std::string parameters)
 {
 	NameHierarchy nameHierarchy = createNameHierarchy(name);
-	std::wstring lastName = nameHierarchy.back().getName();
+	std::string lastName = nameHierarchy.back().getName();
 	nameHierarchy.pop();
 	nameHierarchy.push(NameElement(lastName, ret, parameters));
 	return nameHierarchy;
@@ -62,11 +62,11 @@ TEST_CASE("storage saves file")
 {
 	TestStorage storage;
 
-	std::wstring filePath = L"path/to/test.h";
+	std::string filePath = "path/to/test.h";
 
 	std::shared_ptr<IntermediateStorage> intermediateStorage = std::make_shared<IntermediateStorage>();
 	Id id = intermediateStorage->addNode(StorageNodeData(NODE_FILE, NameHierarchy::serialize(NameHierarchy(filePath, NAME_DELIMITER_FILE)))).first;
-	intermediateStorage->addFile(StorageFile(id, filePath, L"someLanguage", "someTime", true, true));
+	intermediateStorage->addFile(StorageFile(id, filePath, "someLanguage", "someTime", true, true));
 
 	storage.inject(intermediateStorage.get());
 
@@ -76,7 +76,7 @@ TEST_CASE("storage saves file")
 
 TEST_CASE("storage saves node")
 {
-	NameHierarchy a = createNameHierarchy(L"type");
+	NameHierarchy a = createNameHierarchy("type");
 
 	TestStorage storage;
 
@@ -93,8 +93,8 @@ TEST_CASE("storage saves node")
 
 TEST_CASE("storage saves field as member")
 {
-	NameHierarchy a = createNameHierarchy(L"Struct");
-	NameHierarchy b = createNameHierarchy(L"Struct::m_field");
+	NameHierarchy a = createNameHierarchy("Struct");
+	NameHierarchy b = createNameHierarchy("Struct::m_field");
 
 	TestStorage storage;
 
@@ -144,7 +144,7 @@ TEST_CASE("storage saves method static")
 TEST_CASE("storage clears single file data of single file storage")
 {
 	/*
-	m_filePath = FilePath(L"file.cpp");
+	m_filePath = FilePath("file.cpp");
 	TestStorage storage;
 	storage.onFunctionParsed(
 		validLocation(), ParseFunction(typeUsage("bool"), createNameHierarchy("isTrue"),

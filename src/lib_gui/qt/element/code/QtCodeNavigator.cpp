@@ -361,7 +361,7 @@ void QtCodeNavigator::setCoFocusedTokenIds(const std::vector<Id>& coFocusedToken
 	m_coFocusedTokenIds = std::set<Id>(coFocusedTokenIds.begin(), coFocusedTokenIds.end());
 }
 
-std::wstring QtCodeNavigator::getErrorMessageForId(Id errorId) const
+std::string QtCodeNavigator::getErrorMessageForId(Id errorId) const
 {
 	std::map<Id, ErrorInfo>::const_iterator it = m_errorInfos.find(errorId);
 
@@ -370,7 +370,7 @@ std::wstring QtCodeNavigator::getErrorMessageForId(Id errorId) const
 		return it->second.message;
 	}
 
-	return L"";
+	return "";
 }
 
 void QtCodeNavigator::setErrorInfos(const std::vector<ErrorInfo>& errorInfos)
@@ -394,7 +394,7 @@ size_t QtCodeNavigator::getFatalErrorCountForFile(const FilePath& filePath) cons
 	for (const auto &p: m_errorInfos)
 	{
 		const ErrorInfo& error = p.second;
-		if (error.filePath == filePath.wstr() && error.fatal)
+		if (error.filePath == filePath.str() && error.fatal)
 		{
 			fatalErrorCount++;
 		}
@@ -516,7 +516,7 @@ void QtCodeNavigator::updateFiles()
 	}
 }
 
-size_t QtCodeNavigator::findScreenMatches(const std::wstring& query)
+size_t QtCodeNavigator::findScreenMatches(const std::string& query)
 {
 	clearScreenMatches();
 

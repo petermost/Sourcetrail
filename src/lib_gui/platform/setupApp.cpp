@@ -42,23 +42,23 @@ void setupUserDirectory(const FilePath &appPath)
 {
 	// Determine user directory:
 	QString userDataLocation = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + "/";
-	UserPaths::setUserDataDirectoryPath(FilePath(userDataLocation.toStdWString()).makeAbsolute());
+	UserPaths::setUserDataDirectoryPath(FilePath(userDataLocation.toStdString()).makeAbsolute());
 
 	// Create missing user directory and copy default configurations:
 	if (!UserPaths::getUserDataDirectoryPath().exists()) {
 		FileSystem::createDirectories(UserPaths::getUserDataDirectoryPath());
 
 		// Copy a default application settings file:
-		FileSystem::copyFile(ResourcePaths::getFallbackDirectoryPath().concatenate(L"ApplicationSettings.xml"),
+		FileSystem::copyFile(ResourcePaths::getFallbackDirectoryPath().concatenate("ApplicationSettings.xml"),
 			UserPaths::getAppSettingsFilePath());
 
 		// Copy a default windows settings file:
-		FileSystem::copyFile(ResourcePaths::getFallbackDirectoryPath().concatenate(L"window_settings.ini"),
+		FileSystem::copyFile(ResourcePaths::getFallbackDirectoryPath().concatenate("window_settings.ini"),
 			UserPaths::getWindowSettingsFilePath());
 
 		// Copy the example/tutorial projects:
-		FileSystem::copyDirectory(appPath.getConcatenated(L"user").concatenate(L"projects"),
-			UserPaths::getUserDataDirectoryPath().concatenate(L"projects"));
+		FileSystem::copyDirectory(appPath.getConcatenated("user").concatenate("projects"),
+			UserPaths::getUserDataDirectoryPath().concatenate("projects"));
 
 		// Add u+w permissions because the source files may be marked read-only in some Linux distros:
 		for (recursive_directory_iterator it(UserPaths::getUserDataDirectoryPath().getPath()); it != recursive_directory_iterator(); ++it) {

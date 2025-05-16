@@ -51,7 +51,7 @@ public:
 	std::string getCode() const;
 
 	void findScreenMatches(
-		const std::wstring& query, std::vector<std::pair<QtCodeArea*, Id>>* screenMatches);
+		const std::string& query, std::vector<std::pair<QtCodeArea*, Id>>* screenMatches);
 
 	bool hasFocus(const CodeFocusHandler::Focus& focus) const;
 	bool setFocus(Id locationId);
@@ -76,10 +76,10 @@ private:
 	QtCodeFile* m_file;
 
 	Id m_titleId;
-	std::wstring m_titleString;
+	std::string m_titleString;
 
 	Id m_footerId;
-	std::wstring m_footerString;
+	std::string m_footerString;
 
 	std::vector<QPushButton*> m_dots;
 

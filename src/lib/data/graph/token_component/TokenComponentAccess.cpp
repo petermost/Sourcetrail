@@ -1,25 +1,25 @@
 #include "TokenComponentAccess.h"
 
-std::wstring TokenComponentAccess::getAccessString(AccessKind access)
+std::string TokenComponentAccess::getAccessString(AccessKind access)
 {
 	switch (access)
 	{
 	case AccessKind::NONE:
 		break;
 	case AccessKind::PUBLIC:
-		return L"public";
+		return "public";
 	case AccessKind::PROTECTED:
-		return L"protected";
+		return "protected";
 	case AccessKind::PRIVATE:
-		return L"private";
+		return "private";
 	case AccessKind::DEFAULT:
-		return L"default";
+		return "default";
 	case AccessKind::TEMPLATE_PARAMETER:
-		return L"template parameter";
+		return "template parameter";
 	case AccessKind::TYPE_PARAMETER:
-		return L"type parameter";
+		return "type parameter";
 	}
-	return L"";
+	return "";
 }
 
 
@@ -37,7 +37,7 @@ AccessKind TokenComponentAccess::getAccess() const
 	return m_access;
 }
 
-std::wstring TokenComponentAccess::getAccessString() const
+std::string TokenComponentAccess::getAccessString() const
 {
 	return getAccessString(m_access);
 }

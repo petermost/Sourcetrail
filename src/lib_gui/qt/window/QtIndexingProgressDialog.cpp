@@ -65,7 +65,7 @@ void QtIndexingProgressDialog::updateIndexingProgress(
 
 	if (!sourcePath.empty())
 	{
-		m_sourcePath = QString::fromStdWString(sourcePath.wstr());
+		m_sourcePath = QString::fromStdString(sourcePath.str());
 	}
 
 	updateProgress(progress);

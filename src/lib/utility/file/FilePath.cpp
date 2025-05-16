@@ -21,12 +21,12 @@ char FilePath::getEnvironmentVariablePathSeparator()
 		return ':';
 }
 
-wstring FilePath::getExecutableExtension()
+string FilePath::getExecutableExtension()
 {
 	if constexpr (Platform::isWindows())
-		return L".exe"s;
+		return ".exe"s;
 	else
-		return L""s;
+		return ""s;
 }
 
 FilePath::FilePath()
@@ -45,16 +45,6 @@ FilePath::FilePath(const char filePath[])
 }
 
 FilePath::FilePath(const std::string& filePath)
-	: m_path(std::make_unique<boost::filesystem::path>(filePath))
-	, m_exists(false)
-	, m_checkedExists(false)
-	, m_isDirectory(false)
-	, m_checkedIsDirectory(false)
-	, m_canonicalized(false)
-{
-}
-
-FilePath::FilePath(const std::wstring& filePath)
 	: m_path(std::make_unique<boost::filesystem::path>(filePath))
 	, m_exists(false)
 	, m_checkedExists(false)
@@ -84,7 +74,7 @@ FilePath::FilePath(FilePath&& other)
 {
 }
 
-FilePath::FilePath(const std::wstring& filePath, const std::wstring& base)
+FilePath::FilePath(const std::string& filePath, const std::string& base)
 	: m_path(std::make_unique<boost::filesystem::path>(boost::filesystem::absolute(filePath, base)))
 	, m_exists(false)
 	, m_checkedExists(false)
@@ -167,7 +157,7 @@ bool FilePath::isValid() const
 
 FilePath FilePath::getParentDirectory() const
 {
-	FilePath parentDirectory(m_path->parent_path().wstring());
+	FilePath parentDirectory(m_path->parent_path().string());
 
 	if (!parentDirectory.empty())
 	{
@@ -331,7 +321,7 @@ FilePath FilePath::getConcatenated(const FilePath& other) const
 	return path;
 }
 
-FilePath& FilePath::concatenate(const std::wstring& other)
+FilePath& FilePath::concatenate(const char other[])
 {
 	m_path->operator/=(other);
 	m_exists = false;
@@ -343,7 +333,7 @@ FilePath& FilePath::concatenate(const std::wstring& other)
 	return *this;
 }
 
-FilePath FilePath::getConcatenated(const std::wstring& other) const
+FilePath FilePath::getConcatenated(const char other[]) const
 {
 	FilePath path(*this);
 	path.concatenate(other);
@@ -352,7 +342,7 @@ FilePath FilePath::getConcatenated(const std::wstring& other) const
 
 FilePath FilePath::getLowerCase() const
 {
-	return FilePath(utility::toLowerCase(wstr()));
+	return FilePath(utility::toLowerCase(str()));
 }
 
 bool FilePath::contains(const FilePath& other) const
@@ -397,37 +387,32 @@ std::string FilePath::str() const
 	return m_path->generic_string();
 }
 
-std::wstring FilePath::wstr() const
+std::string FilePath::fileName() const
 {
-	return m_path->generic_wstring();
+	return m_path->filename().generic_string();
 }
 
-std::wstring FilePath::fileName() const
+std::string FilePath::extension() const
 {
-	return m_path->filename().generic_wstring();
-}
-
-std::wstring FilePath::extension() const
-{
-	return m_path->extension().generic_wstring();
+	return m_path->extension().generic_string();
 }
 
 FilePath FilePath::withoutExtension() const
 {
 	boost::filesystem::path tmpPath(getPath());
-	return FilePath(tmpPath.replace_extension().wstring());
+	return FilePath(tmpPath.replace_extension().string());
 }
 
-FilePath FilePath::replaceExtension(const std::wstring& extension) const
+FilePath FilePath::replaceExtension(const std::string& extension) const
 {
 	boost::filesystem::path tmpPath(getPath());
-	return FilePath(tmpPath.replace_extension(extension).wstring());
+	return FilePath(tmpPath.replace_extension(extension).string());
 }
 
-bool FilePath::hasExtension(const std::vector<std::wstring>& extensions) const
+bool FilePath::hasExtension(const std::vector<std::string>& extensions) const
 {
-	const std::wstring e = extension();
-	for (const std::wstring& ext: extensions)
+	const std::string e = extension();
+	for (const std::string& ext: extensions)
 	{
 		if (e == ext)
 		{

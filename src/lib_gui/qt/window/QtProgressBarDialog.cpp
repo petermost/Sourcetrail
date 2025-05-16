@@ -36,13 +36,13 @@ void QtProgressBarDialog::updateTitle(const QString& title)
 	}
 }
 
-std::wstring QtProgressBarDialog::getTitle() const
+std::string QtProgressBarDialog::getTitle() const
 {
 	if (m_title)
 	{
-		return m_title->text().toStdWString();
+		return m_title->text().toStdString();
 	}
-	return L"";
+	return "";
 }
 
 void QtProgressBarDialog::updateMessage(const QString& message)
@@ -53,13 +53,13 @@ void QtProgressBarDialog::updateMessage(const QString& message)
 	}
 }
 
-std::wstring QtProgressBarDialog::getMessage() const
+std::string QtProgressBarDialog::getMessage() const
 {
 	if (m_messageLabel)
 	{
-		return m_messageLabel->text().toStdWString();
+		return m_messageLabel->text().toStdString();
 	}
-	return L"";
+	return "";
 }
 
 void QtProgressBarDialog::setUnknownProgress()

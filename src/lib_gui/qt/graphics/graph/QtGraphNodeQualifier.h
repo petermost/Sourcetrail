@@ -25,7 +25,7 @@ protected:
 	void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
 	void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
 
-	void matchName(const std::wstring&  /*query*/, std::vector<QtGraphNode*>*  /*matchedNodes*/) override {}
+	void matchName(const std::string&  /*query*/, std::vector<QtGraphNode*>*  /*matchedNodes*/) override {}
 
 private:
 	const NameHierarchy m_qualifierName;

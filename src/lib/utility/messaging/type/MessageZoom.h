@@ -13,15 +13,15 @@ public:
 		return "MessageZoom";
 	}
 
-	void print(std::wostream& os) const override
+	void print(std::ostream& os) const override
 	{
 		if (zoomIn)
 		{
-			os << L"in";
+			os << "in";
 		}
 		else
 		{
-			os << L"out";
+			os << "out";
 		}
 	}
 

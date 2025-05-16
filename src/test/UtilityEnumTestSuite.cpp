@@ -46,7 +46,7 @@ TEST_CASE("enum lookup invalid value too large")
 TEST_CASE("enum to_string")
 {
 	REQUIRE(to_string(Color::BLUE) == "3"s);
-	REQUIRE(to_wstring(Color::BLUE) == L"3"s);
+	REQUIRE(to_string(Color::BLUE) == "3"s);
 }
 
 TEST_CASE("enum stream operator")
@@ -55,9 +55,9 @@ TEST_CASE("enum stream operator")
 	stream << Color::RED;
 	REQUIRE(stream.str() == "1"s);
 	
-	wstringstream wstream;
+	stringstream wstream;
 	wstream << Color::RED;
-	REQUIRE(wstream.str() == L"1"s);
+	REQUIRE(wstream.str() == "1"s);
 }
 
 	

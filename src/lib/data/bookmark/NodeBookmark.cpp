@@ -2,8 +2,8 @@
 
 NodeBookmark::NodeBookmark(
 	const BookmarkId bookmarkId,
-	const std::wstring& name,
-	const std::wstring& comment,
+	const std::string& name,
+	const std::string& comment,
 	const TimeStamp& timeStamp,
 	const BookmarkCategory& category)
 	: Bookmark(bookmarkId, name, comment, timeStamp, category)

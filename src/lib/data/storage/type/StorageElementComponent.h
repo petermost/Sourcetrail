@@ -10,7 +10,7 @@ struct StorageElementComponent
 {
 	StorageElementComponent(): elementId(0), type(ELEMENT_COMPONENT_NONE) {}
 
-	StorageElementComponent(Id elementId, ElementComponentKind type, std::wstring data)
+	StorageElementComponent(Id elementId, ElementComponentKind type, std::string data)
 		: elementId(elementId), type(type), data(std::move(data))
 	{
 	}
@@ -33,7 +33,7 @@ struct StorageElementComponent
 
 	Id elementId;
 	ElementComponentKind type;
-	std::wstring data;
+	std::string data;
 };
 
 #endif	  // STORAGE_ELEMENT_COMPONENT_H

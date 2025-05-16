@@ -14,12 +14,12 @@ SqliteStorage::SqliteStorage(const FilePath& dbFilePath): m_dbFilePath(dbFilePat
 
 	try
 	{
-		m_database.open(utility::encodeToUtf8(m_dbFilePath.wstr()));
+		m_database.open(utility::encodeToUtf8(m_dbFilePath.str()));
 	}
 	catch (CppSQLite3Exception& e)
 	{
 		LOG_ERROR(
-			L"Failed to load database file \"" + m_dbFilePath.wstr() + L"\" with message: " +
+			"Failed to load database file \"" + m_dbFilePath.str() + "\" with message: " +
 			utility::decodeFromUtf8(e.errorMessage()));
 		throw;
 	}

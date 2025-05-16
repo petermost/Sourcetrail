@@ -56,7 +56,7 @@ public:
 	void onWindowFocus() override;
 
 	void findScreenMatches(
-		const std::wstring& query, std::vector<std::pair<QtCodeArea*, Id>>* screenMatches) override;
+		const std::string& query, std::vector<std::pair<QtCodeArea*, Id>>* screenMatches) override;
 
 	void setFocus(Id locationId) override;
 	void setFocusOnTop() override;

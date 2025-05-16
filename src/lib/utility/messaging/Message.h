@@ -32,7 +32,7 @@ public:
 		MessageQueue::getInstance()->processMessage(message, true);
 	}
 
-	void print(std::wostream&  /*os*/) const override {}
+	void print(std::ostream&  /*os*/) const override {}
 };
 
 #endif	  // MESSAGE_H

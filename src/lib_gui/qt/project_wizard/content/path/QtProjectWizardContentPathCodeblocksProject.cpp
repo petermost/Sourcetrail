@@ -23,7 +23,7 @@ QtProjectWizardContentPathCodeblocksProject::QtProjectWizardContentPathCodeblock
 		"will stay up to date with changes in the Code::Blocks project on every refresh.<br />"
 		"<br />"
 		"You can make use of environment variables with ${ENV_VAR}.");
-	setFileEndings({L".cbp"});
+	setFileEndings({".cbp"});
 	setIsRequired(true);
 }
 
@@ -62,7 +62,7 @@ void QtProjectWizardContentPathCodeblocksProject::populate(QGridLayout* layout, 
 
 void QtProjectWizardContentPathCodeblocksProject::load()
 {
-	m_picker->setText(QString::fromStdWString(m_settings->getCodeblocksProjectPath().wstr()));
+	m_picker->setText(QString::fromStdString(m_settings->getCodeblocksProjectPath().str()));
 
 	m_filePaths.clear();
 
@@ -76,7 +76,7 @@ void QtProjectWizardContentPathCodeblocksProject::load()
 
 void QtProjectWizardContentPathCodeblocksProject::save()
 {
-	m_settings->setCodeblocksProjectPath(FilePath(m_picker->getText().toStdWString()));
+	m_settings->setCodeblocksProjectPath(FilePath(m_picker->getText().toStdString()));
 }
 
 std::vector<FilePath> QtProjectWizardContentPathCodeblocksProject::getFilePaths() const

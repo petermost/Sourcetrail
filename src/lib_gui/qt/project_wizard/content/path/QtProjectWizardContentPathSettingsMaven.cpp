@@ -15,7 +15,7 @@ QtProjectWizardContentPathSettingsMaven::QtProjectWizardContentPathSettingsMaven
 		"<br />"
 		"You can make use of environment variables with ${ENV_VAR}.");
 	setPlaceholderString("Use Default");
-	setFileEndings({L".xml"});
+	setFileEndings({".xml"});
 }
 
 void QtProjectWizardContentPathSettingsMaven::populate(QGridLayout* layout, int& row)
@@ -27,12 +27,12 @@ void QtProjectWizardContentPathSettingsMaven::populate(QGridLayout* layout, int&
 
 void QtProjectWizardContentPathSettingsMaven::load()
 {
-	m_picker->setText(QString::fromStdWString(m_settings->getMavenSettingsFilePath().wstr()));
+	m_picker->setText(QString::fromStdString(m_settings->getMavenSettingsFilePath().str()));
 }
 
 void QtProjectWizardContentPathSettingsMaven::save()
 {
-	m_settings->setMavenSettingsFilePath(FilePath(m_picker->getText().toStdWString()));
+	m_settings->setMavenSettingsFilePath(FilePath(m_picker->getText().toStdString()));
 }
 
 std::shared_ptr<SourceGroupSettings> QtProjectWizardContentPathSettingsMaven::getSourceGroupSettings()

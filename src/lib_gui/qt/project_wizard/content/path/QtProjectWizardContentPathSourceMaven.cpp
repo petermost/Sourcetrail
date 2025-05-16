@@ -23,7 +23,7 @@ QtProjectWizardContentPathSourceMaven::QtProjectWizardContentPathSourceMaven(
 		"Enter the path to the main pom.xml file of your Maven project.<br />"
 		"<br />"
 		"You can make use of environment variables with ${ENV_VAR}.");
-	setFileEndings({L".xml"});
+	setFileEndings({".xml"});
 	setIsRequired(true);
 }
 
@@ -48,13 +48,13 @@ void QtProjectWizardContentPathSourceMaven::populate(QGridLayout* layout, int& r
 
 void QtProjectWizardContentPathSourceMaven::load()
 {
-	m_picker->setText(QString::fromStdWString(m_settings->getMavenProjectFilePath().wstr()));
+	m_picker->setText(QString::fromStdString(m_settings->getMavenProjectFilePath().str()));
 	m_shouldIndexTests->setChecked(m_settings->getShouldIndexMavenTests());
 }
 
 void QtProjectWizardContentPathSourceMaven::save()
 {
-	m_settings->setMavenProjectFilePath(FilePath(m_picker->getText().toStdWString()));
+	m_settings->setMavenProjectFilePath(FilePath(m_picker->getText().toStdString()));
 	m_settings->setShouldIndexMavenTests(m_shouldIndexTests->isChecked());
 }
 
@@ -80,9 +80,9 @@ std::vector<FilePath> QtProjectWizardContentPathSourceMaven::getFilePaths() cons
 
 		dialogView->setParentWindow(m_window);
 		dialogView->showUnknownProgressDialog(
-			L"Preparing Project", L"Maven\nGenerating Source Files");
+			"Preparing Project", "Maven\nGenerating Source Files");
 
-		const std::wstring errorMessage = utility::mavenGenerateSources(
+		const std::string errorMessage = utility::mavenGenerateSources(
 			mavenPath, mavenSettingsPath, mavenProjectRoot);
 		if (!errorMessage.empty())
 		{

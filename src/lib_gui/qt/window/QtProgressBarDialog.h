@@ -18,9 +18,9 @@ class QtProgressBarDialog: public QtIndexingDialog
 public:
 	QtProgressBarDialog(float topRatio, bool hideable, QWidget* parent = nullptr);
 	void updateTitle(const QString& title);
-	std::wstring getTitle() const;
+	std::string getTitle() const;
 	void updateMessage(const QString& message);
-	std::wstring getMessage() const;
+	std::string getMessage() const;
 	void setUnknownProgress();
 	void updateProgress(size_t progress);
 	size_t getProgress() const;

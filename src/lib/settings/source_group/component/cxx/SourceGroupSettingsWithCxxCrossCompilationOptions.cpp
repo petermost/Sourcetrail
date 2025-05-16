@@ -2,105 +2,153 @@
 
 #include "ProjectSettings.h"
 
-std::vector<std::wstring> SourceGroupSettingsWithCxxCrossCompilationOptions::getAvailableArchTypes()
+std::vector<std::string> SourceGroupSettingsWithCxxCrossCompilationOptions::getAvailableArchTypes()
 {
 	// as defined in llvm/lib/Support/Triple.cpp
 
 	return {
-		L"aarch64",
-		L"aarch64_be",
-		L"aarch64_32",
-		L"arm",
-		L"armeb",
-		L"arc",
-		L"avr",
-		L"bpfel",
-		L"bpfeb",
-		L"hexagon",
-		L"mips",
-		L"mipsel",
-		L"mips64",
-		L"mips64el",
-		L"msp430",
-		L"powerpc64",
-		L"powerpc64le",
-		L"powerpc",
-		L"r600",
-		L"amdgcn",
-		L"riscv32",
-		L"riscv64",
-		L"sparc",
-		L"sparcv9",
-		L"sparcel",
-		L"s390x",
-		L"tce",
-		L"tcele",
-		L"thumb",
-		L"thumbeb",
-		L"i386",
-		L"x86_64",
-		L"xcore",
-		L"nvptx",
-		L"nvptx64",
-		L"le32",
-		L"le64",
-		L"amdil",
-		L"amdil64",
-		L"hsail",
-		L"hsail64",
-		L"spir",
-		L"spir64",
-		L"kalimba",
-		L"lanai",
-		L"shave",
-		L"wasm32",
-		L"wasm64",
-		L"renderscript32",
-		L"renderscript64",
+		"aarch64",
+		"aarch64_be",
+		"aarch64_32",
+		"arm",
+		"armeb",
+		"arc",
+		"avr",
+		"bpfel",
+		"bpfeb",
+		"hexagon",
+		"mips",
+		"mipsel",
+		"mips64",
+		"mips64el",
+		"msp430",
+		"powerpc64",
+		"powerpc64le",
+		"powerpc",
+		"r600",
+		"amdgcn",
+		"riscv32",
+		"riscv64",
+		"sparc",
+		"sparcv9",
+		"sparcel",
+		"s390x",
+		"tce",
+		"tcele",
+		"thumb",
+		"thumbeb",
+		"i386",
+		"x86_64",
+		"xcore",
+		"nvptx",
+		"nvptx64",
+		"le32",
+		"le64",
+		"amdil",
+		"amdil64",
+		"hsail",
+		"hsail64",
+		"spir",
+		"spir64",
+		"kalimba",
+		"lanai",
+		"shave",
+		"wasm32",
+		"wasm64",
+		"renderscript32",
+		"renderscript64",
 	};
 }
 
-std::vector<std::wstring> SourceGroupSettingsWithCxxCrossCompilationOptions::getAvailableVendorTypes()
+std::vector<std::string> SourceGroupSettingsWithCxxCrossCompilationOptions::getAvailableVendorTypes()
 {
 	return {
-		L"unknown",
-		L"apple",
-		L"pc",
-		L"scei",
-		L"bgp",
-		L"bgq",
-		L"fsl",
-		L"ibm",
-		L"img",
-		L"mti",
-		L"nvidia",
-		L"csr",
-		L"myriad",
-		L"amd",
-		L"mesa",
-		L"suse",
-		L"oe",
+		"unknown",
+		"apple",
+		"pc",
+		"scei",
+		"bgp",
+		"bgq",
+		"fsl",
+		"ibm",
+		"img",
+		"mti",
+		"nvidia",
+		"csr",
+		"myriad",
+		"amd",
+		"mesa",
+		"suse",
+		"oe",
 	};
 }
 
-std::vector<std::wstring> SourceGroupSettingsWithCxxCrossCompilationOptions::getAvailableOsTypes()
+std::vector<std::string> SourceGroupSettingsWithCxxCrossCompilationOptions::getAvailableOsTypes()
 {
 	return {
-		L"unknown",	 L"cloudabi", L"darwin", L"dragonfly", L"freebsd",	L"fuchsia", L"ios",
-		L"kfreebsd", L"linux",	  L"lv2",	 L"macosx",	   L"netbsd",	L"openbsd", L"solaris",
-		L"windows",	 L"haiku",	  L"minix",	 L"rtems",	   L"nacl",		L"cnk",		L"aix",
-		L"cuda",	 L"nvcl",	  L"amdhsa", L"ps4",	   L"elfiamcu", L"tvos",	L"watchos",
-		L"mesa3d",	 L"contiki",  L"amdpal", L"hermit",	   L"hurd",		L"wasi",	L"emscripten",
+		"unknown",
+		"cloudabi",
+		"darwin",
+		"dragonfly",
+		"freebsd",
+		"fuchsia",
+		"ios",
+		"kfreebsd",
+		"linux",
+		"lv2",
+		"macosx",
+		"netbsd",
+		"openbsd",
+		"solaris",
+		"windows",
+		"haiku",
+		"minix",
+		"rtems",
+		"nacl",
+		"cnk",
+		"aix",
+		"cuda",
+		"nvcl",
+		"amdhsa",
+		"ps4",
+		"elfiamcu",
+		"tvos",
+		"watchos",
+		"mesa3d",
+		"contiki",
+		"amdpal",
+		"hermit",
+		"hurd",
+		"wasi",
+		"emscripten",
 	};
 }
 
-std::vector<std::wstring> SourceGroupSettingsWithCxxCrossCompilationOptions::getAvailableEnvironmentTypes()
+std::vector<std::string> SourceGroupSettingsWithCxxCrossCompilationOptions::getAvailableEnvironmentTypes()
 {
 	return {
-		L"unknown", L"gnu",		L"gnuabin32", L"gnuabi64",	 L"gnueabihf", L"gnueabi",
-		L"gnux32",	L"code16",	L"eabi",	  L"eabihf",	 L"elfv1",	   L"elfv2",
-		L"android", L"musl",	L"musleabi",  L"musleabihf", L"msvc",	   L"itanium",
-		L"cygnus",	L"coreclr", L"simulator", L"macabi",
+		"unknown",
+		"gnu",
+		"gnuabin32",
+		"gnuabi64",
+		"gnueabihf",
+		"gnueabi",
+		"gnux32",
+		"code16",
+		"eabi",
+		"eabihf",
+		"elfv1",
+		"elfv2",
+		"android",
+		"musl",
+		"musleabi",
+		"musleabihf",
+		"msvc",
+		"itanium",
+		"cygnus",
+		"coreclr",
+		"simulator",
+		"macabi",
 	};
 }
 
@@ -114,56 +162,56 @@ void SourceGroupSettingsWithCxxCrossCompilationOptions::setTargetOptionsEnabled(
 	m_targetOptionsEnabled = targetOptionsEnabled;
 }
 
-std::wstring SourceGroupSettingsWithCxxCrossCompilationOptions::getTargetArch() const
+std::string SourceGroupSettingsWithCxxCrossCompilationOptions::getTargetArch() const
 {
 	return m_targetArch;
 }
 
-void SourceGroupSettingsWithCxxCrossCompilationOptions::setTargetArch(const std::wstring& arch)
+void SourceGroupSettingsWithCxxCrossCompilationOptions::setTargetArch(const std::string& arch)
 {
 	m_targetArch = arch;
 }
 
-std::wstring SourceGroupSettingsWithCxxCrossCompilationOptions::getTargetVendor() const
+std::string SourceGroupSettingsWithCxxCrossCompilationOptions::getTargetVendor() const
 {
 	return m_targetVendor;
 }
 
-void SourceGroupSettingsWithCxxCrossCompilationOptions::setTargetVendor(const std::wstring& vendor)
+void SourceGroupSettingsWithCxxCrossCompilationOptions::setTargetVendor(const std::string& vendor)
 {
 	m_targetVendor = vendor;
 }
 
-std::wstring SourceGroupSettingsWithCxxCrossCompilationOptions::getTargetSys() const
+std::string SourceGroupSettingsWithCxxCrossCompilationOptions::getTargetSys() const
 {
 	return m_targetSys;
 }
 
-void SourceGroupSettingsWithCxxCrossCompilationOptions::setTargetSys(const std::wstring& sys)
+void SourceGroupSettingsWithCxxCrossCompilationOptions::setTargetSys(const std::string& sys)
 {
 	m_targetSys = sys;
 }
 
-std::wstring SourceGroupSettingsWithCxxCrossCompilationOptions::getTargetAbi() const
+std::string SourceGroupSettingsWithCxxCrossCompilationOptions::getTargetAbi() const
 {
 	return m_targetAbi;
 }
 
-void SourceGroupSettingsWithCxxCrossCompilationOptions::setTargetAbi(const std::wstring& abi)
+void SourceGroupSettingsWithCxxCrossCompilationOptions::setTargetAbi(const std::string& abi)
 {
 	m_targetAbi = abi;
 }
 
-std::wstring SourceGroupSettingsWithCxxCrossCompilationOptions::getTargetFlag() const
+std::string SourceGroupSettingsWithCxxCrossCompilationOptions::getTargetFlag() const
 {
-	std::wstring targetFlag;
+	std::string targetFlag;
 	if (m_targetOptionsEnabled && !m_targetArch.empty())
 	{
-		targetFlag = L"--target=";
+		targetFlag = "--target=";
 		targetFlag += m_targetArch;
-		targetFlag += L"-" + (m_targetVendor.empty() ? L"unknown" : m_targetVendor);
-		targetFlag += L"-" + (m_targetSys.empty() ? L"unknown" : m_targetSys);
-		targetFlag += L"-" + (m_targetAbi.empty() ? L"unknown" : m_targetAbi);
+		targetFlag += "-" + (m_targetVendor.empty() ? "unknown" : m_targetVendor);
+		targetFlag += "-" + (m_targetSys.empty() ? "unknown" : m_targetSys);
+		targetFlag += "-" + (m_targetAbi.empty() ? "unknown" : m_targetAbi);
 	}
 	return targetFlag;
 }
@@ -182,13 +230,13 @@ void SourceGroupSettingsWithCxxCrossCompilationOptions::load(
 	setTargetOptionsEnabled(
 		config->getValueOrDefault<bool>(key + "/cross_compilation/target_options_enabled", false));
 	setTargetArch(
-		config->getValueOrDefault<std::wstring>(key + "/cross_compilation/target/arch", L""));
+		config->getValueOrDefault<std::string>(key + "/cross_compilation/target/arch", ""));
 	setTargetVendor(
-		config->getValueOrDefault<std::wstring>(key + "/cross_compilation/target/vendor", L""));
+		config->getValueOrDefault<std::string>(key + "/cross_compilation/target/vendor", ""));
 	setTargetSys(
-		config->getValueOrDefault<std::wstring>(key + "/cross_compilation/target/sys", L""));
+		config->getValueOrDefault<std::string>(key + "/cross_compilation/target/sys", ""));
 	setTargetAbi(
-		config->getValueOrDefault<std::wstring>(key + "/cross_compilation/target/abi", L""));
+		config->getValueOrDefault<std::string>(key + "/cross_compilation/target/abi", ""));
 }
 
 void SourceGroupSettingsWithCxxCrossCompilationOptions::save(

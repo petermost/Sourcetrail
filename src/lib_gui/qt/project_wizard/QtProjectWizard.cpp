@@ -105,10 +105,10 @@ void addMsvcCompatibilityFlagsOnDemand(std::shared_ptr<SourceGroupSettingsWithCx
 {
 	if (applicationSettingsContainVisualStudioHeaderSearchPaths())
 	{
-		std::vector<std::wstring> flags = settings->getCompilerFlags();
-		flags.push_back(L"-fms-extensions");
-		flags.push_back(L"-fms-compatibility");
-		flags.push_back(L"-fms-compatibility-version=19");
+		std::vector<std::string> flags = settings->getCompilerFlags();
+		flags.push_back("-fms-extensions");
+		flags.push_back("-fms-compatibility");
+		flags.push_back("-fms-compatibility-version=19");
 		settings->setCompilerFlags(flags);
 	}
 }
@@ -1025,13 +1025,13 @@ void QtProjectWizard::createProject()
 	m_projectSettings->setAllSourceGroupSettings(m_allSourceGroupSettings);
 	if (!m_projectSettings->save(path))
 	{
-		MessageStatus(L"Unable to save project to location: " + path.wstr()).dispatch();
+		MessageStatus("Unable to save project to location: " + path.str()).dispatch();
 
 		QtMessageBox msgBox(this);
 		msgBox.setText(QStringLiteral("Could not create Project"));
-		msgBox.setInformativeText(QString::fromStdWString(
-			L"<p>Sourcetrail was unable to save the project to the specified path. Please pick a "
-			L"different project location.</p>"));
+		msgBox.setInformativeText(QString::fromStdString(
+			"<p>Sourcetrail was unable to save the project to the specified path. Please pick a "
+			"different project location.</p>"));
 		msgBox.addButton(QStringLiteral("Ok"), QtMessageBox::ButtonRole::AcceptRole);
 		msgBox.execModal();
 
@@ -1053,7 +1053,7 @@ void QtProjectWizard::createProject()
 	}
 	else
 	{
-		MessageStatus(L"Created project: " + path.wstr()).dispatch();
+		MessageStatus("Created project: " + path.str()).dispatch();
 	}
 
 	MessageLoadProject(path, settingsChanged).dispatch();

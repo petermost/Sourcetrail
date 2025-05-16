@@ -38,7 +38,7 @@ void TaskExecuteCustomCommands::runPythonPostProcessing(PersistentStorage& stora
 	std::shared_ptr<SourceLocationCollection> locationCollection =
 		storage.getSourceLocationsForLocationIds(unsolvedLocationIds);
 
-	std::map<std::wstring, std::vector<StorageNode>> nodeNameToStorageNodes;
+	std::map<std::string, std::vector<StorageNode>> nodeNameToStorageNodes;
 	if (locationCollection->getSourceLocationCount() > 0)
 	{
 		for (const StorageNode& node: storage.getStorageNodes())
@@ -70,14 +70,14 @@ void TaskExecuteCustomCommands::runPythonPostProcessing(PersistentStorage& stora
 		}
 		if (!filePath.exists())
 		{
-			LOG_WARNING(L"Skipping post processing for non-existing file: " + filePath.wstr());
+			LOG_WARNING("Skipping post processing for non-existing file: " + filePath.str());
 			return;
 		}
 
 		std::shared_ptr<TextAccess> textAccess = storage.getFileContent(filePath, false);
 		if (textAccess)
 		{
-			std::map<std::wstring, std::vector<std::wstring>> childToParentNodesMap;
+			std::map<std::string, std::vector<std::string>> childToParentNodesMap;
 
 			locationFile->forEachStartSourceLocation([textAccess,
 													  &childToParentNodesMap,
@@ -98,13 +98,13 @@ void TaskExecuteCustomCommands::runPythonPostProcessing(PersistentStorage& stora
 
 				const std::string tokenLine = textAccess->getLine(
 					static_cast<unsigned int>(startLoc->getLineNumber()));
-				const std::wstring token = utility::decodeFromUtf8(tokenLine.substr(
+				const std::string token = utility::decodeFromUtf8(tokenLine.substr(
 					startLoc->getColumnNumber() - 1,
 					endLoc->getColumnNumber() - startLoc->getColumnNumber() + 1));
 
 				std::string prefixString = tokenLine.substr(0, startLoc->getColumnNumber() - 1);
 
-				std::wstring definitionContextName;
+				std::string definitionContextName;
 				{
 					std::regex regex("\\s([^\\.()\\s]+)\\.$");
 					std::smatch matches;
@@ -129,7 +129,7 @@ void TaskExecuteCustomCommands::runPythonPostProcessing(PersistentStorage& stora
 									edge.sourceNodeId);
 								if (nameHierarchy.size() > 1)
 								{
-									std::wstring name = nameHierarchy
+									std::string name = nameHierarchy
 															.getRange(0, nameHierarchy.size() - 1)
 															.back()
 															.getName();
@@ -219,7 +219,7 @@ void TaskExecuteCustomCommands::runPythonPostProcessing(PersistentStorage& stora
 			storage.addElementComponent(StorageElementComponent(
 				ambiguousEdgeIds[i],
 				ELEMENT_COMPONENT_IS_AMBIGUOUS,
-				L""));
+				""));
 			storage.addOccurrence(
 				StorageOccurrence(ambiguousEdgeIds[i], dataToInsert[i].sourceLocationId));
 		}
@@ -358,7 +358,7 @@ Task::TaskState TaskExecuteCustomCommands::doUpdate(std::shared_ptr<Blackboard> 
 		{
 			LOG_INFO("Starting Python post processing.");
 			m_dialogView->showUnknownProgressDialog(
-				L"Finish Indexing", L"Run Python Post Processing");
+				"Finish Indexing", "Run Python Post Processing");
 
 			targetStorage.clearCaches();
 			targetStorage.buildCaches();
@@ -386,7 +386,7 @@ void TaskExecuteCustomCommands::handleMessage(MessageIndexingInterrupted*  /*mes
 	m_interrupted = true;
 
 	m_dialogView->showUnknownProgressDialog(
-		L"Interrupting Indexing", L"Waiting for running\ncommand to finish");
+		"Interrupting Indexing", "Waiting for running\ncommand to finish");
 }
 
 void TaskExecuteCustomCommands::executeParallelIndexerCommands(
@@ -414,7 +414,7 @@ void TaskExecuteCustomCommands::executeParallelIndexerCommands(
 		{
 			FilePath databaseFilePath = indexerCommand->getDatabaseFilePath();
 			databaseFilePath = databaseFilePath.getParentDirectory().concatenate(
-				databaseFilePath.fileName() + L"_thread" + std::to_wstring(threadId));
+				databaseFilePath.fileName() + "_thread" + std::to_string(threadId));
 
 			bool databaseFilePathKnown = true;
 			{
@@ -432,9 +432,9 @@ void TaskExecuteCustomCommands::executeParallelIndexerCommands(
 				if (databaseFilePath.exists())
 				{
 					LOG_WARNING(
-						L"Temporary storage \"" + databaseFilePath.wstr() +
-						L"\" already exists on file system. File will be removed to avoid "
-						L"conflicts.");
+						"Temporary storage \"" + databaseFilePath.str() +
+						"\" already exists on file system. File will be removed to avoid "
+						"conflicts.");
 					FileSystem::remove(databaseFilePath);
 				}
 				storage = std::make_shared<PersistentStorage>(databaseFilePath, FilePath());
@@ -466,12 +466,12 @@ void TaskExecuteCustomCommands::runIndexerCommand(
 			indexedSourceFileCount + 1, indexedSourceFileCount, m_indexerCommandCount, {sourcePath});
 		MessageIndexingStatus(true, indexedSourceFileCount * 100 / m_indexerCommandCount).dispatch();
 
-		const std::wstring command = indexerCommand->getCommand();
-		const std::vector<std::wstring> arguments = indexerCommand->getArguments();
+		const std::string command = indexerCommand->getCommand();
+		const std::vector<std::string> arguments = indexerCommand->getArguments();
 
 		LOG_INFO(
 			"Start processing command \"" +
-			utility::encodeToUtf8(command + L" " + utility::join(arguments, L" ")) + "\"");
+			utility::encodeToUtf8(command + " " + utility::join(arguments, " ")) + "\"");
 
 		const ErrorCountInfo previousErrorCount = storage ? storage->getErrorCount()
 														  : ErrorCountInfo();
@@ -506,22 +506,22 @@ void TaskExecuteCustomCommands::runIndexerCommand(
 
 		if (out.exitCode == 0 && out.error.empty())
 		{
-			std::wstring message = L"Process returned successfully.\n";
+			std::string message = "Process returned successfully.\n";
 			LOG_INFO(message);
 		}
 		else
 		{
-			std::wstring statusText = L"command \"" + indexerCommand->getCommand() + L" " +
-				utility::join(arguments, L" ") + L"\" returned";
+			std::string statusText = "command \"" + indexerCommand->getCommand() + " " +
+				utility::join(arguments, " ") + "\" returned";
 			if (out.exitCode != 0)
 			{
-				statusText += L" code \"" + std::to_wstring(out.exitCode) + L"\"";
+				statusText += " code \"" + std::to_string(out.exitCode) + "\"";
 			}
 			if (!out.error.empty())
 			{
-				statusText += L" with message \"" + out.error + L"\"";
+				statusText += " with message \"" + out.error + "\"";
 			}
-			statusText += L".";
+			statusText += ".";
 
 			LOG_ERROR(statusText);
 			MessageShowStatus().dispatch();

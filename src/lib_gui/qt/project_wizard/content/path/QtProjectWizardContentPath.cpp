@@ -47,7 +47,7 @@ bool QtProjectWizardContentPath::check()
 		}
 
 		FilePath path = utility::getExpandedAndAbsolutePath(
-			FilePath(m_picker->getText().toStdWString()),
+			FilePath(m_picker->getText().toStdString()),
 			getSourceGroupSettings()->getProjectDirectoryPath());
 
 		if (m_picker->pickDirectory())
@@ -96,7 +96,7 @@ void QtProjectWizardContentPath::setPlaceholderString(const QString& placeholder
 	m_placeholderString = placeholder;
 }
 
-void QtProjectWizardContentPath::setFileEndings(const std::set<std::wstring>& fileEndings)
+void QtProjectWizardContentPath::setFileEndings(const std::set<std::string>& fileEndings)
 {
 	m_fileEndings = fileEndings;
 }

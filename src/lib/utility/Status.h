@@ -13,12 +13,12 @@ typedef int StatusFilter;
 
 struct Status
 {
-	Status(std::wstring message, bool isError = false)
+	Status(std::string message, bool isError = false)
 		: message(message), type(isError ? StatusType::STATUS_ERROR : StatusType::STATUS_INFO)
 	{
 	}
 
-	std::wstring message;
+	std::string message;
 	StatusType type;
 };
 

@@ -20,7 +20,7 @@ public:
 	void setFilePath(const FilePath& filePath);
 
 	void setModificationTime(const TimeStamp modificationTime);
-	void setProject(const std::wstring& name);
+	void setProject(const std::string& name);
 
 	bool isComplete() const;
 	void setIsComplete(bool isComplete);

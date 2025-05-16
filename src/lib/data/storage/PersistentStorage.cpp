@@ -39,7 +39,7 @@ PersistentStorage::PersistentStorage(const FilePath& dbPath, const FilePath& boo
 	{
 		if (nodeType.hasSearchFilter())
 		{
-			m_commandIndex.addNode(0, nodeType.getReadableTypeWString());
+			m_commandIndex.addNode(0, nodeType.getReadableTypeString());
 		}
 	}
 
@@ -547,7 +547,7 @@ std::map<Id, std::pair<Id, NameHierarchy>> PersistentStorage::getNodeIdToParentF
 					tokenId,
 					std::make_pair(
 						getFileNodeId(location->getFilePath()),
-						NameHierarchy(location->getFilePath().wstr(), NAME_DELIMITER_FILE)));
+						NameHierarchy(location->getFilePath().str(), NAME_DELIMITER_FILE)));
 			}
 		}
 	});
@@ -567,7 +567,7 @@ std::map<Id, std::pair<Id, NameHierarchy>> PersistentStorage::getNodeIdToParentF
 					tokenId,
 					std::make_pair(
 						getFileNodeId(location->getFilePath()),
-						NameHierarchy(location->getFilePath().wstr(), NAME_DELIMITER_FILE)));
+						NameHierarchy(location->getFilePath().str(), NAME_DELIMITER_FILE)));
 			}
 		}
 	});
@@ -586,7 +586,7 @@ StorageEdge PersistentStorage::getEdgeById(Id edgeId) const
 }
 
 std::shared_ptr<SourceLocationCollection> PersistentStorage::getFullTextSearchLocations(
-	const std::wstring& searchTerm, bool caseSensitive) const
+	const std::string& searchTerm, bool caseSensitive) const
 {
 	TRACE();
 
@@ -603,14 +603,14 @@ std::shared_ptr<SourceLocationCollection> PersistentStorage::getFullTextSearchLo
 
 		if (m_fullTextSearchCodec != codec.getName())
 		{
-			MessageStatus(L"Building fulltext search index", false, true).dispatch();
+			MessageStatus("Building fulltext search index", false, true).dispatch();
 			buildFullTextSearchIndex();
 		}
 	}
 
 	MessageStatus(
-		std::wstring(L"Searching fulltext (case-") +
-			(caseSensitive ? L"sensitive" : L"insensitive") + L"): " + searchTerm,
+		std::string("Searching fulltext (case-") +
+			(caseSensitive ? "sensitive" : "insensitive") + "): " + searchTerm,
 		false,
 		true)
 		.dispatch();
@@ -637,7 +637,7 @@ std::shared_ptr<SourceLocationCollection> PersistentStorage::getFullTextSearchLo
 
 						int charsTotal = 0;
 						int lineNumber = 1;
-						std::wstring line = codec.decode(fileContent->getLine(lineNumber));
+						std::string line = codec.decode(fileContent->getLine(lineNumber));
 
 						for (int pos: fileResult.positions)
 						{
@@ -695,10 +695,10 @@ std::shared_ptr<SourceLocationCollection> PersistentStorage::getFullTextSearchLo
 	addCompleteFlagsToSourceLocationCollection(collection.get());
 
 	MessageStatus(
-		std::to_wstring(collection->getSourceLocationCount()) + L" results in " +
-			std::to_wstring(collection->getSourceLocationFileCount()) +
-			L" files for fulltext search (case-" + (caseSensitive ? L"sensitive" : L"insensitive") +
-			L"): " + searchTerm,
+		std::to_string(collection->getSourceLocationCount()) + " results in " +
+			std::to_string(collection->getSourceLocationFileCount()) +
+			" files for fulltext search (case-" + (caseSensitive ? "sensitive" : "insensitive") +
+			"): " + searchTerm,
 		false,
 		false)
 		.dispatch();
@@ -707,7 +707,7 @@ std::shared_ptr<SourceLocationCollection> PersistentStorage::getFullTextSearchLo
 }
 
 std::vector<SearchMatch> PersistentStorage::getAutocompletionMatches(
-	const std::wstring& query, NodeTypeSet acceptedNodeTypes, bool acceptCommands) const
+	const std::string& query, NodeTypeSet acceptedNodeTypes, bool acceptCommands) const
 {
 	TRACE();
 
@@ -795,14 +795,14 @@ std::vector<SearchMatch> PersistentStorage::getAutocompletionMatches(
 
 	// for (auto a : matches)
 	// {
-	// 	std::wcout << a.score << " " << a.name << std::endl;
+	// 	std::cout << a.score << " " << a.name << std::endl;
 	// }
 
 	return matches;
 }
 
 std::vector<SearchMatch> PersistentStorage::getAutocompletionSymbolMatches(
-	const std::wstring& query,
+	const std::string& query,
 	const NodeTypeSet& acceptedNodeTypes,
 	size_t maxResultsCount,
 	size_t maxBestScoredResultsLength) const
@@ -879,12 +879,12 @@ std::vector<SearchMatch> PersistentStorage::getAutocompletionSymbolMatches(
 		match.indices = result.indices;
 		match.score = result.score;
 		match.nodeType = NodeType(firstNode->type);
-		match.typeName = match.nodeType.getReadableTypeWString();
+		match.typeName = match.nodeType.getReadableTypeString();
 		match.searchType = SearchMatch::SEARCH_TOKEN;
 
 		if (m_symbolDefinitionKinds.find(firstNode->id) == m_symbolDefinitionKinds.end())
 		{
-			match.typeName = L"non-indexed " + match.typeName;
+			match.typeName = "non-indexed " + match.typeName;
 		}
 
 		matches.push_back(match);
@@ -894,7 +894,7 @@ std::vector<SearchMatch> PersistentStorage::getAutocompletionSymbolMatches(
 }
 
 std::vector<SearchMatch> PersistentStorage::getAutocompletionFileMatches(
-	const std::wstring& query, size_t maxResultsCount) const
+	const std::string& query, size_t maxResultsCount) const
 {
 	const std::vector<SearchResult> results = m_fileIndex.search(
 		query,
@@ -917,7 +917,7 @@ std::vector<SearchMatch> PersistentStorage::getAutocompletionFileMatches(
 		for (Id tokenId: match.tokenIds)
 		{
 			match.tokenNames.push_back(
-				NameHierarchy(getFileNodePath(tokenId).wstr(), NAME_DELIMITER_FILE));
+				NameHierarchy(getFileNodePath(tokenId).str(), NAME_DELIMITER_FILE));
 		}
 
 		if (!match.tokenNames.size())
@@ -929,7 +929,7 @@ std::vector<SearchMatch> PersistentStorage::getAutocompletionFileMatches(
 		match.score = result.score;
 
 		match.nodeType = NodeType(NODE_FILE);
-		match.typeName = match.nodeType.getReadableTypeWString();
+		match.typeName = match.nodeType.getReadableTypeString();
 
 		match.searchType = SearchMatch::SEARCH_TOKEN;
 
@@ -940,7 +940,7 @@ std::vector<SearchMatch> PersistentStorage::getAutocompletionFileMatches(
 }
 
 std::vector<SearchMatch> PersistentStorage::getAutocompletionCommandMatches(
-	const std::wstring& query, NodeTypeSet acceptedNodeTypes) const
+	const std::string& query, NodeTypeSet acceptedNodeTypes) const
 {
 	// search in indices
 	const std::vector<SearchResult> results = m_commandIndex.search(query, NodeTypeSet::all(), 0);
@@ -958,12 +958,12 @@ std::vector<SearchMatch> PersistentStorage::getAutocompletionCommandMatches(
 		match.score = result.score;
 
 		match.searchType = SearchMatch::SEARCH_COMMAND;
-		match.typeName = L"command";
+		match.typeName = "command";
 
 		if (match.getCommandType() == SearchMatch::COMMAND_NODE_FILTER)
 		{
 			match.nodeType = NodeType(getNodeKindForReadableNodeKindString(match.name));
-			match.typeName = L"filter";
+			match.typeName = "filter";
 		}
 
 		if (acceptedNodeTypes == NodeTypeSet::all() ||
@@ -1777,7 +1777,7 @@ std::shared_ptr<TextAccess> PersistentStorage::getFileContent(
 	TRACE();
 
 	std::shared_ptr<TextAccess> fileContent = m_sqliteIndexStorage.getFileContentByPath(
-		filePath.wstr());
+		filePath.str());
 	if (fileContent->getLineCount() > 0)
 	{
 		return fileContent;
@@ -1788,7 +1788,7 @@ std::shared_ptr<TextAccess> PersistentStorage::getFileContent(
 bool PersistentStorage::hasContentForFile(const FilePath& filePath) const
 {
 	std::shared_ptr<TextAccess> fileContent = m_sqliteIndexStorage.getFileContentByPath(
-		filePath.wstr());
+		filePath.str());
 	return fileContent->getLineCount() > 0;
 }
 
@@ -1983,7 +1983,7 @@ void PersistentStorage::addEdgeBookmark(const EdgeBookmark& bookmark)
 	}
 }
 
-Id PersistentStorage::addBookmarkCategory(const std::wstring& name)
+Id PersistentStorage::addBookmarkCategory(const std::string& name)
 {
 	if (name.empty())
 	{
@@ -2000,9 +2000,9 @@ Id PersistentStorage::addBookmarkCategory(const std::wstring& name)
 
 void PersistentStorage::updateBookmark(
 	const BookmarkId bookmarkId,
-	const std::wstring& name,
-	const std::wstring& comment,
-	const std::wstring& categoryName)
+	const std::string& name,
+	const std::string& comment,
+	const std::string& categoryName)
 {
 	const Id categoryId = addBookmarkCategory(
 		categoryName);	  // only creates category if id didn't exist before;
@@ -2076,7 +2076,7 @@ std::vector<EdgeBookmark> PersistentStorage::getAllEdgeBookmarks() const
 
 	std::vector<EdgeBookmark> edgeBookmarks;
 
-	UnorderedCache<std::wstring, Id> nodeIdCache([&](const std::wstring& serializedNodeName) {
+	UnorderedCache<std::string, Id> nodeIdCache([&](const std::string& serializedNodeName) {
 		return m_sqliteIndexStorage.getNodeBySerializedName(serializedNodeName).id;
 	});
 
@@ -2160,7 +2160,7 @@ TooltipInfo PersistentStorage::getTooltipInfoForTokenIds(
 	}
 
 	const NodeType type(node.type);
-	info.title = type.getReadableTypeWString();
+	info.title = type.getReadableTypeString();
 
 	DefinitionKind defKind = DefinitionKind::NONE;
 	const StorageSymbol symbol = m_sqliteIndexStorage.getFirstById<StorageSymbol>(node.id);
@@ -2174,7 +2174,7 @@ TooltipInfo PersistentStorage::getTooltipInfoForTokenIds(
 		const StorageComponentAccess access = m_sqliteIndexStorage.getComponentAccessByNodeId(node.id);
 		if (access.nodeId != 0)
 		{
-			info.title = accessKindToString(access.type) + L" " + info.title;
+			info.title = accessKindToString(access.type) + " " + info.title;
 		}
 	}
 
@@ -2182,21 +2182,21 @@ TooltipInfo PersistentStorage::getTooltipInfoForTokenIds(
 	{
 		if (!getFileNodeIndexed(node.id))
 		{
-			info.title = L"non-indexed " + info.title;
+			info.title = "non-indexed " + info.title;
 		}
 
 		if (!getFileNodeComplete(node.id))
 		{
-			info.title = L"incomplete " + info.title;
+			info.title = "incomplete " + info.title;
 		}
 	}
 	else if (defKind == DefinitionKind::NONE)
 	{
-		info.title = L"non-indexed " + info.title;
+		info.title = "non-indexed " + info.title;
 	}
 	else if (defKind == DefinitionKind::IMPLICIT)
 	{
-		info.title = L"implicit " + info.title;
+		info.title = "implicit " + info.title;
 	}
 
 	info.count = 0;
@@ -2231,7 +2231,7 @@ TooltipSnippet PersistentStorage::getTooltipSnippetForNode(const StorageNode& no
 	TooltipSnippet snippet;
 	snippet.code = nameHierarchy.getQualifiedNameWithSignature();
 	snippet.locationFile = std::make_shared<SourceLocationFile>(
-		FilePath(L"main.txt"), L"", true, true, true);
+		FilePath("main.txt"), "", true, true, true);
 
 	// set file language
 	std::vector<StorageOccurrence> occurrences = m_sqliteIndexStorage.getOccurrencesForElementIds(
@@ -2327,15 +2327,15 @@ TooltipSnippet PersistentStorage::getTooltipSnippetForNode(const StorageNode& no
 			// remove characters before signature start
 			lines[0] = lines[0].substr(sigLoc->getColumnNumber() - 1);
 
-			std::wstring code = utility::decodeFromUtf8(utility::join(lines, ""));
+			std::string code = utility::decodeFromUtf8(utility::join(lines, ""));
 
 			// store texts of annotations
-			std::vector<std::pair<Id, std::wstring>> annotatedTexts;
-			std::wstring delimiter = nameHierarchy.getDelimiter();
+			std::vector<std::pair<Id, std::string>> annotatedTexts;
+			std::string delimiter = nameHierarchy.getDelimiter();
 			size_t offset = 0;
 			for (const Annotation& annotation: annotations)
 			{
-				std::wstring text = code.substr(
+				std::string text = code.substr(
 					annotation.startPos + offset, annotation.endPos - annotation.startPos + 1);
 
 				// only replace name if not already prepended with other qualifiers
@@ -2344,11 +2344,11 @@ TooltipSnippet PersistentStorage::getTooltipSnippetForNode(const StorageNode& no
 				// if is function name itself, replace with qualified name
 				if (utility::containsElement(
 						file->getSourceLocationById(annotation.locationId)->getTokenIds(), node.id) &&
-					(delimiterPos == std::wstring::npos ||
+					(delimiterPos == std::string::npos ||
 					 delimiterPos < annotation.startPos - delimiter.size()) &&
 					text.size() <= nameHierarchy.getRawName().size())
 				{
-					std::wstring name = nameHierarchy.getQualifiedName();
+					std::string name = nameHierarchy.getQualifiedName();
 					offset = name.size() - text.size();
 
 					code = code.replace(
@@ -2369,10 +2369,10 @@ TooltipSnippet PersistentStorage::getTooltipSnippetForNode(const StorageNode& no
 
 			// create source locations for annotations via stored texts
 			size_t pos = 0;
-			for (const std::pair<Id, std::wstring>& p: annotatedTexts)
+			for (const std::pair<Id, std::string>& p: annotatedTexts)
 			{
 				pos = snippet.code.find(p.second, pos);
-				if (pos != std::wstring::npos)
+				if (pos != std::string::npos)
 				{
 					SourceLocation* loc = file->getSourceLocationById(p.first);
 
@@ -2410,9 +2410,9 @@ TooltipSnippet PersistentStorage::getTooltipSnippetForNode(const StorageNode& no
 		}
 
 		std::set<
-			std::pair<std::wstring, Id>,
-			bool (*)(const std::pair<std::wstring, Id>&, const std::pair<std::wstring, Id>&)>
-			typeNames([](const std::pair<std::wstring, Id>& a, const std::pair<std::wstring, Id>& b) {
+			std::pair<std::string, Id>,
+			bool (*)(const std::pair<std::string, Id>&, const std::pair<std::string, Id>&)>
+			typeNames([](const std::pair<std::string, Id>& a, const std::pair<std::string, Id>& b) {
 				if (a.first.size() == b.first.size())
 				{
 					return a.first < b.first;
@@ -2432,10 +2432,10 @@ TooltipSnippet PersistentStorage::getTooltipSnippetForNode(const StorageNode& no
 		for (const auto& p: typeNames)
 		{
 			size_t pos = 0;
-			while (pos != std::wstring::npos)
+			while (pos != std::string::npos)
 			{
 				pos = snippet.code.find(p.first, pos);
-				if (pos == std::wstring::npos)
+				if (pos == std::string::npos)
 				{
 					continue;
 				}
@@ -2493,7 +2493,7 @@ TooltipInfo PersistentStorage::getTooltipInfoForSourceLocationIdsAndLocalSymbolI
 
 	if (!locationIds.empty())
 	{
-		std::wstring fileLanguage = getFileNodeLanguage(
+		std::string fileLanguage = getFileNodeLanguage(
 			m_sqliteIndexStorage.getFirstById<StorageSourceLocation>(locationIds.front()).fileNodeId);
 
 		const std::vector<Id> nodeIds = getNodeIdsForLocationIds(locationIds);
@@ -2505,14 +2505,14 @@ TooltipInfo PersistentStorage::getTooltipInfoForSourceLocationIdsAndLocalSymbolI
 			const NameHierarchy nameHierarchy = NameHierarchy::deserialize(node.serializedName);
 			snippet.code = nameHierarchy.getQualifiedName();
 			snippet.locationFile = std::make_shared<SourceLocationFile>(
-				FilePath(L"main.txt"), fileLanguage, true, true, true);
+				FilePath("main.txt"), fileLanguage, true, true, true);
 
 			snippet.locationFile->addSourceLocation(
 				LocationType::TOKEN, 0, std::vector<Id>(1, node.id), 1, 1, 1, snippet.code.size());
 
 			if (NodeType(node.type).isCallable())
 			{
-				snippet.code += L"()";
+				snippet.code += "()";
 			}
 
 			info.snippets.push_back(snippet);
@@ -2523,9 +2523,9 @@ TooltipInfo PersistentStorage::getTooltipInfoForSourceLocationIdsAndLocalSymbolI
 	{
 		TooltipSnippet snippet;
 
-		snippet.code = L"local symbol";
+		snippet.code = "local symbol";
 		snippet.locationFile = std::make_shared<SourceLocationFile>(
-			FilePath(L"main.txt"), L"", true, true, true);
+			FilePath("main.txt"), "", true, true, true);
 		snippet.locationFile->addSourceLocation(
 			LocationType::LOCAL_SYMBOL, 0, std::vector<Id>(1, id), 1, 1, 1, snippet.code.size());
 
@@ -2624,7 +2624,7 @@ bool PersistentStorage::getFileNodeIndexed(Id fileId) const
 	return false;
 }
 
-std::wstring PersistentStorage::getFileNodeLanguage(Id fileId) const
+std::string PersistentStorage::getFileNodeLanguage(Id fileId) const
 {
 	auto it = m_fileNodeLanguage.find(fileId);
 	if (it != m_fileNodeLanguage.end())
@@ -2632,7 +2632,7 @@ std::wstring PersistentStorage::getFileNodeLanguage(Id fileId) const
 		return it->second;
 	}
 
-	return L"";
+	return "";
 }
 
 std::unordered_map<Id, std::set<Id>> PersistentStorage::getFileIdToIncludingFileIdMap() const
@@ -2709,7 +2709,7 @@ std::unordered_map<Id, std::set<Id>> PersistentStorage::getFileIdToImportingFile
 }
 
 std::set<Id> PersistentStorage::getReferenced(
-	const std::set<Id>& ids, std::unordered_map<Id, std::set<Id>> idToReferencingIdMap) 
+	const std::set<Id>& ids, std::unordered_map<Id, std::set<Id>> idToReferencingIdMap)
 {
 	std::unordered_map<Id, std::set<Id>> idToReferencedIdMap;
 	for (const auto& it: idToReferencingIdMap)
@@ -3245,7 +3245,7 @@ void PersistentStorage::buildFilePathMaps()
 		m_fileNodeIndexed.emplace(file.id, file.indexed);
 		m_fileNodeLanguage.emplace(file.id, file.languageIdentifier);
 
-		if (!m_hasJavaFiles && path.extension() == L".java")
+		if (!m_hasJavaFiles && path.extension() == ".java")
 		{
 			m_hasJavaFiles = true;
 		}
@@ -3282,7 +3282,7 @@ void PersistentStorage::buildSearchIndex()
 					filePath.makeRelativeTo(dbPath);
 				}
 
-				m_fileIndex.addNode(node.id, filePath.wstr(), type);
+				m_fileIndex.addNode(node.id, filePath.str(), type);
 			}
 		}
 		else
@@ -3296,14 +3296,14 @@ void PersistentStorage::buildSearchIndex()
 
 				// we don't use the signature here, so elements with the same signature share the
 				// same node.
-				std::wstring name = nameHierarchy.getQualifiedName();
+				std::string name = nameHierarchy.getQualifiedName();
 
 				// replace template arguments with .. to avoid clutter in search results and have
 				// different template specializations share the same node.
 				if (defKind == DefinitionKind::NONE &&
 					nameHierarchy.getDelimiter() == nameDelimiterTypeToString(NAME_DELIMITER_CXX))
 				{
-					name = utility::replaceBetween(name, L'<', L'>', L"..");
+					name = utility::replaceBetween(name, '<', '>', "..");
 				}
 
 				m_symbolIndex.addNode(node.id, std::move(name), type);
@@ -3396,13 +3396,13 @@ void PersistentStorage::buildMemberEdgeIdOrderMap()
 		}
 
 		const FilePath path(m_fileNodePaths[location.fileNodeId]);
-		if (path.extension() == L".java")
+		if (path.extension() == ".java")
 		{
 			collection.addSourceLocation(
 				location.type,
 				location.id,
 				std::vector<Id>(),
-				FilePath(to_wstring(location.fileNodeId)),
+				FilePath(to_string(location.fileNodeId)),
 				location.startLine,
 				location.startCol,
 				location.endLine,

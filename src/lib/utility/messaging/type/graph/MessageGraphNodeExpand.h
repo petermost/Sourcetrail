@@ -19,16 +19,16 @@ public:
 		return "MessageGraphNodeExpand";
 	}
 
-	void print(std::wostream& os) const override
+	void print(std::ostream& os) const override
 	{
-		os << tokenId << L" ";
+		os << tokenId << " ";
 		if (expand)
 		{
-			os << L"expand";
+			os << "expand";
 		}
 		else
 		{
-			os << L"collapse";
+			os << "collapse";
 		}
 	}
 

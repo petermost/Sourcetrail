@@ -13,7 +13,7 @@ public:
 	CxxTemplateArgumentNameResolver(CanonicalFilePathCache* canonicalFilePathCache);
 	CxxTemplateArgumentNameResolver(const CxxNameResolver* other);
 
-	std::wstring getTemplateArgumentName(const clang::TemplateArgument& argument);
+	std::string getTemplateArgumentName(const clang::TemplateArgument& argument);
 };
 
 #endif	  // CXX_TEMPLATE_ARGUMENT_NAME_RESOLVER_H

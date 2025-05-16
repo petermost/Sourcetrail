@@ -25,9 +25,9 @@ void QtSearchView::refreshView()
 	});
 }
 
-std::wstring QtSearchView::getQuery() const
+std::string QtSearchView::getQuery() const
 {
-	return m_widget->query().toStdWString();
+	return m_widget->query().toStdString();
 }
 
 void QtSearchView::setMatches(const std::vector<SearchMatch>& matches)

@@ -139,45 +139,45 @@ Tree<NodeType::BundleInfo> NodeType::getOverviewBundleTree() const
 	switch (m_kind)
 	{
 	case NODE_FILE:
-		return Tree<BundleInfo>(BundleInfo(L"Files"));
+		return Tree<BundleInfo>(BundleInfo("Files"));
 	case NODE_MACRO:
-		return Tree<BundleInfo>(BundleInfo(L"Macros"));
+		return Tree<BundleInfo>(BundleInfo("Macros"));
 	case NODE_NAMESPACE:
 	{
-		Tree<BundleInfo> tree(BundleInfo(L"Namespaces"));
+		Tree<BundleInfo> tree(BundleInfo("Namespaces"));
 		tree.children.push_back(Tree<BundleInfo>(BundleInfo(
-			[](const std::wstring& nodeName) {
-				return nodeName.find(L"anonymous namespace") != std::wstring::npos;
+			[](const std::string& nodeName) {
+				return nodeName.find("anonymous namespace") != std::string::npos;
 			},
-			L"Anonymous Namespaces")));
+			"Anonymous Namespaces")));
 		return tree;
 	}
 	case NODE_MODULE:
-		return Tree<BundleInfo>(BundleInfo(L"Modules"));
+		return Tree<BundleInfo>(BundleInfo("Modules"));
 	case NODE_PACKAGE:
-		return Tree<BundleInfo>(BundleInfo(L"Packages"));
+		return Tree<BundleInfo>(BundleInfo("Packages"));
 	case NODE_CLASS:
-		return Tree<BundleInfo>(BundleInfo(L"Classes"));
+		return Tree<BundleInfo>(BundleInfo("Classes"));
 	case NODE_INTERFACE:
-		return Tree<BundleInfo>(BundleInfo(L"Interfaces"));
+		return Tree<BundleInfo>(BundleInfo("Interfaces"));
 	case NODE_ANNOTATION:
-		return Tree<BundleInfo>(BundleInfo(L"Annotations"));
+		return Tree<BundleInfo>(BundleInfo("Annotations"));
 	case NODE_STRUCT:
-		return Tree<BundleInfo>(BundleInfo(L"Structs"));
+		return Tree<BundleInfo>(BundleInfo("Structs"));
 	case NODE_FUNCTION:
-		return Tree<BundleInfo>(BundleInfo(L"Functions"));
+		return Tree<BundleInfo>(BundleInfo("Functions"));
 	case NODE_GLOBAL_VARIABLE:
-		return Tree<BundleInfo>(BundleInfo(L"Global Variables"));
+		return Tree<BundleInfo>(BundleInfo("Global Variables"));
 	case NODE_TYPE:
-		return Tree<BundleInfo>(BundleInfo(L"Types"));
+		return Tree<BundleInfo>(BundleInfo("Types"));
 	case NODE_TYPEDEF:
-		return Tree<BundleInfo>(BundleInfo(L"Typedefs"));
+		return Tree<BundleInfo>(BundleInfo("Typedefs"));
 	case NODE_ENUM:
-		return Tree<BundleInfo>(BundleInfo(L"Enums"));
+		return Tree<BundleInfo>(BundleInfo("Enums"));
 	case NODE_UNION:
-		return Tree<BundleInfo>(BundleInfo(L"Unions"));
+		return Tree<BundleInfo>(BundleInfo("Unions"));
 	case NODE_RECORD:
-		return Tree<BundleInfo>(BundleInfo(L"Records"));
+		return Tree<BundleInfo>(BundleInfo("Records"));
 	default:
 		break;
 	}
@@ -266,10 +266,4 @@ std::string NodeType::getUnderscoredTypeString() const
 std::string NodeType::getReadableTypeString() const
 {
 	return getReadableNodeKindString(m_kind);
-}
-
-std::wstring NodeType::getReadableTypeWString() const
-{
-	std::string str = getReadableTypeString();
-	return std::wstring(str.begin(), str.end());
 }

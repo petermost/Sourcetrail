@@ -231,14 +231,14 @@ bool QtGraphNode::isFocusable() const
 	return m_isInteractive && (isDataNode() || isGroupNode() || isBundleNode());
 }
 
-std::wstring QtGraphNode::getName() const
+std::string QtGraphNode::getName() const
 {
-	return m_text->text().toStdWString();
+	return m_text->text().toStdString();
 }
 
-void QtGraphNode::setName(const std::wstring& name)
+void QtGraphNode::setName(const std::string& name)
 {
-	m_text->setText(QString::fromStdWString(name));
+	m_text->setText(QString::fromStdString(name));
 }
 
 void QtGraphNode::addComponent(const std::shared_ptr<QtGraphNodeComponent>& component)
@@ -354,7 +354,7 @@ void QtGraphNode::showNodeRecursive()
 	}
 }
 
-void QtGraphNode::matchNameRecursive(const std::wstring& query, std::vector<QtGraphNode*>* matchedNodes)
+void QtGraphNode::matchNameRecursive(const std::string& query, std::vector<QtGraphNode*>* matchedNodes)
 {
 	matchName(query, matchedNodes);
 
@@ -587,10 +587,10 @@ void QtGraphNode::notifyEdgesAfterMove()
 	}
 }
 
-void QtGraphNode::matchName(const std::wstring& query, std::vector<QtGraphNode*>* matchedNodes)
+void QtGraphNode::matchName(const std::string& query, std::vector<QtGraphNode*>* matchedNodes)
 {
 	m_isActiveMatch = false;
-	const std::wstring name = getName();
+	const std::string name = getName();
 	size_t pos = utility::toLowerCase(name).find(query);
 
 	if (pos != std::string::npos)
@@ -604,9 +604,9 @@ void QtGraphNode::matchName(const std::wstring& query, std::vector<QtGraphNode*>
 		m_matchRect->show();
 		m_matchText->show();
 
-		std::wstring matchName(name.length(), L' ');
+		std::string matchName(name.length(), ' ');
 		matchName.replace(pos, query.length(), name.substr(pos, query.length()));
-		m_matchText->setText(QString::fromStdWString(matchName));
+		m_matchText->setText(QString::fromStdString(matchName));
 
 		matchedNodes->push_back(this);
 
@@ -657,7 +657,7 @@ void QtGraphNode::setStyle(const GraphViewStyle::NodeStyle& style)
 
 	if (!m_icon && !style.iconPath.empty())
 	{
-		QtDeviceScaledPixmap pixmap(QString::fromStdWString(style.iconPath.wstr()));
+		QtDeviceScaledPixmap pixmap(QString::fromStdString(style.iconPath.str()));
 		pixmap.scaleToHeight(static_cast<int>(style.iconSize));
 
 		m_icon = new QGraphicsPixmapItem(

@@ -43,7 +43,6 @@ template<>
 NodeKind intToEnum(int value);
 
 std::string getReadableNodeKindString(NodeKind kind);
-std::wstring getReadableNodeKindWString(NodeKind kind);
-NodeKind getNodeKindForReadableNodeKindString(const std::wstring& str);
+NodeKind getNodeKindForReadableNodeKindString(const std::string& str);
 
 #endif	  // NODE_KIND_H

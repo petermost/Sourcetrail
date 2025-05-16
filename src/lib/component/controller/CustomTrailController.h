@@ -24,7 +24,7 @@ public:
 	// Controller implementation
 	void clear() override;
 
-	void autocomplete(const std::wstring query, bool from);
+	void autocomplete(const std::string query, bool from);
 	void activateTrail(MessageActivateTrail message);
 
 private:

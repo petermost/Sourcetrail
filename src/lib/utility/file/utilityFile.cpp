@@ -38,7 +38,7 @@ std::vector<FilePath> utility::partitionFilePathsBySize(std::vector<FilePath> fi
 				sourceFileSizesToCommands.begin() +
 					sourceFileSizesToCommands.size() * (i + 1) / partitionCount,
 				[](const PairType& p, const PairType& q) {
-					return p.second.wstr() < q.second.wstr();
+					return p.second.str() < q.second.str();
 				});
 		}
 	}
@@ -83,9 +83,9 @@ FilePath utility::getExpandedPath(const FilePath& path)
 		if (paths.size() > 1)
 		{
 			LOG_WARNING(
-				L"Environment variable in path \"" + path.wstr() + L"\" has been expanded to " +
-				std::to_wstring(paths.size()) + L"paths, but only \"" + paths.front().wstr() +
-				L"\" will be used.");
+				"Environment variable in path \"" + path.str() + "\" has been expanded to " +
+				std::to_string(paths.size()) + "paths, but only \"" + paths.front().str() +
+				"\" will be used.");
 		}
 		return paths.front();
 	}
@@ -119,7 +119,7 @@ FilePath utility::getAsRelativeIfShorter(const FilePath& absolutePath, const Fil
 	if (!baseDirectory.empty())
 	{
 		const FilePath relativePath = absolutePath.getRelativeTo(baseDirectory);
-		if (relativePath.wstr().size() < absolutePath.wstr().size())
+		if (relativePath.str().size() < absolutePath.str().size())
 		{
 			return relativePath;
 		}

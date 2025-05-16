@@ -18,7 +18,7 @@ QtProjectWizardContentPathSourceGradle::QtProjectWizardContentPathSourceGradle(
 		"Enter the path to the main build.gradle file of your Gradle project.<br />"
 		"<br />"
 		"You can make use of environment variables with ${ENV_VAR}.");
-	setFileEndings({L".gradle"});
+	setFileEndings({".gradle"});
 	setIsRequired(true);
 }
 
@@ -43,13 +43,13 @@ void QtProjectWizardContentPathSourceGradle::populate(QGridLayout* layout, int& 
 
 void QtProjectWizardContentPathSourceGradle::load()
 {
-	m_picker->setText(QString::fromStdWString(m_settings->getGradleProjectFilePath().wstr()));
+	m_picker->setText(QString::fromStdString(m_settings->getGradleProjectFilePath().str()));
 	m_shouldIndexTests->setChecked(m_settings->getShouldIndexGradleTests());
 }
 
 void QtProjectWizardContentPathSourceGradle::save()
 {
-	m_settings->setGradleProjectFilePath(FilePath(m_picker->getText().toStdWString()));
+	m_settings->setGradleProjectFilePath(FilePath(m_picker->getText().toStdString()));
 	m_settings->setShouldIndexGradleTests(m_shouldIndexTests->isChecked());
 }
 

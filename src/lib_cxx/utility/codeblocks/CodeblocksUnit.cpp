@@ -83,7 +83,7 @@ bool Unit::getCompile() const
 	return m_compile;
 }
 
-std::set<std::wstring> Unit::getTargetNames() const
+std::set<std::string> Unit::getTargetNames() const
 {
 	return m_targetNames;
 }

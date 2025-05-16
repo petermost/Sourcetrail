@@ -45,7 +45,7 @@ void QtIconButton::leaveEvent(QEvent*  /*event*/)
 
 void QtIconButton::setIconFromPath(const FilePath& path)
 {
-	QPixmap pixmap = QPixmap(QString::fromStdWString(path.wstr()));
+	QPixmap pixmap = QPixmap(QString::fromStdString(path.str()));
 
 	if (m_color != Qt::transparent)
 	{

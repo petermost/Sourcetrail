@@ -88,9 +88,9 @@ Node* Edge::getTo() const
 	return m_to;
 }
 
-std::wstring Edge::getName() const
+std::string Edge::getName() const
 {
-	return getReadableTypeString() + L":" + getFrom()->getFullName() + L"->" + getTo()->getFullName();
+	return getReadableTypeString() + ":" + getFrom()->getFullName() + "->" + getTo()->getFullName();
 }
 
 bool Edge::isNode() const
@@ -103,49 +103,49 @@ bool Edge::isEdge() const
 	return true;
 }
 
-std::wstring Edge::getUnderscoredTypeString(EdgeType type)
+std::string Edge::getUnderscoredTypeString(EdgeType type)
 {
-	return utility::replace(utility::replace(getReadableTypeString(type), L"-", L"_"), L" ", L"_");
+	return utility::replace(utility::replace(getReadableTypeString(type), "-", "_"), " ", "_");
 }
 
-std::wstring Edge::getReadableTypeString(EdgeType type)
+std::string Edge::getReadableTypeString(EdgeType type)
 {
 	switch (type)
 	{
 	case EDGE_UNDEFINED:
-		return L"undefined";
+		return "undefined";
 	case EDGE_MEMBER:
-		return L"child";
+		return "child";
 	case EDGE_TYPE_USAGE:
-		return L"type use";
+		return "type use";
 	case EDGE_USAGE:
-		return L"use";
+		return "use";
 	case EDGE_CALL:
-		return L"call";
+		return "call";
 	case EDGE_INHERITANCE:
-		return L"inheritance";
+		return "inheritance";
 	case EDGE_OVERRIDE:
-		return L"override";
+		return "override";
 	case EDGE_TYPE_ARGUMENT:
-		return L"type argument";
+		return "type argument";
 	case EDGE_TEMPLATE_SPECIALIZATION:
-		return L"template specialization";
+		return "template specialization";
 	case EDGE_INCLUDE:
-		return L"include";
+		return "include";
 	case EDGE_IMPORT:
-		return L"import";
+		return "import";
 	case EDGE_BUNDLED_EDGES:
-		return L"bundled edges";
+		return "bundled edges";
 	case EDGE_MACRO_USAGE:
-		return L"macro use";
+		return "macro use";
 	case EDGE_ANNOTATION_USAGE:
-		return L"annotation use";
+		return "annotation use";
 	}
 
-	return L"";
+	return "";
 }
 
-Edge::EdgeType Edge::getTypeForReadableTypeString(const std::wstring& str)
+Edge::EdgeType Edge::getTypeForReadableTypeString(const std::string& str)
 {
 	for (TypeMask mask = 1; mask <= EDGE_TYPE_MAX_VALUE; mask *= 2)
 	{
@@ -159,27 +159,27 @@ Edge::EdgeType Edge::getTypeForReadableTypeString(const std::wstring& str)
 	return EDGE_UNDEFINED;
 }
 
-std::wstring Edge::getReadableTypeString() const
+std::string Edge::getReadableTypeString() const
 {
 	return getReadableTypeString(m_type);
 }
 
-std::wstring Edge::getAsString() const
+std::string Edge::getAsString() const
 {
-	std::wstringstream str;
-	str << L"[" << getId() << L"] " << getReadableTypeString();
-	str << L": \"" << m_from->getName() << L"\" -> \"" + m_to->getName() << L"\"";
+	std::stringstream str;
+	str << "[" << getId() << "] " << getReadableTypeString();
+	str << ": \"" << m_from->getName() << "\" -> \"" + m_to->getName() << "\"";
 
 	TokenComponentBundledEdges* bundledEdges = getComponent<TokenComponentBundledEdges>();
 	if (bundledEdges != nullptr)
 	{
-		str << L" " << bundledEdges->getBundledEdgesCount();
+		str << " " << bundledEdges->getBundledEdgesCount();
 	}
 
 	return str.str();
 }
 
-std::wostream& operator<<(std::wostream& ostream, const Edge& edge)
+std::ostream& operator<<(std::ostream& ostream, const Edge& edge)
 {
 	ostream << edge.getAsString();
 	return ostream;

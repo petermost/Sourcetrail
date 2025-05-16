@@ -198,7 +198,7 @@ void QtProjectWizardContentPathsIndexedHeaders::buttonClicked()
 			{
 				QtMessageBox msgBox(m_window);
 				msgBox.setText(QStringLiteral("The provided Code::Blocks project path does not exist."));
-				msgBox.setDetailedText(QString::fromStdWString(codeblocksProjectPath.wstr()));
+				msgBox.setDetailedText(QString::fromStdString(codeblocksProjectPath.str()));
 				msgBox.execModal();
 				return;
 			}
@@ -243,7 +243,7 @@ void QtProjectWizardContentPathsIndexedHeaders::buttonClicked()
 			{
 				QtMessageBox msgBox(m_window);
 				msgBox.setText(QStringLiteral("The provided Compilation Database path does not exist."));
-				msgBox.setDetailedText(QString::fromStdWString(cdbPath.wstr()));
+				msgBox.setDetailedText(QString::fromStdString(cdbPath.str()));
 				msgBox.execModal();
 				return;
 			}

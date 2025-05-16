@@ -39,7 +39,7 @@ void QtTooltip::setTooltipInfo(const TooltipInfo& info)
 
 	if (!info.title.empty())
 	{
-		addTitle(QString::fromStdWString(info.title), info.count, info.countText.c_str());
+		addTitle(QString::fromStdString(info.title), info.count, info.countText.c_str());
 	}
 
 	for (const TooltipSnippet& snippet: info.snippets)

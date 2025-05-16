@@ -19,7 +19,7 @@ public:
 		return "MessageShowScope";
 	}
 
-	void print(std::wostream& os) const override
+	void print(std::ostream& os) const override
 	{
 		os << scopeLocationId;
 	}

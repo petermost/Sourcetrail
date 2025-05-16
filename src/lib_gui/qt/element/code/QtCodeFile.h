@@ -63,7 +63,7 @@ public:
 	void updateTitleBar();
 
 	void findScreenMatches(
-		const std::wstring& query, std::vector<std::pair<QtCodeArea*, Id>>* screenMatches);
+		const std::string& query, std::vector<std::pair<QtCodeArea*, Id>>* screenMatches);
 
 	bool hasFocus(const CodeFocusHandler::Focus& focus) const;
 	bool setFocus(Id locationId);

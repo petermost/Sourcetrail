@@ -34,9 +34,9 @@ public:
 private slots:
 	static void homeButtonClicked();
 
-	static void requestAutocomplete(const std::wstring& query, NodeTypeSet acceptedNodeTypes);
+	static void requestAutocomplete(const std::string& query, NodeTypeSet acceptedNodeTypes);
 	static void requestSearch(const std::vector<SearchMatch>& matches, NodeTypeSet acceptedNodeTypes);
-	static void requestFullTextSearch(const std::wstring& query, bool caseSensitive);
+	static void requestFullTextSearch(const std::string& query, bool caseSensitive);
 
 private:
 	QWidget* m_searchBoxContainer;	  // used for correct clipping inside the search box

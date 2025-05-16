@@ -12,7 +12,7 @@ public:
 	struct SetActiveTokenMessage
 	{
 	public:
-		SetActiveTokenMessage(): filePath(L"") {}
+		SetActiveTokenMessage(): filePath("") {}
 
 		FilePath filePath;
 		unsigned int row = 0;
@@ -27,10 +27,10 @@ public:
 	struct CreateCDBProjectMessage
 	{
 	public:
-		CreateCDBProjectMessage(): cdbFileLocation(L"")  {}
+		CreateCDBProjectMessage(): cdbFileLocation("")  {}
 
 		FilePath cdbFileLocation;
-		std::wstring ideId;
+		std::string ideId;
 		bool valid = false;
 	};
 
@@ -39,7 +39,7 @@ public:
 	public:
 		PingMessage() = default;
 
-		std::wstring ideId;
+		std::string ideId;
 		bool valid = false;
 	};
 
@@ -52,30 +52,30 @@ public:
 		PING
 	};
 
-	static MESSAGE_TYPE getMessageType(const std::wstring& message);
+	static MESSAGE_TYPE getMessageType(const std::string& message);
 
-	static SetActiveTokenMessage parseSetActiveTokenMessage(const std::wstring& message);
-	static CreateProjectMessage parseCreateProjectMessage(const std::wstring& message);
-	static CreateCDBProjectMessage parseCreateCDBProjectMessage(const std::wstring& message);
-	static PingMessage parsePingMessage(const std::wstring& message);
+	static SetActiveTokenMessage parseSetActiveTokenMessage(const std::string& message);
+	static CreateProjectMessage parseCreateProjectMessage(const std::string& message);
+	static CreateCDBProjectMessage parseCreateCDBProjectMessage(const std::string& message);
+	static PingMessage parsePingMessage(const std::string& message);
 
-	static std::wstring buildSetIDECursorMessage(
+	static std::string buildSetIDECursorMessage(
 		const FilePath& fileLocation, const unsigned int row, const unsigned int column);
-	static std::wstring buildCreateCDBMessage();
-	static std::wstring buildPingMessage();
+	static std::string buildCreateCDBMessage();
+	static std::string buildPingMessage();
 
 private:
-	static std::vector<std::wstring> divideMessage(const std::wstring& message);
-	static bool isDigits(const std::wstring& text);
+	static std::vector<std::string> divideMessage(const std::string& message);
+	static bool isDigits(const std::string& text);
 
-	static std::wstring s_divider;
-	static std::wstring s_setActiveTokenPrefix;
-	static std::wstring s_moveCursorPrefix;
-	static std::wstring s_endOfMessageToken;
-	static std::wstring s_createProjectPrefix;
-	static std::wstring s_createCDBProjectPrefix;
-	static std::wstring s_createCDBPrefix;
-	static std::wstring s_pingPrefix;
+	static std::string s_divider;
+	static std::string s_setActiveTokenPrefix;
+	static std::string s_moveCursorPrefix;
+	static std::string s_endOfMessageToken;
+	static std::string s_createProjectPrefix;
+	static std::string s_createCDBProjectPrefix;
+	static std::string s_createCDBPrefix;
+	static std::string s_pingPrefix;
 };
 
 #endif	  // NETWORK_PROTOCOL_HELPER_H

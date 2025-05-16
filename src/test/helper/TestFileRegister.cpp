@@ -3,7 +3,7 @@
 #include "FilePathFilter.h"
 
 TestFileRegister::TestFileRegister()
-	: FileRegister(FilePath(), std::set<FilePath>(), {FilePathFilter(L"")})
+	: FileRegister(FilePath(), std::set<FilePath>(), {FilePathFilter("")})
 {
 }
 

@@ -13,7 +13,7 @@ class QJsonObject;
 class IndexerCommand
 {
 public:
-	static std::wstring serialize(
+	static std::string serialize(
 		std::shared_ptr<const IndexerCommand> indexerCommand, bool compact = true);
 
 	IndexerCommand(const FilePath& sourceFilePath);

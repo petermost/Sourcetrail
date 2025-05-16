@@ -27,7 +27,7 @@ const QtHighlighter::HighlightType QtHighlighter::HighlightType::QUOTATION("quot
 const QtHighlighter::HighlightType QtHighlighter::HighlightType::TEXT("text");
 const QtHighlighter::HighlightType QtHighlighter::HighlightType::TYPE("type");
 
-std::map<std::wstring, std::vector<QtHighlighter::HighlightingRule>> QtHighlighter::s_highlightingRules;
+std::map<std::string, std::vector<QtHighlighter::HighlightingRule>> QtHighlighter::s_highlightingRules;
 std::map<QtHighlighter::HighlightType, QTextCharFormat> QtHighlighter::s_charFormats;
 
 namespace
@@ -60,9 +60,9 @@ void QtHighlighter::loadHighlightingRules()
 	});
 
 	for (const FilePath& path: FileSystem::getFilePathsFromDirectory(
-			 ResourcePaths::getSyntaxHighlightingRulesDirectoryPath(), {L".rules"}))
+			 ResourcePaths::getSyntaxHighlightingRulesDirectoryPath(), {".rules"}))
 	{
-		std::wstring language = path.withoutExtension().fileName();
+		std::string language = path.withoutExtension().fileName();
 
 		std::shared_ptr<TextAccess> textAccess = TextAccess::createFromFile(path);
 
@@ -123,7 +123,7 @@ void QtHighlighter::clearHighlightingRules()
 	s_highlightingRules.clear();
 }
 
-QtHighlighter::QtHighlighter(QTextDocument* document, const std::wstring& language)
+QtHighlighter::QtHighlighter(QTextDocument* document, const std::string& language)
 	: m_document(document)
 {
 	if (!s_highlightingRules.size())

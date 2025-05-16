@@ -14,7 +14,7 @@ public:
 
 	FilePath getIncludedFile() const;
 	FilePath getIncludingFile() const;
-	std::wstring getDirective() const;
+	std::string getDirective() const;
 	unsigned int getLineNumber() const;
 
 private:

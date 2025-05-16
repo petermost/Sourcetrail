@@ -195,7 +195,7 @@ void IntermediateStorage::addFile(const StorageFile& file)
 	}
 }
 
-void IntermediateStorage::setFileLanguage(Id fileId, const std::wstring& languageIdentifier)
+void IntermediateStorage::setFileLanguage(Id fileId, const std::string& languageIdentifier)
 {
 	auto it = m_filesIdIndex.find(fileId);
 	if (it != m_filesIdIndex.end())

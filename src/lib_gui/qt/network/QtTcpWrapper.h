@@ -23,9 +23,9 @@ public:
 	void startListening();
 	void stopListening();
 
-	void sendMessage(const std::wstring& message) const;
+	void sendMessage(const std::string& message) const;
 
-	void setReadCallback(const std::function<void(const std::wstring&)>& callback);
+	void setReadCallback(const std::function<void(const std::string&)>& callback);
 
 	quint16 getServerPort() const;
 	void setServerPort(const quint16 serverPort);
@@ -46,7 +46,7 @@ private:
 	quint16 m_clientPort;
 	std::string m_ip;
 
-	std::function<void(const std::wstring&)> m_readCallback;
+	std::function<void(const std::string&)> m_readCallback;
 
 	QTcpServer* m_tcpServer;
 	QTcpSocket* m_tcpClient;

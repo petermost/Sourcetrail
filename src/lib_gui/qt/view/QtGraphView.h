@@ -43,7 +43,7 @@ public:
 
 	// ScreenSearchResponder implementation
 	bool isVisible() const override;
-	void findMatches(ScreenSearchSender* sender, const std::wstring& query) override;
+	void findMatches(ScreenSearchSender* sender, const std::string& query) override;
 	void activateMatch(size_t matchIndex) override;
 	void deactivateMatch(size_t matchIndex) override;
 	void clearMatches() override;

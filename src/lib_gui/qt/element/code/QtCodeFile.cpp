@@ -300,7 +300,7 @@ void QtCodeFile::updateTitleBar()
 }
 
 void QtCodeFile::findScreenMatches(
-	const std::wstring& query, std::vector<std::pair<QtCodeArea*, Id>>* screenMatches)
+	const std::string& query, std::vector<std::pair<QtCodeArea*, Id>>* screenMatches)
 {
 	for (QtCodeSnippet* snippet: m_snippets)
 	{

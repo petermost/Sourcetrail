@@ -126,9 +126,9 @@ SymbolKind utility::getSymbolKind(const clang::VarDecl* d)
 	return symbolKind;
 }
 
-wstring utility::getFileNameOfFileEntry(const FileEntryRef &entry)
+string utility::getFileNameOfFileEntry(const FileEntryRef &entry)
 {
-	wstring fileName = decodeFromUtf8(entry.getFileEntry().tryGetRealPathName().str());
+	string fileName = decodeFromUtf8(entry.getFileEntry().tryGetRealPathName().str());
 	if (fileName.empty())
 	{
 		fileName = decodeFromUtf8(entry.getName().str());
@@ -136,7 +136,7 @@ wstring utility::getFileNameOfFileEntry(const FileEntryRef &entry)
 	else
 	{
 		fileName = FilePath(decodeFromUtf8(entry.getName().str())).getParentDirectory()
-			.concatenate(FilePath(fileName).fileName()).wstr();
+			.concatenate(FilePath(fileName).fileName()).str();
 	}
 	return fileName;
 }

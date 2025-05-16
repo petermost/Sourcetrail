@@ -10,7 +10,7 @@ struct StorageNodeData
 {
 	StorageNodeData(): type(NODE_UNDEFINED) {}
 
-	StorageNodeData(NodeKind type, std::wstring serializedName)
+	StorageNodeData(NodeKind type, std::string serializedName)
 		: type(type), serializedName(std::move(serializedName))
 	{
 	}
@@ -21,14 +21,14 @@ struct StorageNodeData
 	}
 
 	NodeKind type;
-	std::wstring serializedName;
+	std::string serializedName;
 };
 
 struct StorageNode: public StorageNodeData
 {
 	StorageNode():  id(0) {}
 
-	StorageNode(Id id, NodeKind type, std::wstring serializedName)
+	StorageNode(Id id, NodeKind type, std::string serializedName)
 		: StorageNodeData(type, std::move(serializedName)), id(id)
 	{
 	}

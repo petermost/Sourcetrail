@@ -51,17 +51,6 @@ bool ConfigManager::getValue(const std::string& key, std::string& value) const
 	}
 }
 
-bool ConfigManager::getValue(const std::string& key, std::wstring& value) const
-{
-	std::string valueString;
-	if (getValue(key, valueString))
-	{
-		value = utility::decodeFromUtf8(valueString);
-		return true;
-	}
-	return false;
-}
-
 bool ConfigManager::getValue(const std::string& key, int& value) const
 {
 	std::string valueString;
@@ -99,7 +88,7 @@ bool ConfigManager::getValue(const std::string& key, bool& value) const
 
 bool ConfigManager::getValue(const std::string& key, FilePath& value) const
 {
-	std::wstring valueString;
+	std::string valueString;
 	if (getValue(key, valueString))
 	{
 		value = FilePath(valueString);
@@ -135,21 +124,6 @@ bool ConfigManager::getValues(const std::string& key, std::vector<std::string>& 
 		return false;
 	}
 }
-
-bool ConfigManager::getValues(const std::string& key, std::vector<std::wstring>& values) const
-{
-	std::vector<std::string> valuesStringVector;
-	if (getValues(key, valuesStringVector))
-	{
-		for (const std::string& valueString: valuesStringVector)
-		{
-			values.push_back(utility::decodeFromUtf8(valueString));
-		}
-		return true;
-	}
-	return false;
-}
-
 
 bool ConfigManager::getValues(const std::string& key, std::vector<int>& values) const
 {
@@ -195,10 +169,10 @@ bool ConfigManager::getValues(const std::string& key, std::vector<bool>& values)
 
 bool ConfigManager::getValues(const std::string& key, std::vector<FilePath>& values) const
 {
-	std::vector<std::wstring> valuesStringVector;
+	std::vector<std::string> valuesStringVector;
 	if (getValues(key, valuesStringVector))
 	{
-		for (const std::wstring& valueString: valuesStringVector)
+		for (const std::string& valueString: valuesStringVector)
 		{
 			values.push_back(FilePath(valueString));
 		}
@@ -221,11 +195,6 @@ void ConfigManager::setValue(const std::string& key, const std::string& value)
 	}
 }
 
-void ConfigManager::setValue(const std::string& key, const std::wstring& value)
-{
-	setValue(key, utility::encodeToUtf8(value));
-}
-
 void ConfigManager::setValue(const std::string& key, const int value)
 {
 	setValue(key, std::to_string(value));
@@ -245,7 +214,7 @@ void ConfigManager::setValue(const std::string& key, const bool value)
 
 void ConfigManager::setValue(const std::string& key, const FilePath& value)
 {
-	setValue(key, value.wstr());
+	setValue(key, value.str());
 }
 
 void ConfigManager::setValues(const std::string& key, const std::vector<std::string>& values)
@@ -260,15 +229,6 @@ void ConfigManager::setValues(const std::string& key, const std::vector<std::str
 	{
 		m_values.emplace(key, s);
 	}
-}
-
-void ConfigManager::setValues(const std::string& key, const std::vector<std::wstring>& values)
-{
-	std::vector<std::string> stringValues;
-	for (const std::wstring &v : values) {
-		stringValues.push_back(utility::encodeToUtf8(v));
-	}
-	setValues(key, stringValues);
 }
 
 void ConfigManager::setValues(const std::string& key, const std::vector<int>& values)
@@ -303,10 +263,10 @@ void ConfigManager::setValues(const std::string& key, const std::vector<bool>& v
 
 void ConfigManager::setValues(const std::string& key, const std::vector<FilePath>& values)
 {
-	std::vector<std::wstring> stringValues;
+	std::vector<std::string> stringValues;
 	for (const FilePath& p: values)
 	{
-		stringValues.push_back(p.wstr());
+		stringValues.push_back(p.str());
 	}
 	setValues(key, stringValues);
 }

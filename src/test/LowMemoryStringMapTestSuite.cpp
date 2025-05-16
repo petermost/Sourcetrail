@@ -131,14 +131,14 @@ TEST_CASE("find long similar prefix elements")
 	REQUIRE(map.find("abababab") == 0);
 }
 
-TEST_CASE("wstring")
+TEST_CASE("string")
 {
-	LowMemoryStringMap<std::wstring, Id> map;
+	LowMemoryStringMap<std::string, Id> map;
 
-	FilePath filePath(L"data/LowMemoryStringMapTestSuite/names.txt");
+	FilePath filePath("data/LowMemoryStringMapTestSuite/names.txt");
 	std::shared_ptr<TextAccess> textAccess = TextAccess::createFromFile(filePath);
 
-	std::vector<std::wstring> names;
+	std::vector<std::string> names;
 	for (const std::string &line : textAccess->getAllLines()) {
 		names.emplace_back(utility::decodeFromUtf8(line.substr(0, line.find("\n"))));
 	}
@@ -148,7 +148,7 @@ TEST_CASE("wstring")
 		map.add(names[i], i);
 	}
 
-	// map.print(std::wcout);
+	// map.print(std::cout);
 	// std::cout << std::endl << map.getByteSize() << " : " << map.getUncompressedByteSize() << std::endl;
 
 	for (size_t i = 0; i < names.size(); i++)

@@ -30,21 +30,21 @@ public:
 		return "MessageActivateTrailEdge";
 	}
 
-	std::wstring getFullName() const
+	std::string getFullName() const
 	{
-		std::wstring name = Edge::getReadableTypeString(type) + L":";
-		name += sourceNameHierarchy.getQualifiedNameWithSignature() + L"->";
+		std::string name = Edge::getReadableTypeString(type) + ":";
+		name += sourceNameHierarchy.getQualifiedNameWithSignature() + "->";
 		name += targetNameHierarchy.getQualifiedNameWithSignature();
 		return name;
 	}
 
-	void print(std::wostream& os) const override
+	void print(std::ostream& os) const override
 	{
 		for (Id edgeId: edgeIds)
 		{
-			os << edgeId << L",";
+			os << edgeId << ",";
 		}
-		os << L" - " << getFullName();
+		os << " - " << getFullName();
 	}
 
 	const std::vector<Id> edgeIds;

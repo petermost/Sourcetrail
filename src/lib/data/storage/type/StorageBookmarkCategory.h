@@ -9,9 +9,9 @@ struct StorageBookmarkCategoryData
 {
 	StorageBookmarkCategoryData() = default;
 
-	StorageBookmarkCategoryData(const std::wstring& name): name(name) {}
+	StorageBookmarkCategoryData(const std::string& name): name(name) {}
 
-	std::wstring name;
+	std::string name;
 };
 
 struct StorageBookmarkCategory: public StorageBookmarkCategoryData
@@ -23,7 +23,7 @@ struct StorageBookmarkCategory: public StorageBookmarkCategoryData
 	{
 	}
 
-	StorageBookmarkCategory(Id id, const std::wstring& name)
+	StorageBookmarkCategory(Id id, const std::string& name)
 		: StorageBookmarkCategoryData(name), id(id)
 	{
 	}

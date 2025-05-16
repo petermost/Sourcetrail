@@ -31,7 +31,7 @@ QtStatusBar::QtStatusBar(): m_text(this), m_ideStatusText(this)
 	m_text.setSizePolicy(QSizePolicy::Ignored, m_text.sizePolicy().verticalPolicy());
 	m_text.setCursor(Qt::PointingHandCursor);
 	addWidget(&m_text, 1);
-	setText(L"", false, false);
+	setText("", false, false);
 
 	connect(&m_text, &QPushButton::clicked, this, &QtStatusBar::showStatus);
 
@@ -95,7 +95,7 @@ QtStatusBar::QtStatusBar(): m_text(this), m_ideStatusText(this)
 	}
 }
 
-void QtStatusBar::setText(const std::wstring& text, bool isError, bool showLoader)
+void QtStatusBar::setText(const std::string& text, bool isError, bool showLoader)
 {
 	if (isError)
 	{
@@ -119,7 +119,7 @@ void QtStatusBar::setText(const std::wstring& text, bool isError, bool showLoade
 
 	m_textString = text;
 	m_text.setText(m_text.fontMetrics().elidedText(
-		QString::fromStdWString(m_textString), Qt::ElideRight, m_text.width()));
+		QString::fromStdString(m_textString), Qt::ElideRight, m_text.width()));
 }
 
 void QtStatusBar::setErrorCount(ErrorCountInfo errorCount)
@@ -155,9 +155,9 @@ void QtStatusBar::setErrorCount(ErrorCountInfo errorCount)
 	}
 }
 
-void QtStatusBar::setIdeStatus(const std::wstring& text)
+void QtStatusBar::setIdeStatus(const std::string& text)
 {
-	m_ideStatusText.setText(QString::fromStdWString(text));
+	m_ideStatusText.setText(QString::fromStdString(text));
 }
 
 void QtStatusBar::showIndexingProgress(size_t progressPercent)
@@ -177,7 +177,7 @@ void QtStatusBar::hideIndexingProgress()
 void QtStatusBar::resizeEvent(QResizeEvent*  /*event*/)
 {
 	m_text.setText(m_text.fontMetrics().elidedText(
-		QString::fromStdWString(m_textString), Qt::ElideRight, m_text.width()));
+		QString::fromStdString(m_textString), Qt::ElideRight, m_text.width()));
 }
 
 void QtStatusBar::showStatus()

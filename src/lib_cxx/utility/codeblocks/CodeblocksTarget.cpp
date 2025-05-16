@@ -69,7 +69,7 @@ std::shared_ptr<Target> Target::create(const TiXmlElement* element)
 	return target;
 }
 
-std::wstring Target::getTitle() const
+std::string Target::getTitle() const
 {
 	return m_title;
 }

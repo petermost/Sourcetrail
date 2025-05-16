@@ -91,7 +91,7 @@ void JavaParser::buildIndex(const FilePath& filePath, std::shared_ptr<TextAccess
 
 void JavaParser::buildIndex(
 	const FilePath& sourceFilePath,
-	const std::wstring& languageStandard,
+	const std::string& languageStandard,
 	const std::string& classPath,
 	std::shared_ptr<TextAccess> textAccess)
 {
@@ -99,7 +99,7 @@ void JavaParser::buildIndex(
 	{
 		m_currentFilePath = sourceFilePath;
 		m_currentFileId = m_client->recordFile(sourceFilePath, true);
-		m_client->recordFileLanguage(m_currentFileId, L"java");
+		m_client->recordFileLanguage(m_currentFileId, "java");
 
 		// remove tabs because they screw with javaparser's location resolver
 		std::string fileContent = utility::replace(textAccess->getText(), "\t", " ");

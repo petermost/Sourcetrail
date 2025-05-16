@@ -15,13 +15,13 @@ public:
 
 	IndexerCommandJava(
 		const FilePath& sourceFilePath,
-		const std::wstring& languageStandard,
+		const std::string& languageStandard,
 		const std::vector<FilePath>& classPath);
 
 	IndexerCommandType getIndexerCommandType() const override;
 	size_t getByteSize(size_t stringSize) const override;
 
-	std::wstring getLanguageStandard() const;
+	std::string getLanguageStandard() const;
 
 	void setClassPath(std::vector<FilePath> classPath);
 	std::vector<FilePath> getClassPath() const;
@@ -30,7 +30,7 @@ protected:
 	QJsonObject doSerialize() const override;
 
 private:
-	const std::wstring m_languageStandard;
+	const std::string m_languageStandard;
 	std::vector<FilePath> m_classPath;
 };
 

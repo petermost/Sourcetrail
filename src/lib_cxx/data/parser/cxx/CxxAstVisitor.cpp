@@ -161,7 +161,7 @@ bool CxxAstVisitor::TraverseDecl(clang::Decl* decl)
 				const bool pathIsProjectFile = m_canonicalFilePathCache->isProjectFile(
 					fileId, sourceManager);
 				const Id symbolId = m_client->recordFile(filePath, pathIsProjectFile);
-				m_client->recordFileLanguage(symbolId, L"cpp");
+				m_client->recordFileLanguage(symbolId, "cpp");
 				m_canonicalFilePathCache->addFileSymbolId(fileId, filePath, symbolId);
 			}
 

@@ -9,7 +9,7 @@ class FilePath;
 
 namespace utility
 {
-std::vector<std::wstring> getRequiredJarNames();
+std::vector<std::string> getRequiredJarNames();
 
 std::string prepareJavaEnvironment();
 std::string prepareJavaEnvironment(const FilePath &javaDirectoryPath);

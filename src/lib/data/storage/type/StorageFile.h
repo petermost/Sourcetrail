@@ -17,8 +17,8 @@ struct StorageFile
 
 	StorageFile(
 		Id id,
-		std::wstring filePath,
-		std::wstring languageIdentifier,
+		std::string filePath,
+		std::string languageIdentifier,
 		std::string modificationTime,
 		bool indexed,
 		bool complete)
@@ -37,8 +37,8 @@ struct StorageFile
 	}
 
 	Id id;
-	std::wstring filePath;
-	std::wstring languageIdentifier;
+	std::string filePath;
+	std::string languageIdentifier;
 	std::string modificationTime;
 	bool indexed;
 	bool complete;

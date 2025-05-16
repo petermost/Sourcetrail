@@ -25,7 +25,7 @@ public:
 		return *this;
 	}
 
-	void print(std::wostream& os) const override
+	void print(std::ostream& os) const override
 	{
 		if (loadStyle)
 		{

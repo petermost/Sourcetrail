@@ -15,20 +15,20 @@ constexpr boost::chrono::milliseconds INFINITE_TIMEOUT(boost::chrono::millisecon
 
 struct ProcessOutput
 {
-	std::wstring output;
-	std::wstring error;
+	std::string output;
+	std::string error;
 	int exitCode;
 };
 
 std::string getDocumentationLink();
 
-std::wstring searchPath(const std::wstring& bin, bool& ok);
+std::string searchPath(const std::string& bin, bool& ok);
 
-std::wstring searchPath(const std::wstring& bin);
+std::string searchPath(const std::string& bin);
 
 ProcessOutput executeProcess(
-	const std::wstring& command,
-	const std::vector<std::wstring>& arguments,
+	const std::string& command,
+	const std::vector<std::string>& arguments,
 	const FilePath& workingDirectory = FilePath(),
 	const bool waitUntilNoOutput = false,
 	const boost::chrono::milliseconds &timeout = DEFAULT_TIMEOUT,

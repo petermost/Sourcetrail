@@ -12,12 +12,12 @@ const size_t SqliteIndexStorage::s_storageVersion = 25;
 
 namespace
 {
-std::pair<std::wstring, std::wstring> splitLocalSymbolName(const std::wstring& name)
+std::pair<std::string, std::string> splitLocalSymbolName(const std::string& name)
 {
-	size_t pos = name.find_last_of(L'<');
-	if (pos == std::wstring::npos || name.back() != L'>')
+	size_t pos = name.find_last_of('<');
+	if (pos == std::string::npos || name.back() != '>')
 	{
-		return std::make_pair(L"", L"");
+		return std::make_pair("", "");
 	}
 
 	return std::make_pair(name.substr(0, pos), name.substr(pos + 1, name.size() - pos - 2));
@@ -267,7 +267,7 @@ std::vector<Id> SqliteIndexStorage::addLocalSymbols(const std::set<StorageLocalS
 	if (m_tempLocalSymbolIndex.empty())
 	{
 		forEach<StorageLocalSymbol>([this](StorageLocalSymbol&& localSymbol) {
-			std::pair<std::wstring, std::wstring> name = splitLocalSymbolName(localSymbol.name);
+			std::pair<std::string, std::string> name = splitLocalSymbolName(localSymbol.name);
 			if (name.second.size())
 			{
 				m_tempLocalSymbolIndex[name.first].emplace(
@@ -282,7 +282,7 @@ std::vector<Id> SqliteIndexStorage::addLocalSymbols(const std::set<StorageLocalS
 	for (size_t i = 0; i < symbols.size(); i++)
 	{
 		const StorageLocalSymbol& data = *it;
-		std::pair<std::wstring, std::wstring> name = splitLocalSymbolName(data.name);
+		std::pair<std::string, std::string> name = splitLocalSymbolName(data.name);
 		if (name.second.size())
 		{
 			auto it = m_tempLocalSymbolIndex.find(name.first);
@@ -422,7 +422,7 @@ void SqliteIndexStorage::addElementComponents(const std::vector<StorageElementCo
 
 StorageError SqliteIndexStorage::addError(const StorageErrorData& data)
 {
-	const std::wstring sanitizedMessage = utility::replace(data.message, L"'", L"''");
+	const std::string sanitizedMessage = utility::replace(data.message, "'", "''");
 
 	Id id = 0;
 	{
@@ -764,7 +764,7 @@ StorageNode SqliteIndexStorage::getNodeById(Id id) const
 	return StorageNode();
 }
 
-StorageNode SqliteIndexStorage::getNodeBySerializedName(const std::wstring& serializedName) const
+StorageNode SqliteIndexStorage::getNodeBySerializedName(const std::string& serializedName) const
 {
 	CppSQLite3Statement stmt = m_database.compileStatement(
 		"SELECT id, type, serialized_name FROM node WHERE serialized_name == ? LIMIT 1;");
@@ -829,7 +829,7 @@ std::vector<Edge::EdgeType> SqliteIndexStorage::getAvailableEdgeTypes() const
 	return types;
 }
 
-StorageFile SqliteIndexStorage::getFileByPath(const std::wstring& filePath) const
+StorageFile SqliteIndexStorage::getFileByPath(const std::string& filePath) const
 {
 	return doGetFirst<StorageFile>("WHERE file.path == '" + utility::encodeToUtf8(filePath) + "'");
 }
@@ -852,7 +852,7 @@ std::shared_ptr<TextAccess> SqliteIndexStorage::getFileContentById(Id fileId) co
 	return TextAccess::createFromString("");
 }
 
-std::shared_ptr<TextAccess> SqliteIndexStorage::getFileContentByPath(const std::wstring& filePath) const
+std::shared_ptr<TextAccess> SqliteIndexStorage::getFileContentByPath(const std::string& filePath) const
 {
 	try
 	{
@@ -883,7 +883,7 @@ void SqliteIndexStorage::setFileIndexed(Id fileId, bool indexed)
 		" WHERE id == " + to_string(fileId) + ";");
 }
 
-void SqliteIndexStorage::setFileCompleteIfNoError(Id fileId, const std::wstring&  /*filePath*/, bool complete)
+void SqliteIndexStorage::setFileCompleteIfNoError(Id fileId, const std::string&  /*filePath*/, bool complete)
 {
 	bool fileHasErrors = doGetFirst<StorageSourceLocation>("WHERE file_node_id == " + to_string(fileId) +
 		" AND type == " + to_string(LocationType::ERROR)).id != 0;
@@ -906,9 +906,9 @@ std::shared_ptr<SourceLocationFile> SqliteIndexStorage::getSourceLocationsForFil
 	const FilePath& filePath, const std::string& query) const
 {
 	std::shared_ptr<SourceLocationFile> ret = std::make_shared<SourceLocationFile>(
-		filePath, L"", true, false, false);
+		filePath, "", true, false, false);
 
-	const StorageFile file = getFileByPath(filePath.wstr());
+	const StorageFile file = getFileByPath(filePath.str());
 	if (file.id == 0)	 // early out
 	{
 		return ret;

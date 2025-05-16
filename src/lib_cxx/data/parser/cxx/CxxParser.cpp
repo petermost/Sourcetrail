@@ -75,7 +75,7 @@ bool runToolOnCodeWithArgs(
 }	 // namespace
 
 std::vector<std::string> CxxParser::getCommandlineArgumentsEssential(
-	const std::vector<std::wstring>& compilerFlags)
+	const std::vector<std::string>& compilerFlags)
 {
 	std::vector<std::string> args;
 
@@ -96,7 +96,7 @@ std::vector<std::string> CxxParser::getCommandlineArgumentsEssential(
 	// This option tells clang just to continue parsing no matter how manny errors have been thrown.
 	args.push_back("-ferror-limit=0");
 
-	for (const std::wstring& compilerFlag: compilerFlags)
+	for (const std::string& compilerFlag: compilerFlags)
 	{
 		args.push_back(utility::encodeToUtf8(compilerFlag));
 	}
@@ -130,10 +130,10 @@ CxxParser::CxxParser(
 void CxxParser::buildIndex(std::shared_ptr<IndexerCommandCxx> indexerCommand)
 {
 	clang::tooling::CompileCommand compileCommand;
-	compileCommand.Filename = utility::encodeToUtf8(indexerCommand->getSourceFilePath().wstr());
-	compileCommand.Directory = utility::encodeToUtf8(indexerCommand->getWorkingDirectory().wstr());
-	std::vector<std::wstring> args = indexerCommand->getCompilerFlags();
-	if (!args.empty() && !utility::isPrefix<std::wstring>(L"-", args.front()))
+	compileCommand.Filename = utility::encodeToUtf8(indexerCommand->getSourceFilePath().str());
+	compileCommand.Directory = utility::encodeToUtf8(indexerCommand->getWorkingDirectory().str());
+	std::vector<std::string> args = indexerCommand->getCompilerFlags();
+	if (!args.empty() && !utility::isPrefix<std::string>("-", args.front()))
 	{
 		args.erase(args.begin());
 	}
@@ -145,9 +145,9 @@ void CxxParser::buildIndex(std::shared_ptr<IndexerCommandCxx> indexerCommand)
 }
 
 void CxxParser::buildIndex(
-	const std::wstring& fileName,
+	const std::string& fileName,
 	std::shared_ptr<TextAccess> fileContent,
-	std::vector<std::wstring> compilerFlags)
+	std::vector<std::string> compilerFlags)
 {
 	std::shared_ptr<CanonicalFilePathCache> canonicalFilePathCache =
 		std::make_shared<CanonicalFilePathCache>(m_fileRegister);
@@ -170,7 +170,7 @@ void CxxParser::runTool(
 
 	clang::tooling::ClangTool tool(
 		*compilationDatabase,
-		std::vector<std::string>(1, utility::encodeToUtf8(sourceFilePath.wstr())));
+		std::vector<std::string>(1, utility::encodeToUtf8(sourceFilePath.str())));
 
 	std::shared_ptr<CanonicalFilePathCache> canonicalFilePathCache =
 		std::make_shared<CanonicalFilePathCache>(m_fileRegister);
@@ -212,7 +212,7 @@ void CxxParser::runTool(
 		{
 			Id fileId = m_client->recordFile(sourceFilePath, true);
 			m_client->recordError(
-				L"Clang Invocation errors: " + utility::decodeFromUtf8(info.errors),
+				"Clang Invocation errors: " + utility::decodeFromUtf8(info.errors),
 				true,
 				true,
 				sourceFilePath,

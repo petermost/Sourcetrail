@@ -64,7 +64,7 @@ std::shared_ptr<CombinedPathDetector> utility::getCxxVsHeaderPathDetector()
 	}
 
 #if BUILD_CXX_LANGUAGE_PACKAGE
-	for (const wstring &versionRange : VisualStudioVersionSupport::getVersionRanges())
+	for (const string &versionRange : VisualStudioVersionSupport::getVersionRanges())
 	{
 		combinedDetector->addDetector(make_shared<CxxVs15ToLatestHeaderPathDetector>(versionRange));
 	}

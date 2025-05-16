@@ -62,7 +62,7 @@ std::vector<FilePath> CxxVs10To14HeaderPathDetector::doGetPaths() const
 	std::vector<FilePath> headerSearchPaths;
 	if (vsInstallPath.exists())
 	{
-		for (const std::wstring& subdirectory: {L"vc/include"s, L"vc/atlmfc/include"s})
+		for (const std::string& subdirectory: {"vc/include"s, "vc/atlmfc/include"s})
 		{
 			FilePath headerSearchPath = vsInstallPath.getConcatenated(subdirectory);
 			if (headerSearchPath.exists())
@@ -95,10 +95,10 @@ FilePath CxxVs10To14HeaderPathDetector::getVsInstallPathUsingRegistry() const
 		key, QSettings::NativeFormat);	  // NativeFormat means from Registry on Windows.
 	QString value = expressKey.value("InstallDir").toString() + "../../";
 
-	FilePath path(value.toStdWString());
+	FilePath path(value.toStdString());
 	if (path.exists())
 	{
-		LOG_INFO(L"Found working registry key for VS install path: " + key.toStdWString());
+		LOG_INFO("Found working registry key for VS install path: " + key.toStdString());
 		return path;
 	}
 

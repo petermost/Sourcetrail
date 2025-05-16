@@ -46,12 +46,12 @@ void QtProjectWizardContentPathPythonEnvironment::populate(QGridLayout* layout, 
 
 void QtProjectWizardContentPathPythonEnvironment::load()
 {
-	m_picker->setText(QString::fromStdWString(m_settings->getEnvironmentPath().wstr()));
+	m_picker->setText(QString::fromStdString(m_settings->getEnvironmentPath().str()));
 }
 
 void QtProjectWizardContentPathPythonEnvironment::save()
 {
-	m_settings->setEnvironmentPath(FilePath(m_picker->getText().toStdWString()));
+	m_settings->setEnvironmentPath(FilePath(m_picker->getText().toStdString()));
 }
 
 void QtProjectWizardContentPathPythonEnvironment::onTextChanged(const QString& text)
@@ -65,19 +65,19 @@ void QtProjectWizardContentPathPythonEnvironment::onTextChanged(const QString& t
 		m_resultLabel->setText("Checking validity of Python environment...");
 		std::thread([=, this]() {
 			const utility::ProcessOutput out = utility::executeProcess(
-				ResourcePaths::getPythonIndexerFilePath().wstr(),
-				{L"check-environment",
-				 L"--environment-path",
+				ResourcePaths::getPythonIndexerFilePath().str(),
+				{"check-environment",
+				 "--environment-path",
 				 utility::getExpandedAndAbsolutePath(
-					 FilePath(text.toStdWString()), m_settings->getProjectDirectoryPath())
-					 .wstr()},
+					 FilePath(text.toStdString()), m_settings->getProjectDirectoryPath())
+					 .str()},
 				FilePath(),
 				false,
 				milliseconds(5000));
 			m_onQtThread([=, this]() {
 				if (out.exitCode == 0)
 				{
-					m_resultLabel->setText(QString::fromStdWString(out.output));
+					m_resultLabel->setText(QString::fromStdString(out.output));
 				}
 				else
 				{

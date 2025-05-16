@@ -35,13 +35,13 @@ void SourceGroupSettingsWithCxxPathsAndFlags::setFrameworkSearchPaths(
 	m_frameworkSearchPaths = frameworkSearchPaths;
 }
 
-std::vector<std::wstring> SourceGroupSettingsWithCxxPathsAndFlags::getCompilerFlags() const
+std::vector<std::string> SourceGroupSettingsWithCxxPathsAndFlags::getCompilerFlags() const
 {
 	return m_compilerFlags;
 }
 
 void SourceGroupSettingsWithCxxPathsAndFlags::setCompilerFlags(
-	const std::vector<std::wstring>& compilerFlags)
+	const std::vector<std::string>& compilerFlags)
 {
 	m_compilerFlags = compilerFlags;
 }
@@ -64,7 +64,7 @@ void SourceGroupSettingsWithCxxPathsAndFlags::load(const ConfigManager* config, 
 	setFrameworkSearchPaths(config->getValuesOrDefaults(
 		key + "/framework_search_paths/framework_search_path", std::vector<FilePath>()));
 	setCompilerFlags(config->getValuesOrDefaults(
-		key + "/compiler_flags/compiler_flag", std::vector<std::wstring>()));
+		key + "/compiler_flags/compiler_flag", std::vector<std::string>()));
 }
 
 void SourceGroupSettingsWithCxxPathsAndFlags::save(ConfigManager* config, const std::string& key)

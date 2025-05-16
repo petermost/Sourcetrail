@@ -30,7 +30,7 @@ public:
 	bool exitApplication() const;
 
 	bool hasError() const;
-	std::wstring getError();
+	std::string getError();
 
 	void fullRefresh();
 	void incompleteRefresh();
@@ -60,7 +60,7 @@ private:
 	bool m_quit = false;
 	bool m_withoutGUI = false;
 
-	std::wstring m_errorString;
+	std::string m_errorString;
 };
 
 }	 // namespace commandline

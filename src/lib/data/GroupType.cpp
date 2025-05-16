@@ -1,27 +1,27 @@
 #include "GroupType.h"
 
-std::wstring groupTypeToString(GroupType type)
+std::string groupTypeToString(GroupType type)
 {
 	switch (type)
 	{
 	case GroupType::NONE:
-		return L"none";
+		return "none";
 	case GroupType::DEFAULT:
-		return L"default";
+		return "default";
 	case GroupType::FRAMELESS:
-		return L"frameless";
+		return "frameless";
 	case GroupType::FILE:
-		return L"file";
+		return "file";
 	case GroupType::NAMESPACE:
-		return L"namespace";
+		return "namespace";
 	case GroupType::INHERITANCE:
-		return L"inheritance";
+		return "inheritance";
 	}
 
-	return L"none";
+	return "none";
 }
 
-GroupType stringToGroupType(const std::wstring& value)
+GroupType stringToGroupType(const std::string& value)
 {
 	if (value == groupTypeToString(GroupType::NONE))
 		return GroupType::NONE;

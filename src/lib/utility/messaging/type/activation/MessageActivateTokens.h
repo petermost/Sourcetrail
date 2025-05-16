@@ -24,18 +24,18 @@ public:
 		setSchedulerId(other->getSchedulerId());
 	}
 
-	void print(std::wostream& os) const override
+	void print(std::ostream& os) const override
 	{
 		for (const Id& id: tokenIds)
 		{
-			os << id << L" ";
+			os << id << " ";
 		}
 
 		for (const SearchMatch& match: searchMatches)
 		{
 			for (const NameHierarchy& name: match.tokenNames)
 			{
-				os << name.getQualifiedName() << L" ";
+				os << name.getQualifiedName() << " ";
 			}
 		}
 	}
@@ -45,7 +45,7 @@ public:
 		if (isBundledEdges)
 		{
 			SearchMatch match;
-			match.name = match.text = L"bundled edges";	 // TODO: show bundled edges source and target
+			match.name = match.text = "bundled edges";	 // TODO: show bundled edges source and target
 			match.searchType = SearchMatch::SEARCH_TOKEN;
 			match.nodeType = NodeType(NODE_TYPE);
 			return {match};

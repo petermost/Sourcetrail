@@ -45,11 +45,11 @@ public:
 		return "MessageActivateNodes";
 	}
 
-	void print(std::wostream& os) const override
+	void print(std::ostream& os) const override
 	{
 		for (const ActiveNode& node: nodes)
 		{
-			os << node.nodeId << L" ";
+			os << node.nodeId << " ";
 		}
 	}
 

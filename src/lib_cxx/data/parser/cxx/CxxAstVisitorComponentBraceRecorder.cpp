@@ -115,8 +115,8 @@ void CxxAstVisitorComponentBraceRecorder::recordBraces(
 		lbraceLoc.startLineNumber != rbraceLoc.startLineNumber ||
 		lbraceLoc.endLineNumber != rbraceLoc.endLineNumber)
 	{
-		std::wstring name = filePath.fileName() + L"<" + std::to_wstring(lbraceLoc.startLineNumber) +
-			L":" + std::to_wstring(lbraceLoc.startColumnNumber) + L">";
+		std::string name = filePath.fileName() + "<" + std::to_string(lbraceLoc.startLineNumber) +
+			":" + std::to_string(lbraceLoc.startColumnNumber) + ">";
 
 		if (lbraceLoc.startColumnNumber == lbraceLoc.endColumnNumber &&
 			lbraceLoc.startLineNumber == lbraceLoc.endLineNumber)

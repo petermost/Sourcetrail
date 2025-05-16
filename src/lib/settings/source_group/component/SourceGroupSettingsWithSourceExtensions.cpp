@@ -3,7 +3,7 @@
 #include "ProjectSettings.h"
 #include "utility.h"
 
-std::vector<std::wstring> SourceGroupSettingsWithSourceExtensions::getSourceExtensions() const
+std::vector<std::string> SourceGroupSettingsWithSourceExtensions::getSourceExtensions() const
 {
 	if (m_sourceExtensions.empty())
 	{
@@ -13,7 +13,7 @@ std::vector<std::wstring> SourceGroupSettingsWithSourceExtensions::getSourceExte
 }
 
 void SourceGroupSettingsWithSourceExtensions::setSourceExtensions(
-	const std::vector<std::wstring>& sourceExtensions)
+	const std::vector<std::string>& sourceExtensions)
 {
 	m_sourceExtensions = sourceExtensions;
 }
@@ -29,7 +29,7 @@ bool SourceGroupSettingsWithSourceExtensions::equals(const SourceGroupSettingsBa
 void SourceGroupSettingsWithSourceExtensions::load(const ConfigManager* config, const std::string& key)
 {
 	setSourceExtensions(config->getValuesOrDefaults(
-		key + "/source_extensions/source_extension", std::vector<std::wstring>()));
+		key + "/source_extensions/source_extension", std::vector<std::string>()));
 }
 
 void SourceGroupSettingsWithSourceExtensions::save(ConfigManager* config, const std::string& key)

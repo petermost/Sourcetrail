@@ -20,15 +20,15 @@ public:
 	FilePath getCanonicalFilePath(const FilePath& projectFileDirectory) const;
 	CompilerVarType getCompilerVar() const;
 	bool getCompile() const;
-	std::set<std::wstring> getTargetNames() const;
+	std::set<std::string> getTargetNames() const;
 
 private:
 	Unit();
 
-	std::wstring m_filename;
+	std::string m_filename;
 	CompilerVarType m_compilerVar = COMPILER_VAR_CPP;
 	bool m_compile = true;
-	std::set<std::wstring> m_targetNames;
+	std::set<std::string> m_targetNames;
 };
 }	 // namespace Codeblocks
 

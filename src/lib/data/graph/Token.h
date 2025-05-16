@@ -33,7 +33,7 @@ public:
 	std::shared_ptr<ComponentType> removeComponent();
 
 	// Logging.
-	virtual std::wstring getReadableTypeString() const = 0;
+	virtual std::string getReadableTypeString() const = 0;
 
 protected:
 	Token(const Token& other);

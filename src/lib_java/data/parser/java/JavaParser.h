@@ -31,7 +31,7 @@ public:
 private:
 	void buildIndex(
 		const FilePath& sourceFilePath,
-		const std::wstring& languageStandard,
+		const std::string& languageStandard,
 		const std::string& classPath,
 		std::shared_ptr<TextAccess> textAccess);
 

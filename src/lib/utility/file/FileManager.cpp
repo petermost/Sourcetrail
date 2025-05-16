@@ -13,7 +13,7 @@ FileManager::~FileManager() = default;
 void FileManager::update(
 	const std::vector<FilePath>& sourcePaths,
 	const std::vector<FilePathFilter>& excludeFilters,
-	const std::vector<std::wstring>& sourceExtensions)
+	const std::vector<std::string>& sourceExtensions)
 {
 	m_sourcePaths = sourcePaths;
 	m_excludeFilters = excludeFilters;

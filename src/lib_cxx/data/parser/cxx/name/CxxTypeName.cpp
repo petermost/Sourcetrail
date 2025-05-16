@@ -4,7 +4,7 @@
 
 std::unique_ptr<CxxTypeName> CxxTypeName::getUnsolved()
 {
-	return std::make_unique<CxxTypeName>(L"unsolved-type");
+	return std::make_unique<CxxTypeName>("unsolved-type");
 }
 
 std::unique_ptr<CxxTypeName> CxxTypeName::makeUnsolvedIfNull(std::unique_ptr<CxxTypeName> name)
@@ -17,17 +17,17 @@ std::unique_ptr<CxxTypeName> CxxTypeName::makeUnsolvedIfNull(std::unique_ptr<Cxx
 	return getUnsolved();
 }
 
-CxxTypeName::Modifier::Modifier(std::wstring symbol): symbol(std::move(symbol)) {}
+CxxTypeName::Modifier::Modifier(std::string symbol): symbol(std::move(symbol)) {}
 
-CxxTypeName::CxxTypeName(std::wstring name): m_name(std::move(name)) {}
+CxxTypeName::CxxTypeName(std::string name): m_name(std::move(name)) {}
 
-CxxTypeName::CxxTypeName(std::wstring name, std::vector<std::wstring> templateArguments)
+CxxTypeName::CxxTypeName(std::string name, std::vector<std::string> templateArguments)
 	: m_name(std::move(name)), m_templateArguments(std::move(templateArguments))
 {
 }
 
 CxxTypeName::CxxTypeName(
-	std::wstring name, std::vector<std::wstring> templateArguments, std::shared_ptr<CxxName> parent)
+	std::string name, std::vector<std::string> templateArguments, std::shared_ptr<CxxName> parent)
 	: CxxName(parent), m_name(std::move(name)), m_templateArguments(std::move(templateArguments))
 {
 }
@@ -57,22 +57,22 @@ void CxxTypeName::addModifier(Modifier modifier)
 	m_modifiers.emplace_back(std::move(modifier));
 }
 
-std::wstring CxxTypeName::toString() const
+std::string CxxTypeName::toString() const
 {
-	std::wstringstream ss;
+	std::stringstream ss;
 	if (!m_qualifierFlags.empty())
 	{
-		ss << m_qualifierFlags.toString() << L' ';
+		ss << m_qualifierFlags.toString() << ' ';
 	}
 
 	ss << toNameHierarchy().getQualifiedName();
 
 	for (const Modifier& modifier: m_modifiers)
 	{
-		ss << L' ' << modifier.symbol;
+		ss << ' ' << modifier.symbol;
 		if (!modifier.qualifierFlags.empty())
 		{
-			ss << L' ' << modifier.qualifierFlags.toString();
+			ss << ' ' << modifier.qualifierFlags.toString();
 		}
 	}
 	return ss.str();

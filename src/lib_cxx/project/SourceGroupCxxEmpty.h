@@ -25,7 +25,7 @@ public:
 private:
 	std::shared_ptr<SourceGroupSettings> getSourceGroupSettings() override;
 	std::shared_ptr<const SourceGroupSettings> getSourceGroupSettings() const override;
-	std::vector<std::wstring> getBaseCompilerFlags() const;
+	std::vector<std::string> getBaseCompilerFlags() const;
 
 	std::shared_ptr<SourceGroupSettings> m_settings;
 };

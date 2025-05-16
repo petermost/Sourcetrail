@@ -19,9 +19,9 @@ public:
 		return "MessageGraphNodeMove";
 	}
 
-	void print(std::wostream& os) const override
+	void print(std::ostream& os) const override
 	{
-		os << tokenId << L" " << delta.toWString();
+		os << tokenId << " " << delta.toString();
 	}
 
 	const Id tokenId;

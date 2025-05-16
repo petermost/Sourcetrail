@@ -23,11 +23,11 @@ public:
 		return "MessageActivateLocalSymbols";
 	}
 
-	void print(std::wostream& os) const override
+	void print(std::ostream& os) const override
 	{
 		for (const Id& symbolId: symbolIds)
 		{
-			os << symbolId << L" ";
+			os << symbolId << " ";
 		}
 	}
 

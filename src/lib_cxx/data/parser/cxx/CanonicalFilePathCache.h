@@ -21,16 +21,16 @@ public:
 
 	FilePath getCanonicalFilePath(const clang::FileID& fileId, const clang::SourceManager& sourceManager);
 	FilePath getCanonicalFilePath(const clang::FileEntryRef &entry);
-	FilePath getCanonicalFilePath(const std::wstring& path);
+	FilePath getCanonicalFilePath(const std::string& path);
 	FilePath getCanonicalFilePath(const Id symbolId);
 
 	void addFileSymbolId(const clang::FileID& fileId, const FilePath& path, Id symbolId);
 	Id getFileSymbolId(const clang::FileID& fileId);
 	Id getFileSymbolId(const clang::FileEntryRef &entry);
-	Id getFileSymbolId(const std::wstring& path);
+	Id getFileSymbolId(const std::string& path);
 
 	FilePath getDeclarationFilePath(const clang::Decl* declaration);
-	std::wstring getDeclarationFileName(const clang::Decl* declaration);
+	std::string getDeclarationFileName(const clang::Decl* declaration);
 
 	bool isProjectFile(const clang::FileID& fileId, const clang::SourceManager& sourceManager);
 
@@ -38,11 +38,11 @@ private:
 	std::shared_ptr<FileRegister> m_fileRegister;
 
 	std::map<clang::FileID, FilePath> m_fileIdMap;
-	std::unordered_map<std::wstring, FilePath> m_fileStringMap;
+	std::unordered_map<std::string, FilePath> m_fileStringMap;
 
 	std::map<clang::FileID, Id> m_fileIdSymbolIdMap;
 	std::map<Id, clang::FileID> m_symbolIdFileIdMap;
-	std::unordered_map<std::wstring, Id> m_fileStringSymbolIdMap;
+	std::unordered_map<std::string, Id> m_fileStringSymbolIdMap;
 
 	std::map<clang::FileID, bool> m_isProjectFileMap;
 };

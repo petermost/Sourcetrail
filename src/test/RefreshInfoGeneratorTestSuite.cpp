@@ -13,9 +13,9 @@
 
 namespace
 {
-FilePath m_indexDbPath = FilePath(L"data/RefreshInfoGeneratorTestSuite/project.srctrldb");
-FilePath m_bookmarkDbPath = FilePath(L"data/RefreshInfoGeneratorTestSuite/project.srctrlbm");
-FilePath m_sourceFolder = FilePath(L"data/RefreshInfoGeneratorTestSuite/src");
+FilePath m_indexDbPath = FilePath("data/RefreshInfoGeneratorTestSuite/project.srctrldb");
+FilePath m_bookmarkDbPath = FilePath("data/RefreshInfoGeneratorTestSuite/project.srctrlbm");
+FilePath m_sourceFolder = FilePath("data/RefreshInfoGeneratorTestSuite/src");
 
 class SourceGroupSettingsTest: public SourceGroupSettings
 {
@@ -137,10 +137,10 @@ Id addFileToStorage(
 		storage
 			->addNode(StorageNodeData(
 				NODE_FILE,
-				NameHierarchy::serialize(NameHierarchy(filePath.wstr(), NAME_DELIMITER_FILE))))
+				NameHierarchy::serialize(NameHierarchy(filePath.str(), NAME_DELIMITER_FILE))))
 			.first;
 	storage->addFile(
-		StorageFile(id, filePath.wstr(), L"someLanguage", modificationTime, indexed, complete));
+		StorageFile(id, filePath.str(), "someLanguage", modificationTime, indexed, complete));
 	return id;
 }
 
@@ -184,7 +184,7 @@ TEST_CASE("refresh info for all files clears nothing and indexes previously unkn
 {
 	cleanup();
 	{
-		const FilePath sourceFilePath = m_sourceFolder.getConcatenated(L"main.cpp");
+		const FilePath sourceFilePath = m_sourceFolder.getConcatenated("main.cpp");
 
 		std::vector<std::shared_ptr<SourceGroup>> sourceGroups;
 		sourceGroups.push_back(
@@ -209,7 +209,7 @@ TEST_CASE("refresh info for all files is empty for disabled source group")
 {
 	cleanup();
 	{
-		const FilePath sourceFilePath = m_sourceFolder.getConcatenated(L"main.cpp");
+		const FilePath sourceFilePath = m_sourceFolder.getConcatenated("main.cpp");
 
 		std::shared_ptr<SourceGroupTest> sourceGroup(new SourceGroupTest({sourceFilePath}));
 		sourceGroup->setStatus(SourceGroupStatusType::DISABLED);
@@ -233,7 +233,7 @@ TEST_CASE("refresh info for all files is clears indexed files of disabled source
 {
 	cleanup();
 	{
-		const FilePath sourceFilePath = m_sourceFolder.getConcatenated(L"main.cpp");
+		const FilePath sourceFilePath = m_sourceFolder.getConcatenated("main.cpp");
 
 		std::shared_ptr<SourceGroupTest> sourceGroup(new SourceGroupTest({sourceFilePath}));
 		sourceGroup->setStatus(SourceGroupStatusType::DISABLED);
@@ -268,9 +268,9 @@ TEST_CASE("refresh info for all files is clears nonindexed files of disabled sou
 	cleanup();
 	{
 		const FilePath upToDateSourceFilePath = m_sourceFolder.getConcatenated(
-			L"up_to_date_file.cpp");
+			"up_to_date_file.cpp");
 		const FilePath upToDateHeaderFilePath = m_sourceFolder.getConcatenated(
-			L"up_to_date_file.h");
+			"up_to_date_file.h");
 
 		std::shared_ptr<SourceGroupTest> sourceGroup(new SourceGroupTest(
 			{upToDateSourceFilePath}, {upToDateSourceFilePath, upToDateHeaderFilePath}));
@@ -375,7 +375,7 @@ RefreshInfo getRefreshInfo(
 	RefreshInfo refreshInfo;
 	cleanup();
 	{
-		const FilePath filePath = m_sourceFolder.getConcatenated(L"file.extension");
+		const FilePath filePath = m_sourceFolder.getConcatenated("file.extension");
 
 		const std::set<FilePath> sourceFilePaths =
 			((fileState == SOURCE_FILE) ? std::set<FilePath>({filePath}) : std::set<FilePath>({}));
@@ -667,9 +667,9 @@ TEST_CASE(
 	cleanup();
 	{
 		const FilePath upToDateSourceFilePath = m_sourceFolder.getConcatenated(
-			L"up_to_date_file.cpp");
+			"up_to_date_file.cpp");
 		const FilePath outdatedSourceFilePath = m_sourceFolder.getConcatenated(
-			L"outdated_file.cpp");
+			"outdated_file.cpp");
 
 		std::vector<std::shared_ptr<SourceGroup>> sourceGroups;
 		sourceGroups.push_back(std::shared_ptr<SourceGroupTest>(
@@ -718,8 +718,8 @@ TEST_CASE(
 	cleanup();
 	{
 		const FilePath upToDateSourceFilePath = m_sourceFolder.getConcatenated(
-			L"up_to_date_file.cpp");
-		const FilePath outdatedHeaderFilePath = m_sourceFolder.getConcatenated(L"outdated_file.h");
+			"up_to_date_file.cpp");
+		const FilePath outdatedHeaderFilePath = m_sourceFolder.getConcatenated("outdated_file.h");
 
 		std::vector<std::shared_ptr<SourceGroup>> sourceGroups;
 		sourceGroups.push_back(std::shared_ptr<SourceGroupTest>(new SourceGroupTest(
@@ -766,8 +766,8 @@ TEST_CASE(
 	cleanup();
 	{
 		const FilePath upToDateSourceFilePath = m_sourceFolder.getConcatenated(
-			L"up_to_date_file.cpp");
-		const FilePath outdatedHeaderFilePath = m_sourceFolder.getConcatenated(L"outdated_file.h");
+			"up_to_date_file.cpp");
+		const FilePath outdatedHeaderFilePath = m_sourceFolder.getConcatenated("outdated_file.h");
 
 		std::vector<std::shared_ptr<SourceGroup>> sourceGroups;
 		sourceGroups.push_back(
@@ -812,9 +812,9 @@ TEST_CASE("refresh info for updated files does not clear unknown uptodate header
 	cleanup();
 	{
 		const FilePath upToDateSourceFilePath = m_sourceFolder.getConcatenated(
-			L"up_to_date_file.cpp");
+			"up_to_date_file.cpp");
 		const FilePath upToDateHeaderFilePath = m_sourceFolder.getConcatenated(
-			L"up_to_date_file.h");
+			"up_to_date_file.h");
 
 		std::vector<std::shared_ptr<SourceGroup>> sourceGroups;
 		sourceGroups.push_back(
@@ -853,9 +853,9 @@ TEST_CASE(
 	cleanup();
 	{
 		const FilePath outdatedSourceFilePath = m_sourceFolder.getConcatenated(
-			L"outdated_file.cpp");
+			"outdated_file.cpp");
 		const FilePath upToDateHeaderFilePath = m_sourceFolder.getConcatenated(
-			L"up_to_date_file.h");
+			"up_to_date_file.h");
 
 		std::vector<std::shared_ptr<SourceGroup>> sourceGroups;
 		sourceGroups.push_back(std::shared_ptr<SourceGroupTest>(new SourceGroupTest(
@@ -901,11 +901,11 @@ TEST_CASE(
 	cleanup();
 	{
 		const FilePath outdatedSourceFilePath = m_sourceFolder.getConcatenated(
-			L"outdated_file.cpp");
+			"outdated_file.cpp");
 		const FilePath upToDateSourceFilePath = m_sourceFolder.getConcatenated(
-			L"up_to_date_file.cpp");
+			"up_to_date_file.cpp");
 		const FilePath upToDateHeaderFilePath = m_sourceFolder.getConcatenated(
-			L"up_to_date_file.h");
+			"up_to_date_file.h");
 
 		std::vector<std::shared_ptr<SourceGroup>> sourceGroups;
 		sourceGroups.push_back(std::shared_ptr<SourceGroupTest>(new SourceGroupTest(
@@ -955,11 +955,11 @@ TEST_CASE(
 	cleanup();
 	{
 		const FilePath upToDateSourceFilePath = m_sourceFolder.getConcatenated(
-			L"up_to_date_file.cpp");
+			"up_to_date_file.cpp");
 		const FilePath upToDateHeaderFilePath = m_sourceFolder.getConcatenated(
-			L"up_to_date_file.h");
+			"up_to_date_file.h");
 		const FilePath outOfDateHeaderFilePath = m_sourceFolder.getConcatenated(
-			L"out_of_date_file.h");
+			"out_of_date_file.h");
 
 		std::vector<std::shared_ptr<SourceGroup>> sourceGroups;
 		sourceGroups.push_back(std::shared_ptr<SourceGroupTest>(new SourceGroupTest(
@@ -1016,11 +1016,11 @@ TEST_CASE(
 	cleanup();
 	{
 		const FilePath upToDateSourceFilePath = m_sourceFolder.getConcatenated(
-			L"up_to_date_file.cpp");
+			"up_to_date_file.cpp");
 		const FilePath upToDateHeaderFilePath = m_sourceFolder.getConcatenated(
-			L"up_to_date_file.h");
+			"up_to_date_file.h");
 		const FilePath outOfDateHeaderFilePath = m_sourceFolder.getConcatenated(
-			L"out_of_date_file.h");
+			"out_of_date_file.h");
 
 		std::vector<std::shared_ptr<SourceGroup>> sourceGroups;
 		sourceGroups.push_back(std::shared_ptr<SourceGroupTest>(new SourceGroupTest(

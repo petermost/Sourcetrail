@@ -51,10 +51,10 @@ std::vector<std::shared_ptr<IndexerCommand>> SourceGroupCustomCommand::getIndexe
 		{
 			indexerCommands.push_back(std::make_shared<IndexerCommandCustom>(
 				m_settings->getCustomCommand(),
-				std::vector<std::wstring> {},
+				std::vector<std::string> {},
 				m_settings->getProjectSettings()->getProjectFilePath(),
 				m_settings->getProjectSettings()->getTempDBFilePath(),
-				std::to_wstring(SqliteIndexStorage::getStorageVersion()),
+				std::to_string(SqliteIndexStorage::getStorageVersion()),
 				sourcePath,
 				runInParallel));
 		}

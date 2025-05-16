@@ -11,7 +11,7 @@
 /*
  * StringTraits
  *
- * Defines types related to either std::string or std::wstring
+ * Defines types related to either std::string or std::string
  */
 
 template <typename StringT>
@@ -37,31 +37,13 @@ public:
 	}
 };
 
-template <>
-class StringTraits<std::wstring>
-{
-public:
-	typedef wchar_t CharT;
-	typedef std::wostream StreamT;
-
-	static size_t SizeFn(const CharT* str)
-	{
-		return wcslen(str);
-	}
-
-	static CharT* CopyFn(CharT* destination, const CharT* source, size_t num)
-	{
-		return wcsncpy(destination, source, num);
-	}
-};
-
 /*
  * LowMemoryStringMap
  *
  * Map of string - value pairs, where equal suffixes of strings are used to build tree structure
  * reducing memory consumption.
  *
- * - StringT: string type (supported: std::string, std::wstring)
+ * - StringT: string type (supported: std::string, std::string)
  * - ValueT: value type
  * - defaultVal: default value of type ValueT (cannot be stored as value)
  */

@@ -10,7 +10,7 @@ class SourceLocationFile;
 
 struct TooltipSnippet
 {
-	std::wstring code;
+	std::string code;
 	std::shared_ptr<SourceLocationFile> locationFile;
 };
 
@@ -21,7 +21,7 @@ struct TooltipInfo
 		return title.size() || snippets.size();
 	}
 
-	std::wstring title;
+	std::string title;
 
 	int count = -1;
 	std::string countText;

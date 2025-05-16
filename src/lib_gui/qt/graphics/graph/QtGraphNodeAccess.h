@@ -23,7 +23,7 @@ public:
 	void hideLabel();
 
 protected:
-	void matchName(const std::wstring&  /*query*/, std::vector<QtGraphNode*>*  /*matchedNodes*/) override
+	void matchName(const std::string&  /*query*/, std::vector<QtGraphNode*>*  /*matchedNodes*/) override
 	{
 	}
 

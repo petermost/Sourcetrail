@@ -39,11 +39,11 @@ void TaskBuildIndex::doEnter(std::shared_ptr<Blackboard> blackboard)
 	m_indexingFileCount = 0;
 	updateIndexingDialog(blackboard, std::vector<FilePath>());
 
-	std::wstring logFilePath;
+	std::string logFilePath;
 	Logger* logger = LogManager::getInstance()->getLoggerByType("FileLogger");
 	if (logger)
 	{
-		logFilePath = dynamic_cast<FileLogger*>(logger)->getLogFilePath().wstr();
+		logFilePath = dynamic_cast<FileLogger*>(logger)->getLogFilePath().str();
 	}
 
 	// start indexer processes
@@ -139,8 +139,8 @@ void TaskBuildIndex::doExit(std::shared_ptr<Blackboard> blackboard)
 		{
 			Id fileId = parserClient->recordFile(path.getCanonical(), false);
 			parserClient->recordError(
-				L"The translation unit threw an exception during indexing. Please check if the "
-				L"source file "
+				"The translation unit threw an exception during indexing. Please check if the "
+				"source file "
 				"conforms to the specified language standard and all necessary options are defined "
 				"within your project "
 				"setup.",
@@ -148,7 +148,7 @@ void TaskBuildIndex::doExit(std::shared_ptr<Blackboard> blackboard)
 				true,
 				path,
 				ParseLocation(fileId, 1, 1));
-			LOG_INFO(L"crashed translation unit: " + path.wstr());
+			LOG_INFO("crashed translation unit: " + path.str());
 		}
 		m_storageProvider->insert(storage);
 	}
@@ -172,26 +172,26 @@ void TaskBuildIndex::handleMessage(MessageIndexingInterrupted*  /*message*/)
 	m_interrupted = true;
 
 	m_dialogView->showUnknownProgressDialog(
-		L"Interrupting Indexing", L"Waiting for indexer\nthreads to finish");
+		"Interrupting Indexing", "Waiting for indexer\nthreads to finish");
 }
 
-void TaskBuildIndex::runIndexerProcess(ProcessId processId, const std::wstring& logFilePath)
+void TaskBuildIndex::runIndexerProcess(ProcessId processId, const std::string& logFilePath)
 {
 	const FilePath indexerProcessPath = AppPath::getCxxIndexerFilePath();
 	if (!indexerProcessPath.exists())
 	{
 		m_interrupted = true;
 		LOG_ERROR(
-			L"Cannot start indexer process because executable is missing at \"" +
-			indexerProcessPath.wstr() + L"\"");
+			"Cannot start indexer process because executable is missing at \"" +
+			indexerProcessPath.str() + "\"");
 		return;
 	}
 
-	std::vector<std::wstring> commandArguments;
-	commandArguments.push_back(to_wstring(processId));
+	std::vector<std::string> commandArguments;
+	commandArguments.push_back(to_string(processId));
 	commandArguments.push_back(utility::decodeFromUtf8(m_appUUID));
-	commandArguments.push_back(AppPath::getSharedDataDirectoryPath().getAbsolute().wstr());
-	commandArguments.push_back(UserPaths::getUserDataDirectoryPath().getAbsolute().wstr());
+	commandArguments.push_back(AppPath::getSharedDataDirectoryPath().getAbsolute().str());
+	commandArguments.push_back(UserPaths::getUserDataDirectoryPath().getAbsolute().str());
 
 	if (!logFilePath.empty())
 	{
@@ -202,7 +202,7 @@ void TaskBuildIndex::runIndexerProcess(ProcessId processId, const std::wstring& 
 	while ((!m_indexerCommandQueueStopped || result != 0) && !m_interrupted)
 	{
 		result = utility::executeProcess(
-					 indexerProcessPath.wstr(), commandArguments, FilePath(), false, INFINITE_TIMEOUT)
+					 indexerProcessPath.str(), commandArguments, FilePath(), false, INFINITE_TIMEOUT)
 					 .exitCode;
 
 		LOG_INFO_STREAM(<< "Indexer process " << processId << " returned with " + std::to_string(result));

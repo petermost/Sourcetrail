@@ -22,7 +22,7 @@ CxxTemplateArgumentNameResolver::CxxTemplateArgumentNameResolver(const CxxNameRe
 {
 }
 
-std::wstring CxxTemplateArgumentNameResolver::getTemplateArgumentName(
+std::string CxxTemplateArgumentNameResolver::getTemplateArgumentName(
 	const clang::TemplateArgument& argument)
 {
 	// This doesn't work correctly if the template argument is dependent.
@@ -56,9 +56,9 @@ std::wstring CxxTemplateArgumentNameResolver::getTemplateArgumentName(
 	}
 	case clang::TemplateArgument::Pack:
 	{
-		return L"<...>";
+		return "<...>";
 	}
 	}
 
-	return L"";
+	return "";
 }

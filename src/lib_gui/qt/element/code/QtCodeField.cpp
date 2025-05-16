@@ -70,7 +70,7 @@ QtCodeField::QtCodeField(
 	TextCodec codec(ApplicationSettings::getInstance()->getTextEncoding());
 	if (convertLocationsOnDemand && codec.isValid())
 	{
-		QString convertedDisplayCode = QString::fromStdWString(codec.decode(displayCode));
+		QString convertedDisplayCode = QString::fromStdString(codec.decode(displayCode));
 		setPlainText(convertedDisplayCode);
 		if (displayCode.size() != size_t(convertedDisplayCode.length()))
 		{

@@ -109,7 +109,7 @@ void Project::load(std::shared_ptr<DialogView> dialogView)
 {
 	if (m_refreshStage != RefreshStageType::NONE)
 	{
-		MessageStatus(L"Cannot load another project while indexing.", true, false).dispatch();
+		MessageStatus("Cannot load another project while indexing.", true, false).dispatch();
 		return;
 	}
 
@@ -133,18 +133,18 @@ void Project::load(std::shared_ptr<DialogView> dialogView)
 			if (dbPath.exists())
 			{
 				if (dialogView->confirm(
-						L"Sourcetrail has been closed unexpectedly while indexing this project. "
-						L"You can either choose to keep "
-						L"the data that has already been indexed or discard that data and restore "
-						L"the state of your project "
-						L"before indexing?",
-						{L"Keep and Continue", L"Discard and Restore"}) == 0)
+						"Sourcetrail has been closed unexpectedly while indexing this project. "
+						"You can either choose to keep "
+						"the data that has already been indexed or discard that data and restore "
+						"the state of your project "
+						"before indexing?",
+						{"Keep and Continue", "Discard and Restore"}) == 0)
 				{
 					LOG_INFO("Switching to temporary indexing data on user's decision");
 					if (!swapToTempStorageFile(dbPath, tempDbPath, dialogView))
 					{
 						m_state = PROJECT_STATE_NOT_LOADED;
-						MessageStatus(L"Unable to load project", true, false).dispatch();
+						MessageStatus("Unable to load project", true, false).dispatch();
 						return;
 					}
 				}
@@ -226,7 +226,7 @@ void Project::load(std::shared_ptr<DialogView> dialogView)
 		{
 			MessageIndexingFinished().dispatch();
 		}
-		MessageStatus(L"Finished Loading", false, false).dispatch();
+		MessageStatus("Finished Loading", false, false).dispatch();
 	}
 	else
 	{
@@ -234,8 +234,8 @@ void Project::load(std::shared_ptr<DialogView> dialogView)
 		{
 		case PROJECT_STATE_NEEDS_MIGRATION:
 			MessageStatus(
-				L"Project could not be loaded and needs to be re-indexed after automatic migration "
-				L"to latest "
+				"Project could not be loaded and needs to be re-indexed after automatic migration "
+				"to latest "
 				"version.",
 				false,
 				false)
@@ -243,8 +243,8 @@ void Project::load(std::shared_ptr<DialogView> dialogView)
 			break;
 		case PROJECT_STATE_EMPTY:
 			MessageStatus(
-				L"Project could not load any symbols because the index database is empty. Please "
-				L"re-index the "
+				"Project could not load any symbols because the index database is empty. Please "
+				"re-index the "
 				"project.",
 				false,
 				false)
@@ -252,15 +252,15 @@ void Project::load(std::shared_ptr<DialogView> dialogView)
 			break;
 		case PROJECT_STATE_OUTVERSIONED:
 			MessageStatus(
-				L"Project could not be loaded because the indexed data format is incompatible to "
-				L"the current "
+				"Project could not be loaded because the indexed data format is incompatible to "
+				"the current "
 				"version of Sourcetrail. Please re-index the project.",
 				false,
 				false)
 				.dispatch();
 			break;
 		default:
-			MessageStatus(L"Project could not be loaded.", false, false).dispatch();
+			MessageStatus("Project could not be loaded.", false, false).dispatch();
 		}
 	}
 
@@ -285,7 +285,7 @@ void Project::refresh(
 
 	bool needsFullRefresh = false;
 	bool fullRefresh = false;
-	std::wstring question;
+	std::string question;
 
 	switch (m_state)
 	{
@@ -298,37 +298,37 @@ void Project::refresh(
 
 	case PROJECT_STATE_OUTDATED:
 		question =
-			L"The project file was changed after the last indexing. The project needs to get fully "
-			L"reindexed to "
-			L"reflect the current project state. Alternatively you can also choose to just reindex "
-			L"updated or "
-			L"incomplete files. Do you want to reindex the project?";
+			"The project file was changed after the last indexing. The project needs to get fully "
+			"reindexed to "
+			"reflect the current project state. Alternatively you can also choose to just reindex "
+			"updated or "
+			"incomplete files. Do you want to reindex the project?";
 		fullRefresh = true;
 		break;
 
 	case PROJECT_STATE_OUTVERSIONED:
 		question =
-			L"This project was indexed with a different version of Sourcetrail. It needs to be "
-			L"fully reindexed to "
-			L"be used with this version of Sourcetrail. Do you want to reindex the project?";
+			"This project was indexed with a different version of Sourcetrail. It needs to be "
+			"fully reindexed to "
+			"be used with this version of Sourcetrail. Do you want to reindex the project?";
 		needsFullRefresh = true;
 		break;
 
 	case PROJECT_STATE_NEEDS_MIGRATION:
 		question =
-			L"This project was created with a different version and uses an old project file "
-			L"format. "
-			L"The project can still be opened and used with this version, but needs to be fully "
-			L"reindexed. "
-			L"Do you want Sourcetrail to update the project file and reindex the project?";
+			"This project was created with a different version and uses an old project file "
+			"format. "
+			"The project can still be opened and used with this version, but needs to be fully "
+			"reindexed. "
+			"Do you want Sourcetrail to update the project file and reindex the project?";
 		needsFullRefresh = true;
 		break;
 
 	case PROJECT_STATE_DB_CORRUPTED:
 		question =
-			L"There was a problem loading the index of this project. The project needs to get "
-			L"fully reindexed. "
-			L"Do you want to reindex the project?";
+			"There was a problem loading the index of this project. The project needs to get "
+			"fully reindexed. "
+			"Do you want to reindex the project?";
 		needsFullRefresh = true;
 		break;
 
@@ -338,7 +338,7 @@ void Project::refresh(
 
 	if (question.size() && m_hasGUI)
 	{
-		if (dialogView->confirm(question, {L"Reindex", L"Cancel"}) == 1)
+		if (dialogView->confirm(question, {"Reindex", "Cancel"}) == 1)
 		{
 			return;
 		}
@@ -348,11 +348,11 @@ void Project::refresh(
 		ApplicationSettings::getInstance()->getVerboseIndexerLoggingEnabled() && m_hasGUI)
 	{
 		if (dialogView->confirm(
-				L"Warning: You are about to index your project with the \"verbose indexer "
-				L"logging\" setting "
-				L"enabled. This will cause a significant slowdown in indexing performance. Do you "
-				L"want to proceed?",
-				{L"Yes", L"No"}) == 1)
+				"Warning: You are about to index your project with the \"verbose indexer "
+				"logging\" setting "
+				"enabled. This will cause a significant slowdown in indexing performance. Do you "
+				"want to proceed?",
+				{"Yes", "No"}) == 1)
 		{
 			return;
 		}
@@ -449,19 +449,19 @@ void Project::buildIndex(RefreshInfo info, std::shared_ptr<DialogView> dialogVie
 {
 	if (m_refreshStage == RefreshStageType::INDEXING)
 	{
-		MessageStatus(L"Cannot refresh project while indexing.", true, false).dispatch();
+		MessageStatus("Cannot refresh project while indexing.", true, false).dispatch();
 		return;
 	}
 
 	{
-		std::wstring message;
+		std::string message;
 		if (info.mode != RefreshMode::ALL_FILES && info.filesToClear.empty() && info.filesToIndex.empty())
 		{
-			message = L"Nothing to refresh, all files are up-to-date.";
+			message = "Nothing to refresh, all files are up-to-date.";
 		}
 		else if (m_sourceGroups.empty())
 		{
-			message = L"Nothing to refresh, no Source Groups loaded.";
+			message = "Nothing to refresh, no Source Groups loaded.";
 		}
 
 		if (!message.empty())
@@ -504,14 +504,14 @@ void Project::buildIndex(RefreshInfo info, std::shared_ptr<DialogView> dialogVie
 				{
 					if (m_hasGUI &&
 						dialogView->confirm(
-							L"<p>This project contains a source group of type \"" +
+							"<p>This project contains a source group of type \"" +
 								utility::decodeFromUtf8(
 									sourceGroupTypeToString(sourceGroup->getType())) +
-								L"\" that cannot be partially cleared. Do you want to re-index the "
-								L"whole project instead?</p>",
-							{L"Full Re-Index", L"Cancel"}) == 1)
+								"\" that cannot be partially cleared. Do you want to re-index the "
+								"whole project instead?</p>",
+							{"Full Re-Index", "Cancel"}) == 1)
 					{
-						MessageStatus(L"Cannot partially clear project. Indexing aborted.").dispatch();
+						MessageStatus("Cannot partially clear project. Indexing aborted.").dispatch();
 						m_refreshStage = RefreshStageType::NONE;
 						dialogView->clearDialogs();
 						return;
@@ -529,10 +529,10 @@ void Project::buildIndex(RefreshInfo info, std::shared_ptr<DialogView> dialogVie
 		}
 	}
 
-	MessageStatus(L"Preparing Indexing", false, true).dispatch();
+	MessageStatus("Preparing Indexing", false, true).dispatch();
 	MessageErrorCountClear().dispatch();
 
-	dialogView->showUnknownProgressDialog(L"Preparing Indexing", L"Setting up Indexers");
+	dialogView->showUnknownProgressDialog("Preparing Indexing", "Setting up Indexers");
 	MessageIndexingStatus(true, 0).dispatch();
 
 	m_storageCache->clear();
@@ -702,7 +702,7 @@ void Project::buildIndex(RefreshInfo info, std::shared_ptr<DialogView> dialogVie
 		taskSequential->addTask(	// we don't need to hide this dialog again, because it's
 									// overridden by other dialogs later on.
 			std::make_shared<TaskLambda>([dialogView]() {
-				dialogView->showUnknownProgressDialog(L"Finish Indexing", L"Saving\nRemaining Data");
+				dialogView->showUnknownProgressDialog("Finish Indexing", "Saving\nRemaining Data");
 			}));
 
 		// add task that injects the remaining intermediate storages into the persistent storage
@@ -769,7 +769,7 @@ void Project::buildIndex(RefreshInfo info, std::shared_ptr<DialogView> dialogVie
 
 	m_refreshStage = RefreshStageType::INDEXING;
 	MessageStatus(
-		L"Starting Indexing: " + std::to_wstring(sourceFileCount) + L" source files", false, true)
+		"Starting Indexing: " + std::to_string(sourceFileCount) + " source files", false, true)
 		.dispatch();
 	MessageIndexingStarted().dispatch();
 }
@@ -795,7 +795,7 @@ void Project::swapToTempStorage(std::shared_ptr<DialogView> dialogView)
 
 	// std::shared_ptr<DialogView> dialogView =
 	// Application::getInstance()->getDialogView(DialogView::UseCase::INDEXING);
-	// dialogView->showUnknownProgressDialog(L"Finish Indexing", L"Building caches");
+	// dialogView->showUnknownProgressDialog("Finish Indexing", "Building caches");
 	m_storage->buildCaches();
 	// dialogView->hideUnknownProgressDialog();
 
@@ -818,11 +818,11 @@ bool Project::swapToTempStorageFile(
 		if (m_hasGUI)
 		{
 			dialogView->confirm(
-				L"<p>The old index database file of this project seems to be used by a different "
-				L"process and cannot "
-				L"be updated.</p><p>Please close all processes that are using this database and "
-				L"re-load this project to "
-				L"apply or discard the changes pending from the current indexer run.</p>");
+				"<p>The old index database file of this project seems to be used by a different "
+				"process and cannot "
+				"be updated.</p><p>Please close all processes that are using this database and "
+				"re-load this project to "
+				"apply or discard the changes pending from the current indexer run.</p>");
 		}
 		return false;
 	}

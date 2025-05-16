@@ -4,8 +4,8 @@ using namespace std;
 
 Bookmark::Bookmark(
 	const BookmarkId bookmarkId, 
-	const std::wstring& name, 
-	const std::wstring& comment, 
+	const std::string& name, 
+	const std::string& comment, 
 	const TimeStamp& timeStamp, 
 	const BookmarkCategory& category)
 	: m_bookmarkId(bookmarkId)
@@ -31,12 +31,12 @@ BookmarkId Bookmark::getId() const
 	return m_bookmarkId;
 }
 
-std::wstring Bookmark::getName() const
+std::string Bookmark::getName() const
 {
 	return m_name;
 }
 
-std::wstring Bookmark::getComment() const
+std::string Bookmark::getComment() const
 {
 	return m_comment;
 }

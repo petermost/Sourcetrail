@@ -32,9 +32,9 @@ void setWidgetRetainsSpaceWhenHidden(QWidget *widget)
 	widget->setSizePolicy(pol);
 }
 
-void loadFontsFromDirectory(const FilePath &path, const std::wstring &extension)
+void loadFontsFromDirectory(const FilePath &path, const std::string &extension)
 {
-	std::vector<std::wstring> extensions;
+	std::vector<std::string> extensions;
 	extensions.push_back(extension);
 	std::vector<FilePath> fontFilePaths = FileSystem::getFilePathsFromDirectory(path, extensions);
 
@@ -42,7 +42,7 @@ void loadFontsFromDirectory(const FilePath &path, const std::wstring &extension)
 
 	for (const FilePath &fontFilePath : fontFilePaths)
 	{
-		QFile file(QString::fromStdWString(fontFilePath.wstr()));
+		QFile file(QString::fromStdString(fontFilePath.str()));
 		if (file.open(QIODevice::ReadOnly))
 		{
 			int id = QFontDatabase::addApplicationFontFromData(file.readAll());
@@ -57,7 +57,7 @@ void loadFontsFromDirectory(const FilePath &path, const std::wstring &extension)
 	{
 		for (QString &family : QFontDatabase::applicationFontFamilies(loadedFontId))
 		{
-			LOG_INFO(L"Loaded FontFamily: " + family.toStdWString());
+			LOG_INFO("Loaded FontFamily: " + family.toStdString());
 		}
 	}
 }
@@ -79,7 +79,7 @@ QIcon createButtonIcon(const FilePath &iconPath, const std::string &colorId)
 {
 	ColorScheme *scheme = ColorScheme::getInstance().get();
 
-	QPixmap pixmap(QString::fromStdWString(iconPath.wstr()));
+	QPixmap pixmap(QString::fromStdString(iconPath.str()));
 	QIcon icon(utility::colorizePixmap(pixmap, scheme->getColor(colorId + "/icon").c_str()));
 
 	if (scheme->hasColor(colorId + "/icon_disabled"))

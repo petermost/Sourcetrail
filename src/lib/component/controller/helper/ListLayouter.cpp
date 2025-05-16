@@ -106,7 +106,7 @@ void ListLayouter::layoutMultiColumn(Vec2i viewSize, std::vector<std::shared_ptr
 				}
 				else if (textNode->name.size() == 1)
 				{
-					textNode->name += L"..";
+					textNode->name += "..";
 				}
 
 				visibleNodes.insert(visibleNodes.begin() + i, textNode);

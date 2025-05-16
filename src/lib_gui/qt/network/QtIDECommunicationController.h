@@ -22,7 +22,7 @@ public:
 	bool isListening() const override;
 
 private:
-	void sendMessage(const std::wstring& message) const override;
+	void sendMessage(const std::string& message) const override;
 
 	QtTcpWrapper m_tcpWrapper;
 

@@ -12,7 +12,7 @@ QtGraphNodeBundle::QtGraphNodeBundle(
 	Id tokenId,
 	size_t nodeCount,
 	NodeType type,
-	const std::wstring& name,
+	const std::string& name,
 	bool interactive)
 	: QtGraphNode(focusHandler), m_tokenId(tokenId), m_type(type)
 {
@@ -44,9 +44,9 @@ void QtGraphNodeBundle::onClick()
 {
 	MessageGraphNodeBundleSplit(
 		m_tokenId,
-		(!m_type.isUnknownSymbol() || getName() == L"Symbols") &&
-			getName() != L"Anonymous Namespaces",	 // TODO: move to language package
-		!m_type.isUnknownSymbol() || getName() == L"Symbols")
+		(!m_type.isUnknownSymbol() || getName() == "Symbols") &&
+			getName() != "Anonymous Namespaces",	 // TODO: move to language package
+		!m_type.isUnknownSymbol() || getName() == "Symbols")
 		.dispatch();
 }
 

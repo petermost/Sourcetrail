@@ -508,7 +508,7 @@ void UndoRedoController::replayCommand(std::list<Command>::iterator it)
 			{
 				// TODO: replace duplicate main definition fix with better solution
 				if (match.nodeType.getKind() != NODE_FUNCTION || !match.tokenNames.size() ||
-					match.tokenNames[0].getRawName() != L"main")
+					match.tokenNames[0].getRawName() != "main")
 				{
 					match.tokenIds = m_storageAccess->getNodeIdsForNameHierarchies(match.tokenNames);
 				}
@@ -529,7 +529,7 @@ void UndoRedoController::replayCommand(std::list<Command>::iterator it)
 			Application::getInstance()->getCurrentProject();
 		if (currentProject && currentProject->isIndexing())
 		{
-			Application::getInstance()->handleDialog(L"Errors cannot be activated while indexing.");
+			Application::getInstance()->handleDialog("Errors cannot be activated while indexing.");
 
 			ErrorFilter filter;
 			filter.error = false;

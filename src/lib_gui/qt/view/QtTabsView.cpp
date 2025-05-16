@@ -226,7 +226,7 @@ void QtTabsView::removeTab(int index)
 void QtTabsView::setTabState(int idx, const std::vector<SearchMatch>& matches)
 {
 	ColorScheme* scheme = ColorScheme::getInstance().get();
-	std::wstring name;
+	std::string name;
 	std::string color;
 	std::string activeColor;
 
@@ -251,12 +251,12 @@ void QtTabsView::setTabState(int idx, const std::vector<SearchMatch>& matches)
 	}
 	else
 	{
-		name = L"Empty Tab";
+		name = "Empty Tab";
 		color = scheme->getColor("tab/bar/button/background/press");
 		activeColor = color;
 	}
 
-	m_tabBar->setTabText(idx, ' ' + QString::fromStdWString(name) + ' ');
+	m_tabBar->setTabText(idx, ' ' + QString::fromStdString(name) + ' ');
 	m_tabBar->tabButton(idx, QTabBar::LeftSide)
 		->setStyleSheet(
 			QStringLiteral("#type_circle { background-color: ") + QString::fromStdString(color) +

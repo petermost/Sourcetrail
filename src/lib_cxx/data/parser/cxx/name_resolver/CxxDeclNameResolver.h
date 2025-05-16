@@ -21,24 +21,24 @@ public:
 private:
 	std::unique_ptr<CxxName> getContextName(const clang::DeclContext* declaration);
 	std::unique_ptr<CxxDeclName> getDeclName(const clang::NamedDecl* declaration);
-	std::wstring getTranslationUnitMainFileName(const clang::Decl* declaration);
-	std::wstring getNameForAnonymousSymbol(
-		const std::wstring& symbolKindName, const clang::Decl* declaration);
-	std::vector<std::wstring> getTemplateParameterStrings(const clang::TemplateDecl* templateDecl);
+	std::string getTranslationUnitMainFileName(const clang::Decl* declaration);
+	std::string getNameForAnonymousSymbol(
+		const std::string& symbolKindName, const clang::Decl* declaration);
+	std::vector<std::string> getTemplateParameterStrings(const clang::TemplateDecl* templateDecl);
 	template <typename T>
-	std::vector<std::wstring> getTemplateParameterStringsOfPartialSpecialization(const T* templateDecl);
-	std::wstring getTemplateParameterString(const clang::NamedDecl* parameter);
-	std::wstring getTemplateArgumentName(const clang::TemplateArgument& argument);
+	std::vector<std::string> getTemplateParameterStringsOfPartialSpecialization(const T* templateDecl);
+	std::string getTemplateParameterString(const clang::NamedDecl* parameter);
+	std::string getTemplateArgumentName(const clang::TemplateArgument& argument);
 
 	const clang::NamedDecl* m_currentDecl;
 };
 
 
 template <typename T>
-std::vector<std::wstring> CxxDeclNameResolver::getTemplateParameterStringsOfPartialSpecialization(
+std::vector<std::string> CxxDeclNameResolver::getTemplateParameterStringsOfPartialSpecialization(
 	const T* partialSpecializationDecl)
 {
-	std::vector<std::wstring> templateParameterNames;
+	std::vector<std::string> templateParameterNames;
 	clang::TemplateParameterList* parameterList = partialSpecializationDecl->getTemplateParameters();
 
 	const clang::TemplateArgumentList& templateArgumentList =
@@ -65,8 +65,8 @@ std::vector<std::wstring> CxxDeclNameResolver::getTemplateParameterStringsOfPart
 						// TODO: fix case when arg depends on template parameter of outer template
 						// class, or depends on first template parameter.
 						templateParameterNames.push_back(
-							L"arg" + std::to_wstring(ttpt->getDepth()) + L"_" +
-							std::to_wstring(ttpt->getIndex()));
+							"arg" + std::to_string(ttpt->getDepth()) + "_" +
+							std::to_string(ttpt->getIndex()));
 					}
 				}
 				else
@@ -95,8 +95,8 @@ std::vector<std::wstring> CxxDeclNameResolver::getTemplateParameterStringsOfPart
 						// TODO: fix case when arg depends on template parameter of outer template
 						// class, or depends on first template parameter.
 						templateParameterNames.push_back(
-							L"arg" + std::to_wstring(decl->getDepth()) + L"_" +
-							std::to_wstring(decl->getIndex()));
+							"arg" + std::to_string(decl->getDepth()) + "_" +
+							std::to_string(decl->getIndex()));
 					}
 				}
 				else

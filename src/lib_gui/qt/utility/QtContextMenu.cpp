@@ -112,7 +112,7 @@ void QtContextMenu::redoActionTriggered()
 void QtContextMenu::copyFullPathActionTriggered()
 {
 	QApplication::clipboard()->setText(
-		QDir::toNativeSeparators(QString::fromStdWString(s_filePath.wstr())));
+		QDir::toNativeSeparators(QString::fromStdString(s_filePath.str())));
 }
 
 void QtContextMenu::openContainingFolderActionTriggered()
@@ -121,11 +121,11 @@ void QtContextMenu::openContainingFolderActionTriggered()
 	if (dir.exists())
 	{
 		QDesktopServices::openUrl(
-			QUrl(QString::fromStdWString(L"file:///" + dir.wstr()), QUrl::TolerantMode));
+			QUrl(QString::fromStdString("file:///" + dir.str()), QUrl::TolerantMode));
 	}
 	else
 	{
-		LOG_ERROR(L"Unable to open directory: " + dir.wstr());
+		LOG_ERROR("Unable to open directory: " + dir.str());
 	}
 }
 

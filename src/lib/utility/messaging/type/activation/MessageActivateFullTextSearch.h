@@ -15,26 +15,26 @@ public:
 		return "MessageActivateFullTextSearch";
 	}
 
-	MessageActivateFullTextSearch(const std::wstring& searchTerm, bool caseSensitive = false)
+	MessageActivateFullTextSearch(const std::string& searchTerm, bool caseSensitive = false)
 		: searchTerm(searchTerm), caseSensitive(caseSensitive)
 	{
 		setSchedulerId(TabIds::currentTab());
 	}
 
-	void print(std::wostream& os) const override
+	void print(std::ostream& os) const override
 	{
 		os << searchTerm;
 	}
 
 	std::vector<SearchMatch> getSearchMatches() const override
 	{
-		std::wstring prefix(caseSensitive ? 2 : 1, SearchMatch::FULLTEXT_SEARCH_CHARACTER);
+		std::string prefix(caseSensitive ? 2 : 1, SearchMatch::FULLTEXT_SEARCH_CHARACTER);
 		SearchMatch match(prefix + searchTerm);
 		match.searchType = SearchMatch::SEARCH_FULLTEXT;
 		return {match};
 	}
 
-	const std::wstring searchTerm;
+	const std::string searchTerm;
 	bool caseSensitive;
 };
 

@@ -21,24 +21,24 @@ AccessKind intToEnum(int value)
 	return lookupEnum(value, ACCESS_KINDS, AccessKind::NONE);
 }
 
-std::wstring accessKindToString(AccessKind t)
+std::string accessKindToString(AccessKind t)
 {
 	switch (t)
 	{
 	case AccessKind::NONE:
-		return L"";
+		return "";
 	case AccessKind::PUBLIC:
-		return L"public";
+		return "public";
 	case AccessKind::PROTECTED:
-		return L"protected";
+		return "protected";
 	case AccessKind::PRIVATE:
-		return L"private";
+		return "private";
 	case AccessKind::DEFAULT:
-		return L"default";
+		return "default";
 	case AccessKind::TEMPLATE_PARAMETER:
-		return L"template parameter";
+		return "template parameter";
 	case AccessKind::TYPE_PARAMETER:
-		return L"type parameter";
+		return "type parameter";
 	}
-	return L"";
+	return "";
 }

@@ -46,19 +46,19 @@ public:
 	Node* getFrom() const;
 	Node* getTo() const;
 
-	std::wstring getName() const;
+	std::string getName() const;
 
 	// Token implementation
 	bool isNode() const override;
 	bool isEdge() const override;
 
-	static std::wstring getUnderscoredTypeString(EdgeType type);
-	static std::wstring getReadableTypeString(EdgeType type);
-	static EdgeType getTypeForReadableTypeString(const std::wstring& str);
+	static std::string getUnderscoredTypeString(EdgeType type);
+	static std::string getReadableTypeString(EdgeType type);
+	static EdgeType getTypeForReadableTypeString(const std::string& str);
 
 	// Logging.
-	std::wstring getReadableTypeString() const override;
-	std::wstring getAsString() const;
+	std::string getReadableTypeString() const override;
+	std::string getAsString() const;
 
 private:
 	const EdgeType m_type;
@@ -70,6 +70,6 @@ private:
 template <>
 Edge::EdgeType intToEnum(int value);
 
-std::wostream& operator<<(std::wostream& ostream, const Edge& edge);
+std::ostream& operator<<(std::ostream& ostream, const Edge& edge);
 
 #endif	  // EDGE_H

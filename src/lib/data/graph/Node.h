@@ -23,8 +23,8 @@ public:
 	void setType(NodeType type);
 	bool isType(NodeKindMask mask) const;
 
-	std::wstring getName() const;
-	std::wstring getFullName() const;
+	std::string getName() const;
+	std::string getFullName() const;
 	const NameHierarchy& getNameHierarchy() const;
 
 	bool isDefined() const;
@@ -59,8 +59,8 @@ public:
 	bool isEdge() const override;
 
 	// Logging.
-	std::wstring getReadableTypeString() const override;
-	std::wstring getAsString() const;
+	std::string getReadableTypeString() const override;
+	std::string getAsString() const;
 
 private:
 	void operator=(const Node&);
@@ -74,6 +74,6 @@ private:
 	size_t m_childCount = 0;
 };
 
-std::wostream& operator<<(std::wostream& ostream, const Node& node);
+std::ostream& operator<<(std::ostream& ostream, const Node& node);
 
 #endif	  // NODE_H

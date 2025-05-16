@@ -29,10 +29,10 @@ constexpr const char *getClassPathSeparator()
 
 namespace utility
 {
-std::vector<std::wstring> getRequiredJarNames()
+std::vector<std::string> getRequiredJarNames()
 {
 	return {
-		L"java-indexer.jar"
+		"java-indexer.jar"
 	};
 }
 
@@ -49,14 +49,14 @@ std::string prepareJavaEnvironment(const FilePath &javaDirectoryPath)
 	{
 		std::string classPath;
 		{
-			const std::vector<std::wstring> jarNames = getRequiredJarNames();
+			const std::vector<std::string> jarNames = getRequiredJarNames();
 			for (size_t i = 0; i < jarNames.size(); i++)
 			{
 				if (i != 0)
 				{
 					classPath += getClassPathSeparator();
 				}
-				classPath += javaDirectoryPath.getConcatenated(L"lib/" + jarNames[i]).str();
+				classPath += javaDirectoryPath.getConcatenated("lib/" + jarNames[i]).str();
 			}
 		}
 		JavaEnvironmentFactory::createInstance(classPath, &errorString);
@@ -66,7 +66,7 @@ std::string prepareJavaEnvironment(const FilePath &javaDirectoryPath)
 
 bool prepareJavaEnvironmentAndDisplayOccurringErrors()
 {
-	const std::wstring errorString = utility::decodeFromUtf8(utility::prepareJavaEnvironment());
+	const std::string errorString = utility::decodeFromUtf8(utility::prepareJavaEnvironment());
 
 	if (!errorString.empty())
 	{
@@ -76,13 +76,13 @@ bool prepareJavaEnvironmentAndDisplayOccurringErrors()
 
 	if (!JavaEnvironmentFactory::getInstance())
 	{
-		std::wstring dialogMessage =
-			L"Sourcetrail was unable to initialize Java environment on this machine.\n"
+		std::string dialogMessage =
+			"Sourcetrail was unable to initialize Java environment on this machine.\n"
 			"Please make sure to provide the correct Java Path in the preferences.";
 
 		if (!errorString.empty())
 		{
-			dialogMessage += L"\n\nError: " + errorString;
+			dialogMessage += "\n\nError: " + errorString;
 		}
 
 		MessageStatus(dialogMessage, true, false).dispatch();
@@ -97,7 +97,7 @@ std::set<FilePath> fetchRootDirectories(const std::set<FilePath>& sourceFilePath
 {
 	std::shared_ptr<DialogView> dialogView = Application::getInstance()->getDialogView(
 		DialogView::UseCase::PROJECT_SETUP);
-	dialogView->showUnknownProgressDialog(L"Preparing Project", L"Gathering Root\nDirectories");
+	dialogView->showUnknownProgressDialog("Preparing Project", "Gathering Root\nDirectories");
 
 	ScopedFunctor dialogHider([&dialogView]() { dialogView->hideUnknownProgressDialog(); });
 
@@ -154,7 +154,7 @@ std::vector<FilePath> getClassPath(
 	{
 		if (classpath.exists())
 		{
-			LOG_INFO(L"Adding path to classpath: " + classpath.wstr());
+			LOG_INFO("Adding path to classpath: " + classpath.str());
 			classPath.push_back(classpath);
 		}
 	}
@@ -164,7 +164,7 @@ std::vector<FilePath> getClassPath(
 		for (const FilePath& systemLibraryPath:
 			 ApplicationSettings::getInstance()->getJreSystemLibraryPathsExpanded())
 		{
-			LOG_INFO(L"Adding JRE system library path to classpath: " + systemLibraryPath.wstr());
+			LOG_INFO("Adding JRE system library path to classpath: " + systemLibraryPath.str());
 			classPath.push_back(systemLibraryPath);
 		}
 	}
@@ -173,7 +173,7 @@ std::vector<FilePath> getClassPath(
 	{
 		if (rootDirectory.exists())
 		{
-			LOG_INFO(L"Adding root directory to classpath: " + rootDirectory.wstr());
+			LOG_INFO("Adding root directory to classpath: " + rootDirectory.str());
 			classPath.push_back(rootDirectory);
 		}
 	}

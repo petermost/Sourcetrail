@@ -27,12 +27,12 @@ public:
 	{
 		BundleInfo() = default;
 
-		BundleInfo(std::wstring bundleName)
-			: nameMatcher([](const std::wstring&) { return true; }), bundleName(bundleName)
+		BundleInfo(std::string bundleName)
+			: nameMatcher([](const std::string&) { return true; }), bundleName(bundleName)
 		{
 		}
 
-		BundleInfo(std::function<bool(std::wstring)> nameMatcher, std::wstring bundleName)
+		BundleInfo(std::function<bool(std::string)> nameMatcher, std::string bundleName)
 			: nameMatcher(nameMatcher), bundleName(bundleName)
 		{
 		}
@@ -42,8 +42,8 @@ public:
 			return bundleName.size() > 0;
 		}
 
-		std::function<bool(const std::wstring&)> nameMatcher = nullptr;
-		std::wstring bundleName;
+		std::function<bool(const std::string&)> nameMatcher = nullptr;
+		std::string bundleName;
 	};
 
 	static std::vector<NodeType> getOverviewBundleNodes();
@@ -79,7 +79,6 @@ public:
 	bool hasOverviewBundle() const;
 	std::string getUnderscoredTypeString() const;
 	std::string getReadableTypeString() const;
-	std::wstring getReadableTypeWString() const;
 
 private:
 	NodeKind m_kind;

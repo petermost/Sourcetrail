@@ -19,9 +19,9 @@ public:
 		return "MessageActivateFile";
 	}
 
-	void print(std::wostream& os) const override
+	void print(std::ostream& os) const override
 	{
-		os << filePath.wstr();
+		os << filePath.str();
 	}
 
 	const FilePath filePath;

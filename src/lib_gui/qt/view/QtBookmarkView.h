@@ -21,7 +21,7 @@ public:
 	void refreshView() override;
 
 	// BookmarkView implementation
-	void displayBookmarkCreator(const std::vector<std::wstring>& names, const std::vector<BookmarkCategory>& categories, Id nodeId) override;
+	void displayBookmarkCreator(const std::vector<std::string>& names, const std::vector<BookmarkCategory>& categories, Id nodeId) override;
 	void displayBookmarkCreator(std::shared_ptr<Bookmark> bookmark, const std::vector<BookmarkCategory>& categories) override;
 
 	void displayBookmarkBrowser(const std::vector<std::shared_ptr<Bookmark>>& bookmarks) override;

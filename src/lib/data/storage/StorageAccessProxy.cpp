@@ -166,13 +166,13 @@ DEF_GETTER_1(getNodeTypeForNodeWithId, Id, NodeType, NodeType(NODE_SYMBOL))
 DEF_GETTER_1(getEdgeById, Id, StorageEdge, StorageEdge())
 DEF_GETTER_2(
 	getFullTextSearchLocations,
-	const std::wstring&,
+	const std::string&,
 	bool,
 	std::shared_ptr<SourceLocationCollection>,
 	std::make_shared<SourceLocationCollection>())
 DEF_GETTER_3(
 	getAutocompletionMatches,
-	const std::wstring&,
+	const std::string&,
 	NodeTypeSet,
 	bool,
 	std::vector<SearchMatch>,
@@ -221,20 +221,20 @@ DEF_GETTER_1(
 	getSourceLocationsForFile,
 	const FilePath&,
 	std::shared_ptr<SourceLocationFile>,
-	std::make_shared<SourceLocationFile>(FilePath(), L"", false, false, false))
+	std::make_shared<SourceLocationFile>(FilePath(), "", false, false, false))
 DEF_GETTER_3(
 	getSourceLocationsForLinesInFile,
 	const FilePath&,
 	size_t,
 	size_t,
 	std::shared_ptr<SourceLocationFile>,
-	std::make_shared<SourceLocationFile>(FilePath(), L"", false, false, false))
+	std::make_shared<SourceLocationFile>(FilePath(), "", false, false, false))
 DEF_GETTER_2(
 	getSourceLocationsOfTypeInFile,
 	const FilePath&,
 	LocationType,
 	std::shared_ptr<SourceLocationFile>,
-	std::make_shared<SourceLocationFile>(FilePath(), L"", false, false, false))
+	std::make_shared<SourceLocationFile>(FilePath(), "", false, false, false))
 DEF_GETTER_2(getFileContent, const FilePath&, bool, std::shared_ptr<TextAccess>, nullptr)
 DEF_GETTER_1(getFileInfoForFileId, Id, FileInfo, FileInfo())
 DEF_GETTER_1(getFileInfoForFilePath, const FilePath&, FileInfo, FileInfo())
@@ -261,7 +261,7 @@ void StorageAccessProxy::addEdgeBookmark(const EdgeBookmark& bookmark)
 		subject->addEdgeBookmark(bookmark);
 }
 
-Id StorageAccessProxy::addBookmarkCategory(const std::wstring& categoryName)
+Id StorageAccessProxy::addBookmarkCategory(const std::string& categoryName)
 {
 	if (std::shared_ptr<StorageAccess> subject = m_subject.lock())
 	{
@@ -273,9 +273,9 @@ Id StorageAccessProxy::addBookmarkCategory(const std::wstring& categoryName)
 
 void StorageAccessProxy::updateBookmark(
 	const BookmarkId bookmarkId,
-	const std::wstring& name,
-	const std::wstring& comment,
-	const std::wstring& categoryName)
+	const std::string& name,
+	const std::string& comment,
+	const std::string& categoryName)
 {
 	if (std::shared_ptr<StorageAccess> subject = m_subject.lock())
 	{

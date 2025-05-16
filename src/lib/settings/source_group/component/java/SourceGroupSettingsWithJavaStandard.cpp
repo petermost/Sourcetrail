@@ -3,7 +3,7 @@
 #include "ConfigManager.h"
 #include "ToolVersionSupport.h"
 
-std::wstring SourceGroupSettingsWithJavaStandard::getJavaStandard() const
+std::string SourceGroupSettingsWithJavaStandard::getJavaStandard() const
 {
 	if (m_javaStandard.empty())
 	{
@@ -12,7 +12,7 @@ std::wstring SourceGroupSettingsWithJavaStandard::getJavaStandard() const
 	return m_javaStandard;
 }
 
-void SourceGroupSettingsWithJavaStandard::setJavaStandard(const std::wstring& standard)
+void SourceGroupSettingsWithJavaStandard::setJavaStandard(const std::string& standard)
 {
 	m_javaStandard = standard;
 }
@@ -27,7 +27,7 @@ bool SourceGroupSettingsWithJavaStandard::equals(const SourceGroupSettingsBase* 
 
 void SourceGroupSettingsWithJavaStandard::load(const ConfigManager* config, const std::string& key)
 {
-	setJavaStandard(config->getValueOrDefault<std::wstring>(key + "/java_standard", L""));
+	setJavaStandard(config->getValueOrDefault<std::string>(key + "/java_standard", ""));
 }
 
 void SourceGroupSettingsWithJavaStandard::save(ConfigManager* config, const std::string& key)

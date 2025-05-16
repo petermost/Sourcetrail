@@ -3,6 +3,8 @@
 #include "ConfigManager.h"
 #include "TextAccess.h"
 
+using namespace std;
+
 namespace
 {
 std::shared_ptr<TextAccess> getConfigTextAccess()
@@ -26,6 +28,9 @@ std::shared_ptr<TextAccess> getConfigTextAccess()
 		"</config>\n";
 	return TextAccess::createFromString(text);
 }
+
+const string SPECIAL_CHARACTER_UTF8_LOWER_UE = {'\xC3', '\xBC'};
+
 }	 // namespace
 
 TEST_CASE("config manager returns true when key is found")
@@ -54,10 +59,10 @@ TEST_CASE("config manager returns correct string for key")
 {
 	std::shared_ptr<ConfigManager> config = ConfigManager::createAndLoad(getConfigTextAccess());
 
-	std::wstring value;
+	std::string value;
 	config->getValue("path/to/single_value", value);
 
-	REQUIRE(L"42" == value);
+	REQUIRE("42" == value);
 }
 
 
@@ -136,7 +141,7 @@ TEST_CASE("config manager returns correct list for key")
 
 TEST_CASE("config manager save and load configuration and compare")
 {
-	const FilePath path(L"data/ConfigManagerTestSuite/temp.xml");
+	const FilePath path("data/ConfigManagerTestSuite/temp.xml");
 
 	std::shared_ptr<ConfigManager> config = ConfigManager::createAndLoad(getConfigTextAccess());
 	config->save(path.str());
@@ -148,21 +153,21 @@ TEST_CASE("config manager save and load configuration and compare")
 TEST_CASE("config manager loads special character")
 {
 	std::shared_ptr<ConfigManager> config = ConfigManager::createAndLoad(
-		TextAccess::createFromFile(FilePath(L"data/ConfigManagerTestSuite/test_data.xml")));
-	std::wstring loadedSpecialCharacter;
+		TextAccess::createFromFile(FilePath("data/ConfigManagerTestSuite/test_data.xml")));
+	std::string loadedSpecialCharacter;
 	config->getValue("path/to/special_character", loadedSpecialCharacter);
 
-	REQUIRE(loadedSpecialCharacter.size() == 1);
-	REQUIRE(loadedSpecialCharacter[0] == wchar_t(252));
-	;	 // special character needs to be encoded as ASCII code because
+	REQUIRE(loadedSpecialCharacter.size() == 2);
+	REQUIRE(loadedSpecialCharacter == SPECIAL_CHARACTER_UTF8_LOWER_UE);
+		 // special character needs to be encoded as ASCII (UTF-8?) code because
 		 // otherwise python and cxx compiler may be complaining
 }
 
 TEST_CASE("config manager save and load special character and compare")
 {
-	const FilePath path(L"data/ConfigManagerTestSuite/temp.xml");
-	std::wstring specialCharacter;
-	specialCharacter.push_back(wchar_t(252));
+	const FilePath path("data/ConfigManagerTestSuite/temp.xml");
+	std::string specialCharacter;
+	specialCharacter = SPECIAL_CHARACTER_UTF8_LOWER_UE;
 
 	std::shared_ptr<ConfigManager> config = ConfigManager::createEmpty();
 	config->setValue("path/to/special_character", specialCharacter);

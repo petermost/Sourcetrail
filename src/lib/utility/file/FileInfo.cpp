@@ -1,6 +1,6 @@
 #include "FileInfo.h"
 
-FileInfo::FileInfo(): path(FilePath(L"")) {}
+FileInfo::FileInfo(): path(FilePath("")) {}
 
 FileInfo::FileInfo(const FilePath& path): path(path) {}
 

@@ -14,7 +14,7 @@
 QtGraphNodeAccess::QtGraphNodeAccess(AccessKind accessKind)
 	:  m_accessKind(accessKind)
 {
-	std::wstring accessString = TokenComponentAccess::getAccessString(m_accessKind);
+	std::string accessString = TokenComponentAccess::getAccessString(m_accessKind);
 	this->setName(accessString);
 	this->setCursor(Qt::ArrowCursor);
 	m_text->hide();

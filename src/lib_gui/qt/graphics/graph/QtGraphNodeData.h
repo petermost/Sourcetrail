@@ -12,7 +12,7 @@ public:
 	QtGraphNodeData(
 		GraphFocusHandler* focusHandler,
 		const Node* data,
-		const std::wstring& name,
+		const std::string& name,
 		bool childVisible,
 		bool hasQualifier,
 		bool isInteractive);

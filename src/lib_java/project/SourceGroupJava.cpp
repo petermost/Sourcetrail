@@ -38,7 +38,7 @@ std::set<FilePath> SourceGroupJava::getAllSourceFilePaths() const
 std::vector<std::shared_ptr<IndexerCommand>> SourceGroupJava::getIndexerCommands(
 	const RefreshInfo& info) const
 {
-	const std::wstring languageStandard = dynamic_cast<const SourceGroupSettingsWithJavaStandard*>(
+	const std::string languageStandard = dynamic_cast<const SourceGroupSettingsWithJavaStandard*>(
 											  getSourceGroupSettings().get())
 											  ->getJavaStandard();
 

@@ -2,12 +2,12 @@
 
 #include "ConfigManager.h"
 
-const std::wstring& SourceGroupSettingsWithCustomCommand::getCustomCommand() const
+const std::string& SourceGroupSettingsWithCustomCommand::getCustomCommand() const
 {
 	return m_customCommand;
 }
 
-void SourceGroupSettingsWithCustomCommand::setCustomCommand(const std::wstring& customCommand)
+void SourceGroupSettingsWithCustomCommand::setCustomCommand(const std::string& customCommand)
 {
 	m_customCommand = customCommand;
 }
@@ -32,7 +32,7 @@ bool SourceGroupSettingsWithCustomCommand::equals(const SourceGroupSettingsBase*
 
 void SourceGroupSettingsWithCustomCommand::load(const ConfigManager* config, const std::string& key)
 {
-	setCustomCommand(config->getValueOrDefault(key + "/custom_command", std::wstring()));
+	setCustomCommand(config->getValueOrDefault(key + "/custom_command", std::string()));
 	setRunInParallel(config->getValueOrDefault(key + "/run_in_parallel", false));
 }
 

@@ -27,7 +27,7 @@ public:
 	void addSymbol(const StorageSymbol& symbol) override;
 	void addSymbols(const std::vector<StorageSymbol>& symbols) override;
 	void addFile(const StorageFile& file) override;
-	void setFileLanguage(Id fileId, const std::wstring& languageIdentifier);
+	void setFileLanguage(Id fileId, const std::string& languageIdentifier);
 	Id addEdge(const StorageEdgeData& edgeData) override;
 	std::vector<Id> addEdges(const std::vector<StorageEdge>& edges) override;
 	Id addLocalSymbol(const StorageLocalSymbolData& localSymbolData) override;

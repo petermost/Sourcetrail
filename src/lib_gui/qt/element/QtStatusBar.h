@@ -19,10 +19,10 @@ class QtStatusBar: public QStatusBar
 public:
 	QtStatusBar();
 
-	void setText(const std::wstring& text, bool isError, bool showLoader);
+	void setText(const std::string& text, bool isError, bool showLoader);
 	void setErrorCount(ErrorCountInfo errorCount);
 
-	void setIdeStatus(const std::wstring& text);
+	void setIdeStatus(const std::string& text);
 
 	void showIndexingProgress(size_t progressPercent);
 	void hideIndexingProgress();
@@ -40,7 +40,7 @@ private:
 
 	std::shared_ptr<QMovie> m_movie;
 
-	std::wstring m_textString;
+	std::string m_textString;
 
 	QPushButton m_text;
 	QLabel m_loader;

@@ -35,12 +35,12 @@ void LogManager::setLoggingEnabled(bool enabled)
 		if (enabled)
 		{
 			LOG_INFO(std::string("Enabled logging for Sourcetrail version ") + Version::getApplicationVersion().toDisplayString());
-			MessageStatus(L"Enabled console and file logging.").dispatch();
+			MessageStatus("Enabled console and file logging.").dispatch();
 		}
 		else
 		{
 			LOG_INFO("Disabled logging");
-			MessageStatus(L"Disabled console and file logging.").dispatch();
+			MessageStatus("Disabled console and file logging.").dispatch();
 		}
 	}
 }
@@ -97,18 +97,6 @@ void LogManager::logInfo(
 	}
 }
 
-void LogManager::logInfo(
-	const std::wstring& message,
-	const std::string& file,
-	const std::string& function,
-	const unsigned int line)
-{
-	if (m_loggingEnabled)
-	{
-		m_logManagerImplementation.logInfo(message, file, function, line);
-	}
-}
-
 void LogManager::logWarning(
 	const std::string& message,
 	const std::string& file,
@@ -121,18 +109,6 @@ void LogManager::logWarning(
 	}
 }
 
-void LogManager::logWarning(
-	const std::wstring& message,
-	const std::string& file,
-	const std::string& function,
-	const unsigned int line)
-{
-	if (m_loggingEnabled)
-	{
-		m_logManagerImplementation.logWarning(message, file, function, line);
-	}
-}
-
 void LogManager::logError(
 	const std::string& message,
 	const std::string& file,
@@ -142,18 +118,6 @@ void LogManager::logError(
 	if (m_loggingEnabled)
 	{
 		m_logManagerImplementation.logError(utility::decodeFromUtf8(message), file, function, line);
-	}
-}
-
-void LogManager::logError(
-	const std::wstring& message,
-	const std::string& file,
-	const std::string& function,
-	const unsigned int line)
-{
-	if (m_loggingEnabled)
-	{
-		m_logManagerImplementation.logError(message, file, function, line);
 	}
 }
 
