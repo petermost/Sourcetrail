@@ -63,8 +63,8 @@ bool QtProjectWizardContentFlags::check()
 
 	for (const std::string& flag: m_list->getStrings())
 	{
-		if (utility::isPrefix<std::string>("-include ", flag) ||
-			utility::isPrefix<std::string>("--include ", flag))
+		if (utility::isPrefix("-include ", flag) ||
+			utility::isPrefix("--include ", flag))
 		{
 			error = "The entered compiler flag \"" + flag +
 				"\" contains an error. Please remove the intermediate space character.\n";

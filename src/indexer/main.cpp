@@ -1,15 +1,14 @@
 
 #include "language_packages.h"
-
 #include "AppPath.h"
 #include "ApplicationSettings.h"
-#include "UserPaths.h"
-// #include "ConsoleLogger.h"
 #include "FileLogger.h"
 #include "InterprocessIndexer.h"
 #include "LanguagePackageManager.h"
 #include "LogManager.h"
+#include "UserPaths.h"
 #include "logging.h"
+#include "setupApp.h"
 
 #if BUILD_CXX_LANGUAGE_PACKAGE
 #	include "LanguagePackageCxx.h"
@@ -47,6 +46,8 @@ void suppressCrashMessage()
 
 int main(int argc, char* argv[])
 {
+	setupDefaultLocale();
+	
 	ProcessId processId = ProcessId::INVALID;
 	std::string instanceUuid;
 	std::string appPath;

@@ -64,12 +64,12 @@ std::string getErrorMessageFromMavenOutput(std::shared_ptr<const TextAccess> mav
 	{
 		const std::string trimmedLine = utility::trim(line);
 
-		if (utility::isPrefix<std::string>(errorPrefix, trimmedLine))
+		if (utility::isPrefix(errorPrefix, trimmedLine))
 		{
 			errorMessage += utility::decodeFromUtf8(
 				utility::trim(trimmedLine.substr(errorPrefix.size())) + "\n");
 		}
-		else if (utility::isPrefix<std::string>(fatalPrefix, trimmedLine))
+		else if (utility::isPrefix(fatalPrefix, trimmedLine))
 		{
 			errorMessage += utility::decodeFromUtf8(trimmedLine + "\n");
 		}

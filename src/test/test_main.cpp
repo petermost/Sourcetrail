@@ -1,5 +1,4 @@
-#include <boost/filesystem.hpp>
-#include <iostream>
+#include "Catch2.hpp"
 
 #include "ApplicationSettings.h"
 #include "language_packages.h"
@@ -8,7 +7,9 @@
 #include <UserPaths.h>
 #include <setupApp.h>
 
-#include "Catch2.hpp"
+#include <boost/filesystem.hpp>
+
+#include <iostream>
 
 using namespace std;
 using namespace boost::filesystem;
@@ -59,10 +60,12 @@ int main(int argc, char* argv[])
 	EventListener::s_argc = argc;
 	EventListener::s_argv = argv;
 
-	// Set the 'working directory' manually, as a workaround for "Unable to configure working directory 
+	setupDefaultLocale();
+
+	// Set the 'working directory' manually, as a workaround for "Unable to configure working directory
 	// in CMake/Catch" (https://github.com/catchorg/Catch2/issues/2249)
 	path workingDirectory = canonical(path(argv[0])).parent_path();
-	
+
 	// If something is printed to the screen, then this will lead to a failure in 'catch_discover_tests()'!
 	// cout << "Set working directory to '" << workingDirectory << "'" << endl;
 	current_path(workingDirectory);

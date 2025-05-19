@@ -133,7 +133,7 @@ void CxxParser::buildIndex(std::shared_ptr<IndexerCommandCxx> indexerCommand)
 	compileCommand.Filename = utility::encodeToUtf8(indexerCommand->getSourceFilePath().str());
 	compileCommand.Directory = utility::encodeToUtf8(indexerCommand->getWorkingDirectory().str());
 	std::vector<std::string> args = indexerCommand->getCompilerFlags();
-	if (!args.empty() && !utility::isPrefix<std::string>("-", args.front()))
+	if (!args.empty() && !utility::isPrefix("-", args.front()))
 	{
 		args.erase(args.begin());
 	}

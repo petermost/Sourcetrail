@@ -164,10 +164,10 @@ void removeIncludePchFlag(std::vector<std::string>& args)
 	for (size_t i = 0; i < args.size(); i++)
 	{
 		const std::string arg = utility::trim(args[i]);
-		if (utility::isPrefix<std::string>(includePchPrefix, arg))
+		if (utility::isPrefix(includePchPrefix, arg))
 		{
 			if (i + 1 < args.size() &&
-				!utility::isPrefix<std::string>("-", utility::trim(args[i + 1])) &&
+				!utility::isPrefix("-", utility::trim(args[i + 1])) &&
 				arg == includePchPrefix)
 			{
 				args.erase(args.begin() + i + 1);

@@ -45,7 +45,7 @@ std::vector<std::string> getCxxHeaderPaths(const std::string& compilerName)
 		utility::decodeFromUtf8(compilerName), {"-x", "c++", "-v", "-E", "/dev/null"});
 	if (out.exitCode == 0)
 	{
-		std::string standardHeaders = utility::substrBetween<std::string>(
+		std::string standardHeaders = utility::substrBetween(
 			out.output, "#include <...> search starts here:\n", "\nEnd of search list");
 
 		if (!standardHeaders.empty())

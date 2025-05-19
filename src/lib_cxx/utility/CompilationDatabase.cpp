@@ -71,7 +71,7 @@ void utility::CompilationDatabase::init()
 			{
 				std::string argument = utility::decodeFromUtf8(command.CommandLine[i]);
 				if (i + 1 < command.CommandLine.size() &&
-					!utility::isPrefix<std::string>("-", command.CommandLine[i + 1]))
+					!utility::isPrefix("-", command.CommandLine[i + 1]))
 				{
 					argument += utility::decodeFromUtf8(command.CommandLine[++i]);
 				}

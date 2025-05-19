@@ -1,15 +1,16 @@
 #include "utilityString.h"
 
+#include <boost/locale/conversion.hpp>
+
 #include <algorithm>
 #include <cctype>
 #include <iterator>
 #include <string>
 
-
 namespace
 {
-template <typename StringType>
-StringType doReplace(StringType str, const StringType& from, const StringType& to)
+
+std::string doReplace(std::string str, const std::string& from, const std::string& to)
 {
 	size_t pos = 0;
 
@@ -27,15 +28,10 @@ StringType doReplace(StringType str, const StringType& from, const StringType& t
 	return str;
 }
 
-template <typename StringType>
-StringType doReplaceBetween(
-	const StringType& str,
-	typename StringType::value_type startDelimiter,
-	typename StringType::value_type endDelimiter,
-	const StringType& to)
+std::string doReplaceBetween(const std::string& str, typename std::string::value_type startDelimiter, typename std::string::value_type endDelimiter, const std::string& to)
 {
 	size_t startPos = str.find(startDelimiter);
-	if (startPos == StringType::npos)
+	if (startPos == std::string::npos)
 	{
 		return str;
 	}
@@ -50,8 +46,7 @@ StringType doReplaceBetween(
 
 			if (depth == 0)
 			{
-				StringType end = doReplaceBetween<StringType>(
-					str.substr(pos + 1), startDelimiter, endDelimiter, to);
+				std::string end = doReplaceBetween(str.substr(pos + 1), startDelimiter, endDelimiter, to);
 				return str.substr(0, startPos) + startDelimiter + to + endDelimiter + end;
 			}
 		}
@@ -233,29 +228,64 @@ std::string substrAfter(const std::string& str, const std::string& delimiter)
 	return str;
 }
 
+std::string substrBetween(const std::string &str, const std::string &delimiter1, const std::string &delimiter2)
+{
+	size_t found_delimiter1 = str.find(delimiter1);
+	found_delimiter1 += delimiter1.length();
+	size_t found_delimiter2 = str.find(delimiter2, found_delimiter1);
+	if (found_delimiter1 != str.npos && found_delimiter2 != str.npos)
+	{
+		return str.substr(found_delimiter1, found_delimiter2 - found_delimiter1);
+	}
+	return std::string();
+}
+
 std::string toUpperCase(const std::string& in)
 {
-	std::string out;
-	std::transform(in.begin(), in.end(), std::back_inserter(out), toupper);
-	return out;
+    return boost::locale::to_upper(in);
 }
 
 std::string toLowerCase(const std::string& in)
 {
-	std::string out;
-	std::transform(in.begin(), in.end(), std::back_inserter(out), tolower);
-	return out;
+    return boost::locale::to_lower(in);
 }
+
+bool equalsCaseInsensitive(const std::string &a, const std::string &b)
+{
+	return toLowerCase(a) == toLowerCase(b);
+}
+
+bool caseInsensitiveLess(const std::string& s1, const std::string& s2)
+{
+	return toLowerCase(s1) < toLowerCase(s2);
+}
+
+bool isPrefix(const std::string &prefix, const std::string &text)
+{
+	if (prefix.size() <= text.size())
+	{
+		std::pair<typename std::string::const_iterator, typename std::string::const_iterator> res =
+			std::mismatch(prefix.begin(), prefix.end(), text.begin());
+
+		return res.first == prefix.end();
+	}
+	return false;
+}
+
+bool isPostfix(const std::string &postfix, const std::string &text)
+{
+	return text.size() >= postfix.size() && text.rfind(postfix) == (text.size() - postfix.size());
+}
+
 
 std::string replace(std::string str, const std::string& from, const std::string& to)
 {
 	return doReplace(str, from, to);
 }
 
-std::string replaceBetween(
-	const std::string& str, char startDelimiter, char endDelimiter, const std::string& to)
+std::string replaceBetween(const std::string& str, char startDelimiter, char endDelimiter, const std::string& to)
 {
-	return doReplaceBetween<std::string>(str, startDelimiter, endDelimiter, to);
+	return doReplaceBetween(str, startDelimiter, endDelimiter, to);
 }
 
 std::string insertLineBreaksAtBlankSpaces(const std::string& s, size_t maxLineLength)
@@ -388,12 +418,7 @@ std::string breakSignature(std::string signature, size_t maxLineLength, size_t t
 	return breakSignature(returnPart, namePart, paramPart, maxLineLength, tabWidth);
 }
 
-std::string breakSignature(
-	std::string returnPart,
-	std::string namePart,
-	std::string paramPart,
-	size_t maxLineLength,
-	size_t tabWidth)
+std::string breakSignature(std::string returnPart, std::string namePart, std::string paramPart, size_t maxLineLength, size_t tabWidth)
 {
 	namePart = ' ' + namePart;
 
@@ -505,9 +530,7 @@ std::string breakSignature(
 std::string trim(const std::string& str)
 {
 	auto wsfront = std::find_if_not(str.begin(), str.end(), [](int c) { return std::isspace(c); });
-	auto wsback = std::find_if_not(str.rbegin(), str.rend(), [](int c) {
-					  return std::isspace(c);
-				  }).base();
+	auto wsback = std::find_if_not(str.rbegin(), str.rend(), [](int c) { return std::isspace(c); }).base();
 	return (wsback <= wsfront ? std::string() : std::string(wsfront, wsback));
 }
 
@@ -550,27 +573,5 @@ std::string convertWhiteSpacesToSingleSpaces(const std::string& str)
 	return join<std::deque<std::string>>(parts, " ");
 }
 
-bool caseInsensitiveLess(const std::string& s1, const std::string& s2)
-{
-	size_t s1_size = s1.size();
-	size_t s2_size = s2.size();
-	bool res_cmp = s1_size < s2_size;
-	size_t lesser_size = s2_size ^
-		((s1_size ^ s2_size) & static_cast<size_t>(-static_cast<int>(res_cmp)));
-	for (size_t i = 0; i < lesser_size; ++i)
-	{
-		char s1_wchr = s1[i];
-		char s2_wchr = s2[i];
-		if (s1_wchr != s2_wchr)
-		{
-			s1_wchr = tolower(s1_wchr);
-			s2_wchr = tolower(s2_wchr);
-			if (s1_wchr != s2_wchr)
-			{
-				return s1_wchr < s2_wchr;
-			}
-		}
-	}
-	return res_cmp;
-}
+
 }	 // namespace utility

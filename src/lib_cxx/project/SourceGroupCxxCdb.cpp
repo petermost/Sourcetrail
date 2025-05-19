@@ -184,7 +184,7 @@ std::shared_ptr<Task> SourceGroupCxxCdb::getPreIndexTask(
 				{
 					for (const std::string& arg: command.CommandLine)
 					{
-						if ((!compilerFlags.empty() || utility::isPrefix<std::string>("-", arg)) &&
+						if ((!compilerFlags.empty() || utility::isPrefix("-", arg)) &&
 							FilePath(arg).fileName() != sourcePath.fileName())
 						{
 							compilerFlags.emplace_back(utility::decodeFromUtf8(arg));

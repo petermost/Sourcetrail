@@ -18,7 +18,7 @@ public:
 	std::string decode(const std::string &encodedString);
 	std::string encode(const std::string &decodedString);
 
-	int encodedSize(const QString &decodedString);
+	size_t encodedSize(const QString &decodedString);
 
 	std::string getName() const;
 

@@ -4,8 +4,9 @@
 #include <FilePath.h>
 #include <Version.h>
 
+void setupDefaultLocale();
+
 Version setupAppDirectories(const FilePath &appPath);
-void setupUserDirectory(const FilePath &appPath);
 void setupAppEnvironment(int argc, char *argv[]);
 
 #endif

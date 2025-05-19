@@ -63,7 +63,7 @@ void CxxDiagnosticConsumer::HandleDiagnostic(
 		{
 			return;
 		}
-		if (utility::isPrefix<std::string>("unknown argument:", message))
+		if (utility::isPrefix("unknown argument:", message))
 		{
 			return;
 		}

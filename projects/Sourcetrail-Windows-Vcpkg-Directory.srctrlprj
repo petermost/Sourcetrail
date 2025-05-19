@@ -130,6 +130,7 @@
                 <header_search_path>../src/lib_java/project</header_search_path>
                 <header_search_path>../src/lib_java/utility</header_search_path>
                 <header_search_path>../src/lib_python/project</header_search_path>
+                <header_search_path>../src/resources</header_search_path>
                 <header_search_path>../src/test/helper</header_search_path>
                 <header_search_path>../../build/vcpkg-ninja-release/src/lib</header_search_path>
                 <header_search_path>../../build/vcpkg-ninja-release/src/lib_gui</header_search_path>
@@ -153,7 +154,7 @@
             </source_extensions>
             <source_paths>
                 <source_path>../src</source_path>
-                <source_path>../../build/vcpkg-ninja-release/src/lib/language_packages.h</source_path>                
+                <source_path>../../build/vcpkg-ninja-release/src/lib/language_packages.h</source_path>
             </source_paths>
             <status>enabled</status>
             <type>C++ Source Group</type>

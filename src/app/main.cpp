@@ -1,10 +1,5 @@
 #include "setupApp.h"
 
-#include <csignal>
-#include <iostream>
-
-#include "language_packages.h"
-
 #include "Application.h"
 #include "ApplicationSettings.h"
 #include "ApplicationSettingsPrefiller.h"
@@ -25,6 +20,7 @@
 #include "ScopedFunctor.h"
 #include "SourceGroupFactory.h"
 #include "SourceGroupFactoryModuleCustom.h"
+#include "language_packages.h"
 #include "utilityQt.h"
 
 #if BUILD_CXX_LANGUAGE_PACKAGE
@@ -44,6 +40,9 @@
 #if BOOST_OS_WINDOWS
 	#include <windows.h>
 #endif
+
+#include <csignal>
+#include <iostream>
 
 void closeConsoleWindow()
 {
@@ -111,6 +110,8 @@ void addLanguagePackages()
 
 int main(int argc, char* argv[])
 {
+	setupDefaultLocale();
+
 	Version version = setupAppDirectories(FilePath(argv[0]).getCanonical().getParentDirectory());
 
 	if (utility::Platform::isLinux() && std::getenv("SOURCETRAIL_VIA_SCRIPT") == nullptr)

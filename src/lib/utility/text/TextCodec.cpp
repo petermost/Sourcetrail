@@ -59,7 +59,7 @@ string TextCodec::encode(const string &decodedString)
 	return static_cast<QByteArray>(m_encoder.encode(QString::fromStdString(decodedString))).toStdString();
 }
 
-int TextCodec::encodedSize(const QString &decodedString)
+size_t TextCodec::encodedSize(const QString &decodedString)
 {
 	return encode(decodedString.toStdString()).size();
 }

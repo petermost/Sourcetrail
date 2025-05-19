@@ -872,7 +872,7 @@ void QtCodeField::createMultibyteCharacterLocationCache(const QString& code)
 		{
 			if (line[i].unicode() > 127)
 			{
-				int ss = codec.encodedSize(line[i]);
+				int ss = static_cast<int>(codec.encodedSize(line[i]));
 				columnsToOffsets.push_back(std::make_pair(i, ss));
 			}
 		}

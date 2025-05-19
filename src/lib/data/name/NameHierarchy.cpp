@@ -97,7 +97,7 @@ NameHierarchy NameHierarchy::deserialize(const std::string& serializedName)
 	// TODO: replace duplicate main definition fix with better solution
 	if (nameHierarchy.size() == 1 && nameHierarchy.back().hasSignature() &&
 		!nameHierarchy.back().getName().empty() && nameHierarchy.back().getName()[0] == '.' &&
-		utility::isPrefix<std::string>(".:main:.", nameHierarchy.back().getName()))
+		utility::isPrefix(".:main:.", nameHierarchy.back().getName()))
 	{
 		NameElement::Signature sig = nameHierarchy.back().getSignature();
 		nameHierarchy.pop();

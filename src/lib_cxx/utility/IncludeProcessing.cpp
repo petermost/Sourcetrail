@@ -166,18 +166,16 @@ std::vector<IncludeDirective> IncludeProcessing::getIncludeDirectives(
 	{
 		const std::string line = codec.decode(lines[i]);
 		const std::string lineTrimmedToHash = utility::trim(line);
-		if (utility::isPrefix<std::string>("#", lineTrimmedToHash))
+		if (utility::isPrefix("#", lineTrimmedToHash))
 		{
 			const std::string lineTrimmedToInclude = utility::trim(lineTrimmedToHash.substr(1));
-			if (utility::isPrefix<std::string>("include", lineTrimmedToInclude))
+			if (utility::isPrefix("include", lineTrimmedToInclude))
 			{
-				std::string includeString = utility::substrBetween<std::string>(
-					lineTrimmedToInclude, "<", ">");
+				std::string includeString = utility::substrBetween(lineTrimmedToInclude, "<", ">");
 				bool usesBrackets = true;
 				if (includeString.empty())
 				{
-					includeString = utility::substrBetween<std::string>(
-						lineTrimmedToInclude, "\"", "\"");
+					includeString = utility::substrBetween(lineTrimmedToInclude, "\"", "\"");
 					usesBrackets = false;
 				}
 

@@ -232,7 +232,7 @@ TEST_CASE("empty string is detected as prefix of any other string")
 {
 	const std::string foo = "foo";
 
-	REQUIRE(utility::isPrefix<std::string>("", foo));
+	REQUIRE(utility::isPrefix("", foo));
 }
 
 TEST_CASE("prefix of bigger text is detected as prefix")

@@ -16,29 +16,25 @@
 #include <QDirIterator>
 #include <QStandardPaths>
 
+#include <boost/locale/generator.hpp>
+
+using namespace std;
 using namespace utility;
+using namespace boost::locale;
 using namespace boost::system;
 using namespace boost::filesystem;
 
-Version setupAppDirectories(const FilePath &appPath)
+void setupDefaultLocale()
 {
-	QCoreApplication::setApplicationName(QStringLiteral("Sourcetrail"));
+	locale defaultLocale = generator().generate("");
 
-	Version version(PRODUCT_VERSION_MAJOR, PRODUCT_VERSION_MINOR, PRODUCT_VERSION_PATCH);
-	QCoreApplication::setApplicationVersion(QString::fromStdString(version.toDisplayString()));
-
-	// Note: This functions is called from main in 'main.cpp' *AND* the main in 'test_main.cpp'. 
-	// If the appPath is incorrect then most of the Java tests will fail because the 
-	// 'app/data/java/lib/java-indexer.jar' will not be found!
-	AppPath::setSharedDataDirectoryPath(appPath);
-	AppPath::setCxxIndexerDirectoryPath(appPath);
-
-	setupUserDirectory(appPath);
-	
-	return version;
+	locale::global(defaultLocale);
+	cout.imbue(defaultLocale);
+	cerr.imbue(defaultLocale);
 }
 
-void setupUserDirectory(const FilePath &appPath)
+
+static void setupUserDirectory(const FilePath &appPath)
 {
 	// Determine user directory:
 	QString userDataLocation = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + "/";
@@ -68,9 +64,27 @@ void setupUserDirectory(const FilePath &appPath)
 	}
 }
 
+Version setupAppDirectories(const FilePath &appPath)
+{
+	QCoreApplication::setApplicationName(QStringLiteral("Sourcetrail"));
+
+	Version version(PRODUCT_VERSION_MAJOR, PRODUCT_VERSION_MINOR, PRODUCT_VERSION_PATCH);
+	QCoreApplication::setApplicationVersion(QString::fromStdString(version.toDisplayString()));
+
+	// Note: This functions is called from main in 'main.cpp' *AND* the main in 'test_main.cpp'.
+	// If the appPath is incorrect then most of the Java tests will fail because the
+	// 'app/data/java/lib/java-indexer.jar' will not be found!
+	AppPath::setSharedDataDirectoryPath(appPath);
+	AppPath::setCxxIndexerDirectoryPath(appPath);
+
+	setupUserDirectory(appPath);
+
+	return version;
+}
+
 void setupAppEnvironment(int  /*argc*/, char*  /*argv*/[])
 {
-	// This function will be called after setupAppDirectories, so UserPaths::setUserDataDirectoryPath 
+	// This function will be called after setupAppDirectories, so UserPaths::setUserDataDirectoryPath
 	// has been initialized and UserPaths::getAppSettingsFilePath will return the correct path.
 
 	// TODO (petermost): Check https://doc.qt.io/qt-6/highdpi.html#environment-variable-reference
@@ -99,3 +113,4 @@ void setupAppEnvironment(int  /*argc*/, char*  /*argv*/[])
 		}
 	}
 }
+

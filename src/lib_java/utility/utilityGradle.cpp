@@ -66,7 +66,7 @@ std::vector<FilePath> gradleGetAllSourceDirectories(
 				utility::encodeToUtf8(projectDirectoryPath.str()),
 				utility::encodeToUtf8(gradleInitScriptPath.str()));
 
-			if (utility::isPrefix<std::string>("[ERROR]", utility::trim(output)))
+			if (utility::isPrefix("[ERROR]", utility::trim(output)))
 			{
 				// TODO: move error handling to caller of this function
 				const std::string dialogMessage =
@@ -96,7 +96,7 @@ std::vector<FilePath> gradleGetAllSourceDirectories(
 				utility::encodeToUtf8(projectDirectoryPath.str()),
 				utility::encodeToUtf8(gradleInitScriptPath.str()));
 
-			if (utility::isPrefix<std::string>("[ERROR]", utility::trim(output)))
+			if (utility::isPrefix("[ERROR]", utility::trim(output)))
 			{
 				// TODO: move error handling to caller of this function
 				const std::string dialogMessage =
