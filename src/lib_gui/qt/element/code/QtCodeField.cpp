@@ -68,7 +68,7 @@ QtCodeField::QtCodeField(
 	}
 
 	TextCodec codec(ApplicationSettings::getInstance()->getTextEncoding());
-	if (convertLocationsOnDemand && codec.isValid())
+	if (convertLocationsOnDemand)
 	{
 		QString convertedDisplayCode = QString::fromStdString(codec.decode(displayCode));
 		setPlainText(convertedDisplayCode);

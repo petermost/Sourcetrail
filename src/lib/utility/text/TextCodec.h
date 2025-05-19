@@ -13,13 +13,13 @@ public:
 	static QStringList availableCodecs();
 
 	TextCodec(const std::string& name);
+	TextCodec(QStringConverter::Encoding encoding);
 
 	std::string decode(const std::string &encodedString);
 	std::string encode(const std::string &decodedString);
 
 	int encodedSize(const QString &decodedString);
 
-	bool isValid() const;
 	std::string getName() const;
 
 private:

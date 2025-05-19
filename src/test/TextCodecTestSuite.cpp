@@ -72,9 +72,16 @@ void testFunctionForTooltipWithUmlauteInSignature(/* äöüÄÖÜß€ */ )
 
 static TextCodec makeCodec(Encoding encoding)
 {
-	TextCodec textCodec(QStringConverter::nameForEncoding(encoding));
-	REQUIRE(textCodec.isValid());
-	return textCodec;
+	return TextCodec(QStringConverter::nameForEncoding(encoding));
+}
+
+//=================================================================================================
+
+TEST_CASE("TextCodec invalid encoding")
+{
+	TextCodec invalidCodec("invalid/unknown");
+
+	REQUIRE(invalidCodec.getName() == "Locale");
 }
 
 //=================================================================================================

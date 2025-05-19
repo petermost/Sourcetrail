@@ -17,47 +17,51 @@ static constexpr array AVAILABLE_ENCODINGS = {
 };
 static_assert(AVAILABLE_ENCODINGS.size() == QStringConverter::Encoding::LastEncoding + 1, "Encoding missing");
 
+static QStringConverter::Encoding makeValidEncoding(const string &name)
+{
+	for (const auto encoding : AVAILABLE_ENCODINGS)
+	{
+		if (QStringConverter::nameForEncoding(encoding) == name)
+			return encoding;
+	}
+	return QStringConverter::Encoding::System;
+}
+
 QStringList TextCodec::availableCodecs()
 {
 	QStringList availableCodecs;
 
-	for (const QStringConverter::Encoding encoding : AVAILABLE_ENCODINGS)
+	for (const auto encoding : AVAILABLE_ENCODINGS)
 		availableCodecs += QStringConverter::nameForEncoding(encoding);
 
 	return availableCodecs;
 }
 
 TextCodec::TextCodec(const string &name)
-	: m_name(name)
-	, m_decoder(m_name.c_str())
-	, m_encoder(m_name.c_str())
+	: TextCodec(makeValidEncoding(name))
+{
+}
+
+TextCodec::TextCodec(QStringConverter::Encoding encoding)
+	: m_name(QStringConverter::nameForEncoding(encoding))
+	, m_decoder(encoding)
+	, m_encoder(encoding)
 {
 }
 
 string TextCodec::decode(const string &encodedString)
 {
-	if (m_encoder.isValid())
-		return static_cast<QString>(m_decoder.decode(encodedString)).toStdString();
-	else
-		return encodedString;
+	return static_cast<QString>(m_decoder.decode(encodedString)).toStdString();
 }
 
 string TextCodec::encode(const string &decodedString)
 {
-	if (m_encoder.isValid())
-		return static_cast<QByteArray>(m_encoder.encode(QString::fromStdString(decodedString))).toStdString();
-	else
-		return decodedString;
+	return static_cast<QByteArray>(m_encoder.encode(QString::fromStdString(decodedString))).toStdString();
 }
 
 int TextCodec::encodedSize(const QString &decodedString)
 {
 	return encode(decodedString.toStdString()).size();
-}
-
-bool TextCodec::isValid() const
-{
-	return m_decoder.isValid() && m_encoder.isValid();
 }
 
 string TextCodec::getName() const
