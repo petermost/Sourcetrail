@@ -51,12 +51,22 @@ TextCodec::TextCodec(QStringConverter::Encoding encoding)
 
 string TextCodec::decode(const string &encodedString)
 {
-	return static_cast<QString>(m_decoder.decode(encodedString)).toStdString();
+	return decodeBytes(QByteArray::fromStdString(encodedString)).toStdString();
 }
 
 string TextCodec::encode(const string &decodedString)
 {
-	return static_cast<QByteArray>(m_encoder.encode(QString::fromStdString(decodedString))).toStdString();
+	return encodeBytes(QString::fromStdString(decodedString)).toStdString();
+}
+
+QString TextCodec::decodeBytes(const QByteArray &encodedBytes)
+{
+	return static_cast<QString>(m_decoder.decode(encodedBytes));
+}
+
+QByteArray TextCodec::encodeBytes(const QString &decodedString)
+{
+	return static_cast<QByteArray>(m_encoder.encode(decodedString));
 }
 
 size_t TextCodec::encodedSize(const QString &decodedString)
