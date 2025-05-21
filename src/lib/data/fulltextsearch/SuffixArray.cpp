@@ -1,93 +1,39 @@
 #include "SuffixArray.h"
 
-#include <algorithm>
-#include <iostream>
+#include "utilityString.h"
 
-struct suffix
+#include <algorithm>
+
+using namespace utility;
+
+namespace
+{
+
+struct Suffix
 {
 	int index;
 	int rank[2];
+
+	static int cmp(const Suffix &a, const Suffix &b)
+	{
+		return (a.rank[0] == b.rank[0]) ? (a.rank[1] < b.rank[1] ? 1 : 0)
+										: (a.rank[0] < b.rank[0] ? 1 : 0);
+	}
 };
 
-int SuffixArray::cmp(const struct suffix& a, const struct suffix& b)
-{
-	return (a.rank[0] == b.rank[0]) ? (a.rank[1] < b.rank[1] ? 1 : 0)
-									: (a.rank[0] < b.rank[0] ? 1 : 0);
+
 }
 
-SuffixArray::SuffixArray(const std::string& text): m_text(text)
+SuffixArray::SuffixArray(const std::string& text)
+	: m_text(toLowerCase(text))
+	, m_suffixes(buildSuffixes())
+	, m_longestCommonPrefixes(buildLongestCommonPrefixes())
 {
-	std::transform(m_text.begin(), m_text.end(), m_text.begin(), ::tolower);
-	m_array = buildSuffixArray();
-	m_lcp = buildLCP();
-}
-
-void SuffixArray::printArray() const
-{
-	std::cout << "Suffix Array : \n";
-	printArr(m_array);
-	for (size_t i = 0; i < m_array.size(); i++)
-	{
-		std::string suffix = m_text.substr(m_array[i]);
-		std::cout << i << ": \"" << suffix << "\"" << std::endl;
-	}
-}
-
-void SuffixArray::printLCP() const
-{
-	std::cout << "\nLCP Array : \n";
-	printArr(m_lcp);
-	for (size_t i = 0; i < m_array.size(); i++)
-	{
-		std::string prefix = m_text.substr(m_array[i], m_lcp[i]);
-		std::cout << i << ": \"" << prefix << "\"" << std::endl;
-	}
-}
-
-std::vector<int> SuffixArray::buildLCP()
-{
-	const int n = static_cast<int>(m_array.size());
-
-	std::vector<int> lcp(n, 0);
-	std::vector<int> invSuff(n, 0);
-
-	for (int i = 0; i < n; i++)
-	{
-		invSuff[m_array[i]] = i;
-	}
-
-	int k = 0;
-
-	for (int i = 0; i < n; i++)
-	{
-		if (invSuff[i] == n - 1)
-		{
-			k = 0;
-			continue;
-		}
-
-		int j = m_array[invSuff[i] + 1];
-
-		while (i + k < n && j + k < n && m_text[i + k] == m_text[j + k])
-		{
-			k++;
-		}
-
-		lcp[invSuff[i]] = k;
-
-		if (k > 0)
-		{
-			k--;
-		}
-	}
-
-	return lcp;
 }
 
 std::vector<int> SuffixArray::searchForTerm(const std::string& searchTerm) const
 {
-	std::string term = searchTerm;
-	std::transform(term.begin(), term.end(), term.begin(), ::tolower);
+	std::string term = toLowerCase(searchTerm);
 
 	const int termLength = static_cast<int>(term.length());
 	const int textLength = static_cast<int>(m_text.length());
@@ -100,7 +46,7 @@ std::vector<int> SuffixArray::searchForTerm(const std::string& searchTerm) const
 	while (l + 1 < r)
 	{
 		m = (l + r + 1) / 2;
-		compareResult = term.compare(m_text.substr(m_array[m], termLength));
+		compareResult = term.compare(m_text.substr(m_suffixes[m], termLength));
 		if (compareResult < 0)
 		{
 			r = m;
@@ -111,14 +57,14 @@ std::vector<int> SuffixArray::searchForTerm(const std::string& searchTerm) const
 		}
 		else
 		{
-			matches.push_back(m_array[m]);
-			for (int lower = m - 1; lower >= 0 && m_lcp[lower] >= termLength; lower--)
+			matches.push_back(m_suffixes[m]);
+			for (int lower = m - 1; lower >= 0 && m_longestCommonPrefixes[lower] >= termLength; lower--)
 			{
-				matches.push_back(m_array[lower]);
+				matches.push_back(m_suffixes[lower]);
 			}
-			for (int higher = m + 1; higher < textLength && m_lcp[higher - 1] >= termLength; higher++)
+			for (int higher = m + 1; higher < textLength && m_longestCommonPrefixes[higher - 1] >= termLength; higher++)
 			{
-				matches.push_back(m_array[higher]);
+				matches.push_back(m_suffixes[higher]);
 			}
 			break;
 		}
@@ -129,13 +75,15 @@ std::vector<int> SuffixArray::searchForTerm(const std::string& searchTerm) const
 	return matches;
 }
 
-std::vector<int> SuffixArray::buildSuffixArray()
+
+
+std::vector<int> SuffixArray::buildSuffixes() const
 {
 	const int n = static_cast<int>(m_text.length());
-	std::vector<suffix> suffixes;
+	std::vector<Suffix> suffixes;
 	suffixes.reserve(n);
 
-	suffix s;
+	Suffix s;
 	for (int i = 0; i < n; i++)
 	{
 		s.index = i;
@@ -144,7 +92,7 @@ std::vector<int> SuffixArray::buildSuffixArray()
 		suffixes.push_back(s);
 	}
 
-	std::sort(suffixes.begin(), suffixes.end(), SuffixArray::cmp);
+	std::sort(suffixes.begin(), suffixes.end(), Suffix::cmp);
 
 	std::vector<int> ind(n, 0);
 	for (int k = 4; k < 2 * n; k = k * 2)
@@ -175,7 +123,7 @@ std::vector<int> SuffixArray::buildSuffixArray()
 			suffixes[i].rank[1] = (nextindex < n) ? suffixes[ind[nextindex]].rank[0] : -1;
 		}
 
-		std::sort(suffixes.begin(), suffixes.end(), cmp);
+		std::sort(suffixes.begin(), suffixes.end(), Suffix::cmp);
 	}
 
 	std::vector<int> suffixArr;
@@ -186,3 +134,75 @@ std::vector<int> SuffixArray::buildSuffixArray()
 
 	return suffixArr;
 }
+
+std::vector<int> SuffixArray::buildLongestCommonPrefixes() const
+{
+	const int n = static_cast<int>(m_suffixes.size());
+
+	std::vector<int> lcp(n, 0);
+	std::vector<int> invSuff(n, 0);
+
+	for (int i = 0; i < n; i++)
+	{
+		invSuff[m_suffixes[i]] = i;
+	}
+
+	int k = 0;
+
+	for (int i = 0; i < n; i++)
+	{
+		if (invSuff[i] == n - 1)
+		{
+			k = 0;
+			continue;
+		}
+
+		int j = m_suffixes[invSuff[i] + 1];
+
+		while (i + k < n && j + k < n && m_text[i + k] == m_text[j + k])
+		{
+			k++;
+		}
+
+		lcp[invSuff[i]] = k;
+
+		if (k > 0)
+		{
+			k--;
+		}
+	}
+
+	return lcp;
+}
+
+// template <typename T>
+// void printArr(const std::vector<T> &arr)
+// {
+// 	for (size_t i = 0; i < arr.size(); i++)
+// 	{
+// 		std::cout << arr[i] << " ";
+// 	}
+// 	std::cout << std::endl;
+// }
+
+// void SuffixArray::printArray() const
+// {
+// 	std::cout << "Suffix Array : \n";
+// 	printArr(m_suffixArray);
+// 	for (size_t i = 0; i < m_suffixArray.size(); i++)
+// 	{
+// 		std::string suffix = m_text.substr(m_suffixArray[i]);
+// 		std::cout << i << ": \"" << suffix << "\"" << std::endl;
+// 	}
+// }
+
+// void SuffixArray::printLCP() const
+// {
+// 	std::cout << "\nLCP Array : \n";
+// 	printArr(m_longestCommonPrefix);
+// 	for (size_t i = 0; i < m_suffixArray.size(); i++)
+// 	{
+// 		std::string prefix = m_text.substr(m_suffixArray[i], m_longestCommonPrefix[i]);
+// 		std::cout << i << ": \"" << prefix << "\"" << std::endl;
+// 	}
+// }
