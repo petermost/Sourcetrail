@@ -2,6 +2,9 @@
 
 #include "utilityString.h"
 
+using namespace std;
+using namespace utility;
+
 TEST_CASE("split with char delimiter")
 {
 	std::deque<std::string> result = utility::split("A,B,C", ',');
@@ -383,4 +386,17 @@ TEST_CASE(
 TEST_CASE("trim blank spaces of string")
 {
 	REQUIRE(utility::trim(" foo  ") == "foo");
+}
+
+TEST_CASE("split characters")
+{
+	string sentence("Die süße Hündin läuft in die Höhle des Bären");
+	vector<string> chars = splitToCharacters(sentence);
+
+	// for (auto singleChar : chars)
+	// 	cout << singleChar << ", ";
+
+	// cout << endl;
+
+	REQUIRE(chars.size() == 44);
 }

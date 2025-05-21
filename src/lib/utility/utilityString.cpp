@@ -1,11 +1,16 @@
 #include "utilityString.h"
 
+#include <boost/locale/boundary.hpp>
 #include <boost/locale/conversion.hpp>
+#include <boost/locale/encoding_utf.hpp>
 
 #include <algorithm>
 #include <cctype>
 #include <iterator>
 #include <string>
+
+using namespace std;
+using namespace boost::locale::boundary;
 
 namespace
 {
@@ -59,22 +64,12 @@ std::string doReplaceBetween(const std::string& str, typename std::string::value
 
 	return str;
 }
+
 }	 // namespace
 
 namespace utility
 {
 
-// #include <boost/locale/encoding_utf.hpp>
-//
-// std::string encodeToUtf8(const std::wstring &s)
-// {
-// 	return boost::locale::conv::utf_to_utf<char>(s.c_str(), s.c_str() + s.size());
-// }
-//
-// std::wstring decodeFromUtf8(const std::string& s)
-// {
-// 	return boost::locale::conv::utf_to_utf<wchar_t>(s.c_str(), s.c_str() + s.size());
-// }
 
 std::deque<std::string> split(const std::string& str, char delimiter)
 {
@@ -240,25 +235,7 @@ std::string substrBetween(const std::string &str, const std::string &delimiter1,
 	return std::string();
 }
 
-std::string toUpperCase(const std::string& in)
-{
-    return boost::locale::to_upper(in);
-}
 
-std::string toLowerCase(const std::string& in)
-{
-    return boost::locale::to_lower(in);
-}
-
-bool equalsCaseInsensitive(const std::string &a, const std::string &b)
-{
-	return toLowerCase(a) == toLowerCase(b);
-}
-
-bool caseInsensitiveLess(const std::string& s1, const std::string& s2)
-{
-	return toLowerCase(s1) < toLowerCase(s2);
-}
 
 bool isPrefix(const std::string &prefix, const std::string &text)
 {
@@ -572,6 +549,66 @@ std::string convertWhiteSpacesToSingleSpaces(const std::string& str)
 
 	return join<std::deque<std::string>>(parts, " ");
 }
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//
+// Locale specific functions:
+//
+///////////////////////////////////////////////////////////////////////////////
+
+std::string encodeToUtf8String(const std::wstring &s)
+{
+	return boost::locale::conv::utf_to_utf<char>(s);
+}
+
+std::wstring decodeFromUtf8String(const std::string &s)
+{
+	return boost::locale::conv::utf_to_utf<wchar_t>(s);
+}
+
+
+std::string toUpperCase(const std::string& in)
+{
+    return boost::locale::to_upper(in);
+}
+
+std::string toLowerCase(const std::string& in)
+{
+    return boost::locale::to_lower(in);
+}
+
+wstring toUpperCase(const wstring &s)
+{
+	return boost::locale::to_upper(s);
+}
+
+wstring toLowerCase(const wstring &s)
+{
+	return boost::locale::to_lower(s);
+}
+
+bool equalsCaseInsensitive(const std::string &a, const std::string &b)
+{
+	return toLowerCase(a) == toLowerCase(b);
+}
+
+bool caseInsensitiveLess(const std::string& s1, const std::string& s2)
+{
+	return toLowerCase(s1) < toLowerCase(s2);
+}
+
+vector<string> splitToCharacters(const string &s)
+{
+	vector<string> chars;
+
+	ssegment_index characterMap(character, s.begin(), s.end());
+	for (auto it = characterMap.begin(); it != characterMap.end(); ++it)
+		chars.push_back(*it);
+
+	return chars;
+}
+
 
 
 }	 // namespace utility

@@ -9,10 +9,6 @@
 namespace utility
 {
 
-// encodeToUtf8/decodeFromUtf8 are no longer needed, but we keep it for backward
-// compatibility and in case of bugs so we can check where these conversions were done:
-inline const std::string &encodeToUtf8(const std::string& s) { return s; }
-inline const std::string &decodeFromUtf8(const std::string& s) { return s; }
 
 std::deque<std::string> split(const std::string& str, char delimiter);
 std::deque<std::string> split(const std::string& str, const std::string& delimiter);
@@ -36,12 +32,6 @@ std::string substrAfterLast(const std::string& str, char delimiter);
 std::string substrAfter(const std::string& str, char delimiter);
 std::string substrAfter(const std::string& str, const std::string& delimiter);
 std::string substrBetween(const std::string& str, const std::string& delimiter1, const std::string& delimiter2);
-
-std::string toUpperCase(const std::string& in);
-std::string toLowerCase(const std::string& in);
-
-bool equalsCaseInsensitive(const std::string& a, const std::string& b);
-bool caseInsensitiveLess(const std::string& s1, const std::string& s2);
 
 bool isPrefix(const std::string& prefix, const std::string& text);
 bool isPostfix(const std::string& postfix, const std::string& text);
@@ -101,6 +91,29 @@ std::string join(const ContainerType& list, const std::string& delimiter)
 	}
 	return ss.str();
 }
+
+//
+// Locale specific functions:
+//
+
+// encodeToUtf8/decodeFromUtf8 are no longer needed, but we keep it for backward
+// compatibility and in case of bugs so we can check where these conversions were done:
+inline const std::string &encodeToUtf8(const std::string& s) { return s; }
+inline const std::string &decodeFromUtf8(const std::string& s) { return s; }
+
+std::wstring encodeToWString(const std::string &s);
+std::string decodeFromWString(const std::wstring &s);
+
+std::string toUpperCase(const std::string& in);
+std::string toLowerCase(const std::string& in);
+
+std::wstring toUpperCase(const std::wstring &s);
+std::wstring toLowerCase(const std::wstring &s);
+
+bool equalsCaseInsensitive(const std::string& a, const std::string& b);
+bool caseInsensitiveLess(const std::string& s1, const std::string& s2);
+
+std::vector<std::string> splitToCharacters(const std::string &s);
 
 }	 // namespace utility
 

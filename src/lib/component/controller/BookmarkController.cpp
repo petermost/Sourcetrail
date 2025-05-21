@@ -16,13 +16,15 @@
 #include "utility.h"
 #include "utilityString.h"
 
+using namespace utility;
+
 const std::string BookmarkController::s_edgeSeparatorToken = " => ";
 const std::string BookmarkController::s_defaultCategoryName = "default";
 
 BookmarkController::BookmarkController(StorageAccess* storageAccess)
 	: m_storageAccess(storageAccess)
 	, m_bookmarkCache(storageAccess)
-	 
+
 {
 }
 
@@ -529,7 +531,7 @@ std::string BookmarkController::getNodeDisplayName(const Id nodeId) const
 }
 
 std::vector<std::shared_ptr<Bookmark>> BookmarkController::getFilteredBookmarks(
-	const std::vector<std::shared_ptr<Bookmark>>& bookmarks, Bookmark::BookmarkFilter filter) 
+	const std::vector<std::shared_ptr<Bookmark>>& bookmarks, Bookmark::BookmarkFilter filter)
 {
 	std::vector<std::shared_ptr<Bookmark>> result;
 
@@ -562,7 +564,7 @@ std::vector<std::shared_ptr<Bookmark>> BookmarkController::getFilteredBookmarks(
 }
 
 std::vector<std::shared_ptr<Bookmark>> BookmarkController::getOrderedBookmarks(
-	const std::vector<std::shared_ptr<Bookmark>>& bookmarks, Bookmark::BookmarkOrder order) 
+	const std::vector<std::shared_ptr<Bookmark>>& bookmarks, Bookmark::BookmarkOrder order)
 {
 	std::vector<std::shared_ptr<Bookmark>> result = bookmarks;
 
@@ -587,7 +589,7 @@ std::vector<std::shared_ptr<Bookmark>> BookmarkController::getOrderedBookmarks(
 }
 
 std::vector<std::shared_ptr<Bookmark>> BookmarkController::getDateOrderedBookmarks(
-	const std::vector<std::shared_ptr<Bookmark>>& bookmarks, const bool ascending) 
+	const std::vector<std::shared_ptr<Bookmark>>& bookmarks, const bool ascending)
 {
 	std::vector<std::shared_ptr<Bookmark>> result = bookmarks;
 
@@ -602,7 +604,7 @@ std::vector<std::shared_ptr<Bookmark>> BookmarkController::getDateOrderedBookmar
 }
 
 std::vector<std::shared_ptr<Bookmark>> BookmarkController::getNameOrderedBookmarks(
-	const std::vector<std::shared_ptr<Bookmark>>& bookmarks, const bool ascending) 
+	const std::vector<std::shared_ptr<Bookmark>>& bookmarks, const bool ascending)
 {
 	std::vector<std::shared_ptr<Bookmark>> result = bookmarks;
 
@@ -642,37 +644,14 @@ void BookmarkController::cleanBookmarkCategories()
 	}
 }
 
-bool BookmarkController::bookmarkDateCompare(
-	const std::shared_ptr<Bookmark> a, const std::shared_ptr<Bookmark> b)
+bool BookmarkController::bookmarkDateCompare(const std::shared_ptr<Bookmark> a, const std::shared_ptr<Bookmark> b)
 {
 	return a->getTimeStamp() < b->getTimeStamp();
 }
 
-bool BookmarkController::bookmarkNameCompare(
-	const std::shared_ptr<Bookmark> a, const std::shared_ptr<Bookmark> b)
+bool BookmarkController::bookmarkNameCompare(const std::shared_ptr<Bookmark> a, const std::shared_ptr<Bookmark> b)
 {
-	std::string aName = a->getName();
-	std::string bName = b->getName();
-
-	aName = utility::toLowerCase(aName);
-	bName = utility::toLowerCase(bName);
-
-	unsigned int i = 0;
-	while (i < aName.length() && i < bName.length())
-	{
-		if (std::tolower(aName[i]) < std::tolower(bName[i]))
-		{
-			return true;
-		}
-		else if (std::tolower(aName[i]) > std::tolower(bName[i]))
-		{
-			return false;
-		}
-
-		++i;
-	}
-
-	return aName.length() < bName.length();
+	return toLowerCase(a->getName()) < toLowerCase(b->getName());
 }
 
 void BookmarkController::update()
