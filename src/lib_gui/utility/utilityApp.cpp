@@ -1,25 +1,36 @@
 #include "utilityApp.h"
 
-#include <algorithm>
-#include <mutex>
-#include <set>
+#include "ScopedFunctor.h"
+#include "logging.h"
+#include "utilityString.h"
+
+#include <QThread>
 
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/read.hpp>
 #include <boost/chrono.hpp>
-#if BOOST_VERSION >= 108600
-	#include <boost/process/v1.hpp>
-#else
-	#include <boost/process.hpp>
-#endif
 #include <boost/thread.hpp>
 
-#include <QThread>
+#if BOOST_VERSION >= 108600
+	#include <boost/process/v1/args.hpp>
+	#include <boost/process/v1/async_pipe.hpp>
+	#include <boost/process/v1/child.hpp>
+	#include <boost/process/v1/env.hpp>
+	#include <boost/process/v1/io.hpp>
+	#include <boost/process/v1/search_path.hpp>
+	#include <boost/process/v1/start_dir.hpp>
 
-#include "ScopedFunctor.h"
-#include "logging.h"
-#include "utilityString.h"
+	namespace process_v1 = boost::process::v1;
+#else
+	#include <boost/process.hpp>
+
+	namespace process_v1 = boost::process;
+#endif
+
+#include <algorithm>
+#include <mutex>
+#include <set>
 
 using namespace boost;
 using namespace boost::chrono;
@@ -27,7 +38,7 @@ using namespace boost::chrono;
 namespace utility
 {
 std::mutex s_runningProcessesMutex;
-std::set<std::shared_ptr<boost::process::child>> s_runningProcesses;
+std::set<std::shared_ptr<process_v1::child>> s_runningProcesses;
 
 std::string getDocumentationLink()
 {
@@ -37,7 +48,7 @@ std::string getDocumentationLink()
 std::string searchPath(const std::string& bin, bool& ok)
 {
 	ok = false;
-	std::string r = boost::process::search_path(bin).generic_string();
+	std::string r = process_v1::search_path(bin).generic_string();
 	if (!r.empty())
 	{
 		ok = true;
@@ -54,7 +65,7 @@ std::string searchPath(const std::string& bin)
 
 namespace
 {
-bool wait_for_process(boost::process::child *process, milliseconds timeout)
+bool wait_for_process(process_v1::child *process, milliseconds timeout)
 {
 	// This function used to call 'process::child::wait_for()' which issued the warning "wait_for is unreliable".
 	// See these tickets for further information:
@@ -80,11 +91,11 @@ ProcessOutput executeProcess(const std::string& command, const std::vector<std::
 	try
 	{
 		boost::asio::io_context ctx;
-		boost::process::async_pipe ap(ctx);
+		process_v1::async_pipe ap(ctx);
 
-		std::shared_ptr<boost::process::child> process;
+		std::shared_ptr<process_v1::child> process;
 
-		boost::process::environment env = boost::this_process::environment();
+		process_v1::environment env = boost::this_process::environment();
 		std::vector<std::string> previousPath = env["PATH"].to_vector();
 		env["PATH"] = {"/opt/local/bin", "/usr/local/bin", "$HOME/bin"};
 		for (const std::string& entry: previousPath)
@@ -94,22 +105,22 @@ ProcessOutput executeProcess(const std::string& command, const std::vector<std::
 
 		if (workingDirectory.empty())
 		{
-			process = std::make_shared<boost::process::child>(
+			process = std::make_shared<process_v1::child>(
 				searchPath(command),
-				boost::process::args(arguments),
+				process_v1::args(arguments),
 				env,
-				boost::process::std_in.close(),
-				(boost::process::std_out & boost::process::std_err) > ap);
+				process_v1::std_in.close(),
+				(process_v1::std_out & process_v1::std_err) > ap);
 		}
 		else
 		{
-			process = std::make_shared<boost::process::child>(
+			process = std::make_shared<process_v1::child>(
 				searchPath(command),
-				boost::process::args(arguments),
-				boost::process::start_dir(workingDirectory.str()),
+				process_v1::args(arguments),
+				process_v1::start_dir(workingDirectory.str()),
 				env,
-				boost::process::std_in.close(),
-				(boost::process::std_out & boost::process::std_err) > ap);
+				process_v1::std_in.close(),
+				(process_v1::std_out & process_v1::std_err) > ap);
 		}
 
 		{
@@ -211,7 +222,7 @@ ProcessOutput executeProcess(const std::string& command, const std::vector<std::
 
 		exitCode = process->exit_code();
 	}
-	catch (const boost::process::process_error& e)
+	catch (const process_v1::process_error& e)
 	{
 		ProcessOutput ret;
 		ret.error = decodeFromUtf8(e.code().message());
@@ -230,7 +241,7 @@ ProcessOutput executeProcess(const std::string& command, const std::vector<std::
 void killRunningProcesses()
 {
 	std::lock_guard<std::mutex> lock(s_runningProcessesMutex);
-	for (std::shared_ptr<boost::process::child> process: s_runningProcesses)
+	for (std::shared_ptr<process_v1::child> process: s_runningProcesses)
 	{
 		process->terminate();
 	}

@@ -9,15 +9,22 @@
 		"boost-program-options",
 
 		"boost-dll",
-		"boost-locale",
 		"boost-interprocess",
 		"boost-uuid",
 		"boost-asio",
 		"boost-process",
+		{
+			"name": "boost-locale",
+			"features": [
+				"icu"
+			]
+		},
 
 		"sqlite3",
 
 		"tinyxml",
+
+		"icu",
 
 		"qtsvg",
 		"qtimageformats",

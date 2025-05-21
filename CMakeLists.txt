@@ -128,6 +128,14 @@ else()
 	endif()
 endif()
 
+# ICU --------------------------------------------------------------------------
+
+find_package(ICU REQUIRED 
+	COMPONENTS 
+		i18n uc data
+)
+message(STATUS "Found ICU ${ICU_VERSION}: ${ICU_INCLUDE_DIRS}")
+
 # Boost ------------------------------------------------------------------------
 
 set(Boost_NO_WARN_NEW_VERSIONS ON)
@@ -138,7 +146,7 @@ if (isVcpkgBuild)
 endif()
 
 set(BOOST_MIN_VERSION 1.83)
-set(BOOST_MAX_VERSION 1.88)
+set(BOOST_MAX_VERSION 1.89)
 
 find_package(Boost CONFIG REQUIRED 
 	COMPONENTS
@@ -182,6 +190,12 @@ target_link_libraries(External_lib_boost
 		Boost::locale
 		Boost::program_options
 		Boost::system
+		
+		# Prevent linker error in vcpkg build:
+		
+		ICU::i18n
+		ICU::uc
+		ICU::data
 )
 
 # Qt ---------------------------------------------------------------------------
