@@ -23,7 +23,7 @@
 #include "utilityString.h"
 
 GraphController::GraphController(StorageAccess* storageAccess)
-	: m_storageAccess(storageAccess) 
+	: m_storageAccess(storageAccess)
 {
 }
 
@@ -1492,7 +1492,7 @@ void GraphController::addCharacterIndex()
 	m_dummyNodes.insert(m_dummyNodes.end(), newNodes.begin(), newNodes.end());
 
 	// Add index characters
-	wint_t character = 0;
+	char character = 0;
 	for (size_t i = 0; i < m_dummyNodes.size(); i++)
 	{
 		if (!m_dummyNodes[i]->visible || !m_dummyNodes[i]->name.size())
@@ -1500,9 +1500,9 @@ void GraphController::addCharacterIndex()
 			continue;
 		}
 
-		if (towupper(m_dummyNodes[i]->name[0]) != character)
+		if (toupper(m_dummyNodes[i]->name[0]) != character)
 		{
-			character = towupper(m_dummyNodes[i]->name[0]);
+			character = toupper(m_dummyNodes[i]->name[0]);
 
 			std::shared_ptr<DummyNode> textNode = std::make_shared<DummyNode>(DummyNode::DUMMY_TEXT);
 			textNode->name = character;
@@ -2102,7 +2102,7 @@ Vec4i GraphController::layoutNestingRecursive(DummyNode* node, int relayoutAcces
 	return ListLayouter::boundingRect(node->subNodes);
 }
 
-void GraphController::addExpandToggleNode(DummyNode* node) 
+void GraphController::addExpandToggleNode(DummyNode* node)
 {
 	std::shared_ptr<DummyNode> expandNode = std::make_shared<DummyNode>(
 		DummyNode::DUMMY_EXPAND_TOGGLE);
@@ -2144,7 +2144,7 @@ void GraphController::addExpandToggleNode(DummyNode* node)
 	}
 }
 
-void GraphController::layoutToGrid(DummyNode* node) 
+void GraphController::layoutToGrid(DummyNode* node)
 {
 	if (!node->visible || !node->isGraphNode() || !node->hasVisibleSubNode())
 	{
@@ -2389,7 +2389,7 @@ void GraphController::forEachDummyEdge(std::function<void(DummyEdge*)> func)
 void GraphController::createLegendGraph()
 {
 	Id id = Id(0) | Id::FirstBits::ONE;
-	
+
 	std::map<Id, Vec2i> nodePositions;
 	std::shared_ptr<Graph> graph = std::make_shared<Graph>();
 
