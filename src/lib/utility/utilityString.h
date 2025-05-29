@@ -69,7 +69,7 @@ ContainerType split(const std::string& str, const std::string& delimiter)
 		pos = str.find(delimiter, oldPos);
 		c.push_back(str.substr(oldPos, pos - oldPos));
 		oldPos = pos + delimiter.size();
-	} while (pos != std::string::npos);
+	} while (pos < str.length());
 
 	return c;
 }
@@ -101,19 +101,19 @@ std::string join(const ContainerType& list, const std::string& delimiter)
 inline const std::string &encodeToUtf8(const std::string& s) { return s; }
 inline const std::string &decodeFromUtf8(const std::string& s) { return s; }
 
+std::u32string convertToUtf32(const std::string &utf8chars);
+std::string convertToUtf8(const std::u32string &utf32chars);
+
 std::wstring encodeToWString(const std::string &s);
 std::string decodeFromWString(const std::wstring &s);
 
-std::string toUpperCase(const std::string& in);
 std::string toLowerCase(const std::string& in);
 
-std::wstring toUpperCase(const std::wstring &s);
-std::wstring toLowerCase(const std::wstring &s);
+std::u32string toLowerCase(const std::u32string &in);
 
 bool equalsCaseInsensitive(const std::string& a, const std::string& b);
-bool caseInsensitiveLess(const std::string& s1, const std::string& s2);
 
-std::vector<std::string> splitToCharacters(const std::string &s);
+bool caseInsensitiveLess(const std::string& s1, const std::string& s2);
 
 }	 // namespace utility
 

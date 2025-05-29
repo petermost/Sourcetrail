@@ -72,7 +72,13 @@ public:
 	void setIsActiveFile(bool isActiveFile);
 
 	size_t getLineNumberForLocationId(Id locationId) const;
-	std::pair<size_t, size_t> getLineNumbersForLocationId(Id locationId) const;
+	struct LineNumbers
+	{
+		size_t startLine = 0;
+		size_t endLine = 0;
+	};
+	
+	LineNumbers getLineNumbersForLocationId(Id locationId) const;
 	size_t getColumnNumberForLocationId(Id locationId) const;
 
 	Id getLocationIdOfFirstActiveLocation(Id tokenId) const;

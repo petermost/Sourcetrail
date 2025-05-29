@@ -67,9 +67,9 @@ QtCodeField::QtCodeField(
 		}
 	}
 
-	TextCodec codec(ApplicationSettings::getInstance()->getTextEncoding());
 	if (convertLocationsOnDemand)
 	{
+		TextCodec codec(ApplicationSettings::getInstance()->getTextEncoding());
 		QString convertedDisplayCode = QString::fromStdString(codec.decode(displayCode));
 		setPlainText(convertedDisplayCode);
 		if (displayCode.size() != size_t(convertedDisplayCode.length()))
@@ -77,12 +77,12 @@ QtCodeField::QtCodeField(
 			LOG_INFO(
 				"Converting displayed code to " + codec.getName() +
 				" resulted in offset of source locations. Correcting this now.");
-			createMultibyteCharacterLocationCache(convertedDisplayCode);
+			createSurrogateCharacterLocationCache(convertedDisplayCode);
 		}
 	}
 	else
 	{
-		setPlainText(displayCode.c_str());
+		setPlainText(QString::fromStdString(displayCode));
 	}
 
 	createLineLengthCache();
@@ -445,7 +445,7 @@ void QtCodeField::createAnnotations(std::shared_ptr<SourceLocationFile> location
 		else if (startLocation->getLineNumber() <= endLineNumber)
 		{
 			const int startLine = static_cast<int>(startLocation->getLineNumber());
-			const int startCol = getColumnCorrectedForMultibyteCharacters(
+			const int startCol = getColumnCorrectedForSurrogateCharacters(
 				startLine, static_cast<int>(startLocation->getColumnNumber() - 1));
 
 			annotation.start = toTextEditPosition(startLine, startCol);
@@ -467,7 +467,7 @@ void QtCodeField::createAnnotations(std::shared_ptr<SourceLocationFile> location
 		else if (endLocation->getLineNumber() >= m_startLineNumber)
 		{
 			const int endLine = static_cast<int>(endLocation->getLineNumber());
-			const int endCol = getColumnCorrectedForMultibyteCharacters(
+			const int endCol = getColumnCorrectedForSurrogateCharacters(
 				endLine, static_cast<int>(endLocation->getColumnNumber()));
 
 			annotation.end = toTextEditPosition(endLine, endCol);
@@ -581,7 +581,7 @@ int QtCodeField::toTextEditPosition(int lineNumber, int columnNumber) const
 	return position;
 }
 
-std::pair<int, int> QtCodeField::toLineColumn(int textEditPosition) const
+QtCodeField::LineColumn QtCodeField::toLineColumn(int textEditPosition) const
 {
 	int lineNumber = static_cast<int>(m_startLineNumber);
 	for (int i = 0; i < document()->lineCount(); i++)
@@ -597,7 +597,7 @@ std::pair<int, int> QtCodeField::toLineColumn(int textEditPosition) const
 			break;
 		}
 	}
-	return std::make_pair(lineNumber, textEditPosition);
+	return {lineNumber, getColumnCorrectedForSurrogateCharacters(lineNumber, textEditPosition)};
 }
 
 int QtCodeField::startTextEditPosition()
@@ -643,7 +643,7 @@ std::vector<QRect> QtCodeField::getCursorRectsForAnnotation(const Annotation& an
 {
 	std::vector<QRect> rects;
 
-	QTextCursor cursor = QTextCursor(document());
+	QTextCursor cursor(document());
 	cursor.setPosition(annotation.start);
 	QRect rectStart = cursorRect(cursor);
 	QRect rectEnd;
@@ -860,41 +860,39 @@ void QtCodeField::createLineLengthCache()
 	}
 }
 
-void QtCodeField::createMultibyteCharacterLocationCache(const QString& code)
+void QtCodeField::createSurrogateCharacterLocationCache(const QString& code)
 {
-	TextCodec codec(ApplicationSettings::getInstance()->getTextEncoding());
+	m_surrogateCharacterLocations.clear();
 
-	m_multibyteCharacterLocations.clear();
 	for (const QString& line: code.split(QStringLiteral("\n")))
 	{
-		std::vector<std::pair<int, int>> columnsToOffsets;
-		for (int i = 0; i < line.size(); i++)
+		std::vector<ColumnOffset> columnsToOffsets;
+		for (int column = 0; column < line.size(); ++column)
 		{
-			if (line[i].unicode() > 127)
+			if (line[column].isHighSurrogate()) // Surrogate pair?
 			{
-				int ss = static_cast<int>(codec.encodedSize(line[i]));
-				columnsToOffsets.push_back(std::make_pair(i, ss));
+				columnsToOffsets.push_back(ColumnOffset(column, 1));
 			}
 		}
-		m_multibyteCharacterLocations.push_back(columnsToOffsets);
+		m_surrogateCharacterLocations.push_back(columnsToOffsets);
 	}
 }
 
-int QtCodeField::getColumnCorrectedForMultibyteCharacters(int line, int column) const
+int QtCodeField::getColumnCorrectedForSurrogateCharacters(int line, int column) const
 {
 	if (line < int(m_startLineNumber))
 	{
 		return column;
 	}
 
-	const size_t relativeLineNumber = line - m_startLineNumber;
-	if (relativeLineNumber < m_multibyteCharacterLocations.size())
+	const size_t lineIndex = line - m_startLineNumber;
+	if (lineIndex < m_surrogateCharacterLocations.size())
 	{
-		for (const auto &multibyteCharacterLocation: m_multibyteCharacterLocations[relativeLineNumber])
+		for (const ColumnOffset &surrogateCharacterLocation : m_surrogateCharacterLocations[lineIndex])
 		{
-			if (column > multibyteCharacterLocation.first)
+			if (column > surrogateCharacterLocation.column)
 			{
-				column -= multibyteCharacterLocation.second - 1;
+				column += surrogateCharacterLocation.offset;
 			}
 		}
 	}

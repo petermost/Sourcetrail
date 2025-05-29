@@ -256,14 +256,13 @@ void QtCodeFileList::scrollTo(
 	{
 		if (targetLocationId)
 		{
-			std::pair<size_t, size_t> lineNumbers = snippet->getLineNumbersForLocationId(
-				targetLocationId);
+			QtCodeArea::LineNumbers lineNumbers = snippet->getLineNumbersForLocationId(targetLocationId);
 
-			lineNumber = lineNumbers.first;
+			lineNumber = lineNumbers.startLine;
 
-			if (lineNumbers.first != lineNumbers.second)
+			if (lineNumbers.startLine != lineNumbers.endLine)
 			{
-				endLineNumber = lineNumbers.second;
+				endLineNumber = lineNumbers.endLine;
 			}
 		}
 		else

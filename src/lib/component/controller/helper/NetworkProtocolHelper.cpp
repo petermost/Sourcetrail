@@ -266,7 +266,7 @@ std::vector<std::string> NetworkProtocolHelper::divideMessage(const std::string&
 	std::string msg = message;
 	size_t pos = msg.find(s_divider);
 
-	while (pos != std::string::npos)
+	while (pos < msg.length())
 	{
 		std::string subMessage = msg.substr(0, pos);
 		result.push_back(subMessage);

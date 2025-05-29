@@ -48,6 +48,7 @@ add_executable(Sourcetrail_test
 	UtilityStringTestSuite.cpp
 	UtilityEnumTestSuite.cpp
 	Vector2TestSuite.cpp
+	Snippet.cpp
 )
 setDefaultTargetOptions(Sourcetrail_test)
 

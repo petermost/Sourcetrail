@@ -1,6 +1,23 @@
 #include "QtCodeArea.h"
 
-#include <algorithm>
+#include "ApplicationSettings.h"
+#include "ColorScheme.h"
+#include "MessageActivateLocalSymbols.h"
+#include "MessageActivateTokenIds.h"
+#include "MessageFocusIn.h"
+#include "MessageFocusOut.h"
+#include "MessageMoveIDECursor.h"
+#include "MessageShowError.h"
+#include "Platform.h"
+#include "QtActions.h"
+#include "QtCodeNavigator.h"
+#include "QtContextMenu.h"
+#include "SourceLocationFile.h"
+#include "TextCodec.h"
+#include "compatibilityQt.h"
+#include "utility.h"
+#include "utilityQt.h"
+#include "utilityString.h"
 
 #include <QApplication>
 #include <QDrag>
@@ -16,25 +33,7 @@
 #include <QTextDocumentFragment>
 #include <QToolTip>
 
-#include "ApplicationSettings.h"
-#include "ColorScheme.h"
-#include "MessageActivateLocalSymbols.h"
-#include "MessageActivateTokenIds.h"
-#include "MessageFocusIn.h"
-#include "MessageFocusOut.h"
-#include "MessageMoveIDECursor.h"
-#include "MessageShowError.h"
-#include "Platform.h"
-#include "QtCodeNavigator.h"
-#include "QtContextMenu.h"
-#include "QtActions.h"
-#include "SourceLocationFile.h"
-#include "TextCodec.h"
-#include "compatibilityQt.h"
-#include "utility.h"
-#include "utilityQt.h"
-#include "utilityString.h"
-
+#include <algorithm>
 using namespace utility::compatibility;
 
 MouseWheelOverScrollbarFilter::MouseWheelOverScrollbarFilter() = default;
@@ -84,7 +83,7 @@ QtCodeArea::QtCodeArea(
 	QtCodeNavigator* navigator,
 	bool showLineNumbers,
 	QWidget* parent)
-	: QtCodeField(startLineNumber, code, locationFile, parent)
+	: QtCodeField(startLineNumber, code, locationFile, true, parent)
 	, m_navigator(navigator)
 	, m_eventPosition(0, 0)
 	, m_showLineNumbers(showLineNumbers)
@@ -351,17 +350,17 @@ size_t QtCodeArea::getLineNumberForLocationId(Id locationId) const
 	return 0;
 }
 
-std::pair<size_t, size_t> QtCodeArea::getLineNumbersForLocationId(Id locationId) const
+QtCodeArea::LineNumbers QtCodeArea::getLineNumbersForLocationId(Id locationId) const
 {
 	for (const Annotation& annotation: m_annotations)
 	{
 		if (annotation.locationId == locationId)
 		{
-			return std::pair<size_t, size_t>(annotation.startLine, annotation.endLine);
+			return LineNumbers(annotation.startLine, annotation.endLine);
 		}
 	}
 
-	return std::pair<size_t, size_t>(0, 0);
+	return LineNumbers(0, 0);
 }
 
 size_t QtCodeArea::getColumnNumberForLocationId(Id locationId) const
@@ -465,17 +464,18 @@ QRectF QtCodeArea::getLineRectForLineNumber(size_t lineNumber) const
 }
 
 void QtCodeArea::findScreenMatches(
-	const std::string& query, std::vector<std::pair<QtCodeArea*, Id>>* screenMatches)
+	const std::string& queryText, std::vector<std::pair<QtCodeArea*, Id>>* screenMatches)
 {
 	TextCodec codec(ApplicationSettings::getInstance()->getTextEncoding());
+
+	const QString query = QString::fromStdString(queryText);
 	// remove carriage return
-	const std::string& code = utility::toLowerCase(
-		codec.decode(utility::replace(getCode(), "\r", "")));
-	size_t pos = 0;
-	while (pos != std::string::npos)
+	const QString code = QString::fromStdString(codec.decode(utility::replace(getCode(), "\r", "")));
+	qsizetype pos = 0;
+	while (pos < code.length())
 	{
-		pos = code.find(query, pos);
-		if (pos == std::string::npos)
+		pos = code.indexOf(query, pos, Qt::CaseInsensitive);
+		if (pos == -1)
 		{
 			break;
 		}
@@ -484,13 +484,13 @@ void QtCodeArea::findScreenMatches(
 		matchAnnotation.start = static_cast<int>(pos);
 		matchAnnotation.end = static_cast<int>(pos + query.size());
 
-		std::pair<int, int> start = toLineColumn(matchAnnotation.start);
-		matchAnnotation.startLine = start.first;
-		matchAnnotation.startCol = start.second;
+		LineColumn start = toLineColumn(matchAnnotation.start);
+		matchAnnotation.startLine = start.line;
+		matchAnnotation.startCol = start.column;
 
-		std::pair<int, int> end = toLineColumn(matchAnnotation.end);
-		matchAnnotation.endLine = end.first;
-		matchAnnotation.endCol = end.second;
+		LineColumn end = toLineColumn(matchAnnotation.end);
+		matchAnnotation.endLine = end.line;
+		matchAnnotation.endCol = end.column;
 
 		// Set first 2 bits to 1 to avoid collisions
 		matchAnnotation.locationId = Id(screenMatches->size() + 1) | Id::FirstBits::TWO;
@@ -996,9 +996,9 @@ void QtCodeArea::updateLineNumberArea(QRect rect, int dy)
 
 void QtCodeArea::setIDECursorPosition()
 {
-	std::pair<int, int> lineColumn = toLineColumn(this->cursorForPosition(m_eventPosition).position());
+	LineColumn lineColumn = toLineColumn(this->cursorForPosition(m_eventPosition).position());
 
-	MessageMoveIDECursor(getSourceLocationFile()->getFilePath(), lineColumn.first, lineColumn.second)
+	MessageMoveIDECursor(getSourceLocationFile()->getFilePath(), lineColumn.line, lineColumn.column)
 		.dispatch();
 }
 

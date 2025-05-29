@@ -15,7 +15,7 @@ private:
 	std::vector<int> buildSuffixes() const;
 	std::vector<int> buildLongestCommonPrefixes() const;
 
-	const std::string m_text;
+	const std::u32string m_text32;
 	const std::vector<int> m_suffixes;
 	const std::vector<int> m_longestCommonPrefixes;
 };

@@ -43,12 +43,10 @@ public:
 	void setIsActiveFile(bool isActiveFile);
 
 	size_t getLineNumberForLocationId(Id locationId) const;
-	std::pair<size_t, size_t> getLineNumbersForLocationId(Id locationId) const;
+	QtCodeArea::LineNumbers getLineNumbersForLocationId(Id locationId) const;
 
 	Id getFirstActiveLocationId(Id tokenId) const;
 	QRectF getLineRectForLineNumber(size_t lineNumber) const;
-
-	std::string getCode() const;
 
 	void findScreenMatches(
 		const std::string& query, std::vector<std::pair<QtCodeArea*, Id>>* screenMatches);

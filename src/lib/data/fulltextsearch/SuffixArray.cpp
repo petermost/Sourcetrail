@@ -25,7 +25,7 @@ struct Suffix
 }
 
 SuffixArray::SuffixArray(const std::string& text)
-	: m_text(toLowerCase(text))
+	: m_text32(convertToUtf32(toLowerCase(text)))
 	, m_suffixes(buildSuffixes())
 	, m_longestCommonPrefixes(buildLongestCommonPrefixes())
 {
@@ -33,10 +33,10 @@ SuffixArray::SuffixArray(const std::string& text)
 
 std::vector<int> SuffixArray::searchForTerm(const std::string& searchTerm) const
 {
-	std::string term = toLowerCase(searchTerm);
+	const std::u32string searchTerm32 = convertToUtf32(toLowerCase(searchTerm));
 
-	const int termLength = static_cast<int>(term.length());
-	const int textLength = static_cast<int>(m_text.length());
+	const int termLength = static_cast<int>(searchTerm32.length());
+	const int textLength = static_cast<int>(m_text32.length());
 	int l = -1;
 	int r = textLength;
 	int m;
@@ -46,7 +46,7 @@ std::vector<int> SuffixArray::searchForTerm(const std::string& searchTerm) const
 	while (l + 1 < r)
 	{
 		m = (l + r + 1) / 2;
-		compareResult = term.compare(m_text.substr(m_suffixes[m], termLength));
+		compareResult = searchTerm32.compare(m_text32.substr(m_suffixes[m], termLength));
 		if (compareResult < 0)
 		{
 			r = m;
@@ -79,7 +79,7 @@ std::vector<int> SuffixArray::searchForTerm(const std::string& searchTerm) const
 
 std::vector<int> SuffixArray::buildSuffixes() const
 {
-	const int n = static_cast<int>(m_text.length());
+	const int n = static_cast<int>(m_text32.length());
 	std::vector<Suffix> suffixes;
 	suffixes.reserve(n);
 
@@ -87,8 +87,8 @@ std::vector<int> SuffixArray::buildSuffixes() const
 	for (int i = 0; i < n; i++)
 	{
 		s.index = i;
-		s.rank[0] = m_text[i];
-		s.rank[1] = ((i + 1) < n) ? (m_text[i + 1]) : -1;
+		s.rank[0] = m_text32[i];
+		s.rank[1] = ((i + 1) < n) ? (m_text32[i + 1]) : -1;
 		suffixes.push_back(s);
 	}
 
@@ -159,7 +159,7 @@ std::vector<int> SuffixArray::buildLongestCommonPrefixes() const
 
 		int j = m_suffixes[invSuff[i] + 1];
 
-		while (i + k < n && j + k < n && m_text[i + k] == m_text[j + k])
+		while (i + k < n && j + k < n && m_text32[i + k] == m_text32[j + k])
 		{
 			k++;
 		}

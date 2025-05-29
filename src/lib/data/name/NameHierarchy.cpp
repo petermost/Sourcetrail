@@ -51,7 +51,7 @@ NameHierarchy NameHierarchy::deserialize(const std::string& serializedName)
 	NameHierarchy nameHierarchy(serializedName.substr(0, mpos));
 
 	size_t npos = mpos + META_DELIMITER.size();
-	while (npos != std::string::npos && npos < serializedName.size())
+	while (npos < serializedName.size())
 	{
 		// name
 		size_t spos = serializedName.find(PART_DELIMITER, npos);

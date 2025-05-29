@@ -193,14 +193,13 @@ void QtCodeFileSingle::scrollTo(
 	{
 		if (targetLocationId)
 		{
-			std::pair<size_t, size_t> lineNumbers = m_area->getLineNumbersForLocationId(
-				targetLocationId);
+			QtCodeArea::LineNumbers lineNumbers = m_area->getLineNumbersForLocationId(targetLocationId);
 
-			lineNumber = lineNumbers.first;
+			lineNumber = lineNumbers.startLine;
 
-			if (lineNumbers.first != lineNumbers.second)
+			if (lineNumbers.startLine != lineNumbers.endLine)
 			{
-				endLineNumber = lineNumbers.second;
+				endLineNumber = lineNumbers.endLine;
 			}
 		}
 		else

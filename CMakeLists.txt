@@ -55,7 +55,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Project ----------------------------------------------------------------------
 
-project(Sourcetrail VERSION 2025.5.19)
+project(Sourcetrail VERSION 2025.5.29)
 configure_file(cmake/productVersion.h.in src/lib_gui/productVersion.h)
 
 include(cmake/Sourcetrail.cmake)
@@ -136,6 +136,30 @@ find_package(ICU REQUIRED
 )
 message(STATUS "Found ICU ${ICU_VERSION}: ${ICU_INCLUDE_DIRS}")
 
+add_library(External_lib_icu INTERFACE)
+
+target_compile_definitions(External_lib_icu
+	INTERFACE
+		U_CHARSET_IS_UTF8=1
+)
+
+# The documented imported targets:
+# ICU::i18n
+# ICU::uc
+# ICU::data
+# lead to a linker error: "undefined reference to `icudt74_dat'",
+# so use the provided variables:
+
+target_include_directories(External_lib_icu
+	INTERFACE
+		${ICU_INCLUDE_DIRS}
+)
+
+target_link_libraries(External_lib_icu
+	INTERFACE
+		${ICU_LIBRARIES}
+)
+		
 # Boost ------------------------------------------------------------------------
 
 set(Boost_NO_WARN_NEW_VERSIONS ON)
@@ -192,10 +216,8 @@ target_link_libraries(External_lib_boost
 		Boost::system
 		
 		# Prevent linker error in vcpkg build:
-		
-		ICU::i18n
-		ICU::uc
-		ICU::data
+		External_lib_icu
+
 )
 
 # Qt ---------------------------------------------------------------------------

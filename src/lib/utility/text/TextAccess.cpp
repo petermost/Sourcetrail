@@ -188,7 +188,7 @@ std::vector<std::string> TextAccess::splitStringByLines(const std::string& text)
 	size_t prevIndex = 0;
 	size_t index = text.find('\n');
 
-	while (index != std::string::npos)
+	while (index < text.length())
 	{
 		result.push_back(text.substr(prevIndex, index - prevIndex) + '\n');
 

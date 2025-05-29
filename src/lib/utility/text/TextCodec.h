@@ -21,8 +21,6 @@ public:
 	QString decodeBytes(const QByteArray &encodedBytes);
 	QByteArray encodeBytes(const QString &decodedString);
 
-	size_t encodedSize(const QString &decodedString);
-
 	std::string getName() const;
 
 private:

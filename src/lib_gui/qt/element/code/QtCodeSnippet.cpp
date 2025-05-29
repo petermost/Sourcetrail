@@ -123,7 +123,7 @@ size_t QtCodeSnippet::getLineNumberForLocationId(Id locationId) const
 	return m_codeArea->getLineNumberForLocationId(locationId);
 }
 
-std::pair<size_t, size_t> QtCodeSnippet::getLineNumbersForLocationId(Id locationId) const
+QtCodeArea::LineNumbers QtCodeSnippet::getLineNumbersForLocationId(Id locationId) const
 {
 	return m_codeArea->getLineNumbersForLocationId(locationId);
 }
@@ -142,11 +142,6 @@ Id QtCodeSnippet::getFirstActiveLocationId(Id tokenId) const
 QRectF QtCodeSnippet::getLineRectForLineNumber(size_t lineNumber) const
 {
 	return m_codeArea->getLineRectForLineNumber(lineNumber);
-}
-
-std::string QtCodeSnippet::getCode() const
-{
-	return m_codeArea->getCode();
 }
 
 void QtCodeSnippet::findScreenMatches(

@@ -28,6 +28,9 @@
 #include "utility.h"
 #include "utilityApp.h"
 
+using namespace std;
+using namespace utility;
+
 PersistentStorage::PersistentStorage(const FilePath& dbPath, const FilePath& bookmarkPath)
 	: m_sqliteIndexStorage(dbPath), m_sqliteBookmarkStorage(bookmarkPath)
 {
@@ -618,18 +621,19 @@ std::shared_ptr<SourceLocationCollection> PersistentStorage::getFullTextSearchLo
 	{
 		std::vector<std::shared_ptr<std::thread>> threads;
 		std::mutex collectionMutex;
+		const u32string searchTerm32 = convertToUtf32(searchTerm);
 		for (const std::vector<FullTextSearchResult> &fileResults: utility::splitToEquallySizedParts(
 				 m_fullTextSearchIndex.searchForTerm(searchTerm), utility::getIdealThreadCount()))
 		{
 			std::shared_ptr<std::thread> thread = std::make_shared<std::thread>(
 				[this,
-				 &searchTerm,
+				 &searchTerm32,
 				 &caseSensitive,
 				 &codec,
 				 /*no ref here!*/ fileResults,
 				 &collection,
 				 &collectionMutex]() {
-					const int termLength = static_cast<int>(searchTerm.length());
+					const int termLength = static_cast<int>(searchTerm32.length());
 					for (const FullTextSearchResult& fileResult: fileResults)
 					{
 						const FilePath filePath = getFileNodePath(fileResult.fileId);
@@ -637,7 +641,7 @@ std::shared_ptr<SourceLocationCollection> PersistentStorage::getFullTextSearchLo
 
 						int charsTotal = 0;
 						int lineNumber = 1;
-						std::string line = codec.decode(fileContent->getLine(lineNumber));
+						std::u32string line = convertToUtf32(codec.decode(fileContent->getLine(lineNumber)));
 
 						for (int pos: fileResult.positions)
 						{
@@ -645,7 +649,7 @@ std::shared_ptr<SourceLocationCollection> PersistentStorage::getFullTextSearchLo
 							{
 								charsTotal += static_cast<int>(line.length());
 								lineNumber++;
-								line = codec.decode(fileContent->getLine(lineNumber));
+								line = convertToUtf32(codec.decode(fileContent->getLine(lineNumber)));
 							}
 
 							ParseLocation location;
@@ -653,7 +657,7 @@ std::shared_ptr<SourceLocationCollection> PersistentStorage::getFullTextSearchLo
 							location.startColumnNumber = pos - charsTotal + 1;
 
 							if (caseSensitive &&
-								line.substr(location.startColumnNumber - 1, termLength) != searchTerm)
+								line.substr(location.startColumnNumber - 1, termLength) != searchTerm32)
 							{
 								continue;
 							}
@@ -661,7 +665,7 @@ std::shared_ptr<SourceLocationCollection> PersistentStorage::getFullTextSearchLo
 							{
 								charsTotal += static_cast<int>(line.length());
 								lineNumber++;
-								line = codec.decode(fileContent->getLine(lineNumber));
+								line = convertToUtf32(codec.decode(fileContent->getLine(lineNumber)));
 							}
 							location.endLineNumber = lineNumber;
 							location.endColumnNumber = pos + termLength - charsTotal;
@@ -2432,7 +2436,7 @@ TooltipSnippet PersistentStorage::getTooltipSnippetForNode(const StorageNode& no
 		for (const auto& p: typeNames)
 		{
 			size_t pos = 0;
-			while (pos != std::string::npos)
+			while (pos < snippet.code.length())
 			{
 				pos = snippet.code.find(p.first, pos);
 				if (pos == std::string::npos)

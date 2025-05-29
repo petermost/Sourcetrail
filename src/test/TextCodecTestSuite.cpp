@@ -66,10 +66,6 @@ using Encoding = QStringConverter::Encoding;
 
 const string EMPTY_STRING;
 
-void testFunctionForTooltipWithUmlauteInSignature(/* äöüÄÖÜß€ */ )
-{
-}
-
 static TextCodec makeCodec(Encoding encoding)
 {
 	return TextCodec(QStringConverter::nameForEncoding(encoding));

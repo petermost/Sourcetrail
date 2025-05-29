@@ -3,6 +3,7 @@
 #include <boost/locale/boundary.hpp>
 #include <boost/locale/conversion.hpp>
 #include <boost/locale/encoding_utf.hpp>
+#include <boost/locale/util.hpp>
 
 #include <algorithm>
 #include <cctype>
@@ -10,6 +11,8 @@
 #include <string>
 
 using namespace std;
+using namespace boost::locale;
+using namespace boost::locale::util;
 using namespace boost::locale::boundary;
 
 namespace
@@ -24,7 +27,7 @@ std::string doReplace(std::string str, const std::string& from, const std::strin
 		return str;
 	}
 
-	while ((pos = str.find(from, pos)) != std::string::npos)
+	while ((pos = str.find(from, pos)) < str.length())
 	{
 		str.replace(pos, from.length(), to);
 		pos += to.length();
@@ -137,7 +140,7 @@ std::deque<std::string> tokenize(const std::string& str, const std::string& deli
 		}
 
 		oldPos = pos + delimiter.size();
-	} while (pos != std::string::npos && oldPos < str.size());
+	} while (pos < str.length() && oldPos < str.size());
 
 	return c;
 }
@@ -552,40 +555,13 @@ std::string convertWhiteSpacesToSingleSpaces(const std::string& str)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//
 // Locale specific functions:
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-std::string encodeToUtf8String(const std::wstring &s)
-{
-	return boost::locale::conv::utf_to_utf<char>(s);
-}
-
-std::wstring decodeFromUtf8String(const std::string &s)
-{
-	return boost::locale::conv::utf_to_utf<wchar_t>(s);
-}
-
-
-std::string toUpperCase(const std::string& in)
-{
-    return boost::locale::to_upper(in);
-}
-
 std::string toLowerCase(const std::string& in)
 {
     return boost::locale::to_lower(in);
-}
-
-wstring toUpperCase(const wstring &s)
-{
-	return boost::locale::to_upper(s);
-}
-
-wstring toLowerCase(const wstring &s)
-{
-	return boost::locale::to_lower(s);
 }
 
 bool equalsCaseInsensitive(const std::string &a, const std::string &b)
@@ -598,17 +574,53 @@ bool caseInsensitiveLess(const std::string& s1, const std::string& s2)
 	return toLowerCase(s1) < toLowerCase(s2);
 }
 
-vector<string> splitToCharacters(const string &s)
+// Boost.Locale supports UTF-32 only if the library was build with the 'BOOST_LOCALE_ENABLE_CHAR32_T' 
+// switch! So UTF-32 functions convert to UTF-8, do the operation, convert back to UTF-32:
+
+std::u32string toLowerCase(const std::u32string &in)
 {
-	vector<string> chars;
-
-	ssegment_index characterMap(character, s.begin(), s.end());
-	for (auto it = characterMap.begin(); it != characterMap.end(); ++it)
-		chars.push_back(*it);
-
-	return chars;
+	return convertToUtf32(toLowerCase(convertToUtf8(in)));
 }
 
+static std::string doConvertToUtf8(base_converter *converter, char32_t utf32char)
+{
+	std::string utf8chars(converter->max_len(), '\0');
+	utf::len_or_error length = converter->from_unicode(utf32char, utf8chars.data(), utf8chars.data() + utf8chars.size());
+	utf8chars.resize((length != base_converter::illegal) ? length : 0);
 
+	return utf8chars;
+}
 
-}	 // namespace utility
+static utf::code_point doConvertToUtf32(base_converter *converter, const std::string &utf8chars)
+{
+	const char *utf8CharsBegin = utf8chars.data();
+	const char *utf8CharsEnd = utf8chars.data() + utf8chars.size();
+	utf::code_point utf32char = converter->to_unicode(utf8CharsBegin, utf8CharsEnd);
+
+	return (utf32char != base_converter::incomplete && utf32char != base_converter::illegal) ? utf32char : 0;
+}
+
+std::u32string convertToUtf32(const std::string &utf8chars)
+{
+	std::u32string utf32chars;
+	auto converter = create_utf8_converter();
+
+	ssegment_index characters(boundary_type::character, utf8chars.begin(), utf8chars.end());
+	for (const auto &c : characters)
+		utf32chars.push_back(doConvertToUtf32(converter.get(), c));
+
+	return utf32chars;
+}
+
+std::string convertToUtf8(const std::u32string &utf32chars)
+{
+	std::string utf8chars;
+	auto converter = create_utf8_converter();
+	
+	for (char32_t c : utf32chars)
+		utf8chars.append(doConvertToUtf8(converter.get(), c));
+
+	return utf8chars;
+}
+
+} // namespace utility

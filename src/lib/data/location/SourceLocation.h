@@ -52,7 +52,6 @@ public:
 	bool isEndLocation() const;
 
 	bool isScopeLocation() const;
-	bool isFullTextSearchMatch() const;
 
 private:
 	SourceLocationFile* m_file;

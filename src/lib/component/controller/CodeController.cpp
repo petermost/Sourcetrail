@@ -931,7 +931,7 @@ std::vector<std::string> CodeController::getProjectDescription(SourceLocationFil
 		line = utility::replace(line, "\\r", "\r");
 
 		size_t pos = 0;
-		while (pos != std::string::npos)
+		while (pos < line.length())
 		{
 			size_t posA = line.find('[', pos);
 			size_t posB = line.find(']', posA);

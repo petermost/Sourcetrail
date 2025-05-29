@@ -69,11 +69,6 @@ QByteArray TextCodec::encodeBytes(const QString &decodedString)
 	return static_cast<QByteArray>(m_encoder.encode(decodedString));
 }
 
-size_t TextCodec::encodedSize(const QString &decodedString)
-{
-	return encode(decodedString.toStdString()).size();
-}
-
 string TextCodec::getName() const
 {
 	return m_name;

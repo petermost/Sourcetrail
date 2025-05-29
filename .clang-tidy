@@ -19,7 +19,7 @@ Checks: >
     # modernize-use-default-member-init,
     modernize-use-nullptr,
     readability-convert-member-functions-to-static,
-    # readability-implicit-bool-conversion,
+    readability-implicit-bool-conversion,
     # readability-make-member-function-const,
     readability-qualified-auto,
     # readability-redundant-member-init,
