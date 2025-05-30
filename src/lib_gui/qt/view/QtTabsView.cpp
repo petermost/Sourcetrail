@@ -238,15 +238,12 @@ void QtTabsView::setTabState(int idx, const std::vector<SearchMatch>& matches)
 		if (match.searchType == SearchMatch::SEARCH_TOKEN)
 		{
 			color = GraphViewStyle::getNodeColor(match.nodeType.getUnderscoredTypeString(), false).fill;
-			activeColor =
-				GraphViewStyle::getNodeColor(match.nodeType.getUnderscoredTypeString(), true).fill;
+			activeColor = GraphViewStyle::getNodeColor(match.nodeType.getUnderscoredTypeString(), true).fill;
 		}
 		else
 		{
-			color = scheme->getSearchTypeColor(
-				utility::encodeToUtf8(match.getSearchTypeName()), "fill");
-			activeColor = scheme->getSearchTypeColor(
-				utility::encodeToUtf8(match.getSearchTypeName()), "fill", "hover");
+			color = scheme->getSearchTypeColor(match.getSearchTypeName(), "fill");
+			activeColor = scheme->getSearchTypeColor(match.getSearchTypeName(), "fill", "hover");
 		}
 	}
 	else

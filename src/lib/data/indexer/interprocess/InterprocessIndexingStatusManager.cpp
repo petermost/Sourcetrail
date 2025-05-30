@@ -2,7 +2,6 @@
 
 #include "Id.h"
 #include "logging.h"
-#include "utilityString.h"
 
 const char* InterprocessIndexingStatusManager::s_sharedMemoryNamePrefix = "ists_";
 
@@ -32,7 +31,7 @@ void InterprocessIndexingStatusManager::startIndexingSourceFile(const FilePath& 
 	if (indexingFilesPtr)
 	{
 		SharedMemory::String fileStr(access.getAllocator());
-		fileStr = utility::encodeToUtf8(filePath.str()).c_str();
+		fileStr = filePath.str().c_str();
 		indexingFilesPtr->push_back(fileStr);
 	}
 
@@ -76,7 +75,7 @@ void InterprocessIndexingStatusManager::startIndexingSourceFile(const FilePath& 
 		}
 
 		SharedMemory::String str(access.getAllocator());
-		str = utility::encodeToUtf8(filePath.str()).c_str();
+		str = filePath.str().c_str();
 
 		it = currentFilesPtr->insert(std::pair(getProcessId(), str)).first;
 		it->second = str;
@@ -152,8 +151,7 @@ std::vector<FilePath> InterprocessIndexingStatusManager::getCurrentlyIndexedSour
 	{
 		while (indexingFilesPtr->size())
 		{
-			indexingFiles.push_back(
-				FilePath(utility::decodeFromUtf8(indexingFilesPtr->front().c_str())));
+			indexingFiles.push_back(FilePath(indexingFilesPtr->front().c_str()));
 			indexingFilesPtr->pop_front();
 		}
 	}
@@ -175,7 +173,7 @@ std::vector<FilePath> InterprocessIndexingStatusManager::getCrashedSourceFilePat
 	{
 		for (size_t i = 0; i < crashedFilesPtr->size(); i++)
 		{
-			crashedFiles.push_back(FilePath(utility::decodeFromUtf8(crashedFilesPtr->at(i).c_str())));
+			crashedFiles.push_back(FilePath(crashedFilesPtr->at(i).c_str()));
 		}
 	}
 
@@ -188,7 +186,7 @@ std::vector<FilePath> InterprocessIndexingStatusManager::getCrashedSourceFilePat
 			 it != currentFilesPtr->end();
 			 it++)
 		{
-			crashedFiles.push_back(FilePath(utility::decodeFromUtf8(it->second.c_str())));
+			crashedFiles.push_back(FilePath(it->second.c_str()));
 		}
 	}
 

@@ -3,7 +3,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "utilityString.h"
 
 std::string IndexerCommand::serialize(std::shared_ptr<const IndexerCommand> indexerCommand, bool compact)
 {
@@ -17,7 +16,7 @@ IndexerCommand::IndexerCommand(const FilePath& sourceFilePath): m_sourceFilePath
 
 size_t IndexerCommand::getByteSize(size_t  /*stringSize*/) const
 {
-	return utility::encodeToUtf8(m_sourceFilePath.str()).size();
+	return m_sourceFilePath.str().size();
 }
 
 const FilePath& IndexerCommand::getSourceFilePath() const

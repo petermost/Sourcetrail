@@ -2,6 +2,7 @@
 
 #include "utilityClang.h"
 #include "utilityString.h"
+
 #include <clang/AST/ASTContext.h>
 #include <clang/Basic/FileManager.h>
 
@@ -132,8 +133,7 @@ FilePath CanonicalFilePathCache::getDeclarationFilePath(const clang::Decl* decla
 	{
 		return getCanonicalFilePath(fileId, sourceManager);
 	}
-	return getCanonicalFilePath(utility::decodeFromUtf8(
-		sourceManager.getPresumedLoc(declaration->getBeginLoc()).getFilename()));
+	return getCanonicalFilePath(sourceManager.getPresumedLoc(declaration->getBeginLoc()).getFilename());
 }
 
 std::string CanonicalFilePathCache::getDeclarationFileName(const clang::Decl* declaration)

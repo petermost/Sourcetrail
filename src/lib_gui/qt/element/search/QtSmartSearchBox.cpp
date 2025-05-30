@@ -860,10 +860,10 @@ void QtSmartSearchBox::updateElements()
 		{
 			const std::string typeName = match.getSearchTypeName();
 			
-			backgroundColor = scheme->getSearchTypeColor(utility::encodeToUtf8(typeName), "fill");
-			backgroundHoverColor = scheme->getSearchTypeColor(utility::encodeToUtf8(typeName), "fill", "hover");
-			textColor = scheme->getSearchTypeColor(utility::encodeToUtf8(typeName), "text");
-			textHoverColor = scheme->getSearchTypeColor(utility::encodeToUtf8(typeName), "text", "hover");
+			backgroundColor = scheme->getSearchTypeColor(typeName, "fill");
+			backgroundHoverColor = scheme->getSearchTypeColor(typeName, "fill", "hover");
+			textColor = scheme->getSearchTypeColor(typeName, "text");
+			textHoverColor = scheme->getSearchTypeColor(typeName, "text", "hover");
 		}
 		// Properties are also set in 'search_view.css'
 		std::stringstream css;

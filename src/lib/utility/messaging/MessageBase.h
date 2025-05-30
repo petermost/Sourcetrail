@@ -6,7 +6,6 @@
 
 #include "Id.h"
 #include "TabIds.h"
-#include "utilityString.h"
 
 class MessageBase
 {
@@ -102,7 +101,7 @@ public:
 	std::string str() const
 	{
 		std::stringstream ss;
-		ss << utility::decodeFromUtf8(getType()) << " ";
+		ss << getType() << " ";
 		print(ss);
 		return ss.str();
 	}

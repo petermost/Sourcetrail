@@ -3,7 +3,6 @@
 #include "FileSystem.h"
 #include "TimeStamp.h"
 #include "logging.h"
-#include "utilityString.h"
 
 SqliteStorage::SqliteStorage(const FilePath& dbFilePath): m_dbFilePath(dbFilePath.getCanonical())
 {
@@ -14,13 +13,13 @@ SqliteStorage::SqliteStorage(const FilePath& dbFilePath): m_dbFilePath(dbFilePat
 
 	try
 	{
-		m_database.open(utility::encodeToUtf8(m_dbFilePath.str()));
+		m_database.open(m_dbFilePath.str());
 	}
 	catch (CppSQLite3Exception& e)
 	{
 		LOG_ERROR(
 			"Failed to load database file \"" + m_dbFilePath.str() + "\" with message: " +
-			utility::decodeFromUtf8(e.errorMessage()));
+			e.errorMessage());
 		throw;
 	}
 

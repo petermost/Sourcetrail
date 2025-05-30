@@ -1,12 +1,10 @@
 #ifndef COMMANDLINE_HELPER_H
 #define COMMANDLINE_HELPER_H
 
+#include "FilePath.h"
+
 #include <string>
 #include <vector>
-
-#include "utility.h"
-#include "utilityString.h"
-
 
 namespace boost::program_options
 {

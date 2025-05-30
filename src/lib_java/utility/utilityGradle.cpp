@@ -27,18 +27,18 @@ bool gradleCopyDependencies(
 	bool success = javaEnvironment->callStaticVoidMethod(
 		"com/sourcetrail/gradle/InfoRetriever",
 		"copyCompileLibs",
-		utility::encodeToUtf8(projectDirectoryPath.str()),
-		utility::encodeToUtf8(gradleInitScriptPath.str()),
-		utility::encodeToUtf8(outputDirectoryPath.str()));
+		projectDirectoryPath.str(),
+		gradleInitScriptPath.str(),
+		outputDirectoryPath.str());
 
 	if (success && addTestDependencies)
 	{
 		success = javaEnvironment->callStaticVoidMethod(
 			"com/sourcetrail/gradle/InfoRetriever",
 			"copyTestCompileLibs",
-			utility::encodeToUtf8(projectDirectoryPath.str()),
-			utility::encodeToUtf8(gradleInitScriptPath.str()),
-			utility::encodeToUtf8(outputDirectoryPath.str()));
+			projectDirectoryPath.str(),
+			gradleInitScriptPath.str(),
+			outputDirectoryPath.str());
 	}
 
 	return success;
@@ -63,15 +63,15 @@ std::vector<FilePath> gradleGetAllSourceDirectories(
 				"com/sourcetrail/gradle/InfoRetriever",
 				"getMainSrcDirs",
 				output,
-				utility::encodeToUtf8(projectDirectoryPath.str()),
-				utility::encodeToUtf8(gradleInitScriptPath.str()));
+				projectDirectoryPath.str(),
+				gradleInitScriptPath.str());
 
 			if (utility::isPrefix("[ERROR]", utility::trim(output)))
 			{
 				// TODO: move error handling to caller of this function
 				const std::string dialogMessage =
 					"The following error occurred while executing a Gradle command:\n\n" +
-					utility::decodeFromUtf8(utility::replace(output, "\r\n", "\n"));
+					utility::replace(output, "\r\n", "\n");
 				MessageStatus(dialogMessage, true, false).dispatch();
 				if (Application::getInstance())
 				{
@@ -82,7 +82,7 @@ std::vector<FilePath> gradleGetAllSourceDirectories(
 
 			for (const std::string &mainSrcDir: utility::splitToVector(output, ";"))
 			{
-				uncheckedDirectories.insert(utility::decodeFromUtf8(mainSrcDir));
+				uncheckedDirectories.insert(mainSrcDir);
 			}
 		}
 
@@ -93,15 +93,15 @@ std::vector<FilePath> gradleGetAllSourceDirectories(
 				"com/sourcetrail/gradle/InfoRetriever",
 				"getTestSrcDirs",
 				output,
-				utility::encodeToUtf8(projectDirectoryPath.str()),
-				utility::encodeToUtf8(gradleInitScriptPath.str()));
+				projectDirectoryPath.str(),
+				gradleInitScriptPath.str());
 
 			if (utility::isPrefix("[ERROR]", utility::trim(output)))
 			{
 				// TODO: move error handling to caller of this function
 				const std::string dialogMessage =
 					"The following error occurred while executing a Gradle command:\n\n" +
-					utility::decodeFromUtf8(utility::replace(output, "\r\n", "\n"));
+					utility::replace(output, "\r\n", "\n");
 				MessageStatus(dialogMessage, true, false).dispatch();
 				Application::getInstance()->handleDialog(dialogMessage);
 
@@ -110,7 +110,7 @@ std::vector<FilePath> gradleGetAllSourceDirectories(
 
 			for (const std::string &testSrcDir: utility::splitToVector(output, ";"))
 			{
-				uncheckedDirectories.insert(utility::decodeFromUtf8(testSrcDir));
+				uncheckedDirectories.insert(testSrcDir);
 			}
 		}
 	}

@@ -1,12 +1,11 @@
 #include "CxxSpecifierNameResolver.h"
 
+#include "CxxDeclNameResolver.h"
+#include "CxxTypeNameResolver.h"
+
 #include <clang/AST/ASTContext.h>
 #include <clang/AST/DeclTemplate.h>
 #include <clang/AST/PrettyPrinter.h>
-
-#include "CxxDeclNameResolver.h"
-#include "CxxTypeNameResolver.h"
-#include "utilityString.h"
 
 CxxSpecifierNameResolver::CxxSpecifierNameResolver(CanonicalFilePathCache* canonicalFilePathCache)
 	: CxxNameResolver(canonicalFilePathCache)
@@ -29,7 +28,7 @@ std::unique_ptr<CxxName> CxxSpecifierNameResolver::getName(
 		case clang::NestedNameSpecifier::Identifier:
 		{
 			std::unique_ptr<CxxName> name = std::make_unique<CxxDeclName>(
-				utility::decodeFromUtf8(nestedNameSpecifier->getAsIdentifier()->getName().str()));
+				nestedNameSpecifier->getAsIdentifier()->getName().str());
 
 			if (const clang::NestedNameSpecifier* prefix = nestedNameSpecifier->getPrefix())
 			{

@@ -19,6 +19,7 @@
 #include "SourceGroupSettingsWithSourcePaths.h"
 #include "utility.h"
 #include "utilityFile.h"
+#include "utilityString.h"
 
 QtProjectWizardContentPathsHeaderSearch::QtProjectWizardContentPathsHeaderSearch(
 	std::shared_ptr<SourceGroupSettings> settings,

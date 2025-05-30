@@ -5,7 +5,6 @@
 #include "LocationType.h"
 #include "NameHierarchy.h"
 #include "NodeKind.h"
-#include "utilityString.h"
 
 #include <map>
 
@@ -499,5 +498,5 @@ bool TestStorage::containsLocation(const StorageSourceLocation &out, const Stora
 
 void TestStorage::addLine(const std::string &message)
 {
-	m_lines.emplace_back(utility::encodeToUtf8(message) + '\n');
+	m_lines.emplace_back(message + '\n');
 }

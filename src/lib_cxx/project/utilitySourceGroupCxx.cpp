@@ -18,6 +18,7 @@
 #include "TaskLambda.h"
 #include "logging.h"
 #include "utility.h"
+#include "utilityString.h"
 
 namespace utility
 {
@@ -77,15 +78,14 @@ std::shared_ptr<Task> createBuildPchTask(
 				std::make_shared<CanonicalFilePathCache>(fileRegister);
 
 			clang::tooling::CompileCommand pchCommand;
-			pchCommand.Filename = utility::encodeToUtf8(pchInputFilePath.fileName());
+			pchCommand.Filename = pchInputFilePath.fileName();
 			pchCommand.Directory = pchOutputFilePath.getParentDirectory().str();
 			// DON'T use "-fsyntax-only" here because it will cause the output file to be erased
 			pchCommand.CommandLine = utility::concat(
 				{"clang-tool"}, CxxParser::getCommandlineArgumentsEssential(compilerFlags));
 
 			CxxCompilationDatabaseSingle compilationDatabase(pchCommand);
-			clang::tooling::ClangTool tool(
-				compilationDatabase, {utility::encodeToUtf8(pchInputFilePath.str())});
+			clang::tooling::ClangTool tool(compilationDatabase, {pchInputFilePath.str()});
 			GeneratePCHAction* action = new GeneratePCHAction(client, canonicalFilePathCache);
 
 			llvm::IntrusiveRefCntPtr<clang::DiagnosticOptions> options =
@@ -113,7 +113,7 @@ std::shared_ptr<clang::tooling::JSONCompilationDatabase> loadCDB(
 	std::shared_ptr<clang::tooling::JSONCompilationDatabase> cdb =
 		std::shared_ptr<clang::tooling::JSONCompilationDatabase>(
 			clang::tooling::JSONCompilationDatabase::loadFromFile(
-				utility::encodeToUtf8(cdbPath.str()),
+				cdbPath.str(),
 				errorString,
 				clang::tooling::JSONCommandLineSyntax::AutoDetect));
 

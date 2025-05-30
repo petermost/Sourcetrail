@@ -12,7 +12,6 @@
 #include "CxxVariableDeclName.h"
 #include "ScopedSwitcher.h"
 #include "utilityClang.h"
-#include "utilityString.h"
 
 CxxDeclNameResolver::CxxDeclNameResolver(CanonicalFilePathCache* canonicalFilePathCache)
 	: CxxNameResolver(canonicalFilePathCache), m_currentDecl(nullptr)
@@ -101,13 +100,13 @@ std::unique_ptr<CxxDeclName> CxxDeclNameResolver::getDeclName(const clang::Named
 	{
 		ScopedSwitcher<const clang::NamedDecl*> switcher(m_currentDecl, declaration);
 
-		std::string declNameString = utility::decodeFromUtf8(declaration->getNameAsString());
+		std::string declNameString = declaration->getNameAsString();
 
 		if (const clang::TagDecl* tagDecl = clang::dyn_cast_or_null<clang::TagDecl>(declaration))
 		{
 			if (const clang::TypedefNameDecl* typedefNameDecl = tagDecl->getTypedefNameForAnonDecl())
 			{
-				declNameString = utility::decodeFromUtf8(typedefNameDecl->getNameAsString());
+				declNameString = typedefNameDecl->getNameAsString();
 			}
 		}
 

@@ -66,7 +66,7 @@ std::string prepareJavaEnvironment(const FilePath &javaDirectoryPath)
 
 bool prepareJavaEnvironmentAndDisplayOccurringErrors()
 {
-	const std::string errorString = utility::decodeFromUtf8(utility::prepareJavaEnvironment());
+	const std::string errorString = utility::prepareJavaEnvironment();
 
 	if (!errorString.empty())
 	{
@@ -126,7 +126,7 @@ std::set<FilePath> fetchRootDirectories(const std::set<FilePath>& sourceFilePath
 			 it != packageNameParts.rend();
 			 it++)
 		{
-			if (rootPath.fileName() != utility::decodeFromUtf8(*it))
+			if (rootPath.fileName() != *it)
 			{
 				success = false;
 				break;

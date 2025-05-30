@@ -46,17 +46,13 @@ QtHistoryItem::QtHistoryItem(const SearchMatch& match, size_t index, bool isCurr
 	ColorScheme* scheme = ColorScheme::getInstance().get();
 	if (match.searchType == SearchMatch::SEARCH_TOKEN)
 	{
-		m_indicatorColor =
-			GraphViewStyle::getNodeColor(match.nodeType.getUnderscoredTypeString(), false).fill;
-		m_indicatorHoverColor =
-			GraphViewStyle::getNodeColor(match.nodeType.getUnderscoredTypeString(), true).fill;
+		m_indicatorColor = GraphViewStyle::getNodeColor(match.nodeType.getUnderscoredTypeString(), false).fill;
+		m_indicatorHoverColor = GraphViewStyle::getNodeColor(match.nodeType.getUnderscoredTypeString(), true).fill;
 	}
 	else
 	{
-		m_indicatorColor = scheme->getSearchTypeColor(
-			utility::encodeToUtf8(match.getSearchTypeName()), "fill");
-		m_indicatorHoverColor = scheme->getSearchTypeColor(
-			utility::encodeToUtf8(match.getSearchTypeName()), "fill", "hover");
+		m_indicatorColor = scheme->getSearchTypeColor(match.getSearchTypeName(), "fill");
+		m_indicatorHoverColor = scheme->getSearchTypeColor(match.getSearchTypeName(), "fill", "hover");
 	}
 
 	std::stringstream css;

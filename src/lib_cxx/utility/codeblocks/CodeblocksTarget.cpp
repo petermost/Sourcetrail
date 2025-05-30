@@ -3,7 +3,6 @@
 #include "tinyxml.h"
 
 #include "CodeblocksCompiler.h"
-#include "utilityString.h"
 
 namespace Codeblocks
 {
@@ -27,7 +26,7 @@ std::shared_ptr<Target> Target::create(const TiXmlElement* element)
 		{
 			return std::shared_ptr<Target>();
 		}
-		target->m_title = utility::decodeFromUtf8(value);
+		target->m_title = value;
 	}
 
 	{

@@ -3,8 +3,6 @@
 #include <QJsonArray>
 #include <QJsonObject>
 
-#include "utilityString.h"
-
 IndexerCommandType IndexerCommandJava::getStaticIndexerCommandType()
 {
 	return INDEXER_COMMAND_JAVA;
@@ -29,7 +27,7 @@ size_t IndexerCommandJava::getByteSize(size_t stringSize) const
 
 	for (const FilePath& i: m_classPath)
 	{
-		size += stringSize + utility::encodeToUtf8(i.str()).size();
+		size += stringSize + i.str().size();
 	}
 
 	return size;

@@ -9,7 +9,6 @@
 #include "ParserClient.h"
 #include "utilityClang.h"
 
-#include "utilityString.h"
 
 PreprocessorCallbacks::PreprocessorCallbacks(
 	clang::SourceManager& sourceManager,
@@ -93,17 +92,13 @@ void PreprocessorCallbacks::MacroDefined(
 			return;
 		}
 
-		const NameHierarchy nameHierarchy(
-			utility::decodeFromUtf8(macroNameToken.getIdentifierInfo()->getName().str()),
-			NAME_DELIMITER_CXX);
+		const NameHierarchy nameHierarchy(macroNameToken.getIdentifierInfo()->getName().str(), NAME_DELIMITER_CXX);
 
 		Id symbolId = m_client->recordSymbol(nameHierarchy);
 		m_client->recordSymbolKind(symbolId, SymbolKind::MACRO);
 		m_client->recordDefinitionKind(symbolId, DefinitionKind::EXPLICIT);
-		m_client->recordLocation(
-			symbolId, getParseLocation(macroNameToken), ParseLocationType::TOKEN);
-		m_client->recordLocation(
-			symbolId, getParseLocation(macroDirective->getMacroInfo()), ParseLocationType::SCOPE);
+		m_client->recordLocation(symbolId, getParseLocation(macroNameToken), ParseLocationType::TOKEN);
+		m_client->recordLocation(symbolId, getParseLocation(macroDirective->getMacroInfo()), ParseLocationType::SCOPE);
 	}
 }
 
@@ -153,12 +148,9 @@ void PreprocessorCallbacks::onMacroUsage(const clang::Token& macroNameToken)
 	{
 		const ParseLocation loc = getParseLocation(macroNameToken);
 
-		const NameHierarchy referencedNameHierarchy(
-			utility::decodeFromUtf8(macroNameToken.getIdentifierInfo()->getName().str()),
-			NAME_DELIMITER_CXX);
+		const NameHierarchy referencedNameHierarchy(macroNameToken.getIdentifierInfo()->getName().str(), NAME_DELIMITER_CXX);
 
-		m_client->recordReference(
-			REFERENCE_MACRO_USAGE, m_client->recordSymbol(referencedNameHierarchy), loc.fileId, loc);
+		m_client->recordReference(REFERENCE_MACRO_USAGE, m_client->recordSymbol(referencedNameHierarchy), loc.fileId, loc);
 	}
 }
 

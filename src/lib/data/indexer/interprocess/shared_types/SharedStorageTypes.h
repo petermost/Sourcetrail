@@ -11,7 +11,6 @@
 #include "StorageOccurrence.h"
 #include "StorageSourceLocation.h"
 #include "StorageSymbol.h"
-#include "utilityString.h"
 
 // macro creating SharedStorageType from StorageType
 // - arguments: StorageType & SharedStorageType
@@ -53,13 +52,12 @@ struct SharedStorageNode
 
 inline SharedStorageNode toShared(const StorageNode& node, SharedMemory::Allocator* allocator)
 {
-	return SharedStorageNode(
-		node.id, node.type, utility::encodeToUtf8(node.serializedName), allocator);
+	return SharedStorageNode(node.id, node.type, node.serializedName, allocator);
 }
 
 inline StorageNode fromShared(const SharedStorageNode& node)
 {
-	return StorageNode(node.id, node.type, utility::decodeFromUtf8(node.serializedName.c_str()));
+	return StorageNode(node.id, node.type, node.serializedName.c_str());
 }
 
 
@@ -91,8 +89,8 @@ inline SharedStorageFile toShared(const StorageFile& file, SharedMemory::Allocat
 {
 	return SharedStorageFile(
 		file.id,
-		utility::encodeToUtf8(file.filePath),
-		utility::encodeToUtf8(file.languageIdentifier),
+		file.filePath,
+		file.languageIdentifier,
 		file.indexed,
 		file.complete,
 		allocator);
@@ -102,8 +100,8 @@ inline StorageFile fromShared(const SharedStorageFile& file)
 {
 	return StorageFile(
 		file.id,
-		utility::decodeFromUtf8(file.filePath.c_str()),
-		utility::decodeFromUtf8(file.languageIdentifier.c_str()),
+		file.filePath.c_str(),
+		file.languageIdentifier.c_str(),
 		"",
 		file.indexed,
 		file.complete);
@@ -124,12 +122,12 @@ struct SharedStorageLocalSymbol
 inline SharedStorageLocalSymbol toShared(
 	const StorageLocalSymbol& symbol, SharedMemory::Allocator* allocator)
 {
-	return SharedStorageLocalSymbol(symbol.id, utility::encodeToUtf8(symbol.name), allocator);
+	return SharedStorageLocalSymbol(symbol.id, symbol.name, allocator);
 }
 
 inline StorageLocalSymbol fromShared(const SharedStorageLocalSymbol& symbol)
 {
-	return StorageLocalSymbol(symbol.id, utility::decodeFromUtf8(symbol.name.c_str()));
+	return StorageLocalSymbol(symbol.id, symbol.name.c_str());
 }
 
 
@@ -161,8 +159,8 @@ inline SharedStorageError toShared(const StorageError& error, SharedMemory::Allo
 {
 	return SharedStorageError(
 		error.id,
-		utility::encodeToUtf8(error.message),
-		utility::encodeToUtf8(error.translationUnit),
+		error.message,
+		error.translationUnit,
 		error.fatal,
 		error.indexed,
 		allocator);
@@ -172,8 +170,8 @@ inline StorageError fromShared(const SharedStorageError& error)
 {
 	return StorageError(
 		error.id,
-		utility::decodeFromUtf8(error.message.c_str()),
-		utility::decodeFromUtf8(error.translationUnit.c_str()),
+		error.message.c_str(),
+		error.translationUnit.c_str(),
 		error.fatal,
 		error.indexed);
 }

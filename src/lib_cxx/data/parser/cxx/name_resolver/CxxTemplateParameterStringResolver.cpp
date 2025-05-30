@@ -6,7 +6,6 @@
 #include <clang/AST/PrettyPrinter.h>
 
 #include "CxxTypeNameResolver.h"
-#include "utilityString.h"
 
 CxxTemplateParameterStringResolver::CxxTemplateParameterStringResolver(
 	CanonicalFilePathCache* canonicalFilePathCache)
@@ -46,7 +45,7 @@ std::string CxxTemplateParameterStringResolver::getTemplateParameterString(
 			break;
 		}
 
-		const std::string parameterName = utility::decodeFromUtf8(parameter->getName().str());
+		const std::string parameterName = parameter->getName().str();
 		if (!parameterName.empty())
 		{
 			templateParameterTypeString += ' ' + parameterName;

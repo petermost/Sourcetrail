@@ -6,7 +6,6 @@
 #include <sstream>
 
 #include "FileSystem.h"
-#include "utilityString.h"
 
 std::string FileLogger::generateDatedFileName(
 	const std::string& prefix, const std::string& suffix, int offsetDays)
@@ -164,7 +163,7 @@ void FileLogger::logMessage(const std::string& type, const LogMessage& message)
 				   << "() | ";
 	}
 
-	fileStream << type << ": " << utility::encodeToUtf8(message.message) << std::endl;
+	fileStream << type << ": " << message.message << std::endl;
 	fileStream.close();
 
 	m_currentLogLineCount++;

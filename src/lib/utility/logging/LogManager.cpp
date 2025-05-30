@@ -1,14 +1,8 @@
 #include "LogManager.h"
 
-#include <algorithm>
-
 #include "MessageStatus.h"
 #include "Version.h"
 #include "logging.h"
-#include "utilityApp.h"
-#include "utilityString.h"
-
-using namespace utility;
 
 std::shared_ptr<LogManager> LogManager::getInstance()
 {
@@ -93,7 +87,7 @@ void LogManager::logInfo(
 {
 	if (m_loggingEnabled)
 	{
-		m_logManagerImplementation.logInfo(utility::decodeFromUtf8(message), file, function, line);
+		m_logManagerImplementation.logInfo(message, file, function, line);
 	}
 }
 
@@ -105,7 +99,7 @@ void LogManager::logWarning(
 {
 	if (m_loggingEnabled)
 	{
-		m_logManagerImplementation.logWarning(utility::decodeFromUtf8(message), file, function, line);
+		m_logManagerImplementation.logWarning(message, file, function, line);
 	}
 }
 
@@ -117,7 +111,7 @@ void LogManager::logError(
 {
 	if (m_loggingEnabled)
 	{
-		m_logManagerImplementation.logError(utility::decodeFromUtf8(message), file, function, line);
+		m_logManagerImplementation.logError(message, file, function, line);
 	}
 }
 

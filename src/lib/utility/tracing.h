@@ -1,19 +1,16 @@
 #ifndef TRACING_H
 #define TRACING_H
 
-
-// #define TRACING_ENABLED
-// #define USE_ACCUMULATED_TRACING
-
+#include "FilePath.h"
+#include "Id.h"
+#include "TimeStamp.h"
 
 #include <mutex>
 #include <stack>
 #include <thread>
 
-#include "FilePath.h"
-#include "TimeStamp.h"
-#include "types.h"
-#include "utilityString.h"
+// #define TRACING_ENABLED
+// #define USE_ACCUMULATED_TRACING
 
 struct TraceEvent
 {
@@ -118,7 +115,7 @@ ScopedTrace<TracerType>::ScopedTrace(
 {
 	m_event = TracerType::getInstance()->startEvent(eventName);
 	m_event->functionName = functionName;
-	m_event->locationName = utility::encodeToUtf8(FilePath(fileName).fileName()) + ":" +
+	m_event->locationName = FilePath(fileName).fileName() + ":" +
 		std::to_string(lineNumber);
 
 	m_timeStamp = TimeStamp::now();

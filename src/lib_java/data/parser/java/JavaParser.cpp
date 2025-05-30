@@ -115,7 +115,7 @@ void JavaParser::buildIndex(
 			m_id,
 			m_currentFilePath.str(),
 			fileContent,
-			utility::encodeToUtf8(languageStandard),
+			languageStandard,
 			classPath,
 			verbose);
 	}
@@ -274,7 +274,7 @@ void JavaParser::doRecordLocalSymbol(
 {
 	m_client->recordLocalSymbol(
 		NameHierarchy::deserialize(
-			utility::decodeFromUtf8(m_javaEnvironment->toStdString(jSymbolName)))
+			m_javaEnvironment->toStdString(jSymbolName))
 			.getQualifiedName(),
 		ParseLocation(m_currentFileId, beginLine, beginColumn, endLine, endColumn));
 }
@@ -298,7 +298,7 @@ void JavaParser::doRecordError(
 	bool indexed = jIndexed != 0;
 
 	m_client->recordError(
-		utility::decodeFromUtf8(m_javaEnvironment->toStdString(jMessage)),
+		m_javaEnvironment->toStdString(jMessage),
 		fatal,
 		indexed,
 		FilePath(),
@@ -315,7 +315,7 @@ Id JavaParser::getOrCreateSymbolId(jstring jSymbolName)
 		return it->second;
 	}
 
-	Id symbolId = m_client->recordSymbol(NameHierarchy::deserialize(utility::decodeFromUtf8(name)));
+	Id symbolId = m_client->recordSymbol(NameHierarchy::deserialize(name));
 
 	m_symbolNameToIdMap.emplace(name, symbolId);
 	return symbolId;

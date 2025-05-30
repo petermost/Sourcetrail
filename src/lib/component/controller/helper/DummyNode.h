@@ -3,7 +3,6 @@
 
 #include "Vector2.h"
 #include "Vector4.h"
-#include "types.h"
 #include "utility.h"
 #include "utilityString.h"
 

@@ -1,13 +1,13 @@
 #include "FilePath.h"
 
-#include <regex>
+#include "Platform.h"
+#include "logging.h"
+#include "utilityString.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/path.hpp>
 
-#include "logging.h"
-#include "utilityApp.h"
-#include "utilityString.h"
+#include <regex>
 
 using namespace utility;
 using namespace std;

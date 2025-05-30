@@ -1,7 +1,7 @@
 #include "NodeType.h"
 
-#include "utilityString.h"
 #include "QtResources.h"
+#include "utilityString.h"
 
 std::vector<NodeType> NodeType::getOverviewBundleNodes()
 {

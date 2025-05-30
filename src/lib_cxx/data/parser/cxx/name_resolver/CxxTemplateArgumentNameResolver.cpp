@@ -1,13 +1,10 @@
 #include "CxxTemplateArgumentNameResolver.h"
 
-#include <sstream>
+#include "CxxTypeNameResolver.h"
+#include "utilityClang.h"
 
 #include <clang/AST/DeclTemplate.h>
 #include <clang/AST/PrettyPrinter.h>
-
-#include "CxxTypeNameResolver.h"
-#include "utilityClang.h"
-#include "utilityString.h"
 
 using namespace utility;
 
@@ -52,7 +49,7 @@ std::string CxxTemplateArgumentNameResolver::getTemplateArgumentName(
 		std::string buf;
 		llvm::raw_string_ostream os(buf);
 		argument.print(pp, os, includeType);
-		return utility::decodeFromUtf8(os.str());
+		return os.str();
 	}
 	case clang::TemplateArgument::Pack:
 	{

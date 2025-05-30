@@ -2,7 +2,6 @@
 
 #include "ConfigManager.h"
 #include "ProjectSettings.h"
-#include "utilityString.h"
 
 const size_t SourceGroupSettings::s_version = 1;
 const std::string SourceGroupSettings::s_keyPrefix = "source_groups/source_group_";
@@ -92,8 +91,7 @@ const ProjectSettings* SourceGroupSettings::getProjectSettings() const
 
 FilePath SourceGroupSettings::getSourceGroupDependenciesDirectoryPath() const
 {
-	return getProjectSettings()->getDependenciesDirectoryPath().concatenate(
-		utility::decodeFromUtf8(getId()));
+	return getProjectSettings()->getDependenciesDirectoryPath().concatenate(getId());
 }
 
 FilePath SourceGroupSettings::getProjectDirectoryPath() const

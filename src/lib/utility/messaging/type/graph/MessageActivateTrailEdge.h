@@ -6,8 +6,6 @@
 
 #include "Message.h"
 #include "TabIds.h"
-#include "types.h"
-#include "utilityString.h"
 
 class MessageActivateTrailEdge: public Message<MessageActivateTrailEdge>
 {

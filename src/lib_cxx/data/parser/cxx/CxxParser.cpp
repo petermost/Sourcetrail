@@ -98,7 +98,7 @@ std::vector<std::string> CxxParser::getCommandlineArgumentsEssential(
 
 	for (const std::string& compilerFlag: compilerFlags)
 	{
-		args.push_back(utility::encodeToUtf8(compilerFlag));
+		args.push_back(compilerFlag);
 	}
 
 	return args;
@@ -130,8 +130,8 @@ CxxParser::CxxParser(
 void CxxParser::buildIndex(std::shared_ptr<IndexerCommandCxx> indexerCommand)
 {
 	clang::tooling::CompileCommand compileCommand;
-	compileCommand.Filename = utility::encodeToUtf8(indexerCommand->getSourceFilePath().str());
-	compileCommand.Directory = utility::encodeToUtf8(indexerCommand->getWorkingDirectory().str());
+	compileCommand.Filename = indexerCommand->getSourceFilePath().str();
+	compileCommand.Directory = indexerCommand->getWorkingDirectory().str();
 	std::vector<std::string> args = indexerCommand->getCompilerFlags();
 	if (!args.empty() && !utility::isPrefix("-", args.front()))
 	{
@@ -159,18 +159,14 @@ void CxxParser::buildIndex(
 
 	std::vector<std::string> args = getCommandlineArgumentsEssential(compilerFlags);
 
-	runToolOnCodeWithArgs(
-		diagnostics.get(), std::move(action), fileContent->getText(), args, utility::encodeToUtf8(fileName));
+	runToolOnCodeWithArgs(diagnostics.get(), std::move(action), fileContent->getText(), args, fileName);
 }
 
-void CxxParser::runTool(
-	clang::tooling::CompilationDatabase* compilationDatabase, const FilePath& sourceFilePath)
+void CxxParser::runTool(clang::tooling::CompilationDatabase* compilationDatabase, const FilePath& sourceFilePath)
 {
 	initializeLLVM();
 
-	clang::tooling::ClangTool tool(
-		*compilationDatabase,
-		std::vector<std::string>(1, utility::encodeToUtf8(sourceFilePath.str())));
+	clang::tooling::ClangTool tool(*compilationDatabase, std::vector<std::string>(1, sourceFilePath.str()));
 
 	std::shared_ptr<CanonicalFilePathCache> canonicalFilePathCache =
 		std::make_shared<CanonicalFilePathCache>(m_fileRegister);
@@ -212,7 +208,7 @@ void CxxParser::runTool(
 		{
 			Id fileId = m_client->recordFile(sourceFilePath, true);
 			m_client->recordError(
-				"Clang Invocation errors: " + utility::decodeFromUtf8(info.errors),
+				"Clang Invocation errors: " + info.errors,
 				true,
 				true,
 				sourceFilePath,

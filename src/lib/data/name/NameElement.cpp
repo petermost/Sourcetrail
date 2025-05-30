@@ -1,6 +1,5 @@
 #include "NameElement.h"
 
-#include "logging.h"
 #include "utilityString.h"
 
 NameElement::Signature::Signature() = default;

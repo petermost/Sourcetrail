@@ -9,7 +9,6 @@
 #include "CxxTemplateArgumentNameResolver.h"
 #include "logging.h"
 #include "utilityClang.h"
-#include "utilityString.h"
 
 using namespace std;
 using namespace clang;
@@ -127,7 +126,7 @@ std::unique_ptr<CxxTypeName> CxxTypeNameResolver::getName(const clang::Type* typ
 			clang::PrintingPolicy pp = makePrintingPolicyForCPlusPlus();
 
 			return std::make_unique<CxxTypeName>(
-				utility::decodeFromUtf8(type->getAs<clang::BuiltinType>()->getName(pp).str()),
+				type->getAs<clang::BuiltinType>()->getName(pp).str(),
 				std::vector<std::string>());
 		}
 		case clang::Type::TemplateSpecialization:
@@ -207,7 +206,7 @@ std::unique_ptr<CxxTypeName> CxxTypeNameResolver::getName(const clang::Type* typ
 			std::unique_ptr<CxxName> specifierName = CxxSpecifierNameResolver(this).getName(
 				dependentType->getQualifier());
 			return std::make_unique<CxxTypeName>(
-				utility::decodeFromUtf8(dependentType->getIdentifier()->getName().str()),
+				dependentType->getIdentifier()->getName().str(),
 				std::vector<std::string>(),
 				std::move(specifierName));
 		}
@@ -227,7 +226,7 @@ std::unique_ptr<CxxTypeName> CxxTypeNameResolver::getName(const clang::Type* typ
 			}
 
 			return std::make_unique<CxxTypeName>(
-				utility::decodeFromUtf8(dependentType->getIdentifier()->getName().str()),
+				dependentType->getIdentifier()->getName().str(),
 				std::move(templateArguments),
 				std::move(specifierName));
 		}
@@ -297,7 +296,7 @@ std::unique_ptr<CxxTypeName> CxxTypeNameResolver::getName(const clang::Type* typ
 			clang::SmallString<64> Buf;
 			llvm::raw_svector_ostream StrOS(Buf);
 			clang::QualType::print(type, clang::Qualifiers(), StrOS, pp, clang::Twine());
-			std::string nameString = utility::decodeFromUtf8(StrOS.str().str());
+			std::string nameString = StrOS.str().str();
 
 			return std::make_unique<CxxTypeName>(std::move(nameString));
 		}

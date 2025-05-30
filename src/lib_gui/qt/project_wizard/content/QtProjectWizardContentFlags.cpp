@@ -5,6 +5,7 @@
 
 #include "QtStringListBox.h"
 #include "SourceGroupSettingsWithCxxPathsAndFlags.h"
+#include "utilityString.h"
 
 QtProjectWizardContentFlags::QtProjectWizardContentFlags(
 	std::shared_ptr<SourceGroupSettingsWithCxxPathsAndFlags> settings,

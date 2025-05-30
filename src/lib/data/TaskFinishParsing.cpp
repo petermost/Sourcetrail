@@ -7,7 +7,6 @@
 #include "MessageStatus.h"
 #include "PersistentStorage.h"
 #include "TimeStamp.h"
-#include "utilityString.h"
 
 TaskFinishParsing::TaskFinishParsing(
 	std::shared_ptr<PersistentStorage> storage, std::shared_ptr<DialogView> dialogView)
@@ -70,7 +69,7 @@ Task::TaskState TaskFinishParsing::doUpdate(std::shared_ptr<Blackboard> blackboa
 	status += "Finished indexing: ";
 	status += std::to_string(indexedSourceFileCount) + "/" + std::to_string(sourceFileCount) +
 		" source files indexed; ";
-	status += utility::decodeFromUtf8(TimeStamp::secondsToString(time));
+	status += TimeStamp::secondsToString(time);
 	status += "; " + std::to_string(errorInfo.total) + " error" +
 		(errorInfo.total != 1 ? "s" : "");
 	if (errorInfo.fatal > 0)

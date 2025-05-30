@@ -6,7 +6,6 @@
 #include "ResourcePaths.h"
 #include "logging.h"
 #include "utilitySourceGroupCxx.h"
-#include "utilityString.h"
 
 #include <clang/Tooling/CompilationDatabase.h>
 #include <clang/Tooling/JSONCompilationDatabase.h>
@@ -21,8 +20,7 @@ std::vector<FilePath> IndexerCommandCxx::getSourceFilesFromCDB(const FilePath& c
 
 	if (!error.empty())
 	{
-		const std::string message = "Loading Clang compilation database failed with error: \"" +
-			utility::decodeFromUtf8(error) + "\"";
+		const std::string message = "Loading Clang compilation database failed with error: \"" + error + "\"";
 		LOG_ERROR(message);
 		MessageStatus(message, true).dispatch();
 	}
@@ -41,16 +39,13 @@ std::vector<FilePath> IndexerCommandCxx::getSourceFilesFromCDB(
 
 		for (const std::string& fileString: cdb->getAllFiles())
 		{
-			FilePath path = FilePath(utility::decodeFromUtf8(fileString));
+			FilePath path = FilePath(fileString);
 			if (!path.isAbsolute())
 			{
-				std::vector<clang::tooling::CompileCommand> commands = cdb->getCompileCommands(
-					fileString);
+				std::vector<clang::tooling::CompileCommand> commands = cdb->getCompileCommands(fileString);
 				if (!commands.empty())
 				{
-					path = FilePath(utility::decodeFromUtf8(
-										commands.front().Directory + '/' + commands.front().Filename))
-							   .makeCanonical();
+					path = FilePath(commands.front().Directory + '/' + commands.front().Filename).makeCanonical();
 				}
 			}
 			if (!path.isAbsolute())
@@ -139,17 +134,17 @@ size_t IndexerCommandCxx::getByteSize(size_t stringSize) const
 
 	for (const FilePath& path: m_indexedPaths)
 	{
-		size += stringSize + utility::encodeToUtf8(path.str()).size();
+		size += stringSize + path.str().size();
 	}
 
 	for (const FilePathFilter& filter: m_excludeFilters)
 	{
-		size += stringSize + utility::encodeToUtf8(filter.str()).size();
+		size += stringSize + filter.str().size();
 	}
 
 	for (const FilePathFilter& filter: m_includeFilters)
 	{
-		size += stringSize + utility::encodeToUtf8(filter.str()).size();
+		size += stringSize + filter.str().size();
 	}
 
 	for (const std::string& flag: m_compilerFlags)

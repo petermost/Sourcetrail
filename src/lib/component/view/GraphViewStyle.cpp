@@ -3,9 +3,8 @@
 #include "ApplicationSettings.h"
 #include "ColorScheme.h"
 #include "GraphViewStyleImpl.h"
-#include "logging.h"
-#include "utilityString.h"
 #include "QtResources.h"
+#include "logging.h"
 
 int GraphViewStyle::s_gridCellSize = 5;
 int GraphViewStyle::s_gridCellPadding = 10;
@@ -634,7 +633,7 @@ GraphViewStyle::EdgeStyle GraphViewStyle::getStyleForEdgeType(
 	}
 	else
 	{
-		style.color = getEdgeColor(utility::encodeToUtf8(Edge::getUnderscoredTypeString(type)));
+		style.color = getEdgeColor(Edge::getUnderscoredTypeString(type));
 	}
 
 	switch (type)

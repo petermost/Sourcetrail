@@ -14,7 +14,6 @@
 #include <QMouseEvent>
 
 using namespace std;
-using namespace utility;
 
 QtCodeFileTitleButton::QtCodeFileTitleButton(QWidget* parent)
 	: QtSelfRefreshIconButton(QLatin1String(""), FilePath(), "code/file/title", parent)

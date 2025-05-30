@@ -1,6 +1,5 @@
 #include "ColorScheme.h"
 
-#include "utilityString.h"
 
 std::shared_ptr<ColorScheme> ColorScheme::s_instance;
 
@@ -68,7 +67,7 @@ std::string ColorScheme::getNodeTypeColor(
 
 std::string ColorScheme::getEdgeTypeColor(Edge::EdgeType type) const
 {
-	return getEdgeTypeColor(utility::encodeToUtf8(Edge::getUnderscoredTypeString(type)));
+	return getEdgeTypeColor(Edge::getUnderscoredTypeString(type));
 }
 
 std::string ColorScheme::getEdgeTypeColor(const std::string& type) const

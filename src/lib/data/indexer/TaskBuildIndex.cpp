@@ -189,7 +189,7 @@ void TaskBuildIndex::runIndexerProcess(ProcessId processId, const std::string& l
 
 	std::vector<std::string> commandArguments;
 	commandArguments.push_back(to_string(processId));
-	commandArguments.push_back(utility::decodeFromUtf8(m_appUUID));
+	commandArguments.push_back(m_appUUID);
 	commandArguments.push_back(AppPath::getSharedDataDirectoryPath().getAbsolute().str());
 	commandArguments.push_back(UserPaths::getUserDataDirectoryPath().getAbsolute().str());
 

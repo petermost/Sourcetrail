@@ -1,7 +1,6 @@
 #include "CommandLineParser.h"
 
 #include <iostream>
-#include <utility>
 
 #include <boost/program_options.hpp>
 
@@ -10,7 +9,6 @@
 #include "CommandlineHelper.h"
 #include "ConfigManager.h"
 #include "TextAccess.h"
-#include "utilityString.h"
 
 namespace po = boost::program_options;
 

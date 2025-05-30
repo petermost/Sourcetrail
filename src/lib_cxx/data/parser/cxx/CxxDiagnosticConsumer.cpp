@@ -117,7 +117,7 @@ void CxxDiagnosticConsumer::HandleDiagnostic(
 		if (fileId != 0)
 		{
 			m_client->recordError(
-				utility::decodeFromUtf8(message),
+				message,
 				level == clang::DiagnosticsEngine::Fatal,
 				m_canonicalFilePathCache->getFileRegister()->hasFilePath(filePath),
 				m_sourceFilePath,

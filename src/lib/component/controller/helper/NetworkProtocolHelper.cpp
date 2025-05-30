@@ -6,7 +6,6 @@
 #include <boost/algorithm/string.hpp>
 
 #include "logging.h"
-#include "utilityString.h"
 
 std::string NetworkProtocolHelper::s_divider = ">>";
 std::string NetworkProtocolHelper::s_setActiveTokenPrefix = "setActiveToken";

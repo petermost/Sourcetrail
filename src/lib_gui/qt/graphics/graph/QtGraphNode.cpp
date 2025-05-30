@@ -7,10 +7,10 @@
 #include "QtDeviceScaledPixmap.h"
 #include "QtGraphEdge.h"
 #include "QtGraphNodeComponent.h"
+#include "QtResources.h"
 #include "QtRoundedRectItem.h"
 #include "utilityQt.h"
 #include "utilityString.h"
-#include "QtResources.h"
 
 #include <QBrush>
 #include <QCursor>

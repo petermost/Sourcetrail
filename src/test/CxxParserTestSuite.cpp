@@ -201,7 +201,7 @@ TEST_CASE("cxx parser finds explicit bool conversion operator")
 	REQUIRE(client->errors.empty());
 
 	// Find usage:
-	INFO(encodeToUtf8(join(client->calls, "\n"s)));
+	INFO(join(client->calls, "\n"s));
 	REQUIRE(containsElement(client->calls, "void f() -> bool B::operator bool() const <9:8 9:8>"s));
 }
 
@@ -1710,7 +1710,7 @@ TEST_CASE("cxx parser finds deduced type of auto variables")
 	REQUIRE(client->errors.empty());
 
 	// Find type usages:
-	INFO(encodeToUtf8(join(client->typeUses, "\n"s)));
+	INFO(join(client->typeUses, "\n"s));
 	REQUIRE(containsElement(client->typeUses, "f::auto_double_var1 -> double <3:4 3:7>"s));
 	REQUIRE(containsElement(client->typeUses, "f::auto_double_var2 -> double <4:4 4:7>"s));
 	REQUIRE(containsElement(client->typeUses, "f::auto_int_var -> int <6:4 6:7>"s));
@@ -2084,7 +2084,7 @@ TEST_CASE("cxx parser finds call of explicitly defined non-trivial destructor")
 	REQUIRE(client->errors.empty());
 
 	// Find usage:
-	INFO(encodeToUtf8(join(client->calls, "\n"s)));
+	INFO(join(client->calls, "\n"s));
 	REQUIRE(containsElement(client->calls, "int main() -> void App::~App() <11:3 11:3>"s));
 }
 

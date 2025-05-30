@@ -42,7 +42,7 @@ void utility::CompilationDatabase::init()
 	std::string error;
 	std::shared_ptr<clang::tooling::JSONCompilationDatabase> cdb(
 		clang::tooling::JSONCompilationDatabase::loadFromFile(
-			utility::encodeToUtf8(m_filePath.str()),
+			m_filePath.str(),
 			error,
 			clang::tooling::JSONCommandLineSyntax::AutoDetect));
 
@@ -50,7 +50,7 @@ void utility::CompilationDatabase::init()
 	{
 		LOG_ERROR(
 			"Loading compilation database from file \"" + m_filePath.str() +
-			"\" failed with error: " + utility::decodeFromUtf8(error));
+			"\" failed with error: " + error);
 		return;
 	}
 
@@ -66,14 +66,14 @@ void utility::CompilationDatabase::init()
 		const std::string includeFlag = "-I";
 		for (clang::tooling::CompileCommand& command: commands)
 		{
-			const std::string commandDirectory = utility::decodeFromUtf8(command.Directory);
+			const std::string commandDirectory = command.Directory;
 			for (size_t i = 0; i < command.CommandLine.size(); i++)
 			{
-				std::string argument = utility::decodeFromUtf8(command.CommandLine[i]);
+				std::string argument = command.CommandLine[i];
 				if (i + 1 < command.CommandLine.size() &&
 					!utility::isPrefix("-", command.CommandLine[i + 1]))
 				{
-					argument += utility::decodeFromUtf8(command.CommandLine[++i]);
+					argument += command.CommandLine[++i];
 				}
 
 				if (utility::isPrefix(frameworkIncludeFlag, argument))

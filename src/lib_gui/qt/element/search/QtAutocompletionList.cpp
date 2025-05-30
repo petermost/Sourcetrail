@@ -4,7 +4,6 @@
 #include "ColorScheme.h"
 #include "GraphViewStyle.h"
 #include "QtDeviceScaledPixmap.h"
-#include "utilityString.h"
 #include "QtResources.h"
 
 #include <QPainter>
@@ -153,18 +152,8 @@ void QtAutocompletionDelegate::paint(
 	}
 	else
 	{
-		fillColor = QColor(scheme
-							   ->getSearchTypeColor(
-								   utility::encodeToUtf8(
-									   SearchMatch::getSearchTypeName(SearchMatch::SEARCH_COMMAND)),
-								   "fill")
-							   .c_str());
-		textColor = QColor(scheme
-							   ->getSearchTypeColor(
-								   utility::encodeToUtf8(
-									   SearchMatch::getSearchTypeName(SearchMatch::SEARCH_COMMAND)),
-								   "text")
-							   .c_str());
+		fillColor = QColor(scheme->getSearchTypeColor(SearchMatch::getSearchTypeName(SearchMatch::SEARCH_COMMAND), "fill").c_str());
+		textColor = QColor(scheme->getSearchTypeColor(SearchMatch::getSearchTypeName(SearchMatch::SEARCH_COMMAND), "text").c_str());
 	}
 
 	int top1 = 6;

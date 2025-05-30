@@ -13,7 +13,7 @@ using namespace utility;
 using namespace boost::chrono;
 
 CxxVs15ToLatestHeaderPathDetector::CxxVs15ToLatestHeaderPathDetector(const string &versionRange)
-	: PathDetector(utility::encodeToUtf8(getVsWhereProperty(versionRange, "displayName")))
+	: PathDetector(getVsWhereProperty(versionRange, "displayName"))
 	, m_versionRange(versionRange)
 {
 }

@@ -3,7 +3,6 @@
 #include "tinyxml.h"
 
 #include "FilePath.h"
-#include "utilityString.h"
 
 namespace Codeblocks
 {
@@ -27,7 +26,7 @@ std::shared_ptr<Unit> Unit::create(const TiXmlElement* element)
 		{
 			return std::shared_ptr<Unit>();
 		}
-		unit->m_filename = utility::decodeFromUtf8(value);
+		unit->m_filename = value;
 	}
 
 	const TiXmlElement* optionElement = element->FirstChildElement("Option");
@@ -51,7 +50,7 @@ std::shared_ptr<Unit> Unit::create(const TiXmlElement* element)
 			const char* value = optionElement->Attribute("target");
 			if (value)
 			{
-				unit->m_targetNames.insert(utility::decodeFromUtf8(value));
+				unit->m_targetNames.insert(value);
 			}
 		}
 

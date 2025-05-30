@@ -96,16 +96,8 @@ std::string join(const ContainerType& list, const std::string& delimiter)
 // Locale specific functions:
 //
 
-// encodeToUtf8/decodeFromUtf8 are no longer needed, but we keep it for backward
-// compatibility and in case of bugs so we can check where these conversions were done:
-inline const std::string &encodeToUtf8(const std::string& s) { return s; }
-inline const std::string &decodeFromUtf8(const std::string& s) { return s; }
-
 std::u32string convertToUtf32(const std::string &utf8chars);
 std::string convertToUtf8(const std::u32string &utf32chars);
-
-std::wstring encodeToWString(const std::string &s);
-std::string decodeFromWString(const std::wstring &s);
 
 std::string toLowerCase(const std::string& in);
 

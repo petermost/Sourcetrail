@@ -3,7 +3,6 @@
 #include <sstream>
 
 #include "logging.h"
-#include "utilityString.h"
 
 #include "TokenComponentAccess.h"
 #include "TokenComponentConst.h"

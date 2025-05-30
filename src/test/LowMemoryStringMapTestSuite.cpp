@@ -1,9 +1,8 @@
 #include "Catch2.hpp"
 
+#include "Id.h"
 #include "LowMemoryStringMap.h"
 #include "TextAccess.h"
-#include "types.h"
-#include "utilityString.h"
 
 TEST_CASE("roughly everything")
 {
@@ -140,7 +139,7 @@ TEST_CASE("string")
 
 	std::vector<std::string> names;
 	for (const std::string &line : textAccess->getAllLines()) {
-		names.emplace_back(utility::decodeFromUtf8(line.substr(0, line.find("\n"))));
+		names.emplace_back(line.substr(0, line.find("\n")));
 	}
 
 	for (size_t i = 0; i < names.size(); i++)

@@ -86,8 +86,8 @@ std::shared_ptr<TestStorage> parseCode(std::string code)
 		if (!out.error.empty())
 		{
 			FAIL(
-				"Error occurred while running the indexer: \"" + utility::encodeToUtf8(out.error) +
-				"\". Process output was: \"" + utility::encodeToUtf8(out.output) + "\"");
+				"Error occurred while running the indexer: \"" + out.error +
+				"\". Process output was: \"" + out.output + "\"");
 		}
 		REQUIRE(out.exitCode == 0);
 	}

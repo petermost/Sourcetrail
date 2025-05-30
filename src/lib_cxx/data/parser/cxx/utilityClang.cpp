@@ -8,7 +8,6 @@
 #include "CanonicalFilePathCache.h"
 #include "FilePath.h"
 #include "ParseLocation.h"
-#include "utilityString.h"
 
 using namespace std;
 using namespace clang;
@@ -128,15 +127,14 @@ SymbolKind utility::getSymbolKind(const clang::VarDecl* d)
 
 string utility::getFileNameOfFileEntry(const FileEntryRef &entry)
 {
-	string fileName = decodeFromUtf8(entry.getFileEntry().tryGetRealPathName().str());
+	string fileName = entry.getFileEntry().tryGetRealPathName().str();
 	if (fileName.empty())
 	{
-		fileName = decodeFromUtf8(entry.getName().str());
+		fileName = entry.getName().str();
 	}
 	else
 	{
-		fileName = FilePath(decodeFromUtf8(entry.getName().str())).getParentDirectory()
-			.concatenate(FilePath(fileName).fileName()).str();
+		fileName = FilePath(entry.getName().str()).getParentDirectory().concatenate(FilePath(fileName).fileName()).str();
 	}
 	return fileName;
 }
@@ -226,8 +224,7 @@ ParseLocation utility::getParseLocation(
 		Id fileSymbolId = canonicalFilePathCache->getFileSymbolId(sourceManager.getFileID(beginLoc));
 		if (!fileSymbolId)
 		{
-			fileSymbolId = canonicalFilePathCache->getFileSymbolId(
-				utility::decodeFromUtf8(presumedBegin.getFilename()));
+			fileSymbolId = canonicalFilePathCache->getFileSymbolId(presumedBegin.getFilename());
 		}
 
 		return ParseLocation(

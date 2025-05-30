@@ -33,7 +33,7 @@ void QtProjectWizardContentSelect::populate(QGridLayout* layout, int&  /*row*/)
 			ResourcePaths::getPythonIndexerFilePath().str(), {"--version"}, FilePath(), false, milliseconds(5000));
 		if (output.exitCode == 0)
 		{
-			std::string str = utility::encodeToUtf8(output.output);
+			std::string str = output.output;
 			std::regex regex("v\\d*\\.db\\d*\\.p\\d*");	   // "\\d" matches any digit; "\\." matches
 														   // the "." character
 			std::smatch matches;

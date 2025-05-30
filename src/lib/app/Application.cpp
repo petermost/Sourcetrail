@@ -28,7 +28,6 @@
 #include "ViewFactory.h"
 #include "logging.h"
 #include "tracing.h"
-#include "utilityString.h"
 #include "utilityUuid.h"
 
 #include "CppSQLite3.h"
@@ -307,7 +306,7 @@ void Application::handleMessage(MessageLoadProject* message)
 		{
 			const std::string message = "Failed to load project at \"" +
 										 projectSettingsFilePath.str() + "\" with sqlite exception: " +
-										 utility::decodeFromUtf8(e.errorMessage());
+										 e.errorMessage();
 			LOG_ERROR(message);
 			MessageStatus(message, true).dispatch();
 		}
@@ -315,7 +314,7 @@ void Application::handleMessage(MessageLoadProject* message)
 		{
 			const std::string message = "Failed to load project at \"" +
 				projectSettingsFilePath.str() + "\" with exception: " +
-				utility::decodeFromUtf8(e.what());
+				e.what();
 			LOG_ERROR(message);
 			MessageStatus(message, true).dispatch();
 		}
@@ -497,7 +496,7 @@ void Application::updateTitle()
 
 bool Application::checkSharedMemory()
 {
-	std::string error = utility::decodeFromUtf8(SharedMemory::checkSharedMemory(getUUID()));
+	std::string error = SharedMemory::checkSharedMemory(getUUID());
 	if (error.size())
 	{
 		MessageStatus(

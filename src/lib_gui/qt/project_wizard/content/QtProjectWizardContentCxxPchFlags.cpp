@@ -5,6 +5,7 @@
 
 #include "QtStringListBox.h"
 #include "SourceGroupSettingsWithCxxPchOptions.h"
+#include "utilityString.h"
 
 QtProjectWizardContentCxxPchFlags::QtProjectWizardContentCxxPchFlags(
 	std::shared_ptr<SourceGroupSettingsWithCxxPchOptions> settings,

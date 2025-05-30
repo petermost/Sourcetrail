@@ -44,7 +44,6 @@
 #include "utility.h"
 #include "utilityApp.h"
 #include "utilityFile.h"
-#include "utilityString.h"
 
 Project::Project(
 	std::shared_ptr<ProjectSettings> settings,
@@ -505,8 +504,7 @@ void Project::buildIndex(RefreshInfo info, std::shared_ptr<DialogView> dialogVie
 					if (m_hasGUI &&
 						dialogView->confirm(
 							"<p>This project contains a source group of type \"" +
-								utility::decodeFromUtf8(
-									sourceGroupTypeToString(sourceGroup->getType())) +
+								sourceGroupTypeToString(sourceGroup->getType()) +
 								"\" that cannot be partially cleared. Do you want to re-index the "
 								"whole project instead?</p>",
 							{"Full Re-Index", "Cancel"}) == 1)

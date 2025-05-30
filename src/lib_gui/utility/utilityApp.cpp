@@ -225,7 +225,7 @@ ProcessOutput executeProcess(const std::string& command, const std::vector<std::
 	catch (const process_v1::process_error& e)
 	{
 		ProcessOutput ret;
-		ret.error = decodeFromUtf8(e.code().message());
+		ret.error = e.code().message();
 		ret.exitCode = e.code().value();
 		LOG_ERROR_BARE("Process error: " + ret.error);
 
@@ -233,7 +233,7 @@ ProcessOutput executeProcess(const std::string& command, const std::vector<std::
 	}
 
 	ProcessOutput ret;
-	ret.output = trim(decodeFromUtf8(output));
+	ret.output = trim(output);
 	ret.exitCode = exitCode;
 	return ret;
 }

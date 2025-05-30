@@ -96,11 +96,8 @@ void TaskExecuteCustomCommands::runPythonPostProcessing(PersistentStorage& stora
 					return;
 				}
 
-				const std::string tokenLine = textAccess->getLine(
-					static_cast<unsigned int>(startLoc->getLineNumber()));
-				const std::string token = utility::decodeFromUtf8(tokenLine.substr(
-					startLoc->getColumnNumber() - 1,
-					endLoc->getColumnNumber() - startLoc->getColumnNumber() + 1));
+				const std::string tokenLine = textAccess->getLine(static_cast<unsigned int>(startLoc->getLineNumber()));
+				const std::string token = tokenLine.substr(startLoc->getColumnNumber() - 1, endLoc->getColumnNumber() - startLoc->getColumnNumber() + 1);
 
 				std::string prefixString = tokenLine.substr(0, startLoc->getColumnNumber() - 1);
 
@@ -111,7 +108,7 @@ void TaskExecuteCustomCommands::runPythonPostProcessing(PersistentStorage& stora
 					std::regex_search(prefixString, matches, regex);
 					if (!matches.empty())
 					{
-						definitionContextName = utility::decodeFromUtf8(matches.str(1));
+						definitionContextName = matches.str(1);
 					}
 				}
 				{
@@ -469,9 +466,7 @@ void TaskExecuteCustomCommands::runIndexerCommand(
 		const std::string command = indexerCommand->getCommand();
 		const std::vector<std::string> arguments = indexerCommand->getArguments();
 
-		LOG_INFO(
-			"Start processing command \"" +
-			utility::encodeToUtf8(command + " " + utility::join(arguments, " ")) + "\"");
+		LOG_INFO("Start processing command \"" +	command + " " + utility::join(arguments, " ") + "\"");
 
 		const ErrorCountInfo previousErrorCount = storage ? storage->getErrorCount()
 														  : ErrorCountInfo();

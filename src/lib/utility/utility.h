@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "FilePath.h"
-#include "utilityString.h"
 
 namespace utility
 {
@@ -309,8 +308,7 @@ std::vector<std::string> utility::toStrings(const std::vector<T>& d)
 template <>
 inline std::vector<std::string> utility::toStrings<FilePath>(const std::vector<FilePath>& d)
 {
-	return convert<FilePath, std::string>(
-		d, [](const FilePath& fp) { return utility::encodeToUtf8(fp.str()); });
+	return convert<FilePath, std::string>(d, [](const FilePath& fp) { return fp.str(); });
 }
 
 #endif	  // UTILITY_H

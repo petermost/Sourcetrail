@@ -173,9 +173,7 @@ std::string indexerCommandToString(
 		{
 			return indexerCommandCustomToString(indexerCommandCustom, baseDirectory);
 		}
-		return "Unsupported indexer command type: " +
-			utility::decodeFromUtf8(
-				   indexerCommandTypeToString(indexerCommand->getIndexerCommandType()));
+		return "Unsupported indexer command type: " + indexerCommandTypeToString(indexerCommand->getIndexerCommandType());
 	}
 	return "No IndexerCommand provided.";
 }
@@ -202,7 +200,7 @@ std::shared_ptr<TextAccess> generateExpectedOutput(
 		outputString += indexerCommandToString(indexerCommand, projectDataRoot);
 	}
 
-	return TextAccess::createFromString(utility::encodeToUtf8(outputString));
+	return TextAccess::createFromString(outputString);
 }
 
 std::string getOutputFilename()
@@ -234,8 +232,7 @@ void generateAndCompareExpectedOutput(
 			expectedOutputFilePath);
 		REQUIRE_MESSAGE(
 			("Output does not match the expected line count for project \"" +
-			 utility::encodeToUtf8(projectName) + "\". Output was: " + output->getText())
-				.c_str(),
+			 projectName) + "\". Output was: " + output->getText(),
 			expectedOutput->getLineCount() == output->getLineCount());
 		if (expectedOutput->getLineCount() == output->getLineCount())
 		{

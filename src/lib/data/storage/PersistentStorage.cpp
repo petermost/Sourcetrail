@@ -2331,7 +2331,7 @@ TooltipSnippet PersistentStorage::getTooltipSnippetForNode(const StorageNode& no
 			// remove characters before signature start
 			lines[0] = lines[0].substr(sigLoc->getColumnNumber() - 1);
 
-			std::string code = utility::decodeFromUtf8(utility::join(lines, ""));
+			std::string code = utility::join(lines, "");
 
 			// store texts of annotations
 			std::vector<std::pair<Id, std::string>> annotatedTexts;

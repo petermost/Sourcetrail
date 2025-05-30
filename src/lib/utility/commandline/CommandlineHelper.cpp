@@ -1,5 +1,7 @@
 #include "CommandlineHelper.h"
 
+#include "utilityString.h"
+
 #include <fstream>
 #include <iostream>
 #include <string>

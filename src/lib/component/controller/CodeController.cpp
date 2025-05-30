@@ -941,13 +941,12 @@ std::vector<std::string> CodeController::getProjectDescription(SourceLocationFil
 				break;
 			}
 
-			std::string serializedName = utility::decodeFromUtf8(
-				line.substr(posA + 1, posB - posA - 1));
+			std::string serializedName = line.substr(posA + 1, posB - posA - 1);
 
 			NameHierarchy nameHierarchy = NameHierarchy::deserialize(serializedName);
 			Id tokenId = m_storageAccess->getNodeIdForNameHierarchy(nameHierarchy);
 
-			std::string nameString = utility::encodeToUtf8(nameHierarchy.getQualifiedName());
+			std::string nameString = nameHierarchy.getQualifiedName();
 			if (tokenId > 0)
 			{
 				line.replace(posA, posB - posA + 1, nameString);
