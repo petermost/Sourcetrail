@@ -60,6 +60,9 @@ configure_file(cmake/productVersion.h.in src/lib_gui/productVersion.h)
 
 include(cmake/Sourcetrail.cmake)
 
+cmake_print_variables(CMAKE_C_COMPILER)
+cmake_print_variables(CMAKE_CXX_COMPILER)
+
 # set Standard build type to Release
 set(CMAKE_BUILD_TYPE_INIT "Release")
 

@@ -3,54 +3,8 @@
 	"configurePresets": [
 		{
 			"hidden": true,
-			"name": "sourcetrail-mixin-presets",
-			"cacheVariables": {
-				"BUILD_CXX_LANGUAGE_PACKAGE": "ON",
-				"BUILD_JAVA_LANGUAGE_PACKAGE": "ON"
-			}
-		},
-
-
-
-		{
-			"hidden": true,
-			"name": "debug-mixin-presets",
-			"cacheVariables": {
-				"CMAKE_BUILD_TYPE": "Debug",
-				"CMAKE_VERBOSE_MAKEFILE": "TRUE",
-				"CMAKE_EXPORT_COMPILE_COMMANDS": "TRUE",
-
-				"BUILD_UNIT_TESTS_PACKAGE": "ON"
-			}
-		},
-		{
-			"hidden": true,
-			"name": "release-mixin-presets",
-			"cacheVariables": {
-				"CMAKE_BUILD_TYPE": "Release",
-				"CMAKE_VERBOSE_MAKEFILE": "FALSE",
-				"CMAKE_EXPORT_COMPILE_COMMANDS": "TRUE",
-
-				"BUILD_UNIT_TESTS_PACKAGE": "ON"
-			}
-		},
-		{
-			"hidden": true,
-			"name": "relwithdebinfo-mixin-presets",
-			"cacheVariables": {
-				"CMAKE_BUILD_TYPE": "RelWithDebInfo",
-				"CMAKE_VERBOSE_MAKEFILE": "TRUE",
-				"CMAKE_EXPORT_COMPILE_COMMANDS": "TRUE",
-
-				"BUILD_UNIT_TESTS_PACKAGE": "ON"
-			}
-		},
-
-
-
-		{
-			"hidden": true,
 			"name": "default-presets",
+			"generator": "Ninja",
 			"warnings": {
 				"dev": false,
 				"uninitialized": false
@@ -59,9 +13,40 @@
 		},
 		{
 			"hidden": true,
+			"name": "system-default-presets",
+			"inherits": [
+				"default-presets"
+			],
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Linux"
+			}
+		},
+		{
+			"hidden": true,
+			"name": "debug-presets",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Debug",
+				"CMAKE_VERBOSE_MAKEFILE": "TRUE",
+				"CMAKE_EXPORT_COMPILE_COMMANDS": "TRUE"
+			}
+		},
+		{
+			"hidden": true,
+			"name": "release-presets",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Release",
+				"CMAKE_VERBOSE_MAKEFILE": "FALSE",
+				"CMAKE_EXPORT_COMPILE_COMMANDS": "TRUE"
+			}
+		},
+		{
+			"hidden": true,
 			"name": "vcpkg-default-presets",
-			"inherits": "default-presets",
-			"generator": "Ninja",
+			"inherits": [
+				"default-presets"
+			],
 			"cacheVariables": {
 				"CMAKE_TOOLCHAIN_FILE": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
 				"VCPKG_TARGET_TRIPLET": "x64-arm64-linux-windows-osx-static-md"
@@ -69,75 +54,74 @@
 		},
 		{
 			"hidden": true,
-			"name": "system-default-presets",
-			"inherits": "default-presets",
-			"generator": "Ninja",
+			"name": "vcpkg-clang-presets",
 			"cacheVariables": {
-			},
-			"condition": {
-				"type": "equals",
-				"lhs": "${hostSystemName}",
-				"rhs": "Linux"
+				"CMAKE_C_COMPILER"  : "${sourceParentDir}/build/${presetName}/vcpkg_installed/x64-arm64-linux-windows-osx-static-md/tools/llvm/clang",
+				"CMAKE_CXX_COMPILER": "${sourceParentDir}/build/${presetName}/vcpkg_installed/x64-arm64-linux-windows-osx-static-md/tools/llvm/clang++"
+			}
+		},
+		{
+			"hidden": true,
+			"name": "sourcetrail-presets",
+			"cacheVariables": {
+				"BUILD_CXX_LANGUAGE_PACKAGE": "ON",
+				"BUILD_JAVA_LANGUAGE_PACKAGE": "ON",
+				"BUILD_UNIT_TESTS_PACKAGE": "ON"
 			}
 		},
 
 
 
 		{
-			"name": "vcpkg-ninja-debug",
-			"displayName": "Vcpkg Ninja Debug Build",
-			"inherits": [
-				"vcpkg-default-presets",
-				"sourcetrail-mixin-presets",
-				"debug-mixin-presets"
-			]
-		},
-		{
-			"name": "vcpkg-ninja-release",
-			"displayName": "Vcpkg Ninja Release Build",
-			"inherits": [
-				"vcpkg-default-presets",
-				"sourcetrail-mixin-presets",
-				"release-mixin-presets"
-			]
-		},
-		{
-			"name": "vcpkg-ninja-relwithdebinfo",
-			"displayName": "Vcpkg Ninja RelWithDebInfo Build",
-			"inherits": [
-				"vcpkg-default-presets",
-				"sourcetrail-mixin-presets",
-				"relwithdebinfo-mixin-presets"
-			]
-		},
-
-
-
-		{
 			"name": "system-ninja-debug",
-			"displayName": "System Ninja Debug Build",
 			"inherits": [
+				"debug-presets",
 				"system-default-presets",
-				"sourcetrail-mixin-presets",
-				"debug-mixin-presets"
+				"sourcetrail-presets"
 			]
 		},
 		{
 			"name": "system-ninja-release",
-			"displayName": "System Ninja Release Build",
 			"inherits": [
+				"release-presets",
 				"system-default-presets",
-				"sourcetrail-mixin-presets",
-				"release-mixin-presets"
+				"sourcetrail-presets"
+			]
+		},
+
+
+
+		{
+			"name": "vcpkg-ninja-debug",
+			"inherits": [
+				"debug-presets",
+				"vcpkg-default-presets",
+				"sourcetrail-presets"
 			]
 		},
 		{
-			"name": "system-ninja-relwithdebinfo",
-			"displayName": "System Ninja RelWithDebInfo Build",
+			"name": "vcpkg-ninja-release",
 			"inherits": [
-				"system-default-presets",
-				"sourcetrail-mixin-presets",
-				"relwithdebinfo-mixin-presets"
+				"release-presets",
+				"vcpkg-default-presets",
+				"sourcetrail-presets"
+			]
+		},
+
+
+
+		{
+			"name": "vcpkg-clang-ninja-debug",
+			"inherits": [
+				"vcpkg-ninja-debug",
+				"vcpkg-clang-presets"
+			]
+		},
+		{
+			"name": "vcpkg-clang-ninja-release",
+			"inherits": [
+				"vcpkg-ninja-release",
+				"vcpkg-clang-presets"
 			]
 		}
 	]
