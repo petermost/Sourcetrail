@@ -93,7 +93,7 @@ set(CMAKE_FIND_PACKAGE_SORT_ORDER NATURAL)
 
 get_property(isMultiConfigGenerator GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 if (isMultiConfigGenerator)
-	message(FATAL_ERROR "TODO: Multi config generator support is not tested!")
+	message(AUTHOR_WARNING "TODO: Multi config generator support is not tested!")
 	foreach(CONFIGURATION_TYPE ${CMAKE_CONFIGURATION_TYPES})
 		file(COPY "bin/app/data/"  DESTINATION "${CONFIGURATION_TYPE}/app/data/")
 		file(COPY "bin/app/user/"  DESTINATION "${CONFIGURATION_TYPE}/app/user/")
