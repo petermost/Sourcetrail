@@ -5,12 +5,7 @@
 #include <string>
 #include <vector>
 
-
-namespace clang::tooling
-{
-class JSONCompilationDatabase;
-}
-
+#include <clang/Tooling/JSONCompilationDatabase.h>
 
 class DialogView;
 class FilePath;
@@ -28,11 +23,16 @@ std::shared_ptr<Task> createBuildPchTask(
 
 std::shared_ptr<clang::tooling::JSONCompilationDatabase> loadCDB(
 	const FilePath& cdbPath, std::string* error = nullptr);
+	
+std::shared_ptr<clang::tooling::JSONCompilationDatabase> loadCDB(std::string_view cdbContent, clang::tooling::JSONCommandLineSyntax syntax,
+	std::string *error);
+
 bool containsIncludePchFlags(std::shared_ptr<clang::tooling::JSONCompilationDatabase> cdb);
 bool containsIncludePchFlag(const std::vector<std::string>& args);
 std::vector<std::string> getWithRemoveIncludePchFlag(const std::vector<std::string>& args);
 void removeIncludePchFlag(std::vector<std::string>& args);
 std::vector<std::string> getIncludePchFlags(const SourceGroupSettingsWithCxxPchOptions* settings);
-}	 // namespace utility
+void replaceMsvcFlags(std::vector<std::string> *args);
+}
 
-#endif	  // UTILITY_SOURCE_GROUP_CXX_H
+#endif

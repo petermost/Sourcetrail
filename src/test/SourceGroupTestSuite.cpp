@@ -460,13 +460,8 @@ TEST_CASE("source gropup cxx c correct default standard")
 	string defaultCStandard = SourceGroupSettingsWithCStandard::getDefaultCStandard();
 	string defaultCppStandard = SourceGroupSettingsWithCppStandard::getDefaultCppStandard();
 
-	if constexpr (Platform::isLinux()) {
-		REQUIRE(  defaultCStandard.substr(0, 3) == "gnu");
-		REQUIRE(defaultCppStandard.substr(0, 5) == "gnu++");
-	} else {
-		REQUIRE(  defaultCStandard.substr(0, 1) == "c");
-		REQUIRE(defaultCppStandard.substr(0, 3) == "c++");
-	}
+	REQUIRE(  defaultCStandard == "c17");
+	REQUIRE(defaultCppStandard == "c++23");
 }
 
 #endif	  // BUILD_CXX_LANGUAGE_PACKAGE

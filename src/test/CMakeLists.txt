@@ -9,6 +9,7 @@ add_executable(Sourcetrail_test
 	test_main.cpp
 
 	CommandlineTestSuite.cpp
+	CompilationDatabaseTestSuite.cpp
 	ConfigManagerTestSuite.cpp
 	CxxIncludeProcessingTestSuite.cpp
 	CxxParserTestSuite.cpp

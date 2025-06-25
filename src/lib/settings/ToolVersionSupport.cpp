@@ -1,5 +1,4 @@
 #include "ToolVersionSupport.h"
-#include "Platform.h"
 #include "language_packages.h"
 #include "utility.h"
 
@@ -11,8 +10,6 @@ using namespace std;
 using namespace string_literals;
 using namespace utility;
 
-namespace
-{
 // Note: We do the '#if LLVM_VERSION_MAJOR ==' check in case we need to support two different clang
 // versions in the system build and the vcpkg build!
 //
@@ -42,7 +39,7 @@ namespace
 // note: use 'c++2c' or 'c++26' for 'Working draft for C++2c' standard
 // note: use 'gnu++2c' or 'gnu++26' for 'Working draft for C++2c with GNU extensions' standard
 
-vector<string> getReleasedCppStandards()
+static vector<string> getReleasedCppStandards()
 {
 	const vector<string> releasedCppStandards = {
 		#ifdef LLVM_VERSION_MAJOR
@@ -60,7 +57,7 @@ vector<string> getReleasedCppStandards()
 	return releasedCppStandards;
 }
 
-vector<string> getDraftCppStandards()
+static vector<string> getDraftCppStandards()
 {
 	const vector<string> draftCppStandards = {
 		#ifdef LLVM_VERSION_MAJOR
@@ -94,7 +91,7 @@ vector<string> getDraftCppStandards()
 // note: use 'c2y' for 'Working Draft for ISO C2y' standard
 // note: use 'gnu2y' for 'Working Draft for ISO C2y with GNU extensions' standard
 
-vector<string> getReleasedCStandards()
+static vector<string> getReleasedCStandards()
 {
 	const vector<string> releasedCStandards = {
 		#ifdef LLVM_VERSION_MAJOR
@@ -109,7 +106,7 @@ vector<string> getReleasedCStandards()
 	return releasedCStandards;
 }
 
-vector<string> getDraftCStandards()
+static vector<string> getDraftCStandards()
 {
 	const vector<string> draftCStandards = {
 		#ifdef LLVM_VERSION_MAJOR
@@ -124,8 +121,6 @@ vector<string> getDraftCStandards()
 	return draftCStandards;
 }
 
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Clang version support:
@@ -134,10 +129,12 @@ vector<string> getDraftCStandards()
 
 string ClangVersionSupport::getLatestCppStandard()
 {
-	if constexpr (Platform::isLinux())
-		return getReleasedCppStandards()[1];
-	else
-		return getReleasedCppStandards()[0];
+	return getReleasedCppStandards()[0];
+}
+
+string ClangVersionSupport::getLatestCppDraft()
+{
+	return getDraftCppStandards()[0];
 }
 
 vector<string> ClangVersionSupport::getAvailableCppStandards()
@@ -147,10 +144,7 @@ vector<string> ClangVersionSupport::getAvailableCppStandards()
 
 string ClangVersionSupport::getLatestCStandard()
 {
-	if constexpr (Platform::isLinux())
-		return getReleasedCStandards()[1];
-	else
-		return getReleasedCStandards()[0];
+	return getReleasedCStandards()[0];
 }
 
 vector<string> ClangVersionSupport::getAvailableCStandards()

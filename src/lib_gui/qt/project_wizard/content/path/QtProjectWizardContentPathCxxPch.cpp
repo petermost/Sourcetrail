@@ -51,12 +51,14 @@ bool QtProjectWizardContentPathCxxPch::check()
 	if (std::shared_ptr<SourceGroupSettingsCxxCdb> cdbSettings =
 			std::dynamic_pointer_cast<SourceGroupSettingsCxxCdb>(m_settings))
 	{
+		std::string error;
 		const FilePath cdbPath = cdbSettings->getCompilationDatabasePathExpandedAndAbsolute();
-		std::shared_ptr<clang::tooling::JSONCompilationDatabase> cdb = utility::loadCDB(cdbPath);
+		std::shared_ptr<clang::tooling::JSONCompilationDatabase> cdb = utility::loadCDB(cdbPath, &error);
 		if (!cdb)
 		{
 			QtMessageBox msgBox(m_window);
-			msgBox.setText(QStringLiteral("Unable to open and read the provided compilation database file."));
+			msgBox.setText(tr("Unable to open and read the provided compilation database file."));
+			msgBox.setInformativeText(QString::fromStdString(error));
 			msgBox.execModal();
 			return false;
 		}

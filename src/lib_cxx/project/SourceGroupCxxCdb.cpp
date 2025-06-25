@@ -75,11 +75,9 @@ std::set<FilePath> SourceGroupCxxCdb::getAllSourceFilePaths(
 	return sourceFilePaths;
 }
 
-std::shared_ptr<IndexerCommandProvider> SourceGroupCxxCdb::getIndexerCommandProvider(
-	const RefreshInfo& info) const
+std::shared_ptr<IndexerCommandProvider> SourceGroupCxxCdb::getIndexerCommandProvider(const RefreshInfo &info) const
 {
-	std::shared_ptr<CxxIndexerCommandProvider> provider =
-		std::make_shared<CxxIndexerCommandProvider>();
+	std::shared_ptr<CxxIndexerCommandProvider> provider = std::make_shared<CxxIndexerCommandProvider>();
 
 	const FilePath cdbPath = m_settings->getCompilationDatabasePathExpandedAndAbsolute();
 	std::shared_ptr<clang::tooling::JSONCompilationDatabase> cdb = utility::loadCDB(cdbPath);
@@ -93,13 +91,11 @@ std::shared_ptr<IndexerCommandProvider> SourceGroupCxxCdb::getIndexerCommandProv
 
 	const std::vector<std::string> includePchFlags = utility::getIncludePchFlags(m_settings.get());
 
-	const std::set<FilePath> indexedHeaderPaths = utility::toSet(
-		m_settings->getIndexedHeaderPathsExpandedAndAbsolute());
-	const std::set<FilePathFilter> excludeFilters = utility::toSet(
-		m_settings->getExcludeFiltersExpandedAndAbsolute());
-	const std::set<FilePath>& sourceFilePaths = getAllSourceFilePaths(cdb);
+	const std::set<FilePath> indexedHeaderPaths = utility::toSet(m_settings->getIndexedHeaderPathsExpandedAndAbsolute());
+	const std::set<FilePathFilter> excludeFilters = utility::toSet(m_settings->getExcludeFiltersExpandedAndAbsolute());
+	const std::set<FilePath> &sourceFilePaths = getAllSourceFilePaths(cdb);
 
-	for (const clang::tooling::CompileCommand& command: cdb->getAllCompileCommands())
+	for (const clang::tooling::CompileCommand &command : cdb->getAllCompileCommands())
 	{
 		FilePath sourcePath = FilePath(command.Filename).makeCanonical();
 		if (!sourcePath.isAbsolute())
@@ -111,25 +107,20 @@ std::shared_ptr<IndexerCommandProvider> SourceGroupCxxCdb::getIndexerCommandProv
 			}
 		}
 
-		if (info.filesToIndex.find(sourcePath) != info.filesToIndex.end() &&
-			sourceFilePaths.find(sourcePath) != sourceFilePaths.end())
+		if (info.filesToIndex.find(sourcePath) != info.filesToIndex.end() && sourceFilePaths.find(sourcePath) != sourceFilePaths.end())
 		{
 			std::vector<std::string> cdbFlags = command.CommandLine;
-
+			
 			utility::removeIncludePchFlag(cdbFlags);
+			utility::replaceMsvcFlags(&cdbFlags);
 
 			if (command.CommandLine.size() != cdbFlags.size())
 			{
 				utility::append(cdbFlags, includePchFlags);
 			}
 
-			provider->addCommand(std::make_shared<IndexerCommandCxx>(
-				sourcePath,
-				utility::concat(indexedHeaderPaths, {sourcePath}),
-				excludeFilters,
-				std::set<FilePathFilter>(),
-				FilePath(command.Directory),
-				utility::concat(cdbFlags, compilerFlags)));
+			provider->addCommand(std::make_shared<IndexerCommandCxx>(sourcePath, utility::concat(indexedHeaderPaths, {sourcePath}), excludeFilters,
+				std::set<FilePathFilter>(), FilePath(command.Directory), utility::concat(cdbFlags, compilerFlags)));
 		}
 	}
 
