@@ -32,7 +32,7 @@ bool containsIncludePchFlag(const std::vector<std::string>& args);
 std::vector<std::string> getWithRemoveIncludePchFlag(const std::vector<std::string>& args);
 void removeIncludePchFlag(std::vector<std::string>& args);
 std::vector<std::string> getIncludePchFlags(const SourceGroupSettingsWithCxxPchOptions* settings);
-void replaceMsvcFlags(std::vector<std::string> *args);
+void replaceMsvcArguments(std::vector<std::string> *args);
 }
 
 #endif

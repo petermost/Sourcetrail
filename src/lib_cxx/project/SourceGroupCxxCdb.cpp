@@ -112,7 +112,7 @@ std::shared_ptr<IndexerCommandProvider> SourceGroupCxxCdb::getIndexerCommandProv
 			std::vector<std::string> cdbFlags = command.CommandLine;
 			
 			utility::removeIncludePchFlag(cdbFlags);
-			utility::replaceMsvcFlags(&cdbFlags);
+			utility::replaceMsvcArguments(&cdbFlags);
 
 			if (command.CommandLine.size() != cdbFlags.size())
 			{

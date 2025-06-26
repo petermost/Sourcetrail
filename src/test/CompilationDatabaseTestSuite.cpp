@@ -30,6 +30,12 @@ static const char SOURCETRAIL_WINDOWS_CDB[] = R"(
   "command": "C:\\PROGRA~1\\MICROS~2\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1443~1.348\\bin\\HostX64\\x64\\cl.exe  /nologo /TP -DIS_VCPKG_BUILD=1 -ID:\\Sources\\Sourcetrail\\build\\vcpkg-ninja-release\\src\\external -ID:\\Sources\\Sourcetrail\\Sourcetrail\\src\\external -external:ID:\\Sources\\Sourcetrail\\Sourcetrail\\src\\external\\sqlite -external:ID:\\Sources\\Sourcetrail\\build\\vcpkg-ninja-release\\vcpkg_installed\\x64-arm64-linux-windows-osx-static-md\\include -external:W0 /DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++20 -MD /Fosrc\\external\\CMakeFiles\\External_lib_cppsqlite3.dir\\sqlite\\CppSQLite3.cpp.obj /Fdsrc\\external\\CMakeFiles\\External_lib_cppsqlite3.dir\\External_lib_cppsqlite3.pdb /FS -c D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\external\\sqlite\\CppSQLite3.cpp",
   "file": "D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\external\\sqlite\\CppSQLite3.cpp",
   "output": "src\\external\\CMakeFiles\\External_lib_cppsqlite3.dir\\sqlite\\CppSQLite3.cpp.obj"
+},
+{
+  "directory": "D:/Sources/Sourcetrail/build/vcpkg-ninja-release",
+  "command": "C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100261~1.0\\x64\\rc.exe -DBOOST_CONTAINER_NO_LIB -DBOOST_CONTAINER_STATIC_LINK -DBOOST_DATE_TIME_NO_LIB -DBOOST_DATE_TIME_STATIC_LINK -DBOOST_FILESYSTEM_NO_LIB -DBOOST_FILESYSTEM_STATIC_LINK=1 -DBOOST_LOCALE_NO_LIB -DBOOST_LOCALE_STATIC_LINK -DBOOST_PROGRAM_OPTIONS_NO_LIB -DBOOST_PROGRAM_OPTIONS_STATIC_LINK -DBOOST_UUID_FORCE_AUTO_LINK -DIS_VCPKG_BUILD=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_NO_DEBUG -DQT_NO_FOREACH -DQT_NO_IMAGEFORMAT_XPM -DQT_NO_NARROWING_CONVERSIONS_IN_CONNECT -DQT_NO_QASCONST -DQT_NO_QSNPRINTF -DQT_SVG_LIB -DQT_USE_NODISCARD_FILE_OPEN -DQT_WIDGETS_LIB -DUNICODE -DU_CHARSET_IS_UTF8=1 -DWIN32 -DWIN32_LEAN_AND_MEAN -DWIN64 -DWINVER=0x0A00 -D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_NONSTDC_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE -D_CRT_SECURE_NO_WARNINGS -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_SCL_SECURE_NO_DEPRECATE -D_SCL_SECURE_NO_WARNINGS -D_UNICODE -D_WIN32_WINNT=0x0A00 -D_WIN64 -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -I D:\\Sources\\Sourcetrail\\build\\vcpkg-ninja-release\\src\\app -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\app -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\app\\paths -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\app -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\component\\controller\\helper -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\component\\controller -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\component\\view\\helper -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\component\\view -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\component -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\data\\bookmark -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\data\\fulltextsearch -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\data\\graph\\token_component -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\data\\graph -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\data\\indexer\\interprocess\\shared_types -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\data\\indexer\\interprocess -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\data\\indexer -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\data\\location -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\data\\name -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\data\\parser -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\data\\search -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\data\\storage\\migration -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\data\\storage\\sqlite -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\data\\storage\\type -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\data\\storage -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\data\\tooltip -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\data -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\project -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\settings\\migration -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\settings\\source_group\\component -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\settings\\source_group\\type -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\settings\\source_group -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\settings -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility\\commandline -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility\\commandline\\commands -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility\\file -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility\\interprocess -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility\\logging -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility\\math -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility\\messaging\\filter_types -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility\\messaging\\type\\activation -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility\\messaging\\type\\bookmark -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility\\messaging\\type\\code -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility\\messaging\\type\\custom_trail -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility\\messaging\\type\\error -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility\\messaging\\type\\focus -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility\\messaging\\type\\graph -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility\\messaging\\type\\history -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility\\messaging\\type\\indexing -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility\\messaging\\type\\plugin -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility\\messaging\\type\\search -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility\\messaging\\type\\tab -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility\\messaging\\type -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility\\messaging -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility\\migration -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility\\scheduling -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility\\text -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\utility -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\settings\\source_group\\component\\cxx -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\settings\\source_group\\component\\java -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib\\. -I D:\\Sources\\Sourcetrail\\build\\vcpkg-ninja-release\\src\\lib -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_aidkit\\. -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\platform -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\qt\\element\\bookmark -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\qt\\element\\button -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\qt\\element\\code -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\qt\\element\\history -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\qt\\element\\search -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\qt\\element\\dialog -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\qt\\element\\status -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\qt\\element -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\qt\\graphics\\base -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\qt\\graphics\\component -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\qt\\graphics\\graph -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\qt\\graphics -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\qt\\network -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\qt\\project_wizard\\content\\path -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\qt\\project_wizard\\content\\paths -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\qt\\project_wizard\\content -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\qt\\project_wizard -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\qt\\utility -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\qt\\view -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\qt\\window -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\qt -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\utility\\path_detector -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\utility -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\utility\\path_detector\\cxx_header -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\utility\\path_detector\\java_runtime -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\utility\\path_detector\\jre_system_library -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_gui\\utility\\path_detector\\maven_executable -I D:\\Sources\\Sourcetrail\\build\\vcpkg-ninja-release\\src\\lib_gui -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\resources\\. -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_cxx\\data\\indexer -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_cxx\\data\\parser\\cxx\\name -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_cxx\\data\\parser\\cxx\\name_resolver -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_cxx\\data\\parser\\cxx -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_cxx\\project -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_cxx\\utility\\codeblocks -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_cxx\\utility -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_cxx\\. -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_java\\data\\indexer -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_java\\data\\parser\\java -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_java\\project -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_java\\utility -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\lib_java\\. -I D:\\Sources\\Sourcetrail\\build\\vcpkg-ninja-release\\vcpkg_installed\\x64-arm64-linux-windows-osx-static-md\\include\\Qt6\\QtWidgets -I D:\\Sources\\Sourcetrail\\build\\vcpkg-ninja-release\\vcpkg_installed\\x64-arm64-linux-windows-osx-static-md\\include\\Qt6 -I D:\\Sources\\Sourcetrail\\build\\vcpkg-ninja-release\\vcpkg_installed\\x64-arm64-linux-windows-osx-static-md\\include\\Qt6\\QtCore -I D:\\Sources\\Sourcetrail\\build\\vcpkg-ninja-release\\vcpkg_installed\\x64-arm64-linux-windows-osx-static-md\\share\\Qt6\\mkspecs\\win32-msvc -I D:\\Sources\\Sourcetrail\\build\\vcpkg-ninja-release\\vcpkg_installed\\x64-arm64-linux-windows-osx-static-md\\include\\Qt6\\QtGui -I D:\\Sources\\Sourcetrail\\build\\vcpkg-ninja-release\\vcpkg_installed\\x64-arm64-linux-windows-osx-static-md\\include\\Qt6\\QtNetwork -I D:\\Sources\\Sourcetrail\\build\\vcpkg-ninja-release\\vcpkg_installed\\x64-arm64-linux-windows-osx-static-md\\include\\Qt6\\QtSvg -I D:\\Sources\\Sourcetrail\\build\\vcpkg-ninja-release\\vcpkg_installed\\x64-arm64-linux-windows-osx-static-md\\include -I \"C:\\Program Files\\OpenJDK\\jdk-22.0.2\\include\" -I \"C:\\Program Files\\OpenJDK\\jdk-22.0.2\\include\\win32\" -I D:\\Sources\\Sourcetrail\\Sourcetrail\\src\\external\\sqlite -DWIN32 /fo src\\app\\CMakeFiles\\Sourcetrail.dir\\Sourcetrail.rc.res D:\\Sources\\Sourcetrail\\build\\vcpkg-ninja-release\\src\\app\\Sourcetrail.rc",
+  "file": "D:\\Sources\\Sourcetrail\\build\\vcpkg-ninja-release\\src\\app\\Sourcetrail.rc",
+  "output": "src\\app\\CMakeFiles\\Sourcetrail.dir\\Sourcetrail.rc.res"
 }
 ])";
 
@@ -74,34 +80,41 @@ static vector<CompileCommand> loadDatabase(string_view cdbContent, JSONCommandLi
 	return cdb->getAllCompileCommands();
 }
 
-TEST_CASE("CDB replace msvc flags in windows database")
+TEST_CASE("CDB replace msvc arguments in windows database")
 {
 	vector<string> commandLine;
 
 	vector<CompileCommand> compileCommands = loadDatabase(SOURCETRAIL_WINDOWS_CDB, JSONCommandLineSyntax::Windows);
-	REQUIRE(compileCommands.size() == 3);
+	REQUIRE(compileCommands.size() == 4);
 
 	// aidkit command lines:
 
 	commandLine = compileCommands[0].CommandLine;
 	REQUIRE(commandLine.size() == 47);
-	replaceMsvcFlags(&commandLine);
+	replaceMsvcArguments(&commandLine);
 	REQUIRE(commandLine.size() == 17);
 
 	commandLine = compileCommands[1].CommandLine;
 	REQUIRE(commandLine.size() == 47);
-	replaceMsvcFlags(&commandLine);
+	replaceMsvcArguments(&commandLine);
 	REQUIRE(commandLine.size() == 17);
 
 	// CppSQLite3 command line:
 
 	commandLine = compileCommands[2].CommandLine;
 	REQUIRE(commandLine.size() == 22);
-	replaceMsvcFlags(&commandLine);
+	replaceMsvcArguments(&commandLine);
 	REQUIRE(commandLine.size() == 14);
+
+	// Resource compiler (Sourcetrail.rc):
+
+	commandLine = compileCommands[3].CommandLine;
+	REQUIRE(commandLine.size() == 280);
+	replaceMsvcArguments(&commandLine);
+	REQUIRE(commandLine.size() == 280);
 }
 
-TEST_CASE("CDB replace msvc flags in linux database")
+TEST_CASE("CDB replace msvc arguments in linux database")
 {
 	vector<string> commandLine;
 
@@ -112,64 +125,71 @@ TEST_CASE("CDB replace msvc flags in linux database")
 
 	commandLine = compileCommands[0].CommandLine;
 	REQUIRE(commandLine.size() == 38);
-	replaceMsvcFlags(&commandLine);
+	replaceMsvcArguments(&commandLine);
 	REQUIRE(commandLine.size() == 38);
 
 	commandLine = compileCommands[1].CommandLine;
 	REQUIRE(commandLine.size() == 38);
-	replaceMsvcFlags(&commandLine);
+	replaceMsvcArguments(&commandLine);
 	REQUIRE(commandLine.size() == 38);
 
 	// CppSQLite3 command line:
 
 	commandLine = compileCommands[2].CommandLine;
 	REQUIRE(commandLine.size() == 16);
-	replaceMsvcFlags(&commandLine);
+	replaceMsvcArguments(&commandLine);
 	REQUIRE(commandLine.size() == 16);
 }
 
-TEST_CASE("CDB replace msvc flags in issue database")
+TEST_CASE("CDB replace msvc arguments in issue database")
 {
 	vector<CompileCommand> compileCommands = loadDatabase(ISSUE_WINDOWS_CDB, JSONCommandLineSyntax::Windows);
 	REQUIRE(compileCommands.size() == 1);
 
 	vector<string> commandLine = compileCommands[0].CommandLine;
 	REQUIRE(commandLine.size() == 55);
-	replaceMsvcFlags(&commandLine);
+	replaceMsvcArguments(&commandLine);
 	REQUIRE(commandLine.size() == 46);
 }
 
-TEST_CASE("CDB replace msvc flags")
+TEST_CASE("CDB replace msvc arguments")
 {
-	vector<string> args(13);
-	args[0]  = "C:\\some_path\\cl.exe";
-	args[1]  = "/DDefine";
-	args[2]  = "/UUndefine";
-	args[3]  = "/IIncludeDirectory";
-	args[4]  = "/external:IExternalIncludeDirectory1";
-	args[5]  = "-external:IExternalIncludeDirectory2";
-	args[6]  = "/std:c++latest";
-	args[7]  = "/std:c++23preview";
-	args[8]  = "/std:c++11";
-	args[9]  = "-std:c++14";
-	args[10] = "/FIIncludeFile1";
-	args[11] = "-FIIncludeFile2";
-	args[12] = "/SomeUnknownOption";
+	vector<string> arguments {
+		"C:\\some_path\\cl.exe",
+		"/DDefine",
+		"/UUndefine",
 
-	replaceMsvcFlags(&args);
-	REQUIRE(args.size() == 12);
-	REQUIRE(args[0]  == "C:\\some_path\\cl.exe");
-	REQUIRE(args[1]  == "-DDefine");
-	REQUIRE(args[2]  == "-UUndefine");
-	REQUIRE(args[3]  == "-IIncludeDirectory");
-	REQUIRE(args[4]  == "-isystem ExternalIncludeDirectory1");
-	REQUIRE(args[5]  == "-isystem ExternalIncludeDirectory2");
-	REQUIRE(args[6]  == "-std=c++23");
-	REQUIRE(args[7]  == "-std=c++2c");
-	REQUIRE(args[8]  == "-std=c++11");
-	REQUIRE(args[9]  == "-std=c++14");
-	REQUIRE(args[10] == "-include IncludeFile1");
-	REQUIRE(args[11] == "-include IncludeFile2");
-	// Removed: "/SomeUnknownOption"
+		"/IIncludeDirectory",
+		"/external:IExternalIncludeDirectory1", "-external:IExternalIncludeDirectory2",
+		"/FIIncludeFile1", 	"-FIIncludeFile2",
+
+		"/std:c++latest", "-std:c++latest",
+		"/std:c++11", "-std:c++14",
+		"/std:clatest", "-std:clatest",
+		"/std:c11", "-std:c99",
+
+		"/SomeUnknownOption"
+	};
+
+	const vector<string> expectedClangArguments {
+		"C:\\some_path\\cl.exe",
+		"-DDefine",
+		"-UUndefine",
+
+		"-IIncludeDirectory",
+		"-isystem ExternalIncludeDirectory1", "-isystem ExternalIncludeDirectory2",
+		"-include IncludeFile1", "-include IncludeFile2",
+
+		"-std=c++23", "-std=c++23",
+		"-std=c++11", "-std=c++14",
+		"-std=c17", "-std=c17",
+		"-std=c11", "-std=c99",
+
+		// Removed: "/SomeUnknownOption"
+	};
+	replaceMsvcArguments(&arguments);
+
+	for (size_t i = 0; i < arguments.size() && i < expectedClangArguments.size(); ++i)
+		REQUIRE(arguments[i] == expectedClangArguments[i]);
 }
 

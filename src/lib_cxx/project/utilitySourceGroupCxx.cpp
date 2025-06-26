@@ -196,78 +196,71 @@ std::vector<std::string> getIncludePchFlags(const SourceGroupSettingsWithCxxPchO
 	return {};
 }
 
-// Excerpt (https://learn.microsoft.com/en-us/cpp/build/reference/compiler-options):
-// - All compiler options are case-sensitive.
-// - You may use either a forward slash (/) or a dash (-) to specify a compiler option.
-
-static constexpr string_view DEFINE_SWITCH("/D");
-static constexpr string_view UNDEFINE_SWITCH("/U");
-
-static constexpr string_view INCLUDE_SWITCH("/I");
-static constexpr string_view EXTERNAL_INCLUDE_SWITCH_1("/external:I");
-static constexpr string_view EXTERNAL_INCLUDE_SWITCH_2("-external:I");
-
-static constexpr string_view STD_VERSION_SWITCH_1("/std:");
-static constexpr string_view STD_VERSION_SWITCH_2("-std:");
-
-static constexpr string_view FORCE_INCLUDE_SWITCH_1("/FI");
-static constexpr string_view FORCE_INCLUDE_SWITCH_2("-FI");
-
-void replaceMsvcFlags(vector<string> *args)
+static bool getArgumentValue(const string &argument, string_view argumentKey, string *argumentValue)
 {
-	// Replace/Remove flags only if these arguments are for the Microsoft compiler:
-	if (args->size() >= 1 && !(*args)[0].ends_with("cl.exe"s))
+	if (argument.starts_with(argumentKey))
+	{
+		*argumentValue = argument.substr(argumentKey.length());
+		return true;
+	}
+	else
+		return false;
+}
+
+void replaceMsvcArguments(vector<string> *arguments)
+{
+	// Replace/Remove arguments only if these are for the Microsoft compiler, otherwise the check for '/' will remove Linux paths:
+
+	if (arguments->size() >= 1 && !(*arguments)[0].ends_with("cl.exe"s))
 		return;
 
-	string clangArg;
-	vector<string> clangArgs;
-	
-   // Keep/Replace only those options which are necessary to parse the code correctly:
+	string clangArgument;
+	string argumentValue;
+	vector<string> clangArguments;
 
-	for (const string &arg : *args)
+	// Keep/Replace only those options which are necessary to parse the code correctly:
+
+	for (const string &argument : *arguments)
 	{
-		clangArg.clear();
+		// Documentation excerpt (https://learn.microsoft.com/en-us/cpp/build/reference/compiler-options):
+		// - All compiler options are case-sensitive.
+		// - You may use either a forward slash (/) or a dash (-) to specify a compiler option.
 
-		// Defines/Undefines:
+		clangArgument.clear();
 
-		if (arg.starts_with(DEFINE_SWITCH))
-			clangArg = "-D"s + arg.substr(DEFINE_SWITCH.length());
-		else if (arg.starts_with(UNDEFINE_SWITCH))
-			clangArg = "-U"s + arg.substr(UNDEFINE_SWITCH.length());
-		else if (arg.starts_with(FORCE_INCLUDE_SWITCH_1))
-			clangArg = "-include "s + arg.substr(FORCE_INCLUDE_SWITCH_1.length());
-		else if (arg.starts_with(FORCE_INCLUDE_SWITCH_2))
-			clangArg = "-include "s + arg.substr(FORCE_INCLUDE_SWITCH_2.length());
+		// Preprocessor symbols:
 
-		// Include directories:
+		if (getArgumentValue(argument, "/D"sv, &argumentValue))
+			clangArgument = "-D"s + argumentValue;
+		else if (getArgumentValue(argument, "/U"sv, &argumentValue))
+			clangArgument = "-U"s + argumentValue;
+		else if (getArgumentValue(argument, "/FI"sv, &argumentValue) || getArgumentValue(argument, "-FI"sv, &argumentValue))
+			clangArgument = "-include "s + argumentValue;
 
-		else if (arg.starts_with(INCLUDE_SWITCH))
-			clangArg = "-I"s + arg.substr(INCLUDE_SWITCH.length());
-		else if (arg.starts_with(EXTERNAL_INCLUDE_SWITCH_1))
-			clangArg = "-isystem "s + arg.substr(EXTERNAL_INCLUDE_SWITCH_1.length());
-		else if (arg.starts_with(EXTERNAL_INCLUDE_SWITCH_2))
-			clangArg = "-isystem "s + arg.substr(EXTERNAL_INCLUDE_SWITCH_2.length());
+		// Preprocessor include directories:
 
-		// First the specific std switches:
+		else if (getArgumentValue(argument, "/I"sv, &argumentValue))
+			clangArgument = "-I"s + argumentValue;
+		else if (getArgumentValue(argument, "/external:I"sv, &argumentValue) || getArgumentValue(argument, "-external:I"sv, &argumentValue))
+			clangArgument = "-isystem "s + argumentValue;
 
-		else if (arg.starts_with("/std:c++latest"s))
-			clangArg = "-std="s + ClangVersionSupport::getLatestCppStandard();
-		else if (arg.starts_with("/std:c++23preview"s))
-			clangArg = "-std="s + ClangVersionSupport::getLatestCppDraft();
+		// C/C++ language version selection (no support for previews):
 
-		// Then the general std switches:
+		else if (argument.starts_with("/std:c++latest"sv) || argument.starts_with("-std:c++latest"sv))
+			clangArgument = "-std="s + ClangVersionSupport::getLatestCppStandard();
+		else if (argument.starts_with("/std:clatest"sv) || argument.starts_with("-std:clatest"sv))
+			clangArgument = "-std="s + ClangVersionSupport::getLatestCStandard();
+		else if (getArgumentValue(argument, "/std:c++"sv, &argumentValue) || getArgumentValue(argument, "-std:c++"sv, &argumentValue))
+			clangArgument = "-std=c++"s + argumentValue;
+		else if (getArgumentValue(argument, "/std:c"sv, &argumentValue) || getArgumentValue(argument, "-std:c"sv, &argumentValue))
+			clangArgument = "-std=c"s + argumentValue;
 
-		else if (arg.starts_with(STD_VERSION_SWITCH_1))
-			clangArg = "-std="s + arg.substr(STD_VERSION_SWITCH_1.length());
-		else if (arg.starts_with(STD_VERSION_SWITCH_2))
-			clangArg = "-std="s + arg.substr(STD_VERSION_SWITCH_2.length());
-
-		if (!clangArg.empty())
-			clangArgs.push_back(clangArg);
-		else if (!arg.starts_with('/'))
-			clangArgs.push_back(arg);
+		if (!clangArgument.empty())
+			clangArguments.push_back(clangArgument);
+		else if (!argument.starts_with('/'))
+			clangArguments.push_back(argument);
 	}
-	*args = clangArgs;
+	*arguments = std::move(clangArguments);
 }
 
 }	 // namespace utility

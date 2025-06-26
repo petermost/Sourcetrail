@@ -132,11 +132,6 @@ string ClangVersionSupport::getLatestCppStandard()
 	return getReleasedCppStandards()[0];
 }
 
-string ClangVersionSupport::getLatestCppDraft()
-{
-	return getDraftCppStandards()[0];
-}
-
 vector<string> ClangVersionSupport::getAvailableCppStandards()
 {
 	return concat(getDraftCppStandards(), getReleasedCppStandards());
