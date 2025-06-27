@@ -9,7 +9,6 @@ add_executable(Sourcetrail_test
 	test_main.cpp
 
 	CommandlineTestSuite.cpp
-	CompilationDatabaseTestSuite.cpp
 	ConfigManagerTestSuite.cpp
 	CxxIncludeProcessingTestSuite.cpp
 	CxxParserTestSuite.cpp
@@ -44,11 +43,13 @@ add_executable(Sourcetrail_test
 	TaskSchedulerTestSuite.cpp
 	TextAccessTestSuite.cpp
 	TextCodecTestSuite.cpp
+	UtilityEnumTestSuite.cpp
 	UtilityGradleTestSuite.cpp
 	UtilityMavenTestSuite.cpp
+	UtilitySourceGroupCxxTestSuite.cpp
 	UtilityStringTestSuite.cpp
-	UtilityEnumTestSuite.cpp
 	Vector2TestSuite.cpp
+
 	Snippet.cpp
 )
 setDefaultTargetOptions(Sourcetrail_test)
