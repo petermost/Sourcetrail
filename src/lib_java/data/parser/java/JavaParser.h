@@ -1,18 +1,21 @@
 #ifndef JAVA_PARSER_H
 #define JAVA_PARSER_H
 
-#include <jni.h>
-#include <map>
-#include <mutex>
-#include <string>
-
 #include "FilePath.h"
+#include "Id.h"
 #include "IndexerCommandJava.h"
 #include "IndexerStateInfo.h"
 #include "JavaEnvironment.h"
 #include "Parser.h"
 #include "logging.h"
-#include "types.h"
+#include "utilityStl.h"
+
+#include <aidkit/thread_shared.hpp>
+
+#include <jni.h>
+
+#include <map>
+#include <string>
 
 class FilePath;
 class TextAccess;
@@ -161,12 +164,15 @@ private:
 		MAKE_ARGS_16())
 
 #define DEF_RELAYING_METHOD(NAME, PARAMETERS, ARGUMENTS)                                           \
-	static void NAME(JNIEnv* /*env*/, jobject /*objectOrClass*/, jint parserId PARAMETERS)                 \
+	static void NAME(JNIEnv* /*env*/, jobject /*objectOrClass*/, jint parserId PARAMETERS)         \
 	{                                                                                              \
-		std::map<int, JavaParser*>::iterator it = s_parsers.find(int(parserId));                   \
-		if (it != s_parsers.end())                                                                 \
+		auto optIt = aidkit::access([=](auto &parsers)                                             \
 		{                                                                                          \
-			it->second->do##NAME(ARGUMENTS);                                                       \
+			return utility::find_optional(parsers, int(parserId));                                 \
+		}, s_parsers);                                                                             \
+		if (optIt)                                                                                 \
+		{                                                                                          \
+			(*optIt)->second->do##NAME(ARGUMENTS);                                                 \
 		}                                                                                          \
 		else                                                                                       \
 		{                                                                                          \
@@ -219,10 +225,14 @@ private:
 
 	static bool GetInterrupted(JNIEnv*  /*env*/, jobject  /*objectOrClass*/, jint parserId)
 	{
-		std::map<int, JavaParser*>::iterator it = s_parsers.find(int(parserId));
-		if (it != s_parsers.end())
+		auto optIt = aidkit::access([=](auto &parsers)
 		{
-			return it->second->doGetInterrupted();
+			return utility::find_optional(parsers, int(parserId));
+		}, s_parsers);
+
+		if (optIt)
+		{
+			return (*optIt)->second->doGetInterrupted();
 		}
 		else
 		{
@@ -233,8 +243,7 @@ private:
 	}
 
 	static int s_nextParserId;
-	static std::map<int, JavaParser*> s_parsers;
-	static std::mutex s_parsersMutex;
+	static aidkit::thread_shared<std::map<int, JavaParser*>> s_parsers;
 
 
 	bool doGetInterrupted();

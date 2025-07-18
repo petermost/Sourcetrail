@@ -57,15 +57,12 @@ JavaParser::JavaParser(
 
 		m_javaEnvironment->registerNativeMethods("com/sourcetrail/JavaIndexer", methods);
 	}
-	{
-		std::lock_guard<std::mutex> lock(s_parsersMutex);
-		s_parsers[m_id] = this;
-	}
+	(*s_parsers.access())[m_id] = this;
 }
 
 JavaParser::~JavaParser()
 {
-	s_parsers.erase(m_id);
+	s_parsers.access()->erase(m_id);
 }
 
 void JavaParser::buildIndex(std::shared_ptr<IndexerCommandJava> indexerCommand)
@@ -123,10 +120,7 @@ void JavaParser::buildIndex(
 
 int JavaParser::s_nextParserId = 0;
 
-std::map<int, JavaParser*> JavaParser::s_parsers;
-
-std::mutex JavaParser::s_parsersMutex;
-
+aidkit::thread_shared<std::map<int, JavaParser*>> JavaParser::s_parsers;
 
 // definition of native methods
 

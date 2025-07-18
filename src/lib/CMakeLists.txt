@@ -619,6 +619,7 @@ add_library(Sourcetrail_lib
 	utility/utilityEnum.h
 	utility/utilityString.cpp
 	utility/utilityString.h
+	utility/utilityStl.h
 	utility/utilityUuid.cpp
 	utility/utilityUuid.h
 	utility/utilityXml.cpp
