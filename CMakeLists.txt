@@ -89,7 +89,10 @@ set(CMAKE_FIND_PACKAGE_SORT_ORDER NATURAL)
 
 # Prepare Data ----------------------------------------------------------------
 
-configure_file(scripts/generate_coverage_report.sh generate_coverage_report.sh COPYONLY)
+if (isVcpkgBuild)
+	# TODO: The current script only works for vcpkg-builds!
+	configure_file(scripts/generate_coverage_report.sh generate_coverage_report.sh COPYONLY)
+endif()
 
 get_property(isMultiConfigGenerator GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 if (isMultiConfigGenerator)
