@@ -154,22 +154,19 @@ std::shared_ptr<JavaEnvironment> JavaEnvironmentFactory::createEnvironment()
 
 	JNIEnv* env;
 
+	aidkit::access([&](auto &threadIdToEnvAndUserCount)
 	{
-		std::lock_guard<std::mutex> lock(m_threadIdToEnvAndUserCountMutex);
-
-		std::map<std::thread::id, std::pair<JNIEnv*, int>>::const_iterator it =
-			m_threadIdToEnvAndUserCount.find(currentThreadId);
-		if (it != m_threadIdToEnvAndUserCount.end())
+		auto it = threadIdToEnvAndUserCount.find(currentThreadId);
+		if (it != threadIdToEnvAndUserCount.end())
 		{
 			env = it->second.first;
 		}
 		else
 		{
 			m_jvm->AttachCurrentThread((void**)&env, nullptr);
-			m_threadIdToEnvAndUserCount.insert(
-				std::make_pair(currentThreadId, std::make_pair(env, 0)));
+			threadIdToEnvAndUserCount.insert(std::make_pair(currentThreadId, std::make_pair(env, 0)));
 		}
-	}
+	}, m_threadIdToEnvAndUserCount);
 
 	return std::shared_ptr<JavaEnvironment>(new JavaEnvironment(m_jvm, env));
 }
@@ -183,11 +180,11 @@ JavaEnvironmentFactory::JavaEnvironmentFactory(JavaVM* jvm)
 void JavaEnvironmentFactory::registerEnvironment()
 {
 	std::thread::id currentThreadId = std::this_thread::get_id();
+
+	aidkit::access([=](auto &threadIdToEnvAndUserCount)
 	{
-		std::lock_guard<std::mutex> lock(m_threadIdToEnvAndUserCountMutex);
-		std::map<std::thread::id, std::pair<JNIEnv*, int>>::iterator it =
-			m_threadIdToEnvAndUserCount.find(currentThreadId);
-		if (it != m_threadIdToEnvAndUserCount.end())
+		auto it = threadIdToEnvAndUserCount.find(currentThreadId);
+		if (it != threadIdToEnvAndUserCount.end())
 		{
 			it->second.second++;
 		}
@@ -195,28 +192,28 @@ void JavaEnvironmentFactory::registerEnvironment()
 		{
 			LOG_ERROR("something went horribly wrong while registering a java environment");
 		}
-	}
+	}, m_threadIdToEnvAndUserCount);
 }
 
 void JavaEnvironmentFactory::unregisterEnvironment()
 {
 	std::thread::id currentThreadId = std::this_thread::get_id();
+
+	aidkit::access([=, this](auto &threadIdToEnvAndUserCount)
 	{
-		std::lock_guard<std::mutex> lock(m_threadIdToEnvAndUserCountMutex);
-		std::map<std::thread::id, std::pair<JNIEnv*, int>>::iterator it =
-			m_threadIdToEnvAndUserCount.find(currentThreadId);
-		if (it != m_threadIdToEnvAndUserCount.end())
+		auto it = threadIdToEnvAndUserCount.find(currentThreadId);
+		if (it != threadIdToEnvAndUserCount.end())
 		{
 			it->second.second--;
 			if (it->second.second == 0)
 			{	 // TODO: currently this happens quite often. do something about that.
 				m_jvm->DetachCurrentThread();
-				m_threadIdToEnvAndUserCount.erase(it);
+				threadIdToEnvAndUserCount.erase(it);
 			}
 		}
 		else
 		{
 			LOG_ERROR("something went horribly wrong while unregistering a java environment");
 		}
-	}
+	}, m_threadIdToEnvAndUserCount);
 }
