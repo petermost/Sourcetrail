@@ -11,17 +11,14 @@
 #include "TaskLambda.h"
 #include "TaskManager.h"
 #include "TaskScheduler.h"
+#include "utilityStl.h"
 
-TabsController::TabsController(
-	ViewLayout* mainLayout,
-	const ViewFactory* viewFactory,
-	StorageAccess* storageAccess,
-	ScreenSearchSender* screenSearchSender)
+TabsController::TabsController(ViewLayout *mainLayout, const ViewFactory *viewFactory, StorageAccess *storageAccess,
+	ScreenSearchSender *screenSearchSender)
 	: m_mainLayout(mainLayout)
 	, m_viewFactory(viewFactory)
 	, m_storageAccess(storageAccess)
 	, m_screenSearchSender(screenSearchSender)
-	 
 {
 }
 
@@ -32,26 +29,19 @@ void TabsController::clear()
 
 	while (true)
 	{
+		if (m_tabs.access()->empty())
 		{
-			std::lock_guard<std::mutex> lock(m_tabsMutex);
-			if (m_tabs.empty())
-			{
-				break;
-			}
+			break;
 		}
-
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }
 
-void TabsController::addTab(TabId tabId, SearchMatch match)
+void TabsController::addTab(TabId tabId, const SearchMatch &match)
 {
-	std::lock_guard<std::mutex> lock(m_tabsMutex);
-
 	TaskManager::createScheduler(tabId)->startSchedulerLoopThreaded();
 
-	m_tabs.emplace(
-		tabId, std::make_shared<Tab>(tabId, m_viewFactory, m_storageAccess, m_screenSearchSender));
+	m_tabs.access()->emplace(tabId, std::make_shared<Tab>(tabId, m_viewFactory, m_storageAccess, m_screenSearchSender));
 
 	MessageWindowChanged().dispatch();
 
@@ -60,13 +50,15 @@ void TabsController::addTab(TabId tabId, SearchMatch match)
 		MessageSearch msg({match}, NodeTypeSet::all());
 		msg.setSchedulerId(tabId);
 		msg.dispatch();
-
-		if (match.tokenIds.size() && std::get<0>(m_scrollToLine) == match.tokenIds[0])
+		aidkit::access([tabId, &match](auto &scrollToLine)
 		{
-			MessageScrollToLine scrollMsg(std::get<1>(m_scrollToLine), std::get<2>(m_scrollToLine));
-			scrollMsg.setSchedulerId(tabId);
-			scrollMsg.dispatch();
-		}
+			if (match.tokenIds.size() && std::get<0>(scrollToLine) == match.tokenIds[0])
+			{
+				MessageScrollToLine scrollMsg(std::get<1>(scrollToLine), std::get<2>(scrollToLine));
+				scrollMsg.setSchedulerId(tabId);
+				scrollMsg.dispatch();
+			}
+		}, m_scrollToLine);
 	}
 	else
 	{
@@ -81,13 +73,11 @@ void TabsController::addTab(TabId tabId, SearchMatch match)
 
 void TabsController::showTab(TabId tabId)
 {
-	std::lock_guard<std::mutex> lock(m_tabsMutex);
-
-	auto it = m_tabs.find(tabId);
-	if (it != m_tabs.end())
+	auto optIt = utility::find_optional(*m_tabs.access(), tabId);
+	if (optIt)
 	{
 		TabIds::setCurrentTabId(tabId);
-		it->second->setParentLayout(m_mainLayout);
+		(*optIt)->second->setParentLayout(m_mainLayout);
 	}
 	else
 	{
@@ -95,39 +85,42 @@ void TabsController::showTab(TabId tabId)
 		m_mainLayout->showOriginalViews();
 	}
 
-	Task::dispatch(TabIds::app(), std::make_shared<TaskLambda>([this]() {
-					   m_screenSearchSender->clearMatches();
-				   }));
+	Task::dispatch(TabIds::app(), std::make_shared<TaskLambda>([this]()
+	{
+		m_screenSearchSender->clearMatches();
+	}));
 }
 
 void TabsController::removeTab(TabId tabId)
 {
 	// use app task scheduler thread to stop running tasks of tab
-	Task::dispatch(TabIds::background(), std::make_shared<TaskLambda>([tabId, this]() {
-					   m_screenSearchSender->clearMatches();
+	Task::dispatch(TabIds::background(), std::make_shared<TaskLambda>([tabId, this]()
+	{
+		m_screenSearchSender->clearMatches();
 
-					   TaskScheduler* scheduler = TaskManager::getScheduler(tabId).get();
-					   scheduler->terminateRunningTasks();
-					   scheduler->stopSchedulerLoop();
+		TaskScheduler *scheduler = TaskManager::getScheduler(tabId).get();
+		scheduler->terminateRunningTasks();
+		scheduler->stopSchedulerLoop();
 
-					   TaskManager::destroyScheduler(tabId);
+		TaskManager::destroyScheduler(tabId);
 
-					   getView()->destroyTab(tabId);
-				   }));
+		getView()->destroyTab(tabId);
+	}));
 }
 
 void TabsController::destroyTab(TabId tabId)
 {
-	std::lock_guard<std::mutex> lock(m_tabsMutex);
-
-	// destroy the tab on the qt thread to allow view destruction
-	m_tabs.erase(tabId);
-
-	if (m_tabs.empty() && Application::getInstance()->isProjectLoaded() && !m_isCreatingTab)
+	aidkit::access([this, tabId](auto &tabs)
 	{
-		MessageTabOpen().dispatch();
-		m_isCreatingTab = true;
-	}
+		// destroy the tab on the qt thread to allow view destruction
+		tabs.erase(tabId);
+
+		if (tabs.empty() && Application::getInstance()->isProjectLoaded() && !m_isCreatingTab)
+		{
+			MessageTabOpen().dispatch();
+			m_isCreatingTab = true;
+		}
+	}, m_tabs);
 }
 
 void TabsController::onClearTabs()
@@ -143,7 +136,7 @@ TabsView* TabsController::getView() const
 
 void TabsController::handleMessage(MessageActivateErrors*  /*message*/)
 {
-	if (m_tabs.empty() && Application::getInstance()->isProjectLoaded())
+	if (m_tabs.access()->empty() && Application::getInstance()->isProjectLoaded())
 	{
 		MessageTabOpenWith(SearchMatch::createCommand(SearchMatch::COMMAND_ERROR)).dispatch();
 	}
@@ -151,7 +144,7 @@ void TabsController::handleMessage(MessageActivateErrors*  /*message*/)
 
 void TabsController::handleMessage(MessageIndexingFinished*  /*message*/)
 {
-	if (m_tabs.empty() && Application::getInstance()->isProjectLoaded())
+	if (m_tabs.access()->empty() && Application::getInstance()->isProjectLoaded())
 	{
 		MessageTabOpenWith(SearchMatch::createCommand(SearchMatch::COMMAND_ALL)).dispatch();
 	}
@@ -184,8 +177,7 @@ void TabsController::handleMessage(MessageTabOpenWith* message)
 		Id tokenId = message->tokenId;
 		if (!tokenId && message->locationId)
 		{
-			std::vector<Id> tokenIds = m_storageAccess->getNodeIdsForLocationIds(
-				{message->locationId});
+			std::vector<Id> tokenIds = m_storageAccess->getNodeIdsForLocationIds({message->locationId});
 			if (tokenIds.size())
 			{
 				tokenId = tokenIds[0];

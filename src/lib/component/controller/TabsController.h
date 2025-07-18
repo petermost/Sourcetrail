@@ -14,6 +14,8 @@
 #include "Tab.h"
 #include "TabsView.h"
 
+#include <aidkit/thread_shared.hpp>
+
 struct SearchMatch;
 
 class StorageAccess;
@@ -40,7 +42,7 @@ public:
 	// Controller implementation
 	void clear() override;
 	
-	void addTab(TabId tabId, SearchMatch match);
+	void addTab(TabId tabId, const SearchMatch &match);
 	void showTab(TabId tabId);
 	void removeTab(TabId tabId);
 	void destroyTab(TabId tabId);
@@ -57,16 +59,14 @@ private:
 
 	TabsView* getView() const;
 
-	ViewLayout* m_mainLayout;
-	const ViewFactory* m_viewFactory;
-	StorageAccess* m_storageAccess;
-	ScreenSearchSender* m_screenSearchSender;
+	ViewLayout *const m_mainLayout;
+	const ViewFactory *const m_viewFactory;
+	StorageAccess *const m_storageAccess;
+	ScreenSearchSender *const m_screenSearchSender;
 
-	std::map<TabId, std::shared_ptr<Tab>> m_tabs;
-	std::mutex m_tabsMutex;
-
-	bool m_isCreatingTab = false;
-	std::tuple<Id, FilePath, size_t> m_scrollToLine;
+	aidkit::thread_shared<std::map<TabId, std::shared_ptr<Tab>>> m_tabs;
+	std::atomic<bool> m_isCreatingTab = false;
+	aidkit::thread_shared<std::tuple<Id, FilePath, size_t>> m_scrollToLine;
 };
 
 #endif	  // TABS_CONTROLLER_H
