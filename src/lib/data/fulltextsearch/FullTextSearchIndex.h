@@ -1,11 +1,12 @@
 #ifndef FULLTEXTSEARCH_INDEX_H
 #define FULLTEXTSEARCH_INDEX_H
 
-#include <mutex>
-#include <vector>
-
+#include "Id.h"
 #include "SuffixArray.h"
-#include "types.h"
+
+#include <aidkit/thread_shared.hpp>
+
+#include <vector>
 
 class StorageAccess;
 
@@ -34,8 +35,7 @@ public:
 	void clear();
 
 private:
-	mutable std::mutex m_filesMutex;
-	std::vector<FullTextSearchFile> m_files;
+	aidkit::thread_shared<std::vector<FullTextSearchFile>> m_files;
 };
 
 #endif	  // FULLTEXTSEARCH_INDEX_H

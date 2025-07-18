@@ -18,10 +18,7 @@ void FullTextSearchIndex::addFile(Id fileId, const std::string& fileContent)
 
 	FullTextSearchFile fts_file(fileId, SuffixArray(fileContent));
 
-	{
-		std::lock_guard<std::mutex> lock(m_filesMutex);
-		m_files.push_back(fts_file);
-	}
+	m_files.access()->push_back(fts_file);
 }
 
 std::vector<FullTextSearchResult> FullTextSearchIndex::searchForTerm(const std::string& term) const
@@ -29,9 +26,9 @@ std::vector<FullTextSearchResult> FullTextSearchIndex::searchForTerm(const std::
 	TRACE();
 
 	std::vector<FullTextSearchResult> ret;
+	aidkit::access([&](const auto &files)
 	{
-		std::lock_guard<std::mutex> lock(m_filesMutex);
-		for (const FullTextSearchFile &fullTextSearchFile : m_files)
+		for (const FullTextSearchFile &fullTextSearchFile : files)
 		{
 			FullTextSearchResult hit;
 			hit.fileId = fullTextSearchFile.fileId;
@@ -42,19 +39,17 @@ std::vector<FullTextSearchResult> FullTextSearchIndex::searchForTerm(const std::
 				ret.push_back(hit);
 			}
 		}
-	}
+	}, m_files);
 
 	return ret;
 }
 
 size_t FullTextSearchIndex::fileCount() const
 {
-	std::lock_guard<std::mutex> lock(m_filesMutex);
-	return m_files.size();
+	return m_files.access()->size();
 }
 
 void FullTextSearchIndex::clear()
 {
-	std::lock_guard<std::mutex> lock(m_filesMutex);
-	m_files.clear();
+	m_files.access()->clear();
 }
