@@ -4,6 +4,8 @@
 #include "logging.h"
 #include "utilityString.h"
 
+#include <aidkit/thread_shared.hpp>
+
 #include <QThread>
 
 #include <boost/asio/buffer.hpp>
@@ -32,13 +34,13 @@
 #include <mutex>
 #include <set>
 
+using namespace aidkit;
 using namespace boost;
 using namespace boost::chrono;
 
 namespace utility
 {
-std::mutex s_runningProcessesMutex;
-std::set<std::shared_ptr<process_v1::child>> s_runningProcesses;
+thread_shared<std::set<std::shared_ptr<process_v1::child>>> s_runningProcesses;
 
 std::string getDocumentationLink()
 {
@@ -123,16 +125,12 @@ ProcessOutput executeProcess(const std::string& command, const std::vector<std::
 				(process_v1::std_out & process_v1::std_err) > ap);
 		}
 
-		{
-			std::lock_guard<std::mutex> lock(s_runningProcessesMutex);
-			s_runningProcesses.insert(process);
-		}
+		s_runningProcesses.access()->insert(process);
 
 		[[maybe_unused]]
 		ScopedFunctor remover([process]()
 		{
-			std::lock_guard<std::mutex> lock(s_runningProcessesMutex);
-			s_runningProcesses.erase(process);
+			s_runningProcesses.access()->erase(process);
 		});
 
 		bool outputReceived = false;
@@ -240,11 +238,13 @@ ProcessOutput executeProcess(const std::string& command, const std::vector<std::
 
 void killRunningProcesses()
 {
-	std::lock_guard<std::mutex> lock(s_runningProcessesMutex);
-	for (std::shared_ptr<process_v1::child> process: s_runningProcesses)
+	aidkit::access([](auto &runningProcesses)
 	{
-		process->terminate();
-	}
+		for (std::shared_ptr<process_v1::child> process : runningProcesses)
+		{
+			process->terminate();
+		}
+	}, s_runningProcesses);
 }
 
 int getIdealThreadCount()
