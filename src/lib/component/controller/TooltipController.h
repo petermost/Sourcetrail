@@ -14,6 +14,8 @@
 #include "MessageTooltipShow.h"
 #include "MessageWindowFocus.h"
 
+#include <aidkit/thread_shared.hpp>
+
 class StorageAccess;
 class TooltipView;
 
@@ -52,7 +54,7 @@ public:
 private:
 	struct TooltipRequest
 	{
-		static Id s_requestId;
+		static std::atomic<Id::type> s_requestId;
 
 		Id requestId;
 		std::vector<Id> tokenIds;
@@ -64,14 +66,13 @@ private:
 	TooltipView* getView() const;
 	View* getViewForOrigin(TooltipOrigin origin) const;
 
-	void requestTooltipShow(const std::vector<Id> tokenIds, TooltipInfo info, TooltipOrigin origin);
+	void requestTooltipShow(const std::vector<Id> &tokenIds, const TooltipInfo &info, TooltipOrigin origin);
 	void requestTooltipHide();
 
-	StorageAccess* m_storageAccess;
+	StorageAccess *const m_storageAccess;
 
-	std::unique_ptr<TooltipRequest> m_showRequest;
-	std::mutex m_showRequestMutex;
-	bool m_hideRequest = false;
+	aidkit::thread_shared<std::unique_ptr<TooltipRequest>> m_showRequest;
+	std::atomic<bool> m_hideRequest = false;
 };
 
 #endif	  // TOOLTIP_CONTROLLER_H
