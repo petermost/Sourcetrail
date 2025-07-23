@@ -1,9 +1,6 @@
 #ifndef SCREEN_SEARCH_CONTROLLER_H
 #define SCREEN_SEARCH_CONTROLLER_H
 
-#include <mutex>
-#include <set>
-
 #include "ActivationListener.h"
 #include "Controller.h"
 #include "MessageActivateLocalSymbols.h"
@@ -16,6 +13,10 @@
 #include "MessageGraphNodeHide.h"
 #include "MessageListener.h"
 #include "ScreenSearchInterfaces.h"
+
+#include <aidkit/thread_shared.hpp>
+
+#include <set>
 
 class ScreenSearchController
 	: public Controller
@@ -59,11 +60,9 @@ private:
 	void handleMessage(MessageGraphNodeExpand* message) override;
 	void handleMessage(MessageGraphNodeHide* message) override;
 
-	std::vector<ScreenSearchResponder*> m_responders;
-
-	std::vector<std::pair<size_t, size_t>> m_matches;
-	size_t m_matchIndex = 0;
-	std::mutex m_matchMutex;
+	aidkit::thread_shared<std::vector<ScreenSearchResponder *>> m_responders;
+	aidkit::thread_shared<std::vector<std::pair<size_t, size_t>>> m_matches;
+	std::atomic<size_t> m_matchIndex = 0;
 };
 
 #endif	  // SCREEN_SEARCH_CONTROLLER_H

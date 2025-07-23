@@ -137,15 +137,17 @@ void TooltipController::requestTooltipShow(const std::vector<Id> &tokenIds, cons
 
 	Task::dispatch(TabIds::app(), std::make_shared<TaskDecoratorDelay>(delayMS)->addChildTask(std::make_shared<TaskLambda>([requestId, this]()
 	{
-		std::unique_ptr<TooltipRequest> request;
+		std::unique_ptr<TooltipRequest> request = aidkit::access([requestId](std::unique_ptr<TooltipRequest> &showRequest)
 		{
-			auto showRequest = m_showRequest.access();
-			if (!*showRequest || (*showRequest)->requestId != requestId)
+			if (!showRequest || showRequest->requestId != requestId)
 			{
-				return;
+				return std::unique_ptr<TooltipRequest>(nullptr);
 			}
-			request = std::move(*showRequest);
-		}
+			return std::move(showRequest);
+		}, m_showRequest);
+
+		if (!request)
+			return;
 
 		if (!request->info.isValid() && request->tokenIds.size())
 		{

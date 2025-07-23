@@ -8,38 +8,43 @@ void ScreenSearchController::foundMatches(ScreenSearchResponder* responder, size
 {
 	if (matchCount)
 	{
-		std::lock_guard<std::mutex> lock(m_matchMutex);
-
-		size_t responderId = getResponderId(responder);
-		if (!responderId)
+		bool proceed = aidkit::access([this, responder, matchCount](auto &matches)
 		{
+			size_t responderId = getResponderId(responder);
+			if (!responderId)
+			{
+				return false;
+			}
+
+			std::vector<std::pair<size_t, size_t>> newMatches;
+			for (size_t i = 0; i < matchCount; i++)
+			{
+				newMatches.push_back(std::make_pair(responderId, i));
+			}
+
+			size_t i = 0;
+			while (i < matches.size() && responderId > matches[i].first)
+			{
+				i++;
+			}
+
+			matches.insert(matches.begin() + i, newMatches.begin(), newMatches.end());
+			m_matchIndex = matches.size();
+
+			return true;
+		}, m_matches);
+
+		if (!proceed)
 			return;
-		}
-
-		std::vector<std::pair<size_t, size_t>> newMatches;
-		for (size_t i = 0; i < matchCount; i++)
-		{
-			newMatches.push_back(std::make_pair(responderId, i));
-		}
-
-		size_t i = 0;
-		while (i < m_matches.size() && responderId > m_matches[i].first)
-		{
-			i++;
-		}
-
-		m_matches.insert(m_matches.begin() + i, newMatches.begin(), newMatches.end());
-		m_matchIndex = m_matches.size();
 	}
-
-	getView<ScreenSearchView>()->setMatchCount(m_matches.size());
+	getView<ScreenSearchView>()->setMatchCount(m_matches.access()->size());
 }
 
 void ScreenSearchController::addResponder(ScreenSearchResponder* responder)
 {
 	if (responder)
 	{
-		m_responders.push_back(responder);
+		m_responders.access()->push_back(responder);
 		getView<ScreenSearchView>()->addResponder(responder->getName());
 	}
 }
@@ -48,11 +53,14 @@ void ScreenSearchController::removeResponder(ScreenSearchResponder* responder)
 {
 	if (responder)
 	{
-		auto it = std::find(m_responders.begin(), m_responders.end(), responder);
-		if (it != m_responders.end())
+		aidkit::access([responder](auto &responders)
 		{
-			m_responders.erase(it);
-		}
+			auto it = std::find(responders.begin(), responders.end(), responder);
+			if (it != responders.end())
+			{
+				responders.erase(it);
+			}
+		}, m_responders);
 	}
 }
 
@@ -60,90 +68,101 @@ void ScreenSearchController::search(const std::string& query, const std::set<std
 {
 	clearMatches();
 
-	for (ScreenSearchResponder* responder: m_responders)
+	aidkit::access([this, &query, &responderNames](auto &responders)
 	{
-		if (!responder->isVisible())
+		for (ScreenSearchResponder *responder: responders)
 		{
-			continue;
-		}
+			if (!responder->isVisible())
+			{
+				continue;
+			}
 
-		if (query.size() && responderNames.find(responder->getName()) != responderNames.end())
-		{
-			responder->findMatches(this, query);
+			if (query.size() && responderNames.find(responder->getName()) != responderNames.end())
+			{
+				responder->findMatches(this, query);
+			}
 		}
-	}
+	}, m_responders);
 }
 
 void ScreenSearchController::activateMatch(bool next)
 {
-	std::lock_guard<std::mutex> lock(m_matchMutex);
-	if (!m_matches.size())
+	bool proceed = aidkit::access([this, next](auto &matches, auto &responders)
 	{
+		if (!matches.size())
+		{
+			return false;
+		}
+
+		if (m_matchIndex != matches.size())
+		{
+			auto match = matches[m_matchIndex];
+			responders[match.first - 1]->deactivateMatch(match.second);
+		}
+
+		if (next)
+		{
+			if (m_matchIndex == matches.size())
+			{
+				m_matchIndex = 0;
+			}
+			else
+			{
+				m_matchIndex = (m_matchIndex + 1) % matches.size();
+			}
+		}
+		else
+		{
+			if (m_matchIndex == 0)
+			{
+				m_matchIndex = matches.size() - 1;
+			}
+			else
+			{
+				m_matchIndex--;
+			}
+		}
+		return true;
+	}, m_matches, m_responders);
+
+	if (!proceed)
 		return;
-	}
 
-	if (m_matchIndex != m_matches.size())
-	{
-		auto match = m_matches[m_matchIndex];
-		m_responders[match.first - 1]->deactivateMatch(match.second);
-	}
-
-	if (next)
-	{
-		if (m_matchIndex == m_matches.size())
-		{
-			m_matchIndex = 0;
-		}
-		else
-		{
-			m_matchIndex = (m_matchIndex + 1) % m_matches.size();
-		}
-	}
-	else
-	{
-		if (m_matchIndex == 0)
-		{
-			m_matchIndex = m_matches.size() - 1;
-		}
-		else
-		{
-			m_matchIndex--;
-		}
-	}
-
-	auto match = m_matches[m_matchIndex];
-	m_responders[match.first - 1]->activateMatch(match.second);
+	auto match = (*m_matches.access())[m_matchIndex];
+	(*m_responders.access())[match.first - 1]->activateMatch(match.second);
 
 	getView<ScreenSearchView>()->setMatchIndex(m_matchIndex + 1);
 }
 
 void ScreenSearchController::clearMatches()
 {
-	{
-		std::lock_guard<std::mutex> lock(m_matchMutex);
-		m_matches.clear();
-		m_matchIndex = 0;
-	}
+	m_matches.access()->clear();
+	m_matchIndex = 0;
 
 	getView<ScreenSearchView>()->setMatchCount(0);
 
-	for (ScreenSearchResponder* responder: m_responders)
+	aidkit::access([](auto &responders)
 	{
-		responder->clearMatches();
-	}
+		for (ScreenSearchResponder *responder: responders)
+		{
+			responder->clearMatches();
+		}
+	}, m_responders);
 }
 
 size_t ScreenSearchController::getResponderId(ScreenSearchResponder* responder) const
 {
-	for (size_t i = 0; i < m_responders.size(); i++)
+	return aidkit::access([responder](auto &responders) -> size_t
 	{
-		if (m_responders[i] == responder)
+		for (size_t i = 0; i < responders.size(); i++)
 		{
-			return i + 1;
+			if (responders[i] == responder)
+			{
+				return i + 1;
+			}
 		}
-	}
-
-	return 0;
+		return 0;
+	}, m_responders);
 }
 
 void ScreenSearchController::handleActivation(const MessageActivateBase*  /*message*/)
