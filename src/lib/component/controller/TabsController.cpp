@@ -73,22 +73,25 @@ void TabsController::addTab(TabId tabId, const SearchMatch &match)
 
 void TabsController::showTab(TabId tabId)
 {
-	auto optIt = utility::find_optional(*m_tabs.access(), tabId);
-	if (optIt)
+	aidkit::access([this, tabId](auto &tabs)
 	{
-		TabIds::setCurrentTabId(tabId);
-		(*optIt)->second->setParentLayout(m_mainLayout);
-	}
-	else
-	{
-		TabIds::setCurrentTabId(TabId::NONE);
-		m_mainLayout->showOriginalViews();
-	}
+		auto it = tabs.find(tabId);
+		if (it != tabs.end())
+		{
+			TabIds::setCurrentTabId(tabId);
+			it->second->setParentLayout(m_mainLayout);
+		}
+		else
+		{
+			TabIds::setCurrentTabId(TabId::NONE);
+			m_mainLayout->showOriginalViews();
+		}
 
-	Task::dispatch(TabIds::app(), std::make_shared<TaskLambda>([this]()
-	{
-		m_screenSearchSender->clearMatches();
-	}));
+		Task::dispatch(TabIds::app(), std::make_shared<TaskLambda>([this]()
+		{
+			m_screenSearchSender->clearMatches();
+		}));
+	}, m_tabs);
 }
 
 void TabsController::removeTab(TabId tabId)

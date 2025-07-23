@@ -166,18 +166,14 @@ private:
 #define DEF_RELAYING_METHOD(NAME, PARAMETERS, ARGUMENTS)                                           \
 	static void NAME(JNIEnv* /*env*/, jobject /*objectOrClass*/, jint parserId PARAMETERS)         \
 	{                                                                                              \
-		auto optIt = aidkit::access([=](auto &parsers)                                             \
+		aidkit::access([&](auto &parsers)                                                          \
 		{                                                                                          \
-			return utility::find_optional(parsers, int(parserId));                                 \
+			std::map<int, JavaParser*>::iterator it = parsers.find(int(parserId));                 \
+			if (it != parsers.end())                                                               \
+				it->second->do##NAME(ARGUMENTS);                                                   \
+			else                                                                                   \
+				LOG_ERROR("parser with id " + std::to_string(parserId) + " not found");            \
 		}, s_parsers);                                                                             \
-		if (optIt)                                                                                 \
-		{                                                                                          \
-			(*optIt)->second->do##NAME(ARGUMENTS);                                                 \
-		}                                                                                          \
-		else                                                                                       \
-		{                                                                                          \
-			LOG_ERROR("parser with id " + std::to_string(parserId) + " not found");                \
-		}                                                                                          \
 	}
 
 	DEF_RELAYING_METHOD_1(LogInfo, jstring)
@@ -225,21 +221,16 @@ private:
 
 	static bool GetInterrupted(JNIEnv*  /*env*/, jobject  /*objectOrClass*/, jint parserId)
 	{
-		auto optIt = aidkit::access([=](auto &parsers)
+		return aidkit::access([parserId](auto &parsers)
 		{
-			return utility::find_optional(parsers, int(parserId));
+			std::map<int, JavaParser*>::iterator it = parsers.find(int(parserId));
+			if (it != parsers.end())
+				return it->second->doGetInterrupted();
+			else
+				LOG_ERROR("parser with id " + std::to_string(parserId) + " not found");
+
+			return false;
 		}, s_parsers);
-
-		if (optIt)
-		{
-			return (*optIt)->second->doGetInterrupted();
-		}
-		else
-		{
-			LOG_ERROR("parser with id " + std::to_string(parserId) + " not found");
-		}
-
-		return false;
 	}
 
 	static int s_nextParserId;
