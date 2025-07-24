@@ -1,12 +1,13 @@
 #ifndef TASK_SCHEDULER_H
 #define TASK_SCHEDULER_H
 
-#include <deque>
-#include <memory>
-#include <mutex>
-
 #include "Task.h"
 #include "TaskRunner.h"
+
+#include <aidkit/thread_shared.hpp>
+
+#include <deque>
+#include <memory>
 
 class TaskScheduler
 {
@@ -31,15 +32,11 @@ private:
 
 	const TabId m_schedulerId;
 
-	bool m_loopIsRunning = false;
-	bool m_threadIsRunning = false;
-	bool m_terminateRunningTasks = false;
+	std::atomic<bool> m_loopIsRunning = false;
+	std::atomic<bool> m_threadIsRunning = false;
+	std::atomic<bool> m_terminateRunningTasks = false;
 
-	std::deque<std::shared_ptr<TaskRunner>> m_taskRunners;
-
-	mutable std::mutex m_tasksMutex;
-	mutable std::mutex m_loopMutex;
-	mutable std::mutex m_threadMutex;
+	aidkit::thread_shared<std::deque<std::shared_ptr<TaskRunner>>> m_taskRunners;
 };
 
 #endif	  // TASK_SCHEDULER_H

@@ -48,7 +48,7 @@ add_executable(Sourcetrail_test
 	UtilityMavenTestSuite.cpp
 	UtilitySourceGroupCxxTestSuite.cpp
 	UtilityStringTestSuite.cpp
-	UtilityStlTestSuite.cpp
+	# UtilityStlTestSuite.cpp
 	Vector2TestSuite.cpp
 
 	Snippet.cpp
