@@ -54,7 +54,7 @@ public:
 private:
 	struct TooltipRequest
 	{
-		static std::atomic<Id::type> s_requestId;
+		static aidkit::thread_shared<Id> s_requestId;
 
 		Id requestId;
 		std::vector<Id> tokenIds;

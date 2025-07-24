@@ -10,7 +10,7 @@
 #include "TaskDecoratorDelay.h"
 #include "TaskLambda.h"
 
-std::atomic<Id::type> TooltipController::TooltipRequest::s_requestId = 1;
+aidkit::thread_shared<Id> TooltipController::TooltipRequest::s_requestId(1);
 
 TooltipController::TooltipController(StorageAccess* storageAccess)
 	: m_storageAccess(storageAccess)
@@ -118,7 +118,7 @@ View* TooltipController::getViewForOrigin(TooltipOrigin origin) const
 
 void TooltipController::requestTooltipShow(const std::vector<Id> &tokenIds, const TooltipInfo &info, TooltipOrigin origin)
 {
-	Id requestId = TooltipRequest::s_requestId++;
+	Id requestId = (*TooltipRequest::s_requestId.access())++;
 
 	aidkit::access([&](auto &showRequest)
 	{
