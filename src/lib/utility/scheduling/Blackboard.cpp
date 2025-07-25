@@ -2,25 +2,30 @@
 
 Blackboard::Blackboard() = default;
 
-Blackboard::Blackboard(std::shared_ptr<Blackboard> parent): m_parent(parent) {}
+Blackboard::Blackboard(std::shared_ptr<Blackboard> parent)
+	: m_parent(parent)
+{
+}
 
 bool Blackboard::exists(const std::string& key)
 {
-	std::lock_guard<std::mutex> lock(m_itemMutex);
-
-	ItemMap::const_iterator it = m_items.find(key);
-	return (it != m_items.end());
+	return aidkit::access([&key](auto &items)
+	{
+		ItemMap::const_iterator it = items.find(key);
+		return (it != items.end());
+	}, m_items);
 }
 
 bool Blackboard::clear(const std::string& key)
 {
-	std::lock_guard<std::mutex> lock(m_itemMutex);
-
-	ItemMap::const_iterator it = m_items.find(key);
-	if (it != m_items.end())
+	return aidkit::access([&key](auto &items)
 	{
-		m_items.erase(it);
-		return true;
-	}
-	return false;
+		ItemMap::const_iterator it = items.find(key);
+		if (it != items.end())
+		{
+			items.erase(it);
+			return true;
+		}
+		return false;
+	}, m_items);
 }

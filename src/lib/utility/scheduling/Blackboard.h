@@ -1,13 +1,15 @@
 #ifndef BLACKBOARD_H
 #define BLACKBOARD_H
 
+#include "logging.h"
+
+#include <aidkit/thread_shared.hpp>
+
 #include <functional>
 #include <map>
 #include <memory>
-#include <mutex>
 #include <string>
 
-#include "logging.h"
 
 struct BlackboardItemBase
 {
@@ -48,63 +50,62 @@ public:
 private:
 	typedef std::map<std::string, std::shared_ptr<BlackboardItemBase>> ItemMap;
 
-	std::shared_ptr<Blackboard> m_parent;
+	std::shared_ptr<Blackboard> const m_parent;
 
-	ItemMap m_items;
-	std::mutex m_itemMutex;
+	aidkit::thread_shared<ItemMap> m_items;
 };
 
 
 template <typename T>
 void Blackboard::set(const std::string& key, const T& value)
 {
-	std::lock_guard<std::mutex> lock(m_itemMutex);
-
-	m_items[key] = std::make_shared<BlackboardItem<T>>(value);
+	(*m_items.access())[key] = std::make_shared<BlackboardItem<T>>(value);
 }
 
 template <typename T>
 bool Blackboard::get(const std::string& key, T& value)
 {
-	std::lock_guard<std::mutex> lock(m_itemMutex);
-
-	ItemMap::const_iterator it = m_items.find(key);
-	if (it != m_items.end())
+	return aidkit::access([this, &key, &value](auto &items)
 	{
-		if (std::shared_ptr<BlackboardItem<T>> item = std::dynamic_pointer_cast<BlackboardItem<T>>(
-				it->second))
+		ItemMap::const_iterator it = items.find(key);
+		if (it != items.end())
 		{
-			value = item->value;
-			return true;
+			if (std::shared_ptr<BlackboardItem<T>> item = std::dynamic_pointer_cast<BlackboardItem<T>>(
+					it->second))
+			{
+				value = item->value;
+				return true;
+			}
 		}
-	}
-	if (m_parent)
-	{
-		return m_parent->get(key, value);
-	}
+		if (m_parent)
+		{
+			return m_parent->get(key, value);
+		}
 
-	LOG_WARNING("Entry for \"" + key + "\" not found on blackboard.");
-	return false;
+		LOG_WARNING("Entry for \"" + key + "\" not found on blackboard.");
+		return false;
+	}, m_items);
 }
 
 template <typename T>
 bool Blackboard::update(const std::string& key, std::function<T(const T&)> updater)
 {
-	std::lock_guard<std::mutex> lock(m_itemMutex);
-
-	ItemMap::const_iterator it = m_items.find(key);
-	if (it != m_items.end())
+	return aidkit::access([&key, &updater](auto &items)
 	{
-		if (std::shared_ptr<BlackboardItem<T>> item = std::dynamic_pointer_cast<BlackboardItem<T>>(
-				it->second))
+		ItemMap::const_iterator it = items.find(key);
+		if (it != items.end())
 		{
-			item->value = updater(item->value);
-			return true;
+			if (std::shared_ptr<BlackboardItem<T>> item = std::dynamic_pointer_cast<BlackboardItem<T>>(
+					it->second))
+			{
+				item->value = updater(item->value);
+				return true;
+			}
 		}
-	}
 
-	LOG_WARNING("Entry for \"" + key + "\" not found on blackboard.");
-	return false;
+		LOG_WARNING("Entry for \"" + key + "\" not found on blackboard.");
+		return false;
+	}, m_items);
 }
 
 #endif	  // BLACKBOARD_H
