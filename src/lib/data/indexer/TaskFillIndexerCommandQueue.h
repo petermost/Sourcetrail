@@ -1,13 +1,15 @@
 #ifndef TASK_FILL_INDEXER_COMMAND_QUEUE_H
 #define TASK_FILL_INDEXER_COMMAND_QUEUE_H
 
-#include <queue>
-
 #include "MessageIndexingInterrupted.h"
 #include "MessageListener.h"
 #include "Task.h"
 
 #include "InterprocessIndexerCommandManager.h"
+
+#include <aidkit/thread_shared.hpp>
+
+#include <queue>
 
 class IndexerCommandProvider;
 
@@ -33,15 +35,13 @@ protected:
 	bool fillCommandQueue();
 
 private:
-	std::unique_ptr<IndexerCommandProvider> m_indexerCommandProvider;
-	InterprocessIndexerCommandManager m_indexerCommandManager;
-
 	const size_t m_maximumQueueSize;
 
-	std::queue<FilePath> m_filePathQueue;
-	std::mutex m_commandsMutex;
+	std::atomic<bool> m_interrupted = false;
 
-	bool m_interrupted = false;
+	aidkit::thread_shared<std::unique_ptr<IndexerCommandProvider>> m_indexerCommandProvider;
+	aidkit::thread_shared<InterprocessIndexerCommandManager> m_indexerCommandManager;
+	aidkit::thread_shared<std::queue<FilePath>> m_filePathQueue;
 };
 
 #endif	  // TASK_FILL_INDEXER_COMMAND_QUEUE_H
