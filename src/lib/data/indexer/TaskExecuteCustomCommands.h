@@ -1,15 +1,17 @@
 #ifndef TASK_EXECUTE_CUSTOM_COMMANDS_H
 #define TASK_EXECUTE_CUSTOM_COMMANDS_H
 
-#include <set>
-#include <vector>
-
 #include "ErrorCountInfo.h"
 #include "FilePath.h"
 #include "MessageIndexingInterrupted.h"
 #include "MessageListener.h"
 #include "Task.h"
 #include "TimeStamp.h"
+
+#include <aidkit/thread_shared.hpp>
+
+#include <set>
+#include <vector>
 
 class DialogView;
 class IndexerCommandCustom;
@@ -44,24 +46,21 @@ private:
 		std::shared_ptr<Blackboard> blackboard,
 		std::shared_ptr<PersistentStorage> storage);
 
-	std::unique_ptr<IndexerCommandProvider> m_indexerCommandProvider;
+	std::unique_ptr<IndexerCommandProvider> const m_indexerCommandProvider;
 	std::shared_ptr<PersistentStorage> m_storage;
-	std::shared_ptr<DialogView> m_dialogView;
+	std::shared_ptr<DialogView> const m_dialogView;
 	const size_t m_indexerThreadCount;
 	const FilePath m_projectDirectory;
 
 	TimeStamp m_start;
-	bool m_interrupted = false;
-	size_t m_indexerCommandCount;
+	std::atomic<bool> m_interrupted = false;
+	const size_t m_indexerCommandCount;
 	std::vector<std::shared_ptr<IndexerCommandCustom>> m_serialCommands;
-	std::vector<std::shared_ptr<IndexerCommandCustom>> m_parallelCommands;
-	std::mutex m_parallelCommandsMutex;
-	ErrorCountInfo m_errorCount;
-	std::mutex m_errorCountMutex;
+	aidkit::thread_shared<std::vector<std::shared_ptr<IndexerCommandCustom>>> m_parallelCommands;
+	aidkit::thread_shared<ErrorCountInfo> m_errorCount;
 	FilePath m_targetDatabaseFilePath;
-	bool m_hasPythonCommands = false;
-	std::set<FilePath> m_sourceDatabaseFilePaths;
-	std::mutex m_sourceDatabaseFilePathsMutex;
+	const bool m_hasPythonCommands = false; // TODO (petermost) Remove?
+	aidkit::thread_shared<std::set<FilePath>> m_sourceDatabaseFilePaths;
 };
 
 #endif	  // TASK_EXECUTE_CUSTOM_COMMANDS_H

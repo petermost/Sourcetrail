@@ -283,7 +283,7 @@ void TaskExecuteCustomCommands::doEnter(std::shared_ptr<Blackboard>  /*blackboar
 
 				if (indexerCommand->getRunInParallel())
 				{
-					m_parallelCommands.push_back(indexerCommand);
+					m_parallelCommands.access()->push_back(indexerCommand);
 				}
 				else
 				{
@@ -292,7 +292,10 @@ void TaskExecuteCustomCommands::doEnter(std::shared_ptr<Blackboard>  /*blackboar
 			}
 		}
 		// reverse because we pull elements from the back of these vectors
-		std::reverse(m_parallelCommands.begin(), m_parallelCommands.end());
+		aidkit::access([](auto &parallelCommands)
+		{
+			std::reverse(parallelCommands.begin(), parallelCommands.end());
+		}, m_parallelCommands);
 		std::reverse(m_serialCommands.begin(), m_serialCommands.end());
 	}
 }
@@ -339,16 +342,19 @@ Task::TaskState TaskExecuteCustomCommands::doUpdate(std::shared_ptr<Blackboard> 
 		targetStorage.setup();
 		targetStorage.setMode(SqliteIndexStorage::STORAGE_MODE_WRITE);
 		targetStorage.buildCaches();
-		for (const FilePath& sourceDatabaseFilePath: m_sourceDatabaseFilePaths)
+		aidkit::access([&targetStorage](auto &sourceDatabaseFilePaths)
 		{
+			for (const FilePath& sourceDatabaseFilePath: sourceDatabaseFilePaths)
 			{
-				PersistentStorage sourceStorage(sourceDatabaseFilePath, FilePath());
-				sourceStorage.setMode(SqliteIndexStorage::STORAGE_MODE_READ);
-				sourceStorage.buildCaches();
-				targetStorage.inject(&sourceStorage);
+				{
+					PersistentStorage sourceStorage(sourceDatabaseFilePath, FilePath());
+					sourceStorage.setMode(SqliteIndexStorage::STORAGE_MODE_READ);
+					sourceStorage.buildCaches();
+					targetStorage.inject(&sourceStorage);
+				}
+				FileSystem::remove(sourceDatabaseFilePath);
 			}
-			FileSystem::remove(sourceDatabaseFilePath);
-		}
+		}, m_sourceDatabaseFilePaths);
 
 		if (m_hasPythonCommands &&
 			ApplicationSettings::getInstance()->getPythonPostProcessingEnabled())
@@ -386,22 +392,25 @@ void TaskExecuteCustomCommands::handleMessage(MessageIndexingInterrupted*  /*mes
 		"Interrupting Indexing", "Waiting for running\ncommand to finish");
 }
 
-void TaskExecuteCustomCommands::executeParallelIndexerCommands(
-	int threadId, std::shared_ptr<Blackboard> blackboard)
+void TaskExecuteCustomCommands::executeParallelIndexerCommands(int threadId, std::shared_ptr<Blackboard> blackboard)
 {
 	std::shared_ptr<PersistentStorage> storage;
 	while (!m_interrupted)
 	{
-		std::shared_ptr<IndexerCommandCustom> indexerCommand;
+		std::shared_ptr<IndexerCommandCustom> indexerCommand = aidkit::access([](auto &parallelCommands)
 		{
-			std::lock_guard<std::mutex> lock(m_parallelCommandsMutex);
-			if (m_parallelCommands.empty())
+			if (parallelCommands.empty())
 			{
-				return;
+				return std::shared_ptr<IndexerCommandCustom>(nullptr);
 			}
-			indexerCommand = m_parallelCommands.back();
-			m_parallelCommands.pop_back();
-		}
+			auto indexerCommand = parallelCommands.back();
+			parallelCommands.pop_back();
+
+			return indexerCommand;
+		}, m_parallelCommands);
+
+		if (indexerCommand == nullptr)
+			return;
 
 		if (threadId == 0)
 		{
@@ -413,16 +422,15 @@ void TaskExecuteCustomCommands::executeParallelIndexerCommands(
 			databaseFilePath = databaseFilePath.getParentDirectory().concatenate(
 				databaseFilePath.fileName() + "_thread" + std::to_string(threadId));
 
-			bool databaseFilePathKnown = true;
+			bool databaseFilePathKnown = aidkit::access([&databaseFilePath](auto &sourceDatabaseFilePaths)
 			{
-				std::lock_guard<std::mutex> lock(m_sourceDatabaseFilePathsMutex);
-				if (m_sourceDatabaseFilePaths.find(databaseFilePath) ==
-					m_sourceDatabaseFilePaths.end())
+				if (sourceDatabaseFilePaths.find(databaseFilePath) == sourceDatabaseFilePaths.end())
 				{
-					m_sourceDatabaseFilePaths.insert(databaseFilePath);
-					databaseFilePathKnown = false;
+					sourceDatabaseFilePaths.insert(databaseFilePath);
+					return false;
 				}
-			}
+				return true;
+			}, m_sourceDatabaseFilePaths);
 
 			if (!databaseFilePathKnown)
 			{
@@ -486,16 +494,15 @@ void TaskExecuteCustomCommands::runIndexerCommand(
 					currentErrorCount.total - previousErrorCount.total,
 					currentErrorCount.fatal - previousErrorCount.fatal);
 
-				ErrorCountInfo errorCount;	  // local copy to release lock early
+				ErrorCountInfo errorCountCopy = aidkit::access([&diff](auto &errorCount) // local copy to release lock early
 				{
-					std::lock_guard<std::mutex> lock(m_errorCountMutex);
-					m_errorCount.total += diff.total;
-					m_errorCount.fatal += diff.fatal;
-					errorCount = m_errorCount;
-				}
+					errorCount.total += diff.total;
+					errorCount.fatal += diff.fatal;
+					return errorCount;
+				}, m_errorCount);
 
 				errors.erase(errors.begin(), errors.begin() + previousErrorCount.total);
-				MessageErrorCountUpdate(errorCount, errors).dispatch();
+				MessageErrorCountUpdate(errorCountCopy, errors).dispatch();
 			}
 		}
 
