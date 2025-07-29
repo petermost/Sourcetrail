@@ -6,7 +6,7 @@
 
 std::shared_ptr<LogManager> LogManager::getInstance()
 {
-	if (s_instance.use_count() == 0)
+	if (s_instance == nullptr)
 	{
 		s_instance = std::shared_ptr<LogManager>(new LogManager());
 	}
@@ -17,8 +17,6 @@ void LogManager::destroyInstance()
 {
 	s_instance.reset();
 }
-
-LogManager::~LogManager() = default;
 
 void LogManager::setLoggingEnabled(bool enabled)
 {

@@ -2,84 +2,84 @@
 
 #include <algorithm>
 
-LogManagerImplementation::LogManagerImplementation() = default;
-
-LogManagerImplementation::LogManagerImplementation(const LogManagerImplementation& other)
+static tm getTime()
 {
-	m_loggers = other.m_loggers;
-}
+	time_t time;
+	std::time(&time);
 
-void LogManagerImplementation::operator=(const LogManagerImplementation& other)
-{
-	m_loggers = other.m_loggers;
-}
+	// Return copy because localtime returns a pointer to a statically allocated object:
 
-LogManagerImplementation::~LogManagerImplementation() = default;
+	return *std::localtime(&time);
+}
 
 void LogManagerImplementation::addLogger(std::shared_ptr<Logger> logger)
 {
-	std::lock_guard<std::mutex> lockGuard(m_loggerMutex);
-	m_loggers.push_back(logger);
+	m_loggers.access()->push_back(logger);
 }
 
 void LogManagerImplementation::removeLogger(std::shared_ptr<Logger> logger)
 {
-	std::lock_guard<std::mutex> lockGuard(m_loggerMutex);
-	std::vector<std::shared_ptr<Logger>>::iterator it = std::find(
-		m_loggers.begin(), m_loggers.end(), logger);
-	if (it != m_loggers.end())
+	aidkit::access([&logger](auto &loggers)
 	{
-		m_loggers.erase(it);
-	}
+		auto it = std::find(loggers.begin(), loggers.end(), logger);
+		if (it != loggers.end())
+		{
+			loggers.erase(it);
+		}
+	}, m_loggers);
 }
 
 void LogManagerImplementation::removeLoggersByType(const std::string& type)
 {
-	std::lock_guard<std::mutex> lockGuard(m_loggerMutex);
-	for (unsigned int i = 0; i < m_loggers.size(); i++)
+	aidkit::access([&type](auto &loggers)
 	{
-		if (m_loggers[i]->getType() == type)
+		for (unsigned int i = 0; i < loggers.size(); i++)
 		{
-			m_loggers.erase(m_loggers.begin() + i);
-			i--;
+			if (loggers[i]->getType() == type)
+			{
+				loggers.erase(loggers.begin() + i);
+				i--;
+			}
 		}
-	}
+	}, m_loggers);
 }
 
 Logger* LogManagerImplementation::getLogger(std::shared_ptr<Logger> logger)
 {
-	std::lock_guard<std::mutex> lockGuard(m_loggerMutex);
-	std::vector<std::shared_ptr<Logger>>::iterator it = std::find(
-		m_loggers.begin(), m_loggers.end(), logger);
-	if (it != m_loggers.end())
+	return aidkit::access([&logger](auto &loggers)
 	{
-		return (*it).get();
-	}
-	return nullptr;
+		auto it = std::find(loggers.begin(), loggers.end(), logger);
+		if (it != loggers.end())
+		{
+			return (*it).get();
+		}
+		return (Logger *)nullptr;
+	}, m_loggers);
 }
 
 Logger* LogManagerImplementation::getLoggerByType(const std::string& type)
 {
-	std::lock_guard<std::mutex> lockGuard(m_loggerMutex);
-	for (unsigned int i = 0; i < m_loggers.size(); i++)
+	return aidkit::access([&type](auto &loggers)
 	{
-		if (m_loggers[i]->getType() == type)
+		for (unsigned int i = 0; i < loggers.size(); i++)
 		{
-			return m_loggers[i].get();
+			if (loggers[i]->getType() == type)
+			{
+				return loggers[i].get();
+			}
 		}
-	}
-	return nullptr;
+		return (Logger *)nullptr;
+	}, m_loggers);
 }
 
 void LogManagerImplementation::clearLoggers()
 {
-	m_loggers.clear();
+	m_loggers.access()->clear();
 }
 
 int LogManagerImplementation::getLoggerCount() const
 {
-	std::lock_guard<std::mutex> lockGuard(m_loggerMutex);
-	return static_cast<int>(m_loggers.size());
+	return static_cast<int>(m_loggers.access()->size());
 }
 
 void LogManagerImplementation::logInfo(
@@ -88,12 +88,13 @@ void LogManagerImplementation::logInfo(
 	const std::string& function,
 	const unsigned int line)
 {
-	std::lock_guard<std::mutex> lockGuardLogger(m_loggerMutex);
-	for (unsigned int i = 0; i < m_loggers.size(); i++)
+	aidkit::access([&](auto &loggers)
 	{
-		m_loggers[i]->onInfo(
-			LogMessage(message, file, function, line, getTime(), std::this_thread::get_id()));
-	}
+		for (unsigned int i = 0; i < loggers.size(); i++)
+		{
+			loggers[i]->onInfo(LogMessage(message, file, function, line, getTime(), std::this_thread::get_id()));
+		}
+	}, m_loggers);
 }
 
 void LogManagerImplementation::logWarning(
@@ -102,12 +103,13 @@ void LogManagerImplementation::logWarning(
 	const std::string& function,
 	const unsigned int line)
 {
-	std::lock_guard<std::mutex> lockGuardLogger(m_loggerMutex);
-	for (unsigned int i = 0; i < m_loggers.size(); i++)
+	aidkit::access([&](auto &loggers)
 	{
-		m_loggers[i]->onWarning(
-			LogMessage(message, file, function, line, getTime(), std::this_thread::get_id()));
-	}
+		for (unsigned int i = 0; i < loggers.size(); i++)
+		{
+			loggers[i]->onWarning(LogMessage(message, file, function, line, getTime(), std::this_thread::get_id()));
+		}
+	}, m_loggers);
 }
 
 void LogManagerImplementation::logError(
@@ -116,20 +118,12 @@ void LogManagerImplementation::logError(
 	const std::string& function,
 	const unsigned int line)
 {
-	std::lock_guard<std::mutex> lockGuardLogger(m_loggerMutex);
-	for (unsigned int i = 0; i < m_loggers.size(); i++)
+	aidkit::access([&](auto &loggers)
 	{
-		m_loggers[i]->onError(
-			LogMessage(message, file, function, line, getTime(), std::this_thread::get_id()));
-	}
+		for (unsigned int i = 0; i < loggers.size(); i++)
+		{
+			loggers[i]->onError(LogMessage(message, file, function, line, getTime(), std::this_thread::get_id()));
+		}
+	}, m_loggers);
 }
 
-tm LogManagerImplementation::getTime()
-{
-	time_t time;
-	std::time(&time);
-
-	tm result = *std::localtime(&time);	   // this is done because localtime returns a pointer to a
-										   // statically allocated object
-	return result;
-}

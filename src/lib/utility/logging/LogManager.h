@@ -12,8 +12,6 @@ public:
 	static std::shared_ptr<LogManager> getInstance();
 	static void destroyInstance();
 
-	~LogManager();
-
 	void setLoggingEnabled(bool enabled);
 	bool getLoggingEnabled() const;
 
@@ -46,7 +44,7 @@ private:
 
 	LogManager();
 	LogManager(const LogManager&);
-	void operator=(const LogManager&);
+	LogManager &operator=(const LogManager&);
 
 	LogManagerImplementation m_logManagerImplementation;
 	bool m_loggingEnabled = false;
