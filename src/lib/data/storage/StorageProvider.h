@@ -2,9 +2,11 @@
 #define STORAGE_PROVIDER_H
 
 #include "IntermediateStorage.h"
+
+#include <aidkit/thread_shared.hpp>
+
 #include <list>
 #include <memory>
-#include <mutex>
 
 class StorageProvider
 {
@@ -24,8 +26,7 @@ public:
 	void logCurrentState() const;
 
 private:
-	std::list<std::shared_ptr<IntermediateStorage>> m_storages;	   // larger storages are in front
-	mutable std::mutex m_storagesMutex;
+	aidkit::thread_shared<std::list<std::shared_ptr<IntermediateStorage>>> m_storages; // larger storages are in front
 };
 
 #endif	  // STORAGE_PROVIDER_H

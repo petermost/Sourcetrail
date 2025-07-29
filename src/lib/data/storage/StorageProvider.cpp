@@ -4,72 +4,73 @@
 
 int StorageProvider::getStorageCount() const
 {
-	std::lock_guard<std::mutex> lock(m_storagesMutex);
-	return static_cast<int>(m_storages.size());
+	return static_cast<int>(m_storages.access()->size());
 }
 
 void StorageProvider::clear()
 {
-	std::lock_guard<std::mutex> lock(m_storagesMutex);
-	return m_storages.clear();
+	m_storages.access()->clear();
 }
 
 void StorageProvider::insert(std::shared_ptr<IntermediateStorage> storage)
 {
-	const std::size_t storageSize = storage->getSourceLocationCount();
-	std::list<std::shared_ptr<IntermediateStorage>>::iterator it;
-
-	std::lock_guard<std::mutex> lock(m_storagesMutex);
-	for (it = m_storages.begin(); it != m_storages.end(); it++)
+	aidkit::access([&storage](auto &storages)
 	{
-		if ((*it)->getSourceLocationCount() < storageSize)
+		const std::size_t storageSize = storage->getSourceLocationCount();
+
+		std::list<std::shared_ptr<IntermediateStorage>>::iterator it;
+		for (it = storages.begin(); it != storages.end(); it++)
 		{
-			break;
+			if ((*it)->getSourceLocationCount() < storageSize)
+			{
+				break;
+			}
 		}
-	}
-	m_storages.insert(it, storage);
+		storages.insert(it, storage);
+	}, m_storages);
 }
 
 std::shared_ptr<IntermediateStorage> StorageProvider::consumeSecondLargestStorage()
 {
-	std::shared_ptr<IntermediateStorage> ret;
+	return aidkit::access([](auto &storages)
 	{
-		std::lock_guard<std::mutex> lock(m_storagesMutex);
-		if (m_storages.size() > 1)
+		std::shared_ptr<IntermediateStorage> ret;
+
+		if (storages.size() > 1)
 		{
-			std::list<std::shared_ptr<IntermediateStorage>>::iterator it = m_storages.begin();
+			std::list<std::shared_ptr<IntermediateStorage>>::iterator it = storages.begin();
 			it++;
 			ret = *it;
-			m_storages.erase(it);
+			storages.erase(it);
 		}
-	}
-	return ret;
+		return ret;
+	}, m_storages);
 }
 
 std::shared_ptr<IntermediateStorage> StorageProvider::consumeLargestStorage()
 {
-	std::shared_ptr<IntermediateStorage> ret;
+	return aidkit::access([](auto &storages)
 	{
-		std::lock_guard<std::mutex> lock(m_storagesMutex);
-		if (!m_storages.empty())
-		{
-			ret = m_storages.front();
-			m_storages.pop_front();
-		}
-	}
+		std::shared_ptr<IntermediateStorage> ret;
 
-	return ret;
+		if (!storages.empty())
+		{
+			ret = storages.front();
+			storages.pop_front();
+		}
+		return ret;
+	}, m_storages);
 }
 
 void StorageProvider::logCurrentState() const
 {
-	std::string logString = "Storages waiting for injection:";
+	aidkit::access([](auto &storages)
 	{
-		std::lock_guard<std::mutex> lock(m_storagesMutex);
-		for (const std::shared_ptr<IntermediateStorage>& storage: m_storages)
+		std::string logString = "Storages waiting for injection:";
+		for (const std::shared_ptr<IntermediateStorage> &storage : storages)
 		{
 			logString += " " + std::to_string(storage->getSourceLocationCount()) + ";";
 		}
-	}
-	LOG_INFO(logString);
+		LOG_INFO(logString);
+	}, m_storages);
 }
