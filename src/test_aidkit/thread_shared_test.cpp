@@ -33,9 +33,6 @@ class Data {
 		{
 		}
 
-		Data(const Data &) = delete;
-		Data &operator = (const Data &) = delete;
-
 		void set(int v)
 		{
 			m_value = v;
@@ -46,6 +43,10 @@ class Data {
 			return m_value;
 		}
 
+		bool operator == (const Data &other) const
+		{
+			return m_value == other.m_value;
+		}
 	private:
 		int m_value = 0;
 };
@@ -72,7 +73,10 @@ TEST(ThreadSharedTest, testConstAccess)
 	auto dataAccess = constSharedData.access();
 	ASSERT_EQ(dataAccess->get(), 20);
 
-	// Must not compile: dataAccess->set(10);
+	dataAccess.unlock();
+	dataAccess.lock();
+
+	// /* Must not compile: */ dataAccess->set(10);
 }
 
 TEST(ThreadSharedTest, testAccessFunction)
@@ -80,16 +84,30 @@ TEST(ThreadSharedTest, testAccessFunction)
 	thread_shared<Data> sharedData(20);
 	ASSERT_EQ(sharedData.access()->get(), 20);
 
-	access([](auto &c)
+	access([](Data &c)
 	{
 		ASSERT_EQ(c.get(), 20);
 	}, sharedData);
 
-	access([](auto &c)
+	access([](Data &c)
 	{
 		c.set(10);
 	}, sharedData);
 	ASSERT_EQ(sharedData.access()->get(), 10);
+}
+
+TEST(ThreadSharedTest, testMultipleAccessFunction)
+{
+	thread_shared<Data> sharedData10(10);
+	thread_shared<Data> sharedData20(20);
+
+	access([](Data &d1, Data &d2)
+	{
+		std::swap(d1, d2);
+	}, sharedData20, sharedData10);
+
+	ASSERT_EQ(sharedData10.access()->get(), 20);
+	ASSERT_EQ(sharedData20.access()->get(), 10);
 }
 
 TEST(ThreadSharedTest, testConstAccessFunction)
@@ -97,15 +115,25 @@ TEST(ThreadSharedTest, testConstAccessFunction)
 	const thread_shared<Data> sharedData(20);
 	ASSERT_EQ(sharedData.access()->get(), 20);
 
-	access([](const auto &c)
+	access([](const Data &c)
 	{
 		ASSERT_EQ(c.get(), 20);
 	}, sharedData);
 
 	// Must not compile:
-	// access([](const auto &c)
+	// access([](const Data &c)
 	// {
 	// 	c.set(10);
 	// }, sharedData);
 }
 
+TEST(ThreadSharedTest, testAssignConversion)
+{
+	thread_shared<Data> sharedData(15);
+	Data otherData(30);
+
+	sharedData = otherData;
+	Data copyData = sharedData;
+
+	ASSERT_EQ(copyData, otherData);
+}

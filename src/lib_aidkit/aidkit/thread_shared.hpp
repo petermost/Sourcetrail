@@ -19,6 +19,7 @@
 
 #include <mutex>
 #include <functional>
+#include <type_traits>
 
 namespace aidkit {
 
@@ -28,52 +29,73 @@ namespace aidkit {
 template <typename T, typename Mutex = std::mutex>
 class thread_shared {
 	public:
-		class accessor {
-			public:
-				accessor(T *d, Mutex *m) noexcept
+		template <typename U>
+		class accessor_base {
+			protected:
+				accessor_base(U d, Mutex *m) noexcept
 					: m_lock(*m), m_data(d)
 				{ }
+				~accessor_base() = default;
 
-				accessor(const accessor &) = delete;
-				accessor &operator=(const accessor &) = delete;
+				accessor_base(const accessor_base &) = delete;
+				accessor_base &operator = (const accessor_base &) = delete;
+
+				mutable std::unique_lock<Mutex> m_lock;
+				U m_data;
+		};
+
+		class accessor final : public accessor_base<T *> {
+			public:
+				accessor(T *d, Mutex *m) noexcept
+					: accessor_base<T *>(d, m)
+				{ }
 
 				T *operator->() noexcept
 				{
-					return m_data;
+					return this->m_data;
 				}
 
 				T &operator*() noexcept
 				{
-					return *m_data;
+					return *this->m_data;
 				}
 
-			private:
-				std::scoped_lock<Mutex> m_lock;
-				T *m_data;
+				void lock() noexcept
+				{
+					this->m_lock.lock();
+				}
+
+				void unlock() noexcept
+				{
+					this->m_lock.unlock();
+				}
 		};
 
-		class const_accessor {
+		class const_accessor final : public accessor_base<const T *> {
 			public:
 				const_accessor(const T *d, Mutex *m) noexcept
-					: m_lock(*m), m_data(d)
+					: accessor_base<const T *>(d, m)
 				{ }
-
-				const_accessor(const const_accessor &) = delete;
-				const_accessor &operator=(const const_accessor &) = delete;
 
 				const T *operator->() const noexcept
 				{
-					return m_data;
+					return this->m_data;
 				}
 
 				const T &operator*() const noexcept
 				{
-					return *m_data;
+					return *this->m_data;
 				}
 
-			private:
-				std::scoped_lock<Mutex> m_lock;
-				const T *m_data;
+				void lock() const noexcept
+				{
+					this->m_lock.lock();
+				}
+
+				void unlock() const noexcept
+				{
+					this->m_lock.unlock();
+				}
 		};
 
 		template <typename... Args>
@@ -84,6 +106,16 @@ class thread_shared {
 
 		thread_shared(const thread_shared &) = delete;
 		thread_shared &operator=(const thread_shared &) = delete;
+
+		T operator = (const T &value) noexcept
+		{
+			return *access() = value;
+		}
+
+		operator T () const noexcept
+		{
+			return *access();
+		}
 
 		[[nodiscard]]
 		accessor access() noexcept
@@ -111,6 +143,9 @@ class thread_shared {
 template <typename Functor, typename T, typename... Types>
 inline decltype(auto) access(Functor &&functor, thread_shared<T> &data, thread_shared<Types> &...datas)
 {
+	static_assert(std::is_invocable_v<Functor, T &, Types & ...> && !std::is_invocable_v<Functor, T, Types ...>,
+		"Functor must accept 'T &' parameter(s)!");
+
 	std::scoped_lock lock(data.m_mutex, datas.m_mutex...);
 
 	return std::invoke(std::forward<Functor>(functor), data.m_data, datas.m_data...);
@@ -119,6 +154,9 @@ inline decltype(auto) access(Functor &&functor, thread_shared<T> &data, thread_s
 template <typename Functor, typename T, typename... Types>
 inline decltype(auto) access(Functor &&functor, const thread_shared<T> &data, const thread_shared<Types> &...datas)
 {
+	static_assert(std::is_invocable_v<Functor, const T &, const Types & ...>,
+		"Functor must accept 'const T &' parameter(s)!");
+
 	std::scoped_lock lock(data.m_mutex, datas.m_mutex...);
 
 	return std::invoke(std::forward<Functor>(functor), data.m_data, datas.m_data...);
