@@ -25,23 +25,24 @@ std::vector<FullTextSearchResult> FullTextSearchIndex::searchForTerm(const std::
 {
 	TRACE();
 
-	std::vector<FullTextSearchResult> ret;
-	aidkit::access([&](const auto &files)
+	return aidkit::access([&term](const std::vector<FullTextSearchFile> &files)
 	{
+		std::vector<FullTextSearchResult> searchResults;
+
 		for (const FullTextSearchFile &fullTextSearchFile : files)
 		{
-			FullTextSearchResult hit;
-			hit.fileId = fullTextSearchFile.fileId;
-			hit.positions = fullTextSearchFile.array.searchForTerm(term);
-			std::sort(hit.positions.begin(), hit.positions.end());
-			if (!hit.positions.empty())
+			FullTextSearchResult result;
+
+			result.fileId = fullTextSearchFile.fileId;
+			result.positions = fullTextSearchFile.array.searchForTerm(term);
+			std::sort(result.positions.begin(), result.positions.end());
+			if (!result.positions.empty())
 			{
-				ret.push_back(hit);
+				searchResults.push_back(result);
 			}
 		}
+		return searchResults;
 	}, m_files);
-
-	return ret;
 }
 
 size_t FullTextSearchIndex::fileCount() const

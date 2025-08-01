@@ -365,7 +365,7 @@ void PersistentStorage::clearCaches()
 
 	m_hierarchyCache.clear();
 	m_fullTextSearchIndex.clear();
-	m_fullTextSearchCodec = "";
+	m_fullTextSearchCodec.clear();
 }
 
 std::set<FilePath> PersistentStorage::getReferenced(const std::set<FilePath>& filePaths) const
@@ -588,126 +588,94 @@ StorageEdge PersistentStorage::getEdgeById(Id edgeId) const
 	return m_sqliteIndexStorage.getEdgeById(edgeId);
 }
 
-std::shared_ptr<SourceLocationCollection> PersistentStorage::getFullTextSearchLocations(
-	const std::string& searchTerm, bool caseSensitive) const
+std::shared_ptr<SourceLocationCollection> PersistentStorage::getFullTextSearchLocations(const std::string& searchTerm, bool caseSensitive) const
 {
 	TRACE();
 
-	std::shared_ptr<SourceLocationCollection> collection =
-		std::make_shared<SourceLocationCollection>();
 	if (searchTerm.empty())
 	{
-		return collection;
+		return nullptr;
 	}
 
 	TextCodec codec(ApplicationSettings::getInstance()->getTextEncoding());
+	if (m_fullTextSearchCodec != codec.getName())
 	{
-		std::lock_guard<std::mutex> lock(m_fullTextSearchMutex);
-
-		if (m_fullTextSearchCodec != codec.getName())
-		{
-			MessageStatus("Building fulltext search index", false, true).dispatch();
-			buildFullTextSearchIndex();
-		}
+		MessageStatus("Building fulltext search index", false, true).dispatch();
+		buildFullTextSearchIndex();
 	}
 
-	MessageStatus(
-		std::string("Searching fulltext (case-") +
-			(caseSensitive ? "sensitive" : "insensitive") + "): " + searchTerm,
-		false,
-		true)
-		.dispatch();
+	MessageStatus("Searching fulltext (case-"s + (caseSensitive ? "sensitive" : "insensitive") + "): " + searchTerm, false, true).dispatch();
 
+	const u32string searchTerm32 = convertToUtf32(searchTerm);
+
+	std::mutex collectionMutex;
+	SourceLocationCollection collection;
+
+	std::vector<std::shared_ptr<std::thread>> threads;
+	for (const std::vector<FullTextSearchResult> &fileResults : splitToEquallySizedParts(m_fullTextSearchIndex.searchForTerm(searchTerm), getIdealThreadCount()))
 	{
-		std::vector<std::shared_ptr<std::thread>> threads;
-		std::mutex collectionMutex;
-		const u32string searchTerm32 = convertToUtf32(searchTerm);
-		for (const std::vector<FullTextSearchResult> &fileResults: utility::splitToEquallySizedParts(
-				 m_fullTextSearchIndex.searchForTerm(searchTerm), utility::getIdealThreadCount()))
+		auto thread = std::make_shared<std::thread>([this, &searchTerm32, caseSensitive, &codec, &collection, &collectionMutex, /*no ref here!*/ fileResults]()
 		{
-			std::shared_ptr<std::thread> thread = std::make_shared<std::thread>(
-				[this,
-				 &searchTerm32,
-				 &caseSensitive,
-				 &codec,
-				 /*no ref here!*/ fileResults,
-				 &collection,
-				 &collectionMutex]() {
-					const int termLength = static_cast<int>(searchTerm32.length());
-					for (const FullTextSearchResult& fileResult: fileResults)
+			const int termLength = static_cast<int>(searchTerm32.length());
+			for (const FullTextSearchResult &fileResult : fileResults)
+			{
+				const FilePath filePath = getFileNodePath(fileResult.fileId);
+				std::shared_ptr<TextAccess> fileContent = getFileContent(filePath, false);
+
+				int charsTotal = 0;
+				int lineNumber = 1;
+				std::u32string line = convertToUtf32(codec.decode(fileContent->getLine(lineNumber)));
+
+				for (int pos : fileResult.positions)
+				{
+					while (charsTotal + (int)line.length() <= pos)
 					{
-						const FilePath filePath = getFileNodePath(fileResult.fileId);
-						std::shared_ptr<TextAccess> fileContent = getFileContent(filePath, false);
-
-						int charsTotal = 0;
-						int lineNumber = 1;
-						std::u32string line = convertToUtf32(codec.decode(fileContent->getLine(lineNumber)));
-
-						for (int pos: fileResult.positions)
-						{
-							while (charsTotal + (int)line.length() <= pos)
-							{
-								charsTotal += static_cast<int>(line.length());
-								lineNumber++;
-								line = convertToUtf32(codec.decode(fileContent->getLine(lineNumber)));
-							}
-
-							ParseLocation location;
-							location.startLineNumber = lineNumber;
-							location.startColumnNumber = pos - charsTotal + 1;
-
-							if (caseSensitive &&
-								line.substr(location.startColumnNumber - 1, termLength) != searchTerm32)
-							{
-								continue;
-							}
-							while ((charsTotal + (int)line.length()) < pos + termLength)
-							{
-								charsTotal += static_cast<int>(line.length());
-								lineNumber++;
-								line = convertToUtf32(codec.decode(fileContent->getLine(lineNumber)));
-							}
-							location.endLineNumber = lineNumber;
-							location.endColumnNumber = pos + termLength - charsTotal;
-
-							{
-								std::lock_guard<std::mutex> lock(collectionMutex);
-								// Set first bit to 1 to avoid collisions
-								const Id locationId = Id(collection->getSourceLocationCount() + 1) | Id::FirstBits::ONE;
-								collection->addSourceLocation(
-									LocationType::FULLTEXT_SEARCH,
-									locationId,
-									std::vector<Id>(),
-									filePath,
-									location.startLineNumber,
-									location.startColumnNumber,
-									location.endLineNumber,
-									location.endColumnNumber);
-							}
-						}
+						charsTotal += static_cast<int>(line.length());
+						lineNumber++;
+						line = convertToUtf32(codec.decode(fileContent->getLine(lineNumber)));
 					}
-				});
-			threads.push_back(thread);
-		}
 
-		for (std::shared_ptr<std::thread> thread: threads)
-		{
-			thread->join();
-		}
+					ParseLocation location;
+					location.startLineNumber = lineNumber;
+					location.startColumnNumber = pos - charsTotal + 1;
+
+					if (caseSensitive && line.substr(location.startColumnNumber - 1, termLength) != searchTerm32)
+					{
+						continue;
+					}
+					while ((charsTotal + (int)line.length()) < pos + termLength)
+					{
+						charsTotal += static_cast<int>(line.length());
+						lineNumber++;
+						line = convertToUtf32(codec.decode(fileContent->getLine(lineNumber)));
+					}
+					location.endLineNumber = lineNumber;
+					location.endColumnNumber = pos + termLength - charsTotal;
+					{
+						std::lock_guard<std::mutex> lock(collectionMutex);
+
+						// Set first bit to 1 to avoid collisions
+						const Id locationId = Id(collection.getSourceLocationCount() + 1) | Id::FirstBits::ONE;
+						collection.addSourceLocation(LocationType::FULLTEXT_SEARCH, locationId, std::vector<Id>(), filePath,
+							location.startLineNumber, location.startColumnNumber, location.endLineNumber, location.endColumnNumber);
+					}
+				}
+			}
+		});
+		threads.push_back(thread);
 	}
 
-	addCompleteFlagsToSourceLocationCollection(collection.get());
+	for (std::shared_ptr<std::thread> thread: threads)
+	{
+		thread->join();
+	}
 
-	MessageStatus(
-		std::to_string(collection->getSourceLocationCount()) + " results in " +
-			std::to_string(collection->getSourceLocationFileCount()) +
-			" files for fulltext search (case-" + (caseSensitive ? "sensitive" : "insensitive") +
-			"): " + searchTerm,
-		false,
-		false)
-		.dispatch();
+	addCompleteFlagsToSourceLocationCollection(&collection);
 
-	return collection;
+	MessageStatus(std::to_string(collection.getSourceLocationCount()) + " results in " + std::to_string(collection.getSourceLocationFileCount())
+		+ " files for fulltext search (case-" + (caseSensitive ? "sensitive" : "insensitive") + "): " + searchTerm, false, false).dispatch();
+
+	return std::make_shared<SourceLocationCollection>(std::move(collection));
 }
 
 std::vector<SearchMatch> PersistentStorage::getAutocompletionMatches(
@@ -3320,37 +3288,35 @@ void PersistentStorage::buildFullTextSearchIndex() const
 {
 	TRACE();
 
+	std::lock_guard<std::mutex> lock(m_fullTextSearchMutex);
+
 	TextCodec codec(ApplicationSettings::getInstance()->getTextEncoding());
 
 	m_fullTextSearchCodec = codec.getName();
 
 	m_fullTextSearchIndex.clear();
 
-	std::vector<std::shared_ptr<std::thread>> threads;
+	std::vector<StorageFile> indexedFiles;
+	for (const StorageFile& file: m_sqliteIndexStorage.getAll<StorageFile>())
 	{
-		std::vector<StorageFile> indexedFiles;
-		for (const StorageFile& file: m_sqliteIndexStorage.getAll<StorageFile>())
+		if (file.indexed)
 		{
-			if (file.indexed)
+			indexedFiles.push_back(file);
+		}
+	}
+
+	// Split work into threads:
+	std::vector<std::shared_ptr<std::thread>> threads;
+	for (const std::vector<StorageFile> &part : utility::splitToEquallySizedParts(indexedFiles, utility::getIdealThreadCount()))
+	{
+		std::shared_ptr<std::thread> thread = std::make_shared<std::thread>([this, &codec](const std::vector<StorageFile> &files)
+		{
+			for (const StorageFile &file : files)
 			{
-				indexedFiles.push_back(file);
+				m_fullTextSearchIndex.addFile(file.id, codec.decode(m_sqliteIndexStorage.getFileContentById(file.id)->getText()));
 			}
-		}
-		for (std::vector<StorageFile> part:
-			 utility::splitToEquallySizedParts(indexedFiles, utility::getIdealThreadCount()))
-		{
-			std::shared_ptr<std::thread> thread = std::make_shared<std::thread>(
-				[&](const std::vector<StorageFile>& files) {
-					for (const StorageFile& file: files)
-					{
-						m_fullTextSearchIndex.addFile(
-							file.id,
-							codec.decode(m_sqliteIndexStorage.getFileContentById(file.id)->getText()));
-					}
-				},
-				part);
-			threads.push_back(thread);
-		}
+		}, part);
+		threads.push_back(thread);
 	}
 	for (std::shared_ptr<std::thread> thread: threads)
 	{

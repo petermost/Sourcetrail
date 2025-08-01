@@ -21,7 +21,7 @@ class TaskBuildIndex
 {
 public:
 	TaskBuildIndex(
-		size_t processCount,
+		size_t indexerCount,
 		std::shared_ptr<StorageProvider> storageProvider,
 		std::shared_ptr<DialogView> dialogView,
 		const std::string& appUUID,
@@ -39,27 +39,24 @@ protected:
 	void runIndexerProcess(ProcessId processId, const std::string& logFilePath);
 	void runIndexerThread(ProcessId processId);
 	bool fetchIntermediateStorages(std::shared_ptr<Blackboard> blackboard);
-	void updateIndexingDialog(
-		std::shared_ptr<Blackboard> blackboard, const std::vector<FilePath>& sourcePaths);
+	void updateIndexingDialog(std::shared_ptr<Blackboard> blackboard, const std::vector<FilePath>& sourcePaths);
 
 	static const std::string s_processName;
 
-	std::shared_ptr<IndexerCommandList> m_indexerCommandList;
-	std::shared_ptr<StorageProvider> m_storageProvider;
-	std::shared_ptr<DialogView> m_dialogView;
 	const std::string m_appUUID;
-	bool m_multiProcessIndexing;
+	const bool m_multiProcessIndexing;
+	const size_t m_indexerCount;
+	const std::shared_ptr<StorageProvider> m_storageProvider;
+	const std::shared_ptr<DialogView> m_dialogView;
 
 	InterprocessIndexingStatusManager m_interprocessIndexingStatusManager;
 	bool m_indexerCommandQueueStopped = false;
-	size_t m_processCount;
-	bool m_interrupted = false;
+	std::atomic<bool> m_interrupted = false;
 	size_t m_indexingFileCount = 0;
 
 	// store as plain pointers to avoid deallocation issues when closing app during indexing
-	std::vector<std::thread*> m_processThreads;
-	std::vector<std::shared_ptr<InterprocessIntermediateStorageManager>>
-		m_interprocessIntermediateStorageManagers;
+	std::vector<std::thread*> m_indexerThreads;
+	std::vector<std::shared_ptr<InterprocessIntermediateStorageManager>> m_interprocessIntermediateStorageManagers;
 
 	std::atomic<size_t> m_runningThreadCount = 0;
 };

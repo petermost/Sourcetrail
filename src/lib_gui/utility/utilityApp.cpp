@@ -31,7 +31,6 @@
 #endif
 
 #include <algorithm>
-#include <mutex>
 #include <set>
 
 using namespace aidkit;
@@ -40,7 +39,7 @@ using namespace boost::chrono;
 
 namespace utility
 {
-thread_shared<std::set<std::shared_ptr<process_v1::child>>> s_runningProcesses;
+static thread_shared<std::set<std::shared_ptr<process_v1::child>>> s_runningProcesses;
 
 std::string getDocumentationLink()
 {

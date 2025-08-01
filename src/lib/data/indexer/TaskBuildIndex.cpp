@@ -14,20 +14,14 @@
 
 using namespace utility;
 
-TaskBuildIndex::TaskBuildIndex(
-	size_t processCount,
-	std::shared_ptr<StorageProvider> storageProvider,
-	std::shared_ptr<DialogView> dialogView,
-	const std::string& appUUID,
-	bool multiProcessIndexing)
-	: m_storageProvider(storageProvider)
-	, m_dialogView(dialogView)
-	, m_appUUID(appUUID)
+TaskBuildIndex::TaskBuildIndex(size_t indexerCount, std::shared_ptr<StorageProvider> storageProvider, std::shared_ptr<DialogView> dialogView,
+	const std::string &appUUID, bool multiProcessIndexing)
+	: m_appUUID(appUUID)
 	, m_multiProcessIndexing(multiProcessIndexing)
+	, m_indexerCount(indexerCount)
+	, m_storageProvider(storageProvider)
+	, m_dialogView(dialogView)
 	, m_interprocessIndexingStatusManager(appUUID, ProcessId::NONE, true)
-	,
-	 m_processCount(processCount)
-
 {
 }
 
@@ -46,7 +40,7 @@ void TaskBuildIndex::doEnter(std::shared_ptr<Blackboard> blackboard)
 	}
 
 	// start indexer processes
-	for (size_t i = 0; i < m_processCount; i++)
+	for (size_t i = 0; i < m_indexerCount; i++)
 	{
 		m_runningThreadCount++;
 
@@ -56,11 +50,11 @@ void TaskBuildIndex::doEnter(std::shared_ptr<Blackboard> blackboard)
 
 		if (m_multiProcessIndexing)
 		{
-			m_processThreads.push_back(new std::thread(&TaskBuildIndex::runIndexerProcess, this, processId, logFilePath));
+			m_indexerThreads.push_back(new std::thread(&TaskBuildIndex::runIndexerProcess, this, processId, logFilePath));
 		}
 		else
 		{
-			m_processThreads.push_back(new std::thread(&TaskBuildIndex::runIndexerThread, this, processId));
+			m_indexerThreads.push_back(new std::thread(&TaskBuildIndex::runIndexerThread, this, processId));
 		}
 	}
 
@@ -103,12 +97,12 @@ Task::TaskState TaskBuildIndex::doUpdate(std::shared_ptr<Blackboard> blackboard)
 
 void TaskBuildIndex::doExit(std::shared_ptr<Blackboard> blackboard)
 {
-	for (auto *processThread: m_processThreads)
+	for (auto *indexerThread: m_indexerThreads)
 	{
-		processThread->join();
-		delete processThread;
+		indexerThread->join();
+		delete indexerThread;
 	}
-	m_processThreads.clear();
+	m_indexerThreads.clear();
 
 	if (!m_interrupted)
 	{
