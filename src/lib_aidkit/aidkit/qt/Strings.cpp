@@ -23,7 +23,7 @@ using namespace	std;
 
 QChar operator ""_qc(char c)
 {
-	return QChar(static_cast<char8_t>(c));
+	return QChar(c);
 }
 
 QString operator ""_qs(const char *str, size_t len)
