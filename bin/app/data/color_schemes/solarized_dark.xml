@@ -310,6 +310,9 @@ Solarized on github    - https://github.com/altercation/solarized
 			<method>
 				<like>function</like>
 			</method>
+			<concept>
+				<like>function</like>
+			</concept>
 
 			<global_variable>
 				<fill>
