@@ -8,12 +8,6 @@
 
 using namespace utility;
 
-CxxTemplateArgumentNameResolver::CxxTemplateArgumentNameResolver(
-	CanonicalFilePathCache* canonicalFilePathCache)
-	: CxxNameResolver(canonicalFilePathCache)
-{
-}
-
 CxxTemplateArgumentNameResolver::CxxTemplateArgumentNameResolver(const CxxNameResolver* other)
 	: CxxNameResolver(other)
 {

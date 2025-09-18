@@ -10,7 +10,6 @@ class DataType;
 class CxxTemplateArgumentNameResolver: public CxxNameResolver
 {
 public:
-	CxxTemplateArgumentNameResolver(CanonicalFilePathCache* canonicalFilePathCache);
 	CxxTemplateArgumentNameResolver(const CxxNameResolver* other);
 
 	std::string getTemplateArgumentName(const clang::TemplateArgument& argument);
