@@ -38,6 +38,7 @@ public:
 	std::vector<std::string> structs;
 	std::vector<std::string> macros;
 	std::vector<std::string> typeParameters;
+	std::vector<std::string> concepts;
 	std::vector<std::string> localSymbols;
 	std::set<std::string> files;
 	std::vector<std::string> comments;
