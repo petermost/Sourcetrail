@@ -49,6 +49,8 @@ NodeKind symbolKindToNodeKind(SymbolKind symbolKind)
 			return NODE_UNION;
 		case SymbolKind::RECORD:
 			return NODE_RECORD;
+		case SymbolKind::CONCEPT:
+			return NODE_CONCEPT;
 		default:
 			break;
 	}
