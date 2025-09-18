@@ -22,7 +22,8 @@ std::vector<NodeType> NodeType::getOverviewBundleNodes()
 		NodeType(NODE_GLOBAL_VARIABLE),
 		NodeType(NODE_TYPE),
 		NodeType(NODE_TYPEDEF),
-		NodeType(NODE_ENUM)
+		NodeType(NODE_ENUM),
+		NodeType(NODE_CONCEPT)
 	};
 }
 
@@ -101,7 +102,7 @@ bool NodeType::isVariable() const
 bool NodeType::isUsable() const
 {
 	const NodeKindMask mask = NODE_SYMBOL | NODE_BUILTIN_TYPE | NODE_STRUCT | NODE_CLASS |
-		NODE_ENUM | NODE_UNION | NODE_INTERFACE | NODE_ANNOTATION | NODE_TYPEDEF | NODE_RECORD;
+		NODE_ENUM | NODE_UNION | NODE_INTERFACE | NODE_ANNOTATION | NODE_TYPEDEF | NODE_RECORD | NODE_CONCEPT;
 	return ((m_kind & mask) > 0);
 }
 
@@ -130,7 +131,7 @@ bool NodeType::hasSearchFilter() const
 	const NodeKindMask mask = NODE_BUILTIN_TYPE | NODE_MODULE | NODE_NAMESPACE | NODE_PACKAGE |
 		NODE_STRUCT | NODE_CLASS | NODE_INTERFACE | NODE_ANNOTATION | NODE_GLOBAL_VARIABLE |
 		NODE_FIELD | NODE_FUNCTION | NODE_METHOD | NODE_ENUM | NODE_ENUM_CONSTANT | NODE_TYPEDEF |
-		NODE_FILE | NODE_MACRO | NODE_UNION | NODE_RECORD;
+		NODE_FILE | NODE_MACRO | NODE_UNION | NODE_RECORD | NODE_CONCEPT;
 	return ((m_kind & mask) > 0);
 }
 
@@ -178,6 +179,8 @@ Tree<NodeType::BundleInfo> NodeType::getOverviewBundleTree() const
 		return Tree<BundleInfo>(BundleInfo("Unions"));
 	case NODE_RECORD:
 		return Tree<BundleInfo>(BundleInfo("Records"));
+	case NODE_CONCEPT:
+		return Tree<BundleInfo>(BundleInfo("Concepts"));
 	default:
 		break;
 	}
@@ -248,6 +251,7 @@ NodeType::StyleType NodeType::getNodeStyle() const
 	case NODE_GLOBAL_VARIABLE:
 	case NODE_FIELD:
 	case NODE_ENUM_CONSTANT:
+	case NODE_CONCEPT:
 	default:
 		return STYLE_SMALL_NODE;
 	}

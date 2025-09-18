@@ -5,7 +5,7 @@
 
 #include <string>
 
-// these values need to be the same as AccessKind in Java code
+// These values need to be the same as AccessKind in Java code (see AccessKind.java)
 enum class AccessKind
 {	 
 	NONE = 0,

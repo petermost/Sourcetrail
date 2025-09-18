@@ -23,7 +23,8 @@ const SymbolKind SYMBOL_KINDS[] = {
 	SymbolKind::TYPEDEF,
 	SymbolKind::TYPE_PARAMETER,
 	SymbolKind::UNION,
-	SymbolKind::RECORD
+	SymbolKind::RECORD,
+	SymbolKind::CONCEPT
 };
 
 }
