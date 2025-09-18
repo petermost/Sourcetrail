@@ -1,6 +1,6 @@
 package com.sourcetrail;
 
-// these values need to be the same as SymbolKind in C++ code
+// These values need to be the same as SymbolKind in C++ code (see SymbolKind.h)
 public enum SymbolKind {
 	UNDEFINED(0),
 	
@@ -22,7 +22,8 @@ public enum SymbolKind {
 	TYPEDEF(16),
 	TYPE_PARAMETER(17),
 	UNION(18),
-	RECORD(19);
+	RECORD(19),
+	CONCEPT(20);
 
 	private final int m_value;
 		

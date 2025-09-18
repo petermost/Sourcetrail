@@ -3,7 +3,7 @@
 
 #include "utilityEnum.h"
 
-// these values need to be the same as SymbolKind in Java code
+// These values need to be the same as SymbolKind in Java code (see SymbolKind.java)
 enum class SymbolKind
 {	 
 	UNDEFINED = 0,
@@ -26,7 +26,8 @@ enum class SymbolKind
 	TYPEDEF = 16,
 	TYPE_PARAMETER = 17,
 	UNION = 18,
-	RECORD = 19
+	RECORD = 19,
+	CONCEPT = 20
 };
 
 template <>
