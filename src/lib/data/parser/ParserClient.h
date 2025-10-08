@@ -10,6 +10,8 @@
 
 #include <string>
 
+// TODO (petermost): Transfer documentation from https://github.com/CoatiSoftware/SourcetrailDB/blob/master/core/include/SourcetrailDBWriter.h
+
 class ParserClient
 {
 public:

@@ -1686,7 +1686,7 @@ TEST_CASE("cxx parser finds type use of typedef")
 		utility::containsElement<std::string>(client->typeUses, "uint number -> uint <2:1 2:4>"));
 }
 
-TEST_CASE("cxx parser finds deduced type of auto variables")
+TEST_CASE("cxx parser finds deduced auto type variables")
 {
 	shared_ptr<TestStorage> client = parseCode(
 		R"(void f()
@@ -1703,13 +1703,299 @@ TEST_CASE("cxx parser finds deduced type of auto variables")
 	REQUIRE(client->errors.empty());
 
 	// Find type usages:
-	INFO(join(client->typeUses, "\n"s));
+	// Note: The locations are on the 'auto' keyword, not on the variable name.
+
 	REQUIRE(containsElement(client->typeUses, "f::auto_double_var1 -> double <3:4 3:7>"s));
 	REQUIRE(containsElement(client->typeUses, "f::auto_double_var2 -> double <4:4 4:7>"s));
 	REQUIRE(containsElement(client->typeUses, "f::auto_int_var -> int <6:4 6:7>"s));
 	REQUIRE(containsElement(client->typeUses, "f::auto_int_ptr1 -> int <7:4 7:7>"s));
 	REQUIRE(containsElement(client->typeUses, "f::auto_int_ptr2 -> int <8:4 8:7>"s));
 	REQUIRE(containsElement(client->typeUses, "f::auto_int_ref -> int <9:4 9:7>"s));
+}
+
+TEST_CASE("cxx parser finds deduced decltype(auto) type variables")
+{
+	shared_ptr<TestStorage> client = parseCode(
+		R"(void f()
+		{
+			decltype(auto) auto_double_var1 = 0.0;
+			decltype(auto) auto_double_var2 = auto_double_var1;
+
+			decltype(auto) auto_int_var = 0;
+			decltype(auto) auto_int_ptr1 = &auto_int_var;
+			decltype(auto) auto_int_ptr2 = &auto_int_var;
+			decltype(auto) auto_int_ref = auto_int_var;
+		})");
+
+	REQUIRE(client->errors.empty());
+
+	// Find type usages:
+	// Note: The locations are on the 'decltype(auto)' keyword, not on the variable name.
+
+	REQUIRE(containsElement(client->typeUses, "f::auto_double_var1 -> double <3:4 3:17>"s));
+	REQUIRE(containsElement(client->typeUses, "f::auto_double_var2 -> double <4:4 4:17>"s));
+	REQUIRE(containsElement(client->typeUses, "f::auto_int_var -> int <6:4 6:17>"s));
+	REQUIRE(containsElement(client->typeUses, "f::auto_int_ptr1 -> int <7:4 7:17>"s));
+	REQUIRE(containsElement(client->typeUses, "f::auto_int_ptr2 -> int <8:4 8:17>"s));
+	REQUIRE(containsElement(client->typeUses, "f::auto_int_ref -> int <9:4 9:17>"s));
+}
+
+TEST_CASE("cxx parser finds concept (single name usages)")
+{
+	// This examples should contain most if not all possible locations of a single named concept:
+
+	auto client = parseCode(
+	R"(
+		template <typename T>
+		concept Plusable = requires(T a, T b)
+		{
+			{ a + b };
+		};
+
+		template<typename T>
+		requires Plusable<T>
+		T add1(T x, T y);
+
+		template<typename T>
+		T add2(T x, T y)
+		requires Plusable<T>;
+
+		template<Plusable T>
+		T add3(T x, T y);
+
+		auto add4(Plusable auto x, Plusable auto y);
+
+		Plusable auto add5(Plusable auto x, Plusable auto y);
+
+		auto add6 = [](Plusable auto a, Plusable auto b)
+		{
+			return a + b;
+		};
+
+		template<Plusable T>
+		struct Adder0
+		{
+			T operator()(T a, T b);
+		};
+
+		struct Adder1
+		{
+			template<typename T>
+			requires Plusable<T>
+			T add1(T x, T y);
+		};
+
+		struct Adder2
+		{
+			template<typename T>
+			T add2(T x, T y)
+			requires Plusable<T>;
+		};
+
+		struct Adder3
+		{
+			template<Plusable T>
+			T add3(T x, T y);
+		};
+
+		struct Adder4
+		{
+			auto add4(Plusable auto x, Plusable auto y);
+		};
+
+		struct Adder5
+		{
+			Plusable auto add5(Plusable auto x, Plusable auto y);
+		};
+	)");
+
+	REQUIRE(client->errors.size() == 0);
+
+	// Check for the concept declaration:
+
+	REQUIRE(client->concepts.size() == 1);
+	REQUIRE(client->concepts[0] == "Plusable<typename T> <3:11 3:18>"s);
+
+	// Check for the concept usages:
+
+	REQUIRE(client->usages.size() == 19);
+	REQUIRE(client->usages[0] == "T add1<typename T>(T, T) -> Plusable<typename T> <9:12 9:19>"s);
+	REQUIRE(client->usages[1] == "T add2<typename T>(T, T) -> Plusable<typename T> <14:12 14:19>"s);
+	REQUIRE(client->usages[2] == "T add3<Plusable T>(T, T) -> Plusable<typename T> <16:12 16:19>"s);
+
+	REQUIRE(client->usages[3] == "auto add4<Plusable x:auto, Plusable y:auto>(x:auto, y:auto) -> Plusable<typename T> <19:13 19:20>"s);
+	REQUIRE(client->usages[4] == "auto add4<Plusable x:auto, Plusable y:auto>(x:auto, y:auto) -> Plusable<typename T> <19:30 19:37>"s);
+
+	REQUIRE(client->usages[5] == "auto add5<Plusable x:auto, Plusable y:auto>(x:auto, y:auto) -> Plusable<typename T> <21:3 21:10>"s);
+	REQUIRE(client->usages[6] == "auto add5<Plusable x:auto, Plusable y:auto>(x:auto, y:auto) -> Plusable<typename T> <21:22 21:29>"s);
+	REQUIRE(client->usages[7] == "auto add5<Plusable x:auto, Plusable y:auto>(x:auto, y:auto) -> Plusable<typename T> <21:39 21:46>"s);
+
+	REQUIRE(client->usages[8] == "auto lambda at 23:15(a:auto, b:auto) constexpr -> Plusable<typename T> <23:18 23:25>"s);
+	REQUIRE(client->usages[9] == "auto lambda at 23:15(a:auto, b:auto) constexpr -> Plusable<typename T> <23:35 23:42>"s);
+
+	REQUIRE(client->usages[10] == "Adder0<Plusable T> -> Plusable<typename T> <28:12 28:19>"s);
+	REQUIRE(client->usages[11] == "T Adder1::add1<typename T>(T, T) -> Plusable<typename T> <37:13 37:20>"s);
+	REQUIRE(client->usages[12] == "T Adder2::add2<typename T>(T, T) -> Plusable<typename T> <45:13 45:20>"s);
+	REQUIRE(client->usages[13] == "T Adder3::add3<Plusable T>(T, T) -> Plusable<typename T> <50:13 50:20>"s);
+
+	REQUIRE(client->usages[14] == "auto Adder4::add4<Plusable x:auto, Plusable y:auto>(x:auto, y:auto) -> Plusable<typename T> <56:14 56:21>"s);
+	REQUIRE(client->usages[15] == "auto Adder4::add4<Plusable x:auto, Plusable y:auto>(x:auto, y:auto) -> Plusable<typename T> <56:31 56:38>"s);
+
+	REQUIRE(client->usages[16] == "auto Adder5::add5<Plusable x:auto, Plusable y:auto>(x:auto, y:auto) -> Plusable<typename T> <61:4 61:11>"s);
+	REQUIRE(client->usages[17] == "auto Adder5::add5<Plusable x:auto, Plusable y:auto>(x:auto, y:auto) -> Plusable<typename T> <61:23 61:30>"s);
+	REQUIRE(client->usages[18] == "auto Adder5::add5<Plusable x:auto, Plusable y:auto>(x:auto, y:auto) -> Plusable<typename T> <61:40 61:47>"s);
+}
+
+TEST_CASE("cxx parser finds concept (multiple name usages)")
+{
+	// This examples should contain most if not all possible locations of multiple named concept:
+
+	auto client = parseCode(
+	R"(
+		template <typename T>
+		concept Plusable = requires(T a, T b)
+		{
+			{ a + b };
+		};
+
+		template <typename T>
+		concept Minusable = requires(T a, T b)
+		{
+			{ a - b };
+		};
+
+		template<typename T, typename U>
+		requires Plusable<T> && Minusable<U>
+		U add10(T x, U y);
+
+		template<typename T, typename U>
+		U add20(T x, U y)
+		requires Plusable<T> && Minusable<U>;
+
+		template<Plusable T, Minusable U>
+		U add30(T x, U y);
+
+		auto add40(Plusable auto x, Minusable auto y);
+
+		Minusable auto add50(Plusable auto x, Minusable auto y);
+
+		auto add60 = [](Plusable auto a, Minusable auto b)
+		{
+			return a + b;
+		};
+
+		template<Plusable T, Minusable U>
+		struct Adder00
+		{
+			U add00(T a, U b);
+		};
+
+		struct Adder10
+		{
+			template<typename T, typename U>
+			requires Plusable<T> && Minusable<U>
+			U add10(T x, U y);
+		};
+
+		struct Adder20
+		{
+			template<typename T, typename U>
+			U add20(T x, U y)
+			requires Plusable<T> && Minusable<U>;
+		};
+
+		struct Adder30
+		{
+			template<Plusable T, Minusable U>
+			U add30(T x, U y);
+		};
+
+		struct Adder40
+		{
+			auto add40(Plusable auto x, Minusable auto y);
+		};
+
+		struct Adder50
+		{
+			Minusable auto add50(Plusable auto x, Minusable auto y);
+		};
+	)");
+
+	REQUIRE(client->errors.size() == 0);
+
+	// Check for the concept declaration:
+
+	REQUIRE(client->concepts.size() == 2);
+	REQUIRE(client->concepts[0] == "Plusable<typename T> <3:11 3:18>"s);
+	REQUIRE(client->concepts[1] == "Minusable<typename T> <9:11 9:19>"s);
+
+	// Check for the concept usages:
+
+	REQUIRE(client->usages.size() == 26);
+	REQUIRE(client->usages[0] == "U add10<typename T, typename U>(T, U) -> Plusable<typename T> <15:12 15:19>"s);
+	REQUIRE(client->usages[1] == "U add10<typename T, typename U>(T, U) -> Minusable<typename T> <15:27 15:35>"s);
+
+	REQUIRE(client->usages[2] == "U add20<typename T, typename U>(T, U) -> Plusable<typename T> <20:12 20:19>"s);
+	REQUIRE(client->usages[3] == "U add20<typename T, typename U>(T, U) -> Minusable<typename T> <20:27 20:35>"s);
+
+	REQUIRE(client->usages[4] == "U add30<Plusable T, Minusable U>(T, U) -> Plusable<typename T> <22:12 22:19>"s);
+	REQUIRE(client->usages[5] == "U add30<Plusable T, Minusable U>(T, U) -> Minusable<typename T> <22:24 22:32>"s);
+
+	REQUIRE(client->usages[6] == "auto add40<Plusable x:auto, Minusable y:auto>(x:auto, y:auto) -> Plusable<typename T> <25:14 25:21>"s);
+	REQUIRE(client->usages[7] == "auto add40<Plusable x:auto, Minusable y:auto>(x:auto, y:auto) -> Minusable<typename T> <25:31 25:39>"s);
+
+	REQUIRE(client->usages[8] == "auto add50<Plusable x:auto, Minusable y:auto>(x:auto, y:auto) -> Plusable<typename T> <27:24 27:31>"s);
+	REQUIRE(client->usages[9] == "auto add50<Plusable x:auto, Minusable y:auto>(x:auto, y:auto) -> Minusable<typename T> <27:3 27:11>"s);
+	REQUIRE(client->usages[10] == "auto add50<Plusable x:auto, Minusable y:auto>(x:auto, y:auto) -> Minusable<typename T> <27:41 27:49>"s);
+
+	REQUIRE(client->usages[11] == "auto lambda at 29:16(a:auto, b:auto) constexpr -> Plusable<typename T> <29:19 29:26>"s);
+	REQUIRE(client->usages[12] == "auto lambda at 29:16(a:auto, b:auto) constexpr -> Minusable<typename T> <29:36 29:44>"s);
+
+	REQUIRE(client->usages[13] == "Adder00<Plusable T, Minusable U> -> Plusable<typename T> <34:12 34:19>"s);
+	REQUIRE(client->usages[14] == "Adder00<Plusable T, Minusable U> -> Minusable<typename T> <34:24 34:32>"s);
+
+	REQUIRE(client->usages[15] == "U Adder10::add10<typename T, typename U>(T, U) -> Plusable<typename T> <43:13 43:20>"s);
+	REQUIRE(client->usages[16] == "U Adder10::add10<typename T, typename U>(T, U) -> Minusable<typename T> <43:28 43:36>"s);
+
+	REQUIRE(client->usages[17] == "U Adder20::add20<typename T, typename U>(T, U) -> Plusable<typename T> <51:13 51:20>"s);
+	REQUIRE(client->usages[18] == "U Adder20::add20<typename T, typename U>(T, U) -> Minusable<typename T> <51:28 51:36>"s);
+
+	REQUIRE(client->usages[19] == "U Adder30::add30<Plusable T, Minusable U>(T, U) -> Plusable<typename T> <56:13 56:20>"s);
+	REQUIRE(client->usages[20] == "U Adder30::add30<Plusable T, Minusable U>(T, U) -> Minusable<typename T> <56:25 56:33>"s);
+
+	REQUIRE(client->usages[21] == "auto Adder40::add40<Plusable x:auto, Minusable y:auto>(x:auto, y:auto) -> Plusable<typename T> <62:15 62:22>"s);
+	REQUIRE(client->usages[22] == "auto Adder40::add40<Plusable x:auto, Minusable y:auto>(x:auto, y:auto) -> Minusable<typename T> <62:32 62:40>"s);
+
+	REQUIRE(client->usages[23] == "auto Adder50::add50<Plusable x:auto, Minusable y:auto>(x:auto, y:auto) -> Plusable<typename T> <67:25 67:32>"s);
+	REQUIRE(client->usages[24] == "auto Adder50::add50<Plusable x:auto, Minusable y:auto>(x:auto, y:auto) -> Minusable<typename T> <67:4 67:12>"s);
+	REQUIRE(client->usages[25] == "auto Adder50::add50<Plusable x:auto, Minusable y:auto>(x:auto, y:auto) -> Minusable<typename T> <67:42 67:50>"s);
+}
+
+
+TEST_CASE("cxx parser finds concept in constrained auto variables")
+{
+	auto client = parseCode(
+		R"(template<typename T>
+		concept Addable = requires(T a, T b)
+		{
+			{ a + b };
+		};
+
+		void calculate()
+		{
+			Addable auto r = 0;
+		})");
+
+	REQUIRE(client->errors.empty());
+
+	// Check for the concept declaration:
+	REQUIRE(containsElement(client->concepts, "Addable<typename T> <2:11 2:17>"s));
+
+	// Check for the concept usages:
+	REQUIRE(containsElement(client->usages, "calculate::r -> Addable<typename T> <9:4 9:10>"s));
+
+	// Check for the correct auto type:
+	REQUIRE(containsElement(client->typeUses, "calculate::r -> int <9:12 9:15>"s));
 }
 
 TEST_CASE("cxx parser finds class default private inheritance")
@@ -2417,7 +2703,7 @@ TEST_CASE("cxx parser finds return type use in function")
 	REQUIRE(containsElement(client->typeUses, "double PI() -> double <1:1 1:6>"s));
 }
 
-TEST_CASE("cxx parser finds return type auto use in function")
+TEST_CASE("cxx parser finds function return type auto use in function")
 {
 	std::shared_ptr<TestStorage> client = parseCode(
 		R"(auto PI()
@@ -2429,7 +2715,7 @@ TEST_CASE("cxx parser finds return type auto use in function")
 	REQUIRE(containsElement(client->typeUses, "double PI() -> double <1:1 1:4>"s));
 }
 
-TEST_CASE("cxx parser finds return type auto/trailing use in function")
+TEST_CASE("cxx parser finds function return type auto/trailing use in function")
 {
 	std::shared_ptr<TestStorage> client = parseCode(
 		R"(auto PI() -> int
@@ -2441,7 +2727,7 @@ TEST_CASE("cxx parser finds return type auto/trailing use in function")
 	REQUIRE(containsElement(client->typeUses, "int PI() -> int <1:14 1:16>"s));
 }
 
-TEST_CASE("cxx parser finds return type decltype(auto) use in function")
+TEST_CASE("cxx parser finds function return type decltype(auto) use in function")
 {
 	std::shared_ptr<TestStorage> client = parseCode(
 		R"(decltype(auto) PI()

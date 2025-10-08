@@ -66,6 +66,17 @@ std::string CxxTemplateParameterStringResolver::getTemplateParameterTypeString(c
 {
 	std::string typeString = (parameter->wasDeclaredWithTypename() ? "typename" : "class");
 
+	// Check whether the template parameter was declared with a concept name:
+
+	if (const clang::TypeConstraint *typeConstraint = parameter->getTypeConstraint())
+	{
+		if (const clang::ConceptReference *conceptReference = typeConstraint->getConceptReference())
+		{
+			// if (conceptReference->getNamedConcept() != nullptr)
+			typeString = conceptReference->getConceptNameInfo().getAsString();
+		}
+	}
+
 	if (parameter->isTemplateParameterPack())
 	{
 		typeString += "...";

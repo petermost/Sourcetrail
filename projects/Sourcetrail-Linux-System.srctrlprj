@@ -6,13 +6,12 @@
                 <compilation_db_path>../../build/system-ninja-release/compile_commands.json</compilation_db_path>
             </build_file_path>
             <header_search_paths>
-                <header_search_path>../src/external/sqlite</header_search_path>
                 <header_search_path>${JAVA_HOME}/include</header_search_path>
                 <header_search_path>${JAVA_HOME}/include/linux</header_search_path>
             </header_search_paths>
             <indexed_header_paths>
                 <indexed_header_path>/usr/include/x86_64-linux-gnu/qt6</indexed_header_path>
-                <indexed_header_path>/usr/lib/llvm-19/include</indexed_header_path>
+                <indexed_header_path>/usr/lib/llvm-20/include</indexed_header_path>
                 <indexed_header_path>..</indexed_header_path>
                 <indexed_header_path>../../build/system-ninja-release</indexed_header_path>
             </indexed_header_paths>

@@ -93,11 +93,13 @@ public:
 	}
 
 	void visitTagDecl(clang::TagDecl*  /*d*/) {}
+	void visitClassTemplateDecl(clang::ClassTemplateDecl * /*d*/) {}
 	void visitClassTemplateSpecializationDecl(clang::ClassTemplateSpecializationDecl*  /*d*/) {}
 	void visitVarDecl(clang::VarDecl*  /*d*/) {}
 	void visitVarTemplateSpecializationDecl(clang::VarTemplateSpecializationDecl*  /*d*/) {}
 	void visitFieldDecl(clang::FieldDecl*  /*d*/) {}
 	void visitFunctionDecl(clang::FunctionDecl*  /*d*/) {}
+	void visitFunctionTemplateDecl(clang::FunctionTemplateDecl * /*d*/) {}
 	void visitCXXMethodDecl(clang::CXXMethodDecl*  /*d*/) {}
 	void visitEnumConstantDecl(clang::EnumConstantDecl*  /*d*/) {}
 	void visitNamespaceDecl(clang::NamespaceDecl*  /*d*/) {}
@@ -109,6 +111,8 @@ public:
 	void visitNonTypeTemplateParmDecl(clang::NonTypeTemplateParmDecl*  /*d*/) {}
 	void visitTemplateTypeParmDecl(clang::TemplateTypeParmDecl*  /*d*/) {}
 	void visitTemplateTemplateParmDecl(clang::TemplateTemplateParmDecl*  /*d*/) {}
+	void visitConceptDecl(clang::ConceptDecl * /*d*/) {}
+	void visitConceptSpecializationExpr(clang::ConceptSpecializationExpr * /*d*/) {}
 
 	void visitTypeLoc(clang::TypeLoc  /*tl*/) {}
 

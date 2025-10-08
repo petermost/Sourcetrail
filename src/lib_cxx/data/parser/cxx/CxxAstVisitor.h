@@ -127,8 +127,10 @@ public:
 
 
 	bool VisitTagDecl(clang::TagDecl* d);
+	bool VisitClassTemplateDecl(clang::ClassTemplateDecl *d);
 	bool VisitClassTemplateSpecializationDecl(clang::ClassTemplateSpecializationDecl* d);
 	bool VisitFunctionDecl(clang::FunctionDecl* d);
+	bool VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *d);
 	bool VisitCXXMethodDecl(clang::CXXMethodDecl* d);
 	bool VisitVarDecl(clang::VarDecl* d);
 	bool VisitVarTemplateSpecializationDecl(clang::VarTemplateSpecializationDecl* d);
@@ -143,6 +145,8 @@ public:
 	bool VisitNonTypeTemplateParmDecl(clang::NonTypeTemplateParmDecl* d);
 	bool VisitTemplateTypeParmDecl(clang::TemplateTypeParmDecl* d);
 	bool VisitTemplateTemplateParmDecl(clang::TemplateTemplateParmDecl* d);
+	bool VisitConceptDecl(clang::ConceptDecl *d);
+	bool VisitConceptSpecializationExpr(clang::ConceptSpecializationExpr *d);
 	static bool VisitTranslationUnitDecl(clang::TranslationUnitDecl* d);
 
 	bool VisitTypeLoc(clang::TypeLoc tl);
@@ -161,7 +165,7 @@ public:
 	ParseLocation getParseLocation(const clang::SourceLocation& loc) const;
 	ParseLocation getParseLocation(const clang::SourceRange& sourceRange) const;
 
-	bool shouldVisitStmt(const clang::Stmt* s) const;
+	bool shouldVisitStmt(const clang::Stmt* stmt) const;
 	bool shouldVisitDecl(const clang::Decl* decl) const;
 	bool shouldVisitReference(const clang::SourceLocation& referenceLocation) const;
 

@@ -101,6 +101,8 @@ std::unique_ptr<CxxDeclName> CxxDeclNameResolver::getDeclName(const clang::Named
 		[[maybe_unused]]
 		ScopedSwitcher<const clang::NamedDecl*> switcher(m_currentDecl, declaration);
 
+		// TODO (petermost): Why does this return "variableName:auto" (e.g.: 'x:auto') for abbreviated template function parameters?
+
 		std::string declNameString = declaration->getNameAsString();
 
 		if (const clang::TagDecl* tagDecl = clang::dyn_cast_or_null<clang::TagDecl>(declaration))

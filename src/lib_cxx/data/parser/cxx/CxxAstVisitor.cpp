@@ -11,6 +11,8 @@
 #include "logging.h"
 #include "utilityClang.h"
 
+using namespace clang;
+
 CxxAstVisitor::CxxAstVisitor(
 	clang::ASTContext* astContext,
 	clang::Preprocessor* preprocessor,
@@ -375,6 +377,32 @@ bool CxxAstVisitor::TraverseCXXConstructExpr(clang::CXXConstructExpr* s)
 
 DEF_TRAVERSE_TYPE_PTR(CXXTemporaryObjectExpr, {}, {})
 DEF_TRAVERSE_TYPE_PTR(LambdaExpr, {}, {})
+
+/*
+This code would also detect lambdas with concept usages, but it somehow breaks the detection/indexing
+of captured variables!
+
+bool CxxAstVisitor::TraverseLambdaExpr(clang::LambdaExpr *s)
+{
+	FOREACH_COMPONENT(beginTraverseLambdaExpr(s));
+
+	// Iterate/Walk/Traverse over the "closure type" to detect concept usages:
+
+	if (const CXXRecordDecl *closureRecordDecl = s->getLambdaClass())
+	{
+		for (Decl *decl : closureRecordDecl->decls())
+		{
+			// This will eventually call 'visitFunctionTemplateDecl':
+
+			TraverseDecl(decl);
+		}
+	}
+	FOREACH_COMPONENT(endTraverseLambdaExpr(s));
+
+	return true;
+}
+*/
+
 DEF_TRAVERSE_TYPE_PTR(FunctionDecl, {}, {})
 
 // same as base::TraverseClassTemplateSpecializationDecl but without traversing the typeloc of the
@@ -574,8 +602,10 @@ DEF_VISIT_TYPE_PTR(ReturnStmt)
 DEF_VISIT_TYPE_PTR(CompoundStmt)
 DEF_VISIT_TYPE_PTR(InitListExpr)
 DEF_VISIT_TYPE_PTR(TagDecl)
+DEF_VISIT_TYPE_PTR(ClassTemplateDecl)
 DEF_VISIT_TYPE_PTR(ClassTemplateSpecializationDecl)
 DEF_VISIT_TYPE_PTR(FunctionDecl)
+DEF_VISIT_TYPE_PTR(FunctionTemplateDecl)
 DEF_VISIT_TYPE_PTR(CXXMethodDecl)
 DEF_VISIT_TYPE_PTR(VarDecl)
 DEF_VISIT_TYPE_PTR(VarTemplateSpecializationDecl)
@@ -590,6 +620,8 @@ DEF_VISIT_TYPE_PTR(UsingDecl)
 DEF_VISIT_TYPE_PTR(NonTypeTemplateParmDecl)
 DEF_VISIT_TYPE_PTR(TemplateTypeParmDecl)
 DEF_VISIT_TYPE_PTR(TemplateTemplateParmDecl)
+DEF_VISIT_TYPE_PTR(ConceptDecl)
+DEF_VISIT_TYPE_PTR(ConceptSpecializationExpr)
 DEF_VISIT_TYPE(TypeLoc)
 DEF_VISIT_TYPE_PTR(DeclRefExpr)
 DEF_VISIT_TYPE_PTR(MemberExpr)
@@ -660,15 +692,15 @@ ParseLocation CxxAstVisitor::getParseLocation(const clang::SourceRange& sourceRa
 		sourceRange, m_astContext->getSourceManager(), m_preprocessor, m_canonicalFilePathCache);
 }
 
-bool CxxAstVisitor::shouldVisitStmt(const clang::Stmt* s) const
+bool CxxAstVisitor::shouldVisitStmt(const clang::Stmt* stmt) const
 {
-	if (s)
+	if (stmt != nullptr)
 	{
-		clang::SourceLocation loc = m_astContext->getSourceManager().getExpansionLoc(s->getBeginLoc());
+		clang::SourceLocation loc = m_astContext->getSourceManager().getExpansionLoc(stmt->getBeginLoc());
 
 		if (loc.isInvalid())
 		{
-			loc = s->getBeginLoc();
+			loc = stmt->getBeginLoc();
 		}
 
 		if (isLocatedInProjectFile(loc))
@@ -681,10 +713,9 @@ bool CxxAstVisitor::shouldVisitStmt(const clang::Stmt* s) const
 
 bool CxxAstVisitor::shouldVisitDecl(const clang::Decl* decl) const
 {
-	if (decl)
+	if (decl != nullptr)
 	{
-		clang::SourceLocation loc = m_astContext->getSourceManager().getExpansionLoc(
-			decl->getLocation());
+		clang::SourceLocation loc = m_astContext->getSourceManager().getExpansionLoc(decl->getLocation());
 
 		if (loc.isInvalid())
 		{
