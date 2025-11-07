@@ -52,8 +52,7 @@ std::set<FilePath> SourceGroupCxxCdb::getAllSourceFilePaths() const
 		utility::loadCDB(m_settings->getCompilationDatabasePathExpandedAndAbsolute()));
 }
 
-std::set<FilePath> SourceGroupCxxCdb::getAllSourceFilePaths(
-	std::shared_ptr<clang::tooling::JSONCompilationDatabase> cdb) const
+std::set<FilePath> SourceGroupCxxCdb::getAllSourceFilePaths(std::shared_ptr<clang::tooling::CompilationDatabase> cdb) const
 {
 	std::set<FilePath> sourceFilePaths;
 
@@ -80,7 +79,7 @@ std::shared_ptr<IndexerCommandProvider> SourceGroupCxxCdb::getIndexerCommandProv
 	std::shared_ptr<CxxIndexerCommandProvider> provider = std::make_shared<CxxIndexerCommandProvider>();
 
 	const FilePath cdbPath = m_settings->getCompilationDatabasePathExpandedAndAbsolute();
-	std::shared_ptr<clang::tooling::JSONCompilationDatabase> cdb = utility::loadCDB(cdbPath);
+	std::shared_ptr<clang::tooling::CompilationDatabase> cdb = utility::loadCDB(cdbPath);
 	if (!cdb)
 	{
 		return provider;
@@ -148,7 +147,7 @@ std::shared_ptr<Task> SourceGroupCxxCdb::getPreIndexTask(
 	if (m_settings->getUseCompilerFlags())
 	{
 		const FilePath cdbPath = m_settings->getCompilationDatabasePathExpandedAndAbsolute();
-		std::shared_ptr<clang::tooling::JSONCompilationDatabase> cdb = utility::loadCDB(cdbPath);
+		std::shared_ptr<clang::tooling::CompilationDatabase> cdb = utility::loadCDB(cdbPath);
 		if (cdb)
 		{
 			const std::set<FilePath> sourceFilePaths = getAllSourceFilePaths(cdb);

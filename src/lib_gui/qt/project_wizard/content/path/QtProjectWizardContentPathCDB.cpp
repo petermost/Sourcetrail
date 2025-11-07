@@ -132,8 +132,7 @@ void QtProjectWizardContentPathCDB::onPickerTextChanged(const QString& text)
 		cdbPath != m_settings->getCompilationDatabasePathExpandedAndAbsolute())
 	{
 		std::string error;
-		std::shared_ptr<clang::tooling::JSONCompilationDatabase> cdb = utility::loadCDB(
-			cdbPath, &error);
+		std::shared_ptr<clang::tooling::CompilationDatabase> cdb = utility::loadCDB(cdbPath, &error);
 		if (cdb && error.empty())
 		{
 			pickedPath();

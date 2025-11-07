@@ -94,39 +94,40 @@ std::shared_ptr<Task> createBuildPchTask(const SourceGroupSettingsWithCxxPchOpti
 	return pchTask;
 }
 
-shared_ptr<JSONCompilationDatabase> loadCDB(const FilePath& cdbPath, std::string* error)
+shared_ptr<CompilationDatabase> loadCDB(const FilePath& cdbPath, std::string* error)
 {
-	shared_ptr<JSONCompilationDatabase> cdb;
+	unique_ptr<CompilationDatabase> cdb;
 	
 	if (cdbPath.empty() || !cdbPath.exists())
 		return cdb;
 
 	string errorString;
 	cdb = JSONCompilationDatabase::loadFromFile(cdbPath.str(), errorString, JSONCommandLineSyntax::AutoDetect);
-
-	if (error != nullptr && !errorString.empty())
+	if (cdb == nullptr && error != nullptr)
 		*error = errorString;
+
+	if (cdb != nullptr)
+		cdb = expandResponseFiles(std::move(cdb), llvm::vfs::getRealFileSystem());
 
 	return cdb;
 }
 
-shared_ptr<JSONCompilationDatabase> loadCDB(string_view cdbContent, JSONCommandLineSyntax syntax, string *error)
+shared_ptr<CompilationDatabase> loadCDB(string_view cdbContent, JSONCommandLineSyntax syntax, string *error)
 {
-	shared_ptr<JSONCompilationDatabase> cdb;
+	unique_ptr<CompilationDatabase> cdb;
 
 	if (cdbContent.empty())
 		return cdb;
 		
 	string errorString;
 	cdb = JSONCompilationDatabase::loadFromBuffer(cdbContent, errorString, syntax);
-
-	if (error != nullptr && !errorString.empty())
+	if (cdb == nullptr && error != nullptr)
 		*error = errorString;
 
 	return cdb;
 }
 
-bool containsIncludePchFlags(std::shared_ptr<clang::tooling::JSONCompilationDatabase> cdb)
+bool containsIncludePchFlags(std::shared_ptr<clang::tooling::CompilationDatabase> cdb)
 {
 	for (const clang::tooling::CompileCommand& command: cdb->getAllCompileCommands())
 	{

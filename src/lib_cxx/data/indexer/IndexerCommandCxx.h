@@ -10,15 +10,14 @@ class FilePath;
 
 namespace clang::tooling
 {
-class JSONCompilationDatabase;
+class CompilationDatabase;
 }
 
 class IndexerCommandCxx: public IndexerCommand
 {
 public:
 	static std::vector<FilePath> getSourceFilesFromCDB(const FilePath& cdbPath);
-	static std::vector<FilePath> getSourceFilesFromCDB(
-		std::shared_ptr<clang::tooling::JSONCompilationDatabase> cdb, const FilePath& cdbPath);
+	static std::vector<FilePath> getSourceFilesFromCDB(std::shared_ptr<clang::tooling::CompilationDatabase> cdb, const FilePath& cdbPath);
 
 	static std::string getCompilerFlagLanguageStandard(const std::string& languageStandard);
 	static std::vector<std::string> getCompilerFlagsForSystemHeaderSearchPaths(

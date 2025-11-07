@@ -53,7 +53,7 @@ bool QtProjectWizardContentPathCxxPch::check()
 	{
 		std::string error;
 		const FilePath cdbPath = cdbSettings->getCompilationDatabasePathExpandedAndAbsolute();
-		std::shared_ptr<clang::tooling::JSONCompilationDatabase> cdb = utility::loadCDB(cdbPath, &error);
+		std::shared_ptr<clang::tooling::CompilationDatabase> cdb = utility::loadCDB(cdbPath, &error);
 		if (!cdb)
 		{
 			QtMessageBox msgBox(m_window);

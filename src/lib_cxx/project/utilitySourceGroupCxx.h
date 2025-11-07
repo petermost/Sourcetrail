@@ -21,13 +21,12 @@ std::shared_ptr<Task> createBuildPchTask(
 	std::shared_ptr<StorageProvider> storageProvider,
 	std::shared_ptr<DialogView> dialogView);
 
-std::shared_ptr<clang::tooling::JSONCompilationDatabase> loadCDB(
-	const FilePath& cdbPath, std::string* error = nullptr);
+std::shared_ptr<clang::tooling::CompilationDatabase> loadCDB(const FilePath& cdbPath, std::string* error = nullptr);
 	
-std::shared_ptr<clang::tooling::JSONCompilationDatabase> loadCDB(std::string_view cdbContent, clang::tooling::JSONCommandLineSyntax syntax,
+std::shared_ptr<clang::tooling::CompilationDatabase> loadCDB(std::string_view cdbContent, clang::tooling::JSONCommandLineSyntax syntax,
 	std::string *error);
 
-bool containsIncludePchFlags(std::shared_ptr<clang::tooling::JSONCompilationDatabase> cdb);
+bool containsIncludePchFlags(std::shared_ptr<clang::tooling::CompilationDatabase> cdb);
 bool containsIncludePchFlag(const std::vector<std::string>& args);
 std::vector<std::string> getWithRemoveIncludePchFlag(const std::vector<std::string>& args);
 void removeIncludePchFlag(std::vector<std::string>& args);

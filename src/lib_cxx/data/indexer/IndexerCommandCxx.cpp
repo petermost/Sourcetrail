@@ -16,7 +16,7 @@
 std::vector<FilePath> IndexerCommandCxx::getSourceFilesFromCDB(const FilePath& cdbPath)
 {
 	std::string error;
-	std::shared_ptr<clang::tooling::JSONCompilationDatabase> cdb = utility::loadCDB(cdbPath, &error);
+	std::shared_ptr<clang::tooling::CompilationDatabase> cdb = utility::loadCDB(cdbPath, &error);
 
 	if (!error.empty())
 	{
@@ -28,8 +28,7 @@ std::vector<FilePath> IndexerCommandCxx::getSourceFilesFromCDB(const FilePath& c
 	return getSourceFilesFromCDB(cdb, cdbPath);
 }
 
-std::vector<FilePath> IndexerCommandCxx::getSourceFilesFromCDB(
-	std::shared_ptr<clang::tooling::JSONCompilationDatabase> cdb, const FilePath& cdbPath)
+std::vector<FilePath> IndexerCommandCxx::getSourceFilesFromCDB(std::shared_ptr<clang::tooling::CompilationDatabase> cdb, const FilePath& cdbPath)
 {
 	std::vector<FilePath> filePaths;
 	if (cdb)

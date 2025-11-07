@@ -74,7 +74,7 @@ static const char ISSUE_WINDOWS_CDB[] = R"(
 static vector<CompileCommand> loadDatabase(string_view cdbContent, JSONCommandLineSyntax syntax)
 {
 	string error;
-	shared_ptr<JSONCompilationDatabase> cdb = loadCDB(cdbContent, syntax, &error);
+	shared_ptr<CompilationDatabase> cdb = loadCDB(cdbContent, syntax, &error);
 	REQUIRE((cdb != nullptr && error.empty()));
 
 	return cdb->getAllCompileCommands();
