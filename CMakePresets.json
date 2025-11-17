@@ -63,14 +63,6 @@
 		},
 		{
 			"hidden": true,
-			"name": "vcpkg-clang-presets",
-			"cacheVariables": {
-				"CMAKE_C_COMPILER"  : "${sourceParentDir}/build/${presetName}/vcpkg_installed/x64-arm64-linux-windows-osx-static-md/tools/llvm/clang",
-				"CMAKE_CXX_COMPILER": "${sourceParentDir}/build/${presetName}/vcpkg_installed/x64-arm64-linux-windows-osx-static-md/tools/llvm/clang++"
-			}
-		},
-		{
-			"hidden": true,
 			"name": "system-clang-presets",
 			"cacheVariables": {
 				"CMAKE_C_COMPILER"  : "clang",
@@ -90,7 +82,7 @@
 
 
 		{
-			"name": "system-ninja-debug",
+			"name": "system-debug",
 			"inherits": [
 				"debug-presets",
 				"system-default-presets",
@@ -98,7 +90,7 @@
 			]
 		},
 		{
-			"name": "system-ninja-release",
+			"name": "system-release",
 			"inherits": [
 				"release-presets",
 				"system-default-presets",
@@ -106,70 +98,64 @@
 			]
 		},
 		{
-			"name": "system-ninja-relwithdebinfo",
+			"name": "system-clang-debug",
 			"inherits": [
-				"relwithdebinfo-presets",
-				"system-default-presets",
-				"sourcetrail-presets"
-			]
-		},
-
-
-
-		{
-			"name": "vcpkg-ninja-debug",
-			"inherits": [
-				"debug-presets",
-				"vcpkg-default-presets",
-				"sourcetrail-presets"
-			]
-		},
-		{
-			"name": "vcpkg-ninja-release",
-			"inherits": [
-				"release-presets",
-				"vcpkg-default-presets",
-				"sourcetrail-presets"
-			]
-		},
-		{
-			"name": "vcpkg-ninja-relwithdebinfo",
-			"inherits": [
-				"relwithdebinfo-presets",
-				"vcpkg-default-presets",
-				"sourcetrail-presets"
-			]
-		},
-
-
-
-		{
-			"name": "vcpkg-clang-ninja-debug",
-			"inherits": [
-				"vcpkg-ninja-debug",
-				"vcpkg-clang-presets"
-			]
-		},
-		{
-			"name": "vcpkg-clang-ninja-release",
-			"inherits": [
-				"vcpkg-ninja-release",
-				"vcpkg-clang-presets"
-			]
-		},
-
-
-		{
-			"name": "system-clang-ninja-debug",
-			"inherits": [
-				"system-ninja-debug",
+				"system-debug",
 				"system-clang-presets"
 			]
 		},
 		{
-			"name": "system-clang-ninja-release",
+			"name": "system-clang-release",
 			"inherits": [
-				"system-ninja-release",
+				"system-release",
+				"system-clang-presets"
+			]
+		},
+
+
+
+		{
+			"name": "vcpkg-debug",
+			"inherits": [
+				"debug-presets",
+				"vcpkg-default-presets",
+				"sourcetrail-presets"
+			]
+		},
+		{
+			"name": "vcpkg-release",
+			"inherits": [
+				"release-presets",
+				"vcpkg-default-presets",
+				"sourcetrail-presets"
+			]
+		},
+		{
+			"name": "vcpkg-relwithdebinfo",
+			"inherits": [
+				"relwithdebinfo-presets",
+				"vcpkg-default-presets",
+				"sourcetrail-presets"
+			]
+		},
+		{
+			"name": "vcpkg-clang-debug",
+			"inherits": [
+				"vcpkg-debug",
+				"system-clang-presets"
+			]
+		},
+		{
+			"name": "vcpkg-clang-release",
+			"inherits": [
+				"vcpkg-release",
+				"system-clang-presets"
+			]
+		},
+		{
+			"name": "vcpkg-clang-relwithdebinfo",
+			"inherits": [
+				"vcpkg-relwithdebinfo",
 				"system-clang-presets"
 			]
 		}

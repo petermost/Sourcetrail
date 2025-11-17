@@ -131,15 +131,15 @@
                 <header_search_path>../src/lib_java/utility</header_search_path>
                 <header_search_path>../src/lib_python/project</header_search_path>
                 <header_search_path>../src/test/helper</header_search_path>
-                <header_search_path>../../build/vcpkg-ninja-release/src/lib</header_search_path>
-                <header_search_path>../../build/vcpkg-ninja-release/src/lib_gui</header_search_path>
-                <header_search_path>../../build/vcpkg-ninja-release/vcpkg_installed/x64-arm64-linux-windows-osx-static-md/include</header_search_path>
-                <header_search_path>../../build/vcpkg-ninja-release/vcpkg_installed/x64-arm64-linux-windows-osx-static-md/include/Qt6</header_search_path>
-                <header_search_path>../../build/vcpkg-ninja-release/vcpkg_installed/x64-arm64-linux-windows-osx-static-md/include/Qt6/QtCore</header_search_path>
-                <header_search_path>../../build/vcpkg-ninja-release/vcpkg_installed/x64-arm64-linux-windows-osx-static-md/include/Qt6/QtWidgets</header_search_path>
-                <header_search_path>../../build/vcpkg-ninja-release/vcpkg_installed/x64-arm64-linux-windows-osx-static-md/include/Qt6/QtGui</header_search_path>
-                <header_search_path>../../build/vcpkg-ninja-release/vcpkg_installed/x64-arm64-linux-windows-osx-static-md/include/Qt6/QtSvg</header_search_path>
-                <header_search_path>../../build/vcpkg-ninja-release/vcpkg_installed/x64-arm64-linux-windows-osx-static-md/include/Qt6/QtNetwork</header_search_path>
+                <header_search_path>../../build/vcpkg-release/src/lib</header_search_path>
+                <header_search_path>../../build/vcpkg-release/src/lib_gui</header_search_path>
+                <header_search_path>../../build/vcpkg-release/vcpkg_installed/x64-arm64-linux-windows-osx-static-md/include</header_search_path>
+                <header_search_path>../../build/vcpkg-release/vcpkg_installed/x64-arm64-linux-windows-osx-static-md/include/Qt6</header_search_path>
+                <header_search_path>../../build/vcpkg-release/vcpkg_installed/x64-arm64-linux-windows-osx-static-md/include/Qt6/QtCore</header_search_path>
+                <header_search_path>../../build/vcpkg-release/vcpkg_installed/x64-arm64-linux-windows-osx-static-md/include/Qt6/QtWidgets</header_search_path>
+                <header_search_path>../../build/vcpkg-release/vcpkg_installed/x64-arm64-linux-windows-osx-static-md/include/Qt6/QtGui</header_search_path>
+                <header_search_path>../../build/vcpkg-release/vcpkg_installed/x64-arm64-linux-windows-osx-static-md/include/Qt6/QtSvg</header_search_path>
+                <header_search_path>../../build/vcpkg-release/vcpkg_installed/x64-arm64-linux-windows-osx-static-md/include/Qt6/QtNetwork</header_search_path>
                 <header_search_path>${JAVA_HOME}/include</header_search_path>
                 <header_search_path>${JAVA_HOME}/include/linux</header_search_path>
             </header_search_paths>
@@ -153,7 +153,7 @@
             </source_extensions>
             <source_paths>
                 <source_path>../src</source_path>
-                <source_path>../../build/vcpkg-ninja-release/src/lib/language_packages.h</source_path>
+                <source_path>../../build/vcpkg-release/src/lib/language_packages.h</source_path>
             </source_paths>
             <status>enabled</status>
             <type>C++ Source Group</type>

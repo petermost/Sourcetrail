@@ -186,7 +186,7 @@ Depending on the platform and the selected indexer, additional software/packages
 Prepare the build in a terminal or command prompt ("x64 Native Tools Command Prompt"):
 ```
 $ cd Sourcetrail
-$ cmake --preset vcpkg-ninja-release
+$ cmake --preset vcpkg-release
 ```
 Note that the initial compilation of the vcpkg packages (especially LLVM) will take a **long** time!
 
@@ -195,7 +195,7 @@ Note that the initial compilation of the vcpkg packages (especially LLVM) will t
 
 Build:
 ```
-$ cd ../build/vcpkg-ninja-release
+$ cd ../build/vcpkg-release
 $ cmake --build .
 ```
 
@@ -217,12 +217,12 @@ To compile it under (K)ubuntu 25.04, "Plucky Puffin", install the following pack
 Prepare the build:
 ```
 $ cd Sourcetrail
-$ cmake --preset system-ninja-release
+$ cmake --preset system-release
 ```
 
 Build:
 ```
-$ cd ../build/system-ninja-release
+$ cd ../build/system-release
 $ cmake --build .
 ```
 

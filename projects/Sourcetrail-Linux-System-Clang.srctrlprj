@@ -3,7 +3,7 @@
     <source_groups>
         <source_group_01d98a69-0204-4cfc-a6b7-894adb4b5de4>
             <build_file_path>
-                <compilation_db_path>../../build/system-clang-ninja-release/compile_commands.json</compilation_db_path>
+                <compilation_db_path>../../build/system-clang-release/compile_commands.json</compilation_db_path>
             </build_file_path>
             <header_search_paths>
                 <header_search_path>${JAVA_HOME}/include</header_search_path>
@@ -14,7 +14,7 @@
                 <indexed_header_path>/usr/lib/llvm-20/include</indexed_header_path>
                 <indexed_header_path>..</indexed_header_path>
                 <indexed_header_path>/usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++</indexed_header_path>
-                <indexed_header_path>../../build/system-clang-ninja-release</indexed_header_path>
+                <indexed_header_path>../../build/system-clang-release</indexed_header_path>
             </indexed_header_paths>
             <name>C/C++ from Compilation Database</name>
             <pch_flags>

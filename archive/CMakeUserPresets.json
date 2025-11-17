@@ -1,0 +1,30 @@
+{
+	"version": 4,
+	"configurePresets": [
+		{
+			"hidden": true,
+			"name": "vcpkg_installed_clang-presets",
+			"cacheVariables": {
+				"CMAKE_C_COMPILER"  : "${sourceParentDir}/build/${presetName}/vcpkg_installed/x64-arm64-linux-windows-osx-static-md/tools/llvm/clang",
+				"CMAKE_CXX_COMPILER": "${sourceParentDir}/build/${presetName}/vcpkg_installed/x64-arm64-linux-windows-osx-static-md/tools/llvm/clang++"
+			}
+		},
+
+
+
+		{
+			"name": "vcpkg-vcpkg_installed_clang-debug",
+			"inherits": [
+				"vcpkg-debug",
+				"vcpkg_installed_clang-presets"
+			]
+		},
+		{
+			"name": "vcpkg-vcpkg_installed_clang-release",
+			"inherits": [
+				"vcpkg-release",
+				"vcpkg_installed_clang-presets"
+			]
+		}
+	]
+}

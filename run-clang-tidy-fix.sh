@@ -6,5 +6,5 @@
 #!/bin/sh
 
 # Running 'run-clang-tidy' with '-j 1' doesn't solve the problem of multiple fixes!
-# run-clang-tidy-18 -p ../build/system-ninja-debug/ -fix -extra-arg="-w"
-run-clang-tidy-20 -p ../build/vcpkg-ninja-release/ -fix
+# run-clang-tidy-18 -p ../build/system-debug/ -fix -extra-arg="-w"
+run-clang-tidy-20 -p ../build/system-release/ -fix
