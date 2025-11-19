@@ -4,7 +4,7 @@
 #include <QRegularExpression>
 #include <QTextCharFormat>
 
-import aidkit.enum_class;
+#include <aidkit/enum_class.hpp>
 
 class QTextBlock;
 class QTextDocument;

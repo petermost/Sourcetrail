@@ -15,16 +15,14 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with CppAidKit. If not, see <http://www.gnu.org/licenses/>.
 
-module;
+#pragma once
 
 #include <algorithm>
 #include <functional>
 #include <string_view>
 #include <vector>
 
-export module aidkit.enum_class;
-
-export namespace aidkit {
+namespace aidkit {
 
 template<typename T, typename Char = char, typename Int = int>
 	class enum_class {

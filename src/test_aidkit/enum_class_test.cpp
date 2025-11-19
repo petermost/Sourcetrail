@@ -15,9 +15,8 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with CppAidKit. If not, see <http://www.gnu.org/licenses/>.
 
-import aidkit.enum_class;
-
 #include <gtest/gtest.h>
+#include <aidkit/enum_class.hpp>
 
 using namespace std;
 using namespace aidkit;

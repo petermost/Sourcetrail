@@ -15,13 +15,11 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with CppAidKit. If not, see <http://www.gnu.org/licenses/>.
 
-module;
+#pragma once
 
 #include <mutex>
 
-export module aidkit.shared_data;
-
-export namespace aidkit {
+namespace aidkit {
 
 template <typename T, typename Mutex = std::mutex>
 	class shared_data_ptr {
