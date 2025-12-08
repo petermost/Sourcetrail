@@ -1,4 +1,15 @@
 ### Changelog
+
+#### 2025.12.8
+- C++: Add indexing of structured binding declarations
+- C++: Add indexing of `auto` prvalue casts
+- GUI: Fix error/status view not cleared between indexing ([#51](https://github.com/petermost/Sourcetrail/issues/51))
+- C/C++: Replace msvc mulitithreading library switches with corresponding clang switch
+- C/C++: Add Visual Studio 2026 support
+- Database: Enable simple database performance improvement
+- Python: Remove non-working Python support
+- C/C++: Remove support for Visual Studio 2010 to 2015
+
 #### 2025.10.13
 - C/C++: Add indexing of `concept` type constraints
 - C/C++: Add indexing of abbreviated function templates
