@@ -9,6 +9,7 @@
 #include "MessageStatus.h"
 #include "SourceGroupSettingsCxxCdb.h"
 #include "TaskLambda.h"
+#include "ToolChain.h"
 #include "utility.h"
 #include "utilitySourceGroupCxx.h"
 #include "utilityString.h"
@@ -111,7 +112,7 @@ std::shared_ptr<IndexerCommandProvider> SourceGroupCxxCdb::getIndexerCommandProv
 			std::vector<std::string> commandLine = command.CommandLine;
 			
 			utility::removeIncludePchFlag(commandLine);
-			utility::replaceMsvcArguments(&commandLine);
+			replaceMsvcArguments(&commandLine);
 
 			if (command.CommandLine.size() != commandLine.size())
 			{
@@ -180,10 +181,10 @@ std::shared_ptr<Task> SourceGroupCxxCdb::getPreIndexTask(
 					ClangInvocationInfo info = ClangInvocationInfo::getClangInvocationString(
 						&compilationDatabase);
 
-					if (info.invocation.find("\"-x\" \"c++\""))
+					if (info.invocation.find("\"" + ClangCompiler::languageOption() + "\" \"" + ClangCompiler::CPP_LANGUAGE + "\"") != 0)
 					{
-						compilerFlags.push_back("-x");
-						compilerFlags.push_back("c++");
+						compilerFlags.push_back(ClangCompiler::languageOption());
+						compilerFlags.push_back(ClangCompiler::CPP_LANGUAGE);
 					}
 					break;
 				}

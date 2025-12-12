@@ -19,7 +19,7 @@
 #include "logging.h"
 #include "utility.h"
 #include "utilityString.h"
-#include "ToolVersionSupport.h"
+#include "ToolChain.h"
 
 using namespace std;
 using namespace clang::tooling;
@@ -49,8 +49,8 @@ std::shared_ptr<Task> createBuildPchTask(const SourceGroupSettingsWithCxxPchOpti
 
 	utility::removeIncludePchFlag(compilerFlags);
 	compilerFlags.push_back(pchInputFilePath.str());
-	compilerFlags.push_back("-emit-pch");
-	compilerFlags.push_back("-o");
+	compilerFlags.push_back(ClangCompiler::emitPchOption());
+	compilerFlags.push_back(ClangCompiler::outputOption());
 	compilerFlags.push_back(pchOutputFilePath.str());
 
 	pchTask = std::make_shared<TaskLambda>([dialogView, storageProvider, pchInputFilePath, pchOutputFilePath, compilerFlags]()
@@ -76,7 +76,7 @@ std::shared_ptr<Task> createBuildPchTask(const SourceGroupSettingsWithCxxPchOpti
 		pchCommand.Filename = pchInputFilePath.fileName();
 		pchCommand.Directory = pchOutputFilePath.getParentDirectory().str();
 		// DON'T use "-fsyntax-only" here because it will cause the output file to be erased
-		pchCommand.CommandLine = utility::concat({"clang-tool"}, CxxParser::getCommandlineArgumentsEssential(compilerFlags));
+		pchCommand.CommandLine = utility::concat({ClangCompiler::TOOL_NAME}, CxxParser::getCommandlineArgumentsEssential(compilerFlags));
 		
 		CxxCompilationDatabaseSingle compilationDatabase(pchCommand);
 		clang::tooling::ClangTool tool(compilationDatabase, {pchInputFilePath.str()});
@@ -141,7 +141,7 @@ bool containsIncludePchFlags(std::shared_ptr<clang::tooling::CompilationDatabase
 
 bool containsIncludePchFlag(const std::vector<std::string>& args)
 {
-	const std::string includePchPrefix = "-include-pch";
+	const std::string includePchPrefix = ClangCompiler::includePchOption();
 	for (size_t i = 0; i < args.size(); i++)
 	{
 		const std::string arg = utility::trim(args[i]);
@@ -162,7 +162,7 @@ std::vector<std::string> getWithRemoveIncludePchFlag(const std::vector<std::stri
 
 void removeIncludePchFlag(std::vector<std::string>& args)
 {
-	const std::string includePchPrefix = "-include-pch";
+	const std::string includePchPrefix = ClangCompiler::includePchOption();
 	for (size_t i = 0; i < args.size(); i++)
 	{
 		const std::string arg = utility::trim(args[i]);
@@ -191,79 +191,10 @@ std::vector<std::string> getIncludePchFlags(const SourceGroupSettingsWithCxxPchO
 											   .getConcatenated(pchInputFilePath.fileName())
 											   .replaceExtension("pch");
 
-		return {"-fallow-pch-with-compiler-errors", "-include-pch", pchOutputFilePath.str()};
+		return { ClangCompiler::allowPchWithCompilerErrors(), ClangCompiler::includePchOption(), pchOutputFilePath.str()};
 	}
 
 	return {};
-}
-
-static optional<string> getArgumentValue(const string &argument, string_view argumentKey)
-{
-	return argument.starts_with(argumentKey) ? make_optional(argument.substr(argumentKey.length())) : nullopt;
-}
-
-void replaceMsvcArguments(vector<string> *commandLineArguments)
-{
-	// Replace/Remove arguments only if these are for the Microsoft compiler, otherwise the check for '/' will remove Linux paths:
-
-	if (commandLineArguments->size() >= 1 && !(*commandLineArguments)[0].ends_with("cl.exe"s))
-		return;
-
-	optional<string> argumentValue;
-
-	// - Keep/Replace only those options which are necessary to parse the code correctly
-	//
-	// From https://learn.microsoft.com/en-us/cpp/build/reference/compiler-options:
-	// - All compiler options are case-sensitive.
-	// - You may use either a forward slash (/) or a dash (-) to specify a compiler option.
-
-	auto argument = commandLineArguments->begin();
-	while (argument != commandLineArguments->end())
-	{
-		if (argument == commandLineArguments->begin())
-			++argument; // skip command
-
-		// Preprocessor symbols:
-
-		else if ((argumentValue = getArgumentValue(*argument, "/D"sv)))
-			*argument++ = "-D"s + *argumentValue;
-		else if ((argumentValue = getArgumentValue(*argument, "/U"sv)))
-			*argument++ = "-U"s + *argumentValue;
-		else if ((argumentValue = getArgumentValue(*argument, "/FI"sv)) || (argumentValue = getArgumentValue(*argument, "-FI"sv)))
-			*argument++ = "-include "s + *argumentValue;
-
-		// Preprocessor include directories:
-
-		else if ((argumentValue = getArgumentValue(*argument, "/I"sv)))
-			*argument++ = "-I"s + *argumentValue;
-		else if ((argumentValue = getArgumentValue(*argument, "/external:I"sv)) || (argumentValue = getArgumentValue(*argument, "-external:I"sv)))
-			*argument++ = "-isystem "s + *argumentValue;
-
-		// C/C++ language version selection (no support for previews):
-
-		else if (argument->starts_with("/std:c++latest"sv) || argument->starts_with("-std:c++latest"sv))
-			*argument++ = "-std="s + ClangVersionSupport::getLatestCppStandard();
-		else if (argument->starts_with("/std:clatest"sv) || argument->starts_with("-std:clatest"sv))
-			*argument++ = "-std="s + ClangVersionSupport::getLatestCStandard();
-		else if ((argumentValue = getArgumentValue(*argument, "/std:c++"sv)) || (argumentValue = getArgumentValue(*argument, "-std:c++"sv)))
-			*argument++ = "-std=c++"s + *argumentValue;
-		else if ((argumentValue = getArgumentValue(*argument, "/std:c"sv)) || (argumentValue = getArgumentValue(*argument, "-std:c"sv)))
-			*argument++ = "-std=c"s + *argumentValue;
-
-		// Multithread support:
-
-		else if (getArgumentValue(*argument, "/MD"sv) || getArgumentValue(*argument, "/MT"sv)
-			|| getArgumentValue(*argument, "-MD"sv) || getArgumentValue(*argument, "-MT"sv))
-		{
-			*argument++ = "-pthread"s;
-		}
-		// Remove unknown arguments:
-
-		else if (argument->starts_with('/'))
-			argument = commandLineArguments->erase(argument);
-		else
-			++argument;
-	}
 }
 
 }	 // namespace utility

@@ -15,7 +15,7 @@
 
 #include "TestFileRegister.h"
 #include "TestStorage.h"
-#include "ToolVersionSupport.h"
+#include "ToolChain.h"
 
 using namespace std;
 using namespace std::string_literals;
@@ -37,7 +37,7 @@ std::shared_ptr<TestStorage> parseCode(const std::string &code, const std::vecto
 	parser.buildIndex(
 		"input.cc",
 		TextAccess::createFromString(code),
-		utility::concat(compilerFlags, "-std="s + ClangVersionSupport::getLatestCppStandard()));
+		utility::concat(compilerFlags, 	ClangCompiler::stdOption(ClangCompiler::getLatestCppStandard())));
 
 	return TestStorage::create(storage);
 }
@@ -4381,7 +4381,7 @@ TEST_CASE("cxx parser finds usage of local variable in microsoft inline assembly
 		"	mov x, eax\n"
 		"}\n"
 		"}\n",
-		{"--target=i686-pc-windows-msvc"});
+		{ClangCompiler::targetOption("i686-pc-windows-msvc")});
 
 	REQUIRE(
 		utility::containsElement<std::string>(client->localSymbols, "input.cc<3:6> <6:11 6:11>"));
@@ -4532,8 +4532,8 @@ TEST_CASE("cxx parser parses multiple files")
 		includeFilters,
 		workingDirectory,
 		std::vector<std::string> {
-			"--target=x86_64-pc-windows-msvc", 
-			"-std=" + ClangVersionSupport::getLatestCppStandard(), 
+			ClangCompiler::targetOption("x86_64-pc-windows-msvc"),
+			ClangCompiler::stdOption(ClangCompiler::getLatestCppStandard()),
 			sourceFilePath.str()
 		}
 	);
@@ -4661,7 +4661,7 @@ TEST_CASE("cxx parser finds braces of asm stmt")
 		"		mov eax, eax\n"
 		"	}\n"
 		"}\n",
-		{"--target=i686-pc-windows-msvc"});
+		{ClangCompiler::targetOption("i686-pc-windows-msvc")});
 
 	REQUIRE(
 		utility::containsElement<std::string>(client->localSymbols, "input.cc<4:2> <4:2 4:2>"));

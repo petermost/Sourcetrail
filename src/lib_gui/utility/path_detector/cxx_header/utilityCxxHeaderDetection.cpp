@@ -4,11 +4,11 @@
 #include <QSysInfo>
 
 #include "FileSystem.h"
-#include "ToolVersionSupport.h"
+#include "ToolChain.h"
 #include "utilityApp.h"
 #include "utilityString.h"
 
-using namespace std::string_literals;
+using namespace std;
 
 namespace utility
 {
@@ -41,7 +41,13 @@ std::vector<std::string> getCxxHeaderPaths(const std::string& compilerName)
 {
 	std::vector<std::string> paths;
 
-	const utility::ProcessOutput out = utility::executeProcess(compilerName, {"-x", "c++", "-v", "-E", "/dev/null"});
+	const vector<string> arguments = {
+		ClangCompiler::verboseOption(),
+		ClangCompiler::languageOption(), ClangCompiler::CPP_LANGUAGE,
+		ClangCompiler::preprocessOption(), "/dev/null"
+	};
+
+	const utility::ProcessOutput out = utility::executeProcess(compilerName, arguments);
 	if (out.exitCode == 0)
 	{
 		std::string standardHeaders = utility::substrBetween(
@@ -63,19 +69,18 @@ std::vector<FilePath> getWindowsSdkHeaderSearchPaths(Platform::Architecture arch
 {
 	std::vector<FilePath> headerSearchPaths;
 
-	std::vector<std::string> windowsSdkVersions = WindowsSdkVersionSupport::getVersions();
+	std::vector<std::string> windowsSdkVersions = WindowsSdk::getVersions();
 
 	for (size_t i = 0; i < windowsSdkVersions.size(); i++)
 	{
-		const FilePath sdkPath = getWindowsSdkRootPathUsingRegistry(
-			architecture, windowsSdkVersions[i]);
+		const FilePath sdkPath = getWindowsSdkRootPathUsingRegistry(architecture, windowsSdkVersions[i]);
 		if (sdkPath.exists())
 		{
 			const FilePath sdkIncludePath = sdkPath.getConcatenated("include/");
 			if (sdkIncludePath.exists())
 			{
 				bool usingSubdirectories = false;
-				for (const std::string& subDirectory: {"shared"s, "um"s, "winrt"s})
+				for (const std::string &subDirectory : {"shared"s, "um"s, "winrt"s})
 				{
 					const FilePath sdkSubdirectory = sdkIncludePath.getConcatenated(subDirectory);
 					if (sdkSubdirectory.exists())
@@ -97,8 +102,7 @@ std::vector<FilePath> getWindowsSdkHeaderSearchPaths(Platform::Architecture arch
 		const FilePath sdkPath = getWindowsSdkRootPathUsingRegistry(architecture, "v10.0");
 		if (sdkPath.exists())
 		{
-			for (const FilePath& versionPath:
-				 FileSystem::getDirectSubDirectories(sdkPath.getConcatenated("include/")))
+			for (const FilePath &versionPath : FileSystem::getDirectSubDirectories(sdkPath.getConcatenated("include/")))
 			{
 				const FilePath ucrtPath = versionPath.getConcatenated("ucrt");
 				if (ucrtPath.exists())

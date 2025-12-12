@@ -5,7 +5,10 @@
 
 #include "QtStringListBox.h"
 #include "SourceGroupSettingsWithCxxPchOptions.h"
+#include "ToolChain.h"
 #include "utilityString.h"
+
+using namespace std;
 
 QtProjectWizardContentCxxPchFlags::QtProjectWizardContentCxxPchFlags(
 	std::shared_ptr<SourceGroupSettingsWithCxxPchOptions> settings,
@@ -77,11 +80,12 @@ bool QtProjectWizardContentCxxPchFlags::check()
 
 	for (const std::string& flag: m_list->getStrings())
 	{
-		if (utility::isPrefix("-include ", flag) ||
-			utility::isPrefix("--include ", flag))
+		// Check whether the given 'force include option' contains a space at the end:
+
+		if (utility::isPrefix(ClangCompiler::forceIncludeOption() + " "s, flag) ||
+			utility::isPrefix(ClangCompiler::forceIncludeOption2() + " "s, flag))
 		{
-			error = "The entered flag \"" + flag +
-				"\" contains an error. Please remove the intermediate space character.\n";
+			error = "The entered flag \"" + flag + "\" contains an error. Please remove the intermediate space character.\n";
 		}
 	}
 

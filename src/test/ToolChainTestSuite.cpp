@@ -1,5 +1,6 @@
 #include "Catch2.hpp"
 
+#include "ToolChain.h"
 #include "utilitySourceGroupCxx.h"
 
 #include <clang/Tooling/CompilationDatabase.h>
@@ -179,8 +180,8 @@ TEST_CASE("CDB replace msvc arguments")
 		"-UUndefine",
 
 		"-IIncludeDirectory",
-		"-isystem ExternalIncludeDirectory1", "-isystem ExternalIncludeDirectory2",
-		"-include IncludeFile1", "-include IncludeFile2",
+		"-isystemExternalIncludeDirectory1", "-isystemExternalIncludeDirectory2",
+		"-includeIncludeFile1", "-includeIncludeFile2",
 
 		"-std=c++23", "-std=c++23",
 		"-std=c++11", "-std=c++14",

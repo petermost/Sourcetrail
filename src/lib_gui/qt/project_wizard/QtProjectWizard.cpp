@@ -20,7 +20,7 @@
 #include "QtResources.h"
 #include "SourceGroupSettingsCustomCommand.h"
 #include "SourceGroupSettingsUnloadable.h"
-#include "ToolVersionSupport.h"
+#include "ToolChain.h"
 #include "language_packages.h"
 #include "utility.h"
 #include "utilityPathDetection.h"
@@ -64,6 +64,8 @@
 #	include "SourceGroupSettingsJavaMaven.h"
 #endif	  // BUILD_JAVA_LANGUAGE_PACKAGE
 
+using namespace std;
+
 namespace
 {
 #if BUILD_CXX_LANGUAGE_PACKAGE
@@ -102,9 +104,9 @@ void addMsvcCompatibilityFlagsOnDemand(std::shared_ptr<SourceGroupSettingsWithCx
 	if (applicationSettingsContainVisualStudioHeaderSearchPaths())
 	{
 		std::vector<std::string> flags = settings->getCompilerFlags();
-		flags.push_back("-fms-extensions");
-		flags.push_back("-fms-compatibility");
-		flags.push_back("-fms-compatibility-version=" + ClangVersionSupport::getLatestMsCompatibilityVersion());
+		flags.push_back(ClangCompiler::msExtensionsOption());
+		flags.push_back(ClangCompiler::msCompatibilityOption());
+		flags.push_back(ClangCompiler::msCompatibilityVersionOption(VisualStudio::getLatestMsvcVersion()));
 		settings->setCompilerFlags(flags);
 	}
 }

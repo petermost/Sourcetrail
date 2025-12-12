@@ -5,6 +5,7 @@
 #include <QLabel>
 
 #include "SourceGroupSettingsWithCxxCrossCompilationOptions.h"
+#include "ToolChain.h"
 #include "logging.h"
 
 QtProjectWizardContentCrossCompilationOptions::QtProjectWizardContentCrossCompilationOptions(
@@ -60,8 +61,7 @@ void QtProjectWizardContentCrossCompilationOptions::populate(QGridLayout* layout
 		QLabel* label = new QLabel("Architecture:");
 
 		m_arch = new QComboBox();
-		std::vector<std::string> archTypes =
-			SourceGroupSettingsWithCxxCrossCompilationOptions::getAvailableArchTypes();
+		std::vector<std::string> archTypes = ClangCompiler::getAvailableArchTypes();
 		std::sort(archTypes.begin(), archTypes.end());
 		for (size_t i = 0; i < archTypes.size(); i++)
 		{
@@ -77,8 +77,7 @@ void QtProjectWizardContentCrossCompilationOptions::populate(QGridLayout* layout
 		QLabel* label = new QLabel("Vendor:");
 
 		m_vendor = new QComboBox();
-		std::vector<std::string> vendorTypes =
-			SourceGroupSettingsWithCxxCrossCompilationOptions::getAvailableVendorTypes();
+		std::vector<std::string> vendorTypes = ClangCompiler::getAvailableVendorTypes();
 		std::sort(vendorTypes.begin() + 1, vendorTypes.end());
 		for (size_t i = 0; i < vendorTypes.size(); i++)
 		{
@@ -93,8 +92,7 @@ void QtProjectWizardContentCrossCompilationOptions::populate(QGridLayout* layout
 		QLabel* label = new QLabel("OS:");
 
 		m_sys = new QComboBox();
-		std::vector<std::string> osTypes =
-			SourceGroupSettingsWithCxxCrossCompilationOptions::getAvailableOsTypes();
+		std::vector<std::string> osTypes = ClangCompiler::getAvailableOsTypes();
 		std::sort(osTypes.begin() + 1, osTypes.end());
 		for (size_t i = 0; i < osTypes.size(); i++)
 		{
@@ -109,8 +107,7 @@ void QtProjectWizardContentCrossCompilationOptions::populate(QGridLayout* layout
 		QLabel* label = new QLabel("Environment:");
 
 		m_abi = new QComboBox();
-		std::vector<std::string> environmentTypes =
-			SourceGroupSettingsWithCxxCrossCompilationOptions::getAvailableEnvironmentTypes();
+		std::vector<std::string> environmentTypes = ClangCompiler::getAvailableEnvironmentTypes();
 		std::sort(environmentTypes.begin() + 1, environmentTypes.end());
 		for (size_t i = 0; i < environmentTypes.size(); i++)
 		{

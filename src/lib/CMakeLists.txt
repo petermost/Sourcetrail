@@ -352,8 +352,8 @@ add_library(Sourcetrail_lib
 	settings/source_group/SourceGroupType.cpp
 	settings/source_group/SourceGroupType.h
 
-	settings/ToolVersionSupport.cpp
-	settings/ToolVersionSupport.h
+	settings/ToolChain.cpp
+	settings/ToolChain.h
 	settings/ApplicationSettings.cpp
 	settings/ApplicationSettings.h
 	settings/ApplicationSettingsPrefiller.cpp

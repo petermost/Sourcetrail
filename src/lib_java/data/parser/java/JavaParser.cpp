@@ -8,7 +8,7 @@
 #include "ParserClient.h"
 #include "ReferenceKind.h"
 #include "TextAccess.h"
-#include "ToolVersionSupport.h"
+#include "ToolChain.h"
 #include "utilityJava.h"
 #include "utilityString.h"
 
@@ -86,7 +86,7 @@ void JavaParser::buildIndex(std::shared_ptr<IndexerCommandJava> indexerCommand)
 
 void JavaParser::buildIndex(const FilePath& filePath, std::shared_ptr<TextAccess> textAccess)
 {
-	buildIndex(filePath, EclipseVersionSupport::getLatestJavaStandard(), "", textAccess);
+	buildIndex(filePath, EclipseCompiler::getLatestJavaStandard(), "", textAccess);
 }
 
 void JavaParser::buildIndex(
