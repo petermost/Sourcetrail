@@ -2,8 +2,8 @@ add_library(AidKit_lib
 	aidkit/enum_class.hpp
 	aidkit/enum_class.cpp
 
-	aidkit/shared_data.hpp
-	aidkit/shared_data.cpp
+	aidkit/thread_shared.hpp
+	aidkit/thread_shared.cpp
 	
 	aidkit/qt/Strings.hpp
 	aidkit/qt/Strings.cpp

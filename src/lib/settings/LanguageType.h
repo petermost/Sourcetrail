@@ -17,9 +17,6 @@ enum class LanguageType
 #if BUILD_JAVA_LANGUAGE_PACKAGE
 	JAVA,
 #endif
-#if BUILD_PYTHON_LANGUAGE_PACKAGE
-	PYTHON,
-#endif
 	CUSTOM
 };
 

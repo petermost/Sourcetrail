@@ -1,156 +1,8 @@
 #include "SourceGroupSettingsWithCxxCrossCompilationOptions.h"
 
 #include "ProjectSettings.h"
+#include "ToolChain.h"
 
-std::vector<std::string> SourceGroupSettingsWithCxxCrossCompilationOptions::getAvailableArchTypes()
-{
-	// as defined in llvm/lib/Support/Triple.cpp
-
-	return {
-		"aarch64",
-		"aarch64_be",
-		"aarch64_32",
-		"arm",
-		"armeb",
-		"arc",
-		"avr",
-		"bpfel",
-		"bpfeb",
-		"hexagon",
-		"mips",
-		"mipsel",
-		"mips64",
-		"mips64el",
-		"msp430",
-		"powerpc64",
-		"powerpc64le",
-		"powerpc",
-		"r600",
-		"amdgcn",
-		"riscv32",
-		"riscv64",
-		"sparc",
-		"sparcv9",
-		"sparcel",
-		"s390x",
-		"tce",
-		"tcele",
-		"thumb",
-		"thumbeb",
-		"i386",
-		"x86_64",
-		"xcore",
-		"nvptx",
-		"nvptx64",
-		"le32",
-		"le64",
-		"amdil",
-		"amdil64",
-		"hsail",
-		"hsail64",
-		"spir",
-		"spir64",
-		"kalimba",
-		"lanai",
-		"shave",
-		"wasm32",
-		"wasm64",
-		"renderscript32",
-		"renderscript64",
-	};
-}
-
-std::vector<std::string> SourceGroupSettingsWithCxxCrossCompilationOptions::getAvailableVendorTypes()
-{
-	return {
-		"unknown",
-		"apple",
-		"pc",
-		"scei",
-		"bgp",
-		"bgq",
-		"fsl",
-		"ibm",
-		"img",
-		"mti",
-		"nvidia",
-		"csr",
-		"myriad",
-		"amd",
-		"mesa",
-		"suse",
-		"oe",
-	};
-}
-
-std::vector<std::string> SourceGroupSettingsWithCxxCrossCompilationOptions::getAvailableOsTypes()
-{
-	return {
-		"unknown",
-		"cloudabi",
-		"darwin",
-		"dragonfly",
-		"freebsd",
-		"fuchsia",
-		"ios",
-		"kfreebsd",
-		"linux",
-		"lv2",
-		"macosx",
-		"netbsd",
-		"openbsd",
-		"solaris",
-		"windows",
-		"haiku",
-		"minix",
-		"rtems",
-		"nacl",
-		"cnk",
-		"aix",
-		"cuda",
-		"nvcl",
-		"amdhsa",
-		"ps4",
-		"elfiamcu",
-		"tvos",
-		"watchos",
-		"mesa3d",
-		"contiki",
-		"amdpal",
-		"hermit",
-		"hurd",
-		"wasi",
-		"emscripten",
-	};
-}
-
-std::vector<std::string> SourceGroupSettingsWithCxxCrossCompilationOptions::getAvailableEnvironmentTypes()
-{
-	return {
-		"unknown",
-		"gnu",
-		"gnuabin32",
-		"gnuabi64",
-		"gnueabihf",
-		"gnueabi",
-		"gnux32",
-		"code16",
-		"eabi",
-		"eabihf",
-		"elfv1",
-		"elfv2",
-		"android",
-		"musl",
-		"musleabi",
-		"musleabihf",
-		"msvc",
-		"itanium",
-		"cygnus",
-		"coreclr",
-		"simulator",
-		"macabi",
-	};
-}
 
 bool SourceGroupSettingsWithCxxCrossCompilationOptions::getTargetOptionsEnabled() const
 {
@@ -207,8 +59,7 @@ std::string SourceGroupSettingsWithCxxCrossCompilationOptions::getTargetFlag() c
 	std::string targetFlag;
 	if (m_targetOptionsEnabled && !m_targetArch.empty())
 	{
-		targetFlag = "--target=";
-		targetFlag += m_targetArch;
+		targetFlag = ClangCompiler::targetOption(m_targetArch);
 		targetFlag += "-" + (m_targetVendor.empty() ? "unknown" : m_targetVendor);
 		targetFlag += "-" + (m_targetSys.empty() ? "unknown" : m_targetSys);
 		targetFlag += "-" + (m_targetAbi.empty() ? "unknown" : m_targetAbi);

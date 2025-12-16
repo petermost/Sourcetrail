@@ -387,8 +387,8 @@ if (BUILD_CXX_LANGUAGE_PACKAGE)
 			utility/path_detector/cxx_header/CxxFrameworkPathDetector.h
 			utility/path_detector/cxx_header/CxxHeaderPathDetector.cpp
 			utility/path_detector/cxx_header/CxxHeaderPathDetector.h
-			utility/path_detector/cxx_header/CxxVs10To15HeaderPathDetector.cpp
-			utility/path_detector/cxx_header/CxxVs10To15HeaderPathDetector.h
+			
+			
 			utility/path_detector/cxx_header/CxxVs17ToLatestHeaderPathDetector.cpp
 			utility/path_detector/cxx_header/CxxVs17ToLatestHeaderPathDetector.h
 			utility/path_detector/cxx_header/utilityCxxHeaderDetection.cpp
@@ -440,19 +440,6 @@ if (BUILD_JAVA_LANGUAGE_PACKAGE)
 			utility/path_detector/java_runtime
 			utility/path_detector/jre_system_library
 			utility/path_detector/maven_executable
-	)
-endif()
-
-if (BUILD_PYTHON_LANGUAGE_PACKAGE)
-	target_sources(Sourcetrail_lib_gui
-		PRIVATE
-			qt/project_wizard/content/path/QtProjectWizardContentPathPythonEnvironment.cpp
-			qt/project_wizard/content/path/QtProjectWizardContentPathPythonEnvironment.h
-	)
-
-	target_include_directories(Sourcetrail_lib_gui
-		PUBLIC
-			qt/project_wizard/content/path
 	)
 endif()
 

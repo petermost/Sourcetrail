@@ -7,10 +7,10 @@
 #include "RefreshInfo.h"
 #include "SourceGroupSettingsCEmpty.h"
 #include "SourceGroupSettingsCppEmpty.h"
-#include "SourceGroupSettingsWithCStandard.h"
 #include "SourceGroupSettingsWithCppStandard.h"
 #include "SourceGroupSettingsWithCxxPathsAndFlags.h"
 #include "TaskLambda.h"
+#include "ToolChain.h"
 #include "logging.h"
 #include "utility.h"
 #include "utilitySourceGroupCxx.h"
@@ -199,13 +199,13 @@ std::vector<std::string> SourceGroupCxxEmpty::getBaseCompilerFlags() const
 
 	if (std::dynamic_pointer_cast<SourceGroupSettingsCEmpty>(m_settings))
 	{
-		compilerFlags.push_back("-x");
-		compilerFlags.push_back("c");
+		compilerFlags.push_back(ClangCompiler::languageOption());
+		compilerFlags.push_back(ClangCompiler::C_LANGUAGE);
 	}
 	else if (std::dynamic_pointer_cast<SourceGroupSettingsCppEmpty>(m_settings))
 	{
-		compilerFlags.push_back("-x");
-		compilerFlags.push_back("c++");
+		compilerFlags.push_back(ClangCompiler::languageOption());
+		compilerFlags.push_back(ClangCompiler::CPP_LANGUAGE);
 	}
 
 	auto settingsCxx = std::dynamic_pointer_cast<const SourceGroupSettingsWithCxxPathsAndFlags>(m_settings);

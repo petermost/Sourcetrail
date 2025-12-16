@@ -35,23 +35,17 @@ endif()
 
 # Project ----------------------------------------------------------------------
 
-project(Sourcetrail VERSION 2025.11.17 HOMEPAGE_URL "http://sourcetrail.de")
+project(Sourcetrail VERSION 2025.12.16 HOMEPAGE_URL "http://sourcetrail.de")
 cmake_print_variables(CMAKE_C_COMPILER)
 cmake_print_variables(CMAKE_CXX_COMPILER)
 
-
 # Configure which language(s)/package(s) should be supported:
-option(BUILD_CXX_LANGUAGE_PACKAGE    "Add C/C++ support to the Sourcetrail indexer." OFF)
-option(BUILD_JAVA_LANGUAGE_PACKAGE   "Add Java support to the Sourcetrail indexer." OFF)
-option(BUILD_PYTHON_LANGUAGE_PACKAGE "Add Python support to the Sourcetrail indexer." OFF)
-option(BUILD_UNIT_TESTS_PACKAGE      "Build the corresponding language unit tests." OFF)
+option(BUILD_CXX_LANGUAGE_PACKAGE  "Add C/C++ support to the Sourcetrail indexer." OFF)
+option(BUILD_JAVA_LANGUAGE_PACKAGE "Add Java support to the Sourcetrail indexer." OFF)
+option(BUILD_UNIT_TESTS_PACKAGE    "Build the corresponding language unit tests." OFF)
 
 configure_file(cmake/language_packages.h.in src/lib/language_packages.h)
 
-# prohibit in-source-builds
-if (${CMAKE_BINARY_DIR} STREQUAL ${CMAKE_SOURCE_DIR})
-	message(FATAL_ERROR "In-source-builds are not supported!")
-endif()
 
 # Make Ninja build verbose as well (https://github.com/ninja-build/ninja/issues/900):
 if (CMAKE_VERBOSE_MAKEFILE)
@@ -77,11 +71,11 @@ endif()
 # https://cmake.org/cmake/help/latest/prop_tgt/C_STANDARD.html
 # https://cmake.org/cmake/help/latest/prop_tgt/CXX_STANDARD.html
 
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -438,20 +432,6 @@ else()
 	message(STATUS "Building the Java indexer is disabled. You can enable it by setting 'BUILD_JAVA_LANGUAGE_PACKAGE' to 'ON'.")
 endif()
 
-# Lib Python -------------------------------------------------------------------
-
-if (BUILD_PYTHON_LANGUAGE_PACKAGE)
-	message(WARNING "Python indexer is in a prototype state!")
-	
-	# Bash:
-	find_program(BASH_COMMAND NAMES "bash" REQUIRED)
-	message(STATUS "Found Bash: ${BASH_COMMAND}")
-
-	add_subdirectory(src/lib_python)
-else()
-	message(STATUS "Building the Python indexer is disabled. You can enable it by setting 'BUILD_PYTHON_LANGUAGE_PACKAGE' to 'ON'.")
-endif()
-
 # Indexer App ------------------------------------------------------------------
 
 add_subdirectory(src/indexer)
@@ -487,13 +467,28 @@ else()
 	message(STATUS "Building the tests is disabled. You can enable them by setting 'BUILD_UNIT_TESTS_PACKAGE' to 'ON'.")
 endif()
 
-if (NOT BUILD_CXX_LANGUAGE_PACKAGE AND NOT BUILD_JAVA_LANGUAGE_PACKAGE AND NOT BUILD_PYTHON_LANGUAGE_PACKAGE)
-	message(WARNING "Building ONLY the GUI, because all language indexers are disabled!")
-endif()
-
 # Create license information:
 include(cmake/licenses.cmake)
 configureLicenseFile(src/lib_gui/licenses.h)
+
+# Some sanity checks:
+# Note: We doing these checks last so the messages are at the end of a possible long output from cmake.
+
+if (NOT BUILD_CXX_LANGUAGE_PACKAGE AND NOT BUILD_JAVA_LANGUAGE_PACKAGE)
+	message(WARNING "Building ONLY the GUI, because all language indexers are disabled!")
+endif()
+
+# prohibit in-source-builds
+if (${CMAKE_BINARY_DIR} STREQUAL ${CMAKE_SOURCE_DIR})
+	message(FATAL_ERROR "In-source-builds are not supported!")
+endif()
+
+if (BUILD_PYTHON_LANGUAGE_PACKAGE)
+	message(FATAL_ERROR "Python support has been removed!")
+	# See:
+	# - https://github.com/petermost/Sourcetrail/issues/34
+	# - https://github.com/CoatiSoftware/SourcetrailPythonIndexer
+endif()
 
 # Enable this code to find out *all* imported targets:
 # get_property(importedTargets DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY IMPORTED_TARGETS)

@@ -15,8 +15,6 @@ public:
 
 	size_t getStaticVersion() const override;
 
-	void migrateIfNecessary();
-
 	StorageBookmarkCategory addBookmarkCategory(const StorageBookmarkCategoryData& data);
 	StorageBookmark addBookmark(const StorageBookmarkData& data);
 	StorageBookmarkedNode addBookmarkedNode(const StorageBookmarkedNodeData& data);

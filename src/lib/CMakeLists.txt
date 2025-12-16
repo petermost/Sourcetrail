@@ -247,12 +247,6 @@ add_library(Sourcetrail_lib
 	data/search/SearchMatch.cpp
 	data/search/SearchMatch.h
 
-	data/storage/migration/SqliteStorageMigration.cpp
-	data/storage/migration/SqliteStorageMigration.h
-	data/storage/migration/SqliteStorageMigrationLambda.cpp
-	data/storage/migration/SqliteStorageMigrationLambda.h
-	data/storage/migration/SqliteStorageMigrator.h
-
 	data/storage/sqlite/SqliteBookmarkStorage.cpp
 	data/storage/sqlite/SqliteBookmarkStorage.h
 	data/storage/sqlite/SqliteDatabaseIndex.cpp
@@ -336,16 +330,6 @@ add_library(Sourcetrail_lib
 	project/SourceGroupFactoryModuleCustom.cpp
 	project/SourceGroupFactoryModuleCustom.h
 
-	settings/migration/SettingsMigration.cpp
-	settings/migration/SettingsMigration.h
-	settings/migration/SettingsMigrationDeleteKey.cpp
-	settings/migration/SettingsMigrationDeleteKey.h
-	settings/migration/SettingsMigrationLambda.cpp
-	settings/migration/SettingsMigrationLambda.h
-	settings/migration/SettingsMigrationMoveKey.cpp
-	settings/migration/SettingsMigrationMoveKey.h
-	settings/migration/SettingsMigrator.h
-
 	settings/source_group/component/SourceGroupSettingsWithCustomCommand.cpp
 	settings/source_group/component/SourceGroupSettingsWithCustomCommand.h
 	settings/source_group/component/SourceGroupSettingsWithExcludeFilters.cpp
@@ -368,8 +352,8 @@ add_library(Sourcetrail_lib
 	settings/source_group/SourceGroupType.cpp
 	settings/source_group/SourceGroupType.h
 
-	settings/ToolVersionSupport.cpp
-	settings/ToolVersionSupport.h
+	settings/ToolChain.cpp
+	settings/ToolChain.h
 	settings/ApplicationSettings.cpp
 	settings/ApplicationSettings.h
 	settings/ApplicationSettingsPrefiller.cpp
@@ -555,9 +539,6 @@ add_library(Sourcetrail_lib
 	utility/messaging/MessageQueue.cpp
 	utility/messaging/MessageQueue.h
 
-	utility/migration/Migration.h
-	utility/migration/Migrator.h
-
 	utility/scheduling/Blackboard.cpp
 	utility/scheduling/Blackboard.h
 	utility/scheduling/Task.cpp
@@ -596,6 +577,8 @@ add_library(Sourcetrail_lib
 
 	utility/ConfigManager.cpp
 	utility/ConfigManager.h
+	utility/Id.cpp
+	utility/Id.h
 	utility/LowMemoryStringMap.h
 	utility/OrderedCache.h
 	utility/Platform.cpp
@@ -607,24 +590,24 @@ add_library(Sourcetrail_lib
 	utility/SingleValueCache.h
 	utility/TimeStamp.cpp
 	utility/TimeStamp.h
+	utility/Tree.h
+	utility/UnorderedCache.h
+	utility/Version.cpp
+	utility/Version.h
 	utility/tracing.cpp
 	utility/tracing.h
-	utility/Tree.h
 	utility/types.h
-	utility/Id.h
-	utility/Id.cpp
-	utility/UnorderedCache.h
 	utility/utility.cpp
 	utility/utility.h
 	utility/utilityEnum.h
+	utility/utilityMainFunction.cpp
+	utility/utilityMainFunction.h
 	utility/utilityString.cpp
 	utility/utilityString.h
 	utility/utilityUuid.cpp
 	utility/utilityUuid.h
 	utility/utilityXml.cpp
 	utility/utilityXml.h
-	utility/Version.cpp
-	utility/Version.h
 )
 setDefaultTargetOptions(Sourcetrail_lib)
 
@@ -648,14 +631,12 @@ target_include_directories(Sourcetrail_lib
 		data/name
 		data/parser
 		data/search
-		data/storage/migration
 		data/storage/sqlite
 		data/storage/type
 		data/storage
 		data/tooltip
 		data
 		project
-		settings/migration
 		settings/source_group/component
 		settings/source_group/type
 		settings/source_group
@@ -681,7 +662,6 @@ target_include_directories(Sourcetrail_lib
 		utility/messaging/type/tab
 		utility/messaging/type
 		utility/messaging
-		utility/migration
 		utility/scheduling
 		utility/text
 		utility
@@ -746,22 +726,6 @@ if (BUILD_JAVA_LANGUAGE_PACKAGE)
 	)
 endif()
 
-if (BUILD_PYTHON_LANGUAGE_PACKAGE)
-	target_sources(Sourcetrail_lib
-		PRIVATE
-			settings/source_group/component/python/SourceGroupSettingsWithPythonEnvironmentPath.cpp
-			settings/source_group/component/python/SourceGroupSettingsWithPythonEnvironmentPath.h
-			settings/source_group/component/python/SourceGroupSettingsWithSourceExtensionsPython.h
-
-			settings/source_group/type/SourceGroupSettingsPythonEmpty.h
-	)
-	target_include_directories(Sourcetrail_lib
-		PUBLIC
-			settings/source_group/component/python
-			settings/source_group/type
-	)
-endif()
-
 target_include_directories(Sourcetrail_lib
 	PUBLIC
 		.
@@ -776,7 +740,6 @@ target_link_libraries(Sourcetrail_lib
 
 		$<$<BOOL:${BUILD_CXX_LANGUAGE_PACKAGE}>:Sourcetrail_lib_cxx>
 		$<$<BOOL:${BUILD_JAVA_LANGUAGE_PACKAGE}>:Sourcetrail_lib_java>
-		$<$<BOOL:${BUILD_PYTHON_LANGUAGE_PACKAGE}>:Sourcetrail_lib_python>
 
 		External_lib_tinyxml
 		External_lib_cppsqlite3

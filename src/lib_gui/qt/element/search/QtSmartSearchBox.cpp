@@ -746,7 +746,7 @@ void QtSmartSearchBox::addMatch(const SearchMatch& match)
 	if (m_completer->popup()->isVisible())
 	{
 		const SearchMatch* mPtr = m_completer->getSearchMatchAt(0);
-		if (mPtr && utility::equalsCaseInsensitive(match.getFullName(), mPtr->getFullName()))
+		if (mPtr && utility::isCaseInsensitiveEqual(match.getFullName(), mPtr->getFullName()))
 		{
 			matchPtr = mPtr;
 		}

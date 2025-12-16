@@ -43,11 +43,6 @@ bool SourceGroup::allowsPartialClearing() const
 	return true;
 }
 
-bool SourceGroup::allowsShallowIndexing() const
-{
-	return false;
-}
-
 std::set<FilePath> SourceGroup::filterToContainedSourceFilePath(
 	const std::set<FilePath>& sourceFilePaths) const
 {

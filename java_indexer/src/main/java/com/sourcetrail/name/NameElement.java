@@ -1,5 +1,7 @@
 package com.sourcetrail.name;
 
+import static com.sourcetrail.name.NameHierarchy.*;
+
 public class NameElement
 {
 	private String m_name = "";
@@ -51,6 +53,6 @@ public class NameElement
 
 	String serialize()
 	{
-		return m_name + "\ts" + m_prefix + "\tp" + m_postfix;
+		return m_name + PART_DELIMITER + m_prefix + SIGNATURE_DELIMITER + m_postfix;
 	}
 }

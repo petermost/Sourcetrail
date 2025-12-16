@@ -6,7 +6,6 @@
 #include "FilePath.h"
 #include "SqliteDatabaseIndex.h"
 
-class SqliteStorageMigration;
 class TimeStamp;
 
 class SqliteStorage
@@ -60,11 +59,12 @@ private:
 	virtual void setupTables() = 0;
 	virtual void setupPrecompiledStatements() = 0;
 
+	void enablePragmas() const;
+	void disablePragmas() const;
+
 	std::vector<std::pair<int, SqliteDatabaseIndex>> m_indices;
 
 	bool m_precompiledStatementsInitialized = false;
-
-	friend SqliteStorageMigration;
 };
 
 #endif	  // SQLITE_STORAGE_H

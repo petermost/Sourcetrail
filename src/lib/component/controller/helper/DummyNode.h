@@ -39,7 +39,7 @@ public:
 				return a->isBundleNode();
 			}
 
-			return utility::caseInsensitiveLess(a->name, b->name);
+			return utility::isCaseInsensitiveLess(a->name, b->name);
 		}
 	};
 

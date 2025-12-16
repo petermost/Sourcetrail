@@ -14,7 +14,7 @@
 #include "TestStorage.h"
 #include "TextAccess.h"
 #include "TimeStamp.h"
-#include "ToolVersionSupport.h"
+#include "ToolChain.h"
 #include "utilityJava.h"
 #include "utilityPathDetection.h"
 #include "utilityString.h"
@@ -38,7 +38,7 @@ std::shared_ptr<TextAccess> parseCode(
 	std::shared_ptr<IntermediateStorage> storage = std::make_shared<IntermediateStorage>();
 	JavaParser parser(std::make_shared<ParserClientImpl>(storage), std::make_shared<IndexerStateInfo>());
 	std::shared_ptr<IndexerCommandJava> command = std::make_shared<IndexerCommandJava>(
-		sourceFilePath, EclipseVersionSupport::getLatestJavaStandard(), classpath);
+		sourceFilePath, EclipseCompiler::getLatestJavaStandard(), classpath);
 
 	TimeStamp startTime = TimeStamp::now();
 	parser.buildIndex(command);

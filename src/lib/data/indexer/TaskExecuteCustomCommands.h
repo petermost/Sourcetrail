@@ -21,8 +21,6 @@ class TaskExecuteCustomCommands
 	, public MessageListener<MessageIndexingInterrupted>
 {
 public:
-	static void runPythonPostProcessing(PersistentStorage& storage);
-
 	TaskExecuteCustomCommands(
 		std::unique_ptr<IndexerCommandProvider> indexerCommandProvider,
 		std::shared_ptr<PersistentStorage> storage,
@@ -59,7 +57,6 @@ private:
 	ErrorCountInfo m_errorCount;
 	std::mutex m_errorCountMutex;
 	FilePath m_targetDatabaseFilePath;
-	bool m_hasPythonCommands = false;
 	std::set<FilePath> m_sourceDatabaseFilePaths;
 	std::mutex m_sourceDatabaseFilePathsMutex;
 };

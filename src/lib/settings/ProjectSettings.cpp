@@ -1,8 +1,5 @@
 #include "ProjectSettings.h"
 
-#include "SettingsMigrationDeleteKey.h"
-#include "SettingsMigrationLambda.h"
-#include "SettingsMigrationMoveKey.h"
 #include "SourceGroupSettingsCustomCommand.h"
 #include "SourceGroupSettingsUnloadable.h"
 #include "logging.h"
@@ -22,10 +19,6 @@
 #	include "SourceGroupSettingsJavaGradle.h"
 #	include "SourceGroupSettingsJavaMaven.h"
 #endif	  // BUILD_JAVA_LANGUAGE_PACKAGE
-
-#if BUILD_PYTHON_LANGUAGE_PACKAGE
-#	include "SourceGroupSettingsPythonEmpty.h"
-#endif	  // BUILD_PYTHON_LANGUAGE_PACKAGE
 
 const std::string ProjectSettings::PROJECT_FILE_EXTENSION = ".srctrlprj";
 const std::string ProjectSettings::BOOKMARK_DB_FILE_EXTENSION = ".srctrlbm";
@@ -100,26 +93,6 @@ bool ProjectSettings::equalsExceptNameAndLocation(const ProjectSettings& other) 
 	}
 
 	return true;
-}
-
-bool ProjectSettings::needMigration() const
-{
-	if (getVersion() == 0)
-	{
-		return false;
-	}
-	return getMigrations().willMigrate(this, ProjectSettings::VERSION);
-}
-
-void ProjectSettings::migrate()
-{
-	SettingsMigrator migrator = getMigrations();
-	bool migrated = migrator.migrate(this, ProjectSettings::VERSION);
-
-	if (migrated)
-	{
-		save();
-	}
 }
 
 bool ProjectSettings::reload()
@@ -210,11 +183,6 @@ std::vector<std::shared_ptr<SourceGroupSettings>> ProjectSettings::getAllSourceG
 			settings = std::make_shared<SourceGroupSettingsJavaGradle>(id, this);
 			break;
 #endif	  // BUILD_JAVA_LANGUAGE_PACKAGE
-#if BUILD_PYTHON_LANGUAGE_PACKAGE
-		case SourceGroupType::PYTHON_EMPTY:
-			settings = std::make_shared<SourceGroupSettingsPythonEmpty>(id, this);
-			break;
-#endif	  // BUILD_PYTHON_LANGUAGE_PACKAGE
 		case SourceGroupType::CUSTOM_COMMAND:
 			settings = std::make_shared<SourceGroupSettingsCustomCommand>(id, this);
 			break;
@@ -278,224 +246,4 @@ std::vector<FilePath> ProjectSettings::makePathsExpandedAndAbsolute(const std::v
 FilePath ProjectSettings::makePathExpandedAndAbsolute(const FilePath& path) const
 {
 	return utility::getExpandedAndAbsolutePath(path, getProjectDirectoryPath());
-}
-
-SettingsMigrator ProjectSettings::getMigrations() const
-{
-	SettingsMigrator migrator;
-	migrator.addMigration(
-		1,
-		std::make_shared<SettingsMigrationLambda>([](const SettingsMigration* migration,
-													 Settings* settings) {
-			const std::string language = migration->getValueFromSettings<std::string>(
-				settings, "language_settings/language", "");
-			const std::string standard = migration->getValueFromSettings<std::string>(
-				settings, "language_settings/standard", "");
-
-			if (language == "C" && !utility::isPrefix("c", standard))
-			{
-				migration->setValueInSettings(settings, "language_settings/standard", "c" + standard);
-			}
-
-			if (language == "C++" && !utility::isPrefix("c++", standard))
-			{
-				migration->setValueInSettings(
-					settings, "language_settings/standard", "c++" + standard);
-			}
-		}));
-
-	{
-		const std::string sourceGroupKey = "source_groups/source_group_" + utility::getUuidString();
-
-		migrator.addMigration(
-			2, std::make_shared<SettingsMigrationMoveKey>("info/description", "description"));
-		migrator.addMigration(
-			2,
-			std::make_shared<SettingsMigrationMoveKey>(
-				"language_settings/standard", sourceGroupKey + "/standard"));
-		migrator.addMigration(
-			2,
-			std::make_shared<SettingsMigrationMoveKey>(
-				"source/source_paths/source_path", sourceGroupKey + "/source_paths/source_path"));
-		migrator.addMigration(
-			2,
-			std::make_shared<SettingsMigrationMoveKey>(
-				"source/exclude_paths/exclude_path", sourceGroupKey + "/exclude_paths/exclude_path"));
-		migrator.addMigration(
-			2,
-			std::make_shared<SettingsMigrationMoveKey>(
-				"source/extensions/source_extensions",
-				sourceGroupKey + "/source_extensions/source_extension"));
-		migrator.addMigration(
-			2,
-			std::make_shared<SettingsMigrationMoveKey>(
-				"source/header_search_paths/header_search_path",
-				sourceGroupKey + "/header_search_paths/header_search_path"));
-		migrator.addMigration(
-			2,
-			std::make_shared<SettingsMigrationMoveKey>(
-				"source/use_source_paths_for_header_search",
-				sourceGroupKey + "/use_source_paths_for_header_search"));
-		migrator.addMigration(
-			2,
-			std::make_shared<SettingsMigrationMoveKey>(
-				"source/framework_search_paths/framework_search_path",
-				sourceGroupKey + "/framework_search_paths/framework_search_path"));
-		migrator.addMigration(
-			2,
-			std::make_shared<SettingsMigrationMoveKey>(
-				"source/compiler_flags/compiler_flag",
-				sourceGroupKey + "/compiler_flags/compiler_flag"));
-		migrator.addMigration(
-			2,
-			std::make_shared<SettingsMigrationMoveKey>(
-				"source/build_file_path/compilation_db_path",
-				sourceGroupKey + "/build_file_path/compilation_db_path"));
-		migrator.addMigration(
-			2,
-			std::make_shared<SettingsMigrationMoveKey>(
-				"source/class_paths/class_path", sourceGroupKey + "/class_paths/class_path"));
-		migrator.addMigration(
-			2,
-			std::make_shared<SettingsMigrationMoveKey>(
-				"source/maven/project_file_path", sourceGroupKey + "/maven/project_file_path"));
-		migrator.addMigration(
-			2,
-			std::make_shared<SettingsMigrationMoveKey>(
-				"source/maven/dependencies_directory",
-				sourceGroupKey + "/maven/dependencies_directory"));
-		migrator.addMigration(
-			2,
-			std::make_shared<SettingsMigrationMoveKey>(
-				"source/maven/should_index_tests", sourceGroupKey + "/maven/should_index_tests"));
-
-		migrator.addMigration(
-			3,
-			std::make_shared<SettingsMigrationLambda>(
-				[=](const SettingsMigration* migration, Settings* settings) {
-					const std::string language = migration->getValueFromSettings<std::string>(
-						settings, "language_settings/language", "");
-
-					SourceGroupType type = SourceGroupType::UNKNOWN;
-#if BUILD_CXX_LANGUAGE_PACKAGE
-					if (language == "C" || language == "C++")
-					{
-						const std::string cdbPath = migration->getValueFromSettings<std::string>(
-							settings, sourceGroupKey + "/build_file_path/compilation_db_path", "");
-						if (!cdbPath.empty())
-						{
-							type = SourceGroupType::CXX_CDB;
-						}
-						else if (language == "C")
-						{
-							type = SourceGroupType::C_EMPTY;
-						}
-						else
-						{
-							type = SourceGroupType::CXX_EMPTY;
-						}
-					}
-#endif	  // BUILD_CXX_LANGUAGE_PACKAGE
-#if BUILD_JAVA_LANGUAGE_PACKAGE
-					if (language == "Java")
-					{
-						const std::string mavenProjectFilePath =
-							migration->getValueFromSettings<std::string>(
-								settings, sourceGroupKey + "/maven/project_file_path", "");
-						if (!mavenProjectFilePath.empty())
-						{
-							type = SourceGroupType::JAVA_MAVEN;
-						}
-						const std::string gradleProjectFilePath =
-							migration->getValueFromSettings<std::string>(
-								settings, sourceGroupKey + "/gradle/project_file_path", "");
-						if (!gradleProjectFilePath.empty())
-						{
-							type = SourceGroupType::JAVA_GRADLE;
-						}
-						else
-						{
-							type = SourceGroupType::JAVA_EMPTY;
-						}
-					}
-#endif	  // BUILD_JAVA_LANGUAGE_PACKAGE
-					migration->setValueInSettings(
-						settings, sourceGroupKey + "/type", sourceGroupTypeToString(type));
-				}));
-	}
-	migrator.addMigration(
-		4, std::make_shared<SettingsMigrationDeleteKey>("language_settings/language"));
-	migrator.addMigration(
-		4, std::make_shared<SettingsMigrationDeleteKey>("source/build_file_path/vs_solution_path"));
-	migrator.addMigration(
-		4, std::make_shared<SettingsMigrationDeleteKey>("source/extensions/header_extensions"));
-
-	for (const std::shared_ptr<SourceGroupSettings> &sourceGroupSettings: getAllSourceGroupSettings())
-	{
-		const std::string key = SourceGroupSettings::s_keyPrefix + sourceGroupSettings->getId();
-		migrator.addMigration(
-			5,
-			std::make_shared<SettingsMigrationMoveKey>(
-				key + "/exclude_paths/exclude_path", key + "/exclude_filters/exclude_filter"));
-	}
-
-	for (const std::shared_ptr<SourceGroupSettings> &sourceGroupSettings: getAllSourceGroupSettings())
-	{
-#if BUILD_CXX_LANGUAGE_PACKAGE
-		if (sourceGroupSettings->getType() == SourceGroupType::CXX_CDB)
-		{
-			const std::string key = SourceGroupSettings::s_keyPrefix + sourceGroupSettings->getId();
-			migrator.addMigration(
-				6,
-				std::make_shared<SettingsMigrationMoveKey>(
-					key + "/source_paths/source_path",
-					key + "/indexed_header_paths/indexed_header_path"));
-		}
-#endif	  // BUILD_CXX_LANGUAGE_PACKAGE
-	}
-
-	for (const std::shared_ptr<SourceGroupSettings> &sourceGroupSettings: getAllSourceGroupSettings())
-	{
-		std::string languageName;
-		switch (getLanguageTypeForSourceGroupType(sourceGroupSettings->getType()))
-		{
-#if BUILD_CXX_LANGUAGE_PACKAGE
-		case LanguageType::C:
-			languageName = "c";
-			break;
-		case LanguageType::CXX:
-			languageName = "cpp";
-			break;
-#endif	  // BUILD_CXX_LANGUAGE_PACKAGE
-#if BUILD_JAVA_LANGUAGE_PACKAGE
-		case LanguageType::JAVA:
-			languageName = "java";
-			break;
-#endif	  // BUILD_JAVA_LANGUAGE_PACKAGE
-#if BUILD_PYTHON_LANGUAGE_PACKAGE
-		case LanguageType::PYTHON:
-			continue;
-#endif	  // BUILD_PYTHON_LANGUAGE_PACKAGE
-		case LanguageType::CUSTOM:
-		default:
-			continue;
-		}
-
-		std::string key = SourceGroupSettings::s_keyPrefix + sourceGroupSettings->getId();
-		migrator.addMigration(
-			7,
-			std::make_shared<SettingsMigrationMoveKey>(
-				key + "/standard", key + "/" + languageName + "_standard"));
-	}
-
-	for (std::shared_ptr<SourceGroupSettings> &sourceGroupSettings: getAllSourceGroupSettings())
-	{
-		const std::string key = SourceGroupSettings::s_keyPrefix + sourceGroupSettings->getId();
-		migrator.addMigration(
-			8,
-			std::make_shared<SettingsMigrationMoveKey>(
-				key + "/python_environment_directory_path", key + "/python_environment_path"));
-	}
-
-	return migrator;
 }

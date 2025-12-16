@@ -25,9 +25,6 @@
                 </target>
                 <target_options_enabled>0</target_options_enabled>
             </cross_compilation>
-            <exclude_filters>
-                <exclude_filter>../src/lib_python</exclude_filter>
-            </exclude_filters>
             <header_search_paths>
                 <header_search_path>../src/external/sqlite</header_search_path>
                 <header_search_path>../src/lib/app</header_search_path>
@@ -61,7 +58,6 @@
                 <header_search_path>../src/lib/settings/source_group/component</header_search_path>
                 <header_search_path>../src/lib/settings/source_group/component/cxx</header_search_path>
                 <header_search_path>../src/lib/settings/source_group/component/java</header_search_path>
-                <header_search_path>../src/lib/settings/source_group/component/python</header_search_path>
                 <header_search_path>../src/lib/settings/source_group/type</header_search_path>
                 <header_search_path>../src/lib/utility</header_search_path>
                 <header_search_path>../src/lib/utility/commandline</header_search_path>
@@ -129,7 +125,6 @@
                 <header_search_path>../src/lib_java/data/parser/java</header_search_path>
                 <header_search_path>../src/lib_java/project</header_search_path>
                 <header_search_path>../src/lib_java/utility</header_search_path>
-                <header_search_path>../src/lib_python/project</header_search_path>
                 <header_search_path>../src/resources</header_search_path>
                 <header_search_path>../src/test/helper</header_search_path>
                 <header_search_path>../../build/vcpkg-release/src/lib</header_search_path>

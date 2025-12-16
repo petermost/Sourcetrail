@@ -1,13 +1,13 @@
 #include "SourceGroupSettingsWithJavaStandard.h"
 
 #include "ConfigManager.h"
-#include "ToolVersionSupport.h"
+#include "ToolChain.h"
 
 std::string SourceGroupSettingsWithJavaStandard::getJavaStandard() const
 {
 	if (m_javaStandard.empty())
 	{
-		return EclipseVersionSupport::getLatestJavaStandard();
+		return EclipseCompiler::getLatestJavaStandard();
 	}
 	return m_javaStandard;
 }

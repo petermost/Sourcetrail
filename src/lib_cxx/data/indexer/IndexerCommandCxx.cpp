@@ -4,6 +4,7 @@
 #include "OrderedCache.h"
 #include "Platform.h"
 #include "ResourcePaths.h"
+#include "ToolChain.h"
 #include "logging.h"
 #include "utilitySourceGroupCxx.h"
 
@@ -60,7 +61,7 @@ std::vector<FilePath> IndexerCommandCxx::getSourceFilesFromCDB(std::shared_ptr<c
 
 std::string IndexerCommandCxx::getCompilerFlagLanguageStandard(const std::string& languageStandard)
 {
-	return "-std=" + languageStandard;
+	return ClangCompiler::stdOption(languageStandard);
 }
 
 std::vector<std::string> IndexerCommandCxx::getCompilerFlagsForSystemHeaderSearchPaths(
@@ -70,20 +71,22 @@ std::vector<std::string> IndexerCommandCxx::getCompilerFlagsForSystemHeaderSearc
 	compilerFlags.reserve(systemHeaderSearchPaths.size() * 2);
 
 	// *Prepend* clang system includes on windows:
-	if constexpr (utility::Platform::isWindows()) {
-		compilerFlags.push_back("-isystem");
+	if constexpr (utility::Platform::isWindows())
+	{
+		compilerFlags.push_back(ClangCompiler::systemIncludeOption());
 		compilerFlags.push_back(ResourcePaths::getCxxCompilerHeaderDirectoryPath().str());
 	}
 
 	for (const FilePath& path: systemHeaderSearchPaths)
 	{
-		compilerFlags.push_back("-isystem");
+		compilerFlags.push_back(ClangCompiler::systemIncludeOption());
 		compilerFlags.push_back(path.str());
 	}
 
 	// *Append* clang system includes on non-windows:
-	if constexpr (!utility::Platform::isWindows()) {
-		compilerFlags.push_back("-isystem");
+	if constexpr (!utility::Platform::isWindows())
+	{
+		compilerFlags.push_back(ClangCompiler::systemIncludeOption());
 		compilerFlags.push_back(ResourcePaths::getCxxCompilerHeaderDirectoryPath().str());
 	}
 	return compilerFlags;
@@ -96,7 +99,7 @@ std::vector<std::string> IndexerCommandCxx::getCompilerFlagsForFrameworkSearchPa
 	compilerFlags.reserve(frameworkSearchPaths.size() * 2);
 	for (const FilePath& path: frameworkSearchPaths)
 	{
-		compilerFlags.push_back("-iframework");
+		compilerFlags.push_back(ClangCompiler::frameworkIncludeOption());
 		compilerFlags.push_back(path.str());
 	}
 	return compilerFlags;
@@ -106,6 +109,7 @@ IndexerCommandType IndexerCommandCxx::getStaticIndexerCommandType()
 {
 	return INDEXER_COMMAND_CXX;
 }
+
 IndexerCommandCxx::IndexerCommandCxx(
 	const FilePath& sourceFilePath,
 	const std::set<FilePath>& indexedPaths,

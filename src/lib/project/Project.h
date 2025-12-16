@@ -37,8 +37,7 @@ public:
 
 	void load(std::shared_ptr<DialogView> dialogView);
 
-	void refresh(
-		std::shared_ptr<DialogView> dialogView, RefreshMode refreshMode, bool shallowIndexingRequested);
+	void refresh(std::shared_ptr<DialogView> dialogView, RefreshMode refreshMode);
 
 	RefreshInfo getRefreshInfo(RefreshMode mode) const;
 
@@ -52,7 +51,6 @@ private:
 		PROJECT_STATE_LOADED,
 		PROJECT_STATE_OUTDATED,
 		PROJECT_STATE_OUTVERSIONED,
-		PROJECT_STATE_NEEDS_MIGRATION,
 		PROJECT_STATE_DB_CORRUPTED
 	};
 

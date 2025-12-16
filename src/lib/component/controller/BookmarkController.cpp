@@ -651,7 +651,7 @@ bool BookmarkController::bookmarkDateCompare(const std::shared_ptr<Bookmark> a, 
 
 bool BookmarkController::bookmarkNameCompare(const std::shared_ptr<Bookmark> a, const std::shared_ptr<Bookmark> b)
 {
-	return toLowerCase(a->getName()) < toLowerCase(b->getName());
+	return isCaseInsensitiveLess(a->getName(), b->getName());
 }
 
 void BookmarkController::update()

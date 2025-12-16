@@ -41,8 +41,6 @@ public:
 		Project* project,
 		const std::vector<RefreshMode>& enabledModes,
 		const RefreshMode initialMode,
-		bool enabledShallowOption,
-		bool initialShallowState,
 		std::function<void(const RefreshInfo& info)> onStartIndexing,
 		std::function<void()> onCancelIndexing) override;
 	void updateIndexingDialog(
@@ -62,8 +60,7 @@ public:
 		size_t totalFileCount,
 		float time,
 		ErrorCountInfo errorInfo,
-		bool interrupted,
-		bool shallow) override;
+		bool interrupted) override;
 
 	int confirm(const std::string& message, const std::vector<std::string>& options) override;
 
@@ -96,7 +93,6 @@ private:
 	QtThreadedLambdaFunctor m_onQtThread3;
 
 	std::map<RefreshMode, RefreshInfo> m_refreshInfos;
-	bool m_shallowIndexingEnabled;
 
 	std::atomic<bool> m_resultReady = false;
 	bool m_uiBlocked = false;

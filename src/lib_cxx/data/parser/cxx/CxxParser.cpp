@@ -12,6 +12,7 @@
 #include "ParserClient.h"
 #include "SingleFrontendActionFactory.h"
 #include "TextAccess.h"
+#include "ToolChain.h"
 #include "logging.h"
 #include "utility.h"
 #include "utilityString.h"
@@ -29,7 +30,7 @@ namespace
 {
 std::vector<std::string> prependSyntaxOnlyToolArgs(const std::vector<std::string>& args)
 {
-	return utility::concat(std::vector<std::string>({"clang-tool", "-fsyntax-only"}), args);
+	return utility::concat(std::vector<std::string>({ClangCompiler::TOOL_NAME, ClangCompiler::syntaxOnlyOption()}), args);
 }
 
 std::vector<std::string> appendFilePath(const std::vector<std::string>& args, llvm::StringRef filePath)
@@ -74,27 +75,15 @@ bool runToolOnCodeWithArgs(
 }
 }	 // namespace
 
-std::vector<std::string> CxxParser::getCommandlineArgumentsEssential(
-	const std::vector<std::string>& compilerFlags)
+std::vector<std::string> CxxParser::getCommandlineArgumentsEssential(const std::vector<std::string>& compilerFlags)
 {
 	std::vector<std::string> args;
 
-	// The option -fno-delayed-template-parsing signals that templates that there should
-	// be AST elements for unused template functions as well.
-	args.push_back("-fno-delayed-template-parsing");
-
-	// The option -fexceptions signals that clang should watch out for exception-related code during
-	// indexing.
-	args.push_back("-fexceptions");
-
-	// The option -c signals that no executable is built.
-	args.push_back("-c");
-
-	// The option -w disables all warnings.
-	args.push_back("-w");
-
-	// This option tells clang just to continue parsing no matter how manny errors have been thrown.
-	args.push_back("-ferror-limit=0");
+	args.push_back(ClangCompiler::noDelayedTemplateParsingOption());
+	args.push_back(ClangCompiler::exceptionsOption());
+	args.push_back(ClangCompiler::compileOption());
+	args.push_back(ClangCompiler::noWarningsOption());
+	args.push_back(ClangCompiler::errorLimitOption(0));
 
 	for (const std::string& compilerFlag: compilerFlags)
 	{

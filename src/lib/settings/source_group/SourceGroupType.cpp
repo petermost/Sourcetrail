@@ -24,10 +24,6 @@ std::string sourceGroupTypeToString(SourceGroupType v)
 	case SourceGroupType::JAVA_GRADLE:
 		return "Java Source Group from Gradle";
 #endif	  // BUILD_JAVA_LANGUAGE_PACKAGE
-#if BUILD_PYTHON_LANGUAGE_PACKAGE
-	case SourceGroupType::PYTHON_EMPTY:
-		return "Python Source Group";
-#endif	  // BUILD_PYTHON_LANGUAGE_PACKAGE
 	case SourceGroupType::CUSTOM_COMMAND:
 		return "Custom Command Source Group";
 	case SourceGroupType::UNKNOWN:
@@ -60,10 +56,6 @@ std::string sourceGroupTypeToProjectSetupString(SourceGroupType v)
 	case SourceGroupType::JAVA_GRADLE:
 		return "Java Source Group from Gradle";
 #endif	  // BUILD_JAVA_LANGUAGE_PACKAGE
-#if BUILD_PYTHON_LANGUAGE_PACKAGE
-	case SourceGroupType::PYTHON_EMPTY:
-		return "Empty Python Source Group";
-#endif	  // BUILD_PYTHON_LANGUAGE_PACKAGE
 	case SourceGroupType::CUSTOM_COMMAND:
 		return "Custom Command Source Group";
 	case SourceGroupType::UNKNOWN:
@@ -110,12 +102,6 @@ SourceGroupType stringToSourceGroupType(const std::string& v)
 		return SourceGroupType::JAVA_GRADLE;
 	}
 #endif	  // BUILD_JAVA_LANGUAGE_PACKAGE
-#if BUILD_PYTHON_LANGUAGE_PACKAGE
-	if (v == sourceGroupTypeToString(SourceGroupType::PYTHON_EMPTY))
-	{
-		return SourceGroupType::PYTHON_EMPTY;
-	}
-#endif	  // BUILD_PYTHON_LANGUAGE_PACKAGE
 	if (v == sourceGroupTypeToString(SourceGroupType::CUSTOM_COMMAND))
 	{
 		return SourceGroupType::CUSTOM_COMMAND;

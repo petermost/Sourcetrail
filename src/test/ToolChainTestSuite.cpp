@@ -1,5 +1,6 @@
 #include "Catch2.hpp"
 
+#include "ToolChain.h"
 #include "utilitySourceGroupCxx.h"
 
 #include <clang/Tooling/CompilationDatabase.h>
@@ -168,6 +169,11 @@ TEST_CASE("CDB replace msvc arguments")
 		"/std:clatest", "-std:clatest",
 		"/std:c11", "-std:c99",
 
+		"/std:c++23preview", "-std:c++23preview",
+		"/std:c23preview", "-std:c23preview",
+
+		"/MD", "/MDd", "/MT", "/MTd",
+
 		"/SomeUnknownOption"
 	};
 
@@ -177,13 +183,18 @@ TEST_CASE("CDB replace msvc arguments")
 		"-UUndefine",
 
 		"-IIncludeDirectory",
-		"-isystem ExternalIncludeDirectory1", "-isystem ExternalIncludeDirectory2",
-		"-include IncludeFile1", "-include IncludeFile2",
+		"-isystemExternalIncludeDirectory1", "-isystemExternalIncludeDirectory2",
+		"-includeIncludeFile1", "-includeIncludeFile2",
 
 		"-std=c++23", "-std=c++23",
 		"-std=c++11", "-std=c++14",
 		"-std=c17", "-std=c17",
 		"-std=c11", "-std=c99",
+
+		"-std=" + ClangCompiler::getLatestCppDraft(), "-std=" + ClangCompiler::getLatestCppDraft(),
+		"-std=" + ClangCompiler::getLatestCDraft(), "-std=" + ClangCompiler::getLatestCDraft(),
+
+		"-pthread", "-pthread", "-pthread", "-pthread"
 
 		// Removed: "/SomeUnknownOption"
 	};

@@ -13,12 +13,10 @@ public:
 	MessageLoadProject(
 		const FilePath& filePath,
 		bool settingsChanged = false,
-		RefreshMode refreshMode = RefreshMode::NONE,
-		bool shallowIndexingRequested = false)
+		RefreshMode refreshMode = RefreshMode::NONE)
 		: projectSettingsFilePath(filePath)
 		, settingsChanged(settingsChanged)
 		, refreshMode(refreshMode)
-		, shallowIndexingRequested(shallowIndexingRequested)
 	{
 	}
 
@@ -37,7 +35,6 @@ public:
 	const FilePath projectSettingsFilePath;
 	const bool settingsChanged;
 	const RefreshMode refreshMode;
-	const bool shallowIndexingRequested;
 };
 
 #endif	  // MESSAGE_LOAD_PROJECT_H

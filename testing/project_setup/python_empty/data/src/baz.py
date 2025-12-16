@@ -1,2 +1,0 @@
-class Baz:
-	pass

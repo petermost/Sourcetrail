@@ -7,9 +7,8 @@
 #if BUILD_CXX_LANGUAGE_PACKAGE
 #	include "CxxFrameworkPathDetector.h"
 #	include "CxxHeaderPathDetector.h"
-#	include "CxxVs10To15HeaderPathDetector.h"
 #	include "CxxVs17ToLatestHeaderPathDetector.h"
-#	include "ToolVersionSupport.h"
+#	include "ToolChain.h"
 #endif
 
 #if BUILD_JAVA_LANGUAGE_PACKAGE
@@ -64,44 +63,10 @@ std::shared_ptr<CombinedPathDetector> utility::getCxxVsHeaderPathDetector()
 	}
 
 #if BUILD_CXX_LANGUAGE_PACKAGE
-	for (const string &versionRange : VisualStudioVersionSupport::getVersionRanges())
+	for (const string &versionRange : VisualStudio::getVersionRanges())
 	{
 		combinedDetector->addDetector(make_shared<CxxVs17ToLatestHeaderPathDetector>(versionRange));
 	}
-	// Old Visual Studio versions:
-
-	combinedDetector->addDetector(std::make_shared<CxxVs10To15HeaderPathDetector>(
-		CxxVs10To15HeaderPathDetector::VISUAL_STUDIO_2015, false, Platform::Architecture::BITS_32));
-	combinedDetector->addDetector(std::make_shared<CxxVs10To15HeaderPathDetector>(
-		CxxVs10To15HeaderPathDetector::VISUAL_STUDIO_2015, false, Platform::Architecture::BITS_64));
-	combinedDetector->addDetector(std::make_shared<CxxVs10To15HeaderPathDetector>(
-		CxxVs10To15HeaderPathDetector::VISUAL_STUDIO_2015, true, Platform::Architecture::BITS_32));
-	combinedDetector->addDetector(std::make_shared<CxxVs10To15HeaderPathDetector>(
-		CxxVs10To15HeaderPathDetector::VISUAL_STUDIO_2015, true, Platform::Architecture::BITS_64));
-	combinedDetector->addDetector(std::make_shared<CxxVs10To15HeaderPathDetector>(
-		CxxVs10To15HeaderPathDetector::VISUAL_STUDIO_2013, false, Platform::Architecture::BITS_32));
-	combinedDetector->addDetector(std::make_shared<CxxVs10To15HeaderPathDetector>(
-		CxxVs10To15HeaderPathDetector::VISUAL_STUDIO_2013, false, Platform::Architecture::BITS_64));
-	combinedDetector->addDetector(std::make_shared<CxxVs10To15HeaderPathDetector>(
-		CxxVs10To15HeaderPathDetector::VISUAL_STUDIO_2013, true, Platform::Architecture::BITS_32));
-	combinedDetector->addDetector(std::make_shared<CxxVs10To15HeaderPathDetector>(
-		CxxVs10To15HeaderPathDetector::VISUAL_STUDIO_2013, true, Platform::Architecture::BITS_64));
-	combinedDetector->addDetector(std::make_shared<CxxVs10To15HeaderPathDetector>(
-		CxxVs10To15HeaderPathDetector::VISUAL_STUDIO_2012, false, Platform::Architecture::BITS_32));
-	combinedDetector->addDetector(std::make_shared<CxxVs10To15HeaderPathDetector>(
-		CxxVs10To15HeaderPathDetector::VISUAL_STUDIO_2012, false, Platform::Architecture::BITS_64));
-	combinedDetector->addDetector(std::make_shared<CxxVs10To15HeaderPathDetector>(
-		CxxVs10To15HeaderPathDetector::VISUAL_STUDIO_2012, true, Platform::Architecture::BITS_32));
-	combinedDetector->addDetector(std::make_shared<CxxVs10To15HeaderPathDetector>(
-		CxxVs10To15HeaderPathDetector::VISUAL_STUDIO_2012, true, Platform::Architecture::BITS_64));
-	combinedDetector->addDetector(std::make_shared<CxxVs10To15HeaderPathDetector>(
-		CxxVs10To15HeaderPathDetector::VISUAL_STUDIO_2010, false, Platform::Architecture::BITS_32));
-	combinedDetector->addDetector(std::make_shared<CxxVs10To15HeaderPathDetector>(
-		CxxVs10To15HeaderPathDetector::VISUAL_STUDIO_2010, false, Platform::Architecture::BITS_64));
-	combinedDetector->addDetector(std::make_shared<CxxVs10To15HeaderPathDetector>(
-		CxxVs10To15HeaderPathDetector::VISUAL_STUDIO_2010, true, Platform::Architecture::BITS_32));
-	combinedDetector->addDetector(std::make_shared<CxxVs10To15HeaderPathDetector>(
-		CxxVs10To15HeaderPathDetector::VISUAL_STUDIO_2010, true, Platform::Architecture::BITS_64));
 #endif
 
 	return combinedDetector;

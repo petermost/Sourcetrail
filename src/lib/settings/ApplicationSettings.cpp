@@ -2,9 +2,6 @@
 
 #include "Logger.h"
 #include "ResourcePaths.h"
-#include "SettingsMigrationLambda.h"
-#include "SettingsMigrationMoveKey.h"
-#include "SettingsMigrator.h"
 #include "Status.h"
 #include "UserPaths.h"
 #include "utility.h"
@@ -30,103 +27,6 @@ bool ApplicationSettings::load(const FilePath& filePath, bool readOnly)
 	if (!loaded)
 	{
 		return false;
-	}
-
-	SettingsMigrator migrator;
-
-	migrator.addMigration(
-		1,
-		std::make_shared<SettingsMigrationMoveKey>(
-			"source/header_search_paths/header_search_path",
-			"indexing/cxx/header_search_paths/header_search_path"));
-	migrator.addMigration(
-		1,
-		std::make_shared<SettingsMigrationMoveKey>(
-			"source/framework_search_paths/framework_search_path",
-			"indexing/cxx/framework_search_paths/framework_search_path"));
-	migrator.addMigration(
-		1,
-		std::make_shared<SettingsMigrationMoveKey>(
-			"application/indexer_thread_count", "indexing/indexer_thread_count"));
-	migrator.addMigration(
-		2,
-		std::make_shared<SettingsMigrationMoveKey>(
-			"network/coati_port", "network/sourcetrail_port"));
-	migrator.addMigration(
-		4,
-		std::make_shared<SettingsMigrationLambda>(
-			[](const SettingsMigration* migration, Settings* settings)
-			{
-				std::string colorSchemePathString = migration->getValueFromSettings<std::string>(
-					settings, "application/color_scheme", "");
-				if (!colorSchemePathString.empty())
-				{
-					FilePath colorSchemePath(colorSchemePathString);
-					migration->setValueInSettings(
-						settings,
-						"application/color_scheme",
-						colorSchemePath.withoutExtension().fileName());
-				}
-			}));
-	migrator.addMigration(
-		7,
-		std::make_shared<SettingsMigrationLambda>(
-			[](const SettingsMigration* migration, Settings* settings)
-			{
-				std::vector<std::string> recentProjects;
-				recentProjects.push_back("./projects/tictactoe_py/tictactoe_py.srctrlprj");
-				utility::append(
-					recentProjects,
-					migration->getValuesFromSettings(
-						settings, "user/recent_projects/recent_project", std::vector<std::string>()));
-
-				for (size_t i = 0; i < recentProjects.size(); i++)
-				{
-					if (recentProjects[i] == "./projects/tictactoe/tictactoe.srctrlprj")
-					{
-						recentProjects[i] = "./projects/tictactoe_cpp/tictactoe_cpp.srctrlprj";
-					}
-				}
-				migration->setValuesInSettings(
-					settings, "user/recent_projects/recent_project", recentProjects);
-			}));
-	migrator.addMigration(
-		8,
-		std::make_shared<SettingsMigrationLambda>(
-			[](const SettingsMigration* migration, Settings* settings)
-			{
-				std::vector<FilePath> cxxHeaderSearchPaths = migration->getValuesFromSettings(
-					settings,
-					"indexing/cxx/header_search_paths/header_search_path",
-					std::vector<FilePath>());
-
-				std::vector<FilePath> newCxxHeaderSearchPaths;
-				for (const FilePath& path: cxxHeaderSearchPaths)
-				{
-					if (path.getCanonical().getConcatenated("/stdarg.h").exists() &&
-						path.str().find("data/cxx/include") != std::string::npos)
-					{
-						continue;
-					}
-
-					newCxxHeaderSearchPaths.push_back(path);
-				}
-
-				migration->setValuesInSettings(
-					settings,
-					"indexing/cxx/header_search_paths/header_search_path",
-					newCxxHeaderSearchPaths);
-
-				if (newCxxHeaderSearchPaths.size() == 0)
-				{
-					migration->setValueInSettings(
-						settings, "indexing/cxx/has_prefilled_header_search_paths", false);
-				}
-			}));
-	bool migrated = migrator.migrate(this, ApplicationSettings::VERSION);
-	if (migrated)
-	{
-		save();
 	}
 
 	return true;
@@ -454,16 +354,6 @@ bool ApplicationSettings::getHasPrefilledMavenPath() const
 void ApplicationSettings::setHasPrefilledMavenPath(bool v)
 {
 	setValue<bool>("indexing/java/has_prefilled_maven_path", v);
-}
-
-bool ApplicationSettings::getPythonPostProcessingEnabled() const
-{
-	return getValue<bool>("indexing/python/post_processing", true);
-}
-
-void ApplicationSettings::setPythonPostProcessingEnabled(bool enabled)
-{
-	setValue<bool>("indexing/python/post_processing", enabled);
 }
 
 std::vector<FilePath> ApplicationSettings::getHeaderSearchPaths() const

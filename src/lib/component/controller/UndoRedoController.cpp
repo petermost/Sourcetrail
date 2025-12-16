@@ -1,8 +1,8 @@
 #include "UndoRedoController.h"
 
 #include "MessageFlushUpdates.h"
-#include "MessageSearch.h"
 #include "utility.h"
+#include "utilityMainFunction.h"
 
 #include "Application.h"
 #include "Project.h"
@@ -506,9 +506,7 @@ void UndoRedoController::replayCommand(std::list<Command>::iterator it)
 
 			for (SearchMatch match: matches)
 			{
-				// TODO: replace duplicate main definition fix with better solution
-				if (match.nodeType.getKind() != NODE_FUNCTION || !match.tokenNames.size() ||
-					match.tokenNames[0].getRawName() != "main")
+				if (!isMainFunction(match))
 				{
 					match.tokenIds = m_storageAccess->getNodeIdsForNameHierarchies(match.tokenNames);
 				}

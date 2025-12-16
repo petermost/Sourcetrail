@@ -1,21 +1,21 @@
 #include "CxxAstVisitorComponentIndexer.h"
 
-#include <clang/AST/ASTContext.h>
-#include <clang/Analysis/CFG.h>
-#include <clang/Basic/SourceLocation.h>
-#include <clang/Basic/SourceManager.h>
-#include <clang/Lex/Preprocessor.h>
-
 #include "CanonicalFilePathCache.h"
 #include "CxxAstVisitor.h"
 #include "CxxAstVisitorComponentContext.h"
 #include "CxxAstVisitorComponentDeclRefKind.h"
 #include "CxxAstVisitorComponentTypeRefKind.h"
 #include "CxxDeclNameResolver.h"
-#include "CxxFunctionDeclName.h"
 #include "CxxTypeNameResolver.h"
 #include "ParserClient.h"
 #include "utilityClang.h"
+#include "utilityMainFunction.h"
+
+#include <clang/AST/ASTContext.h>
+#include <clang/Analysis/CFG.h>
+#include <clang/Basic/SourceLocation.h>
+#include <clang/Basic/SourceManager.h>
+#include <clang/Lex/Preprocessor.h>
 
 using namespace std;
 using namespace clang;
@@ -1247,33 +1247,24 @@ Id CxxAstVisitorComponentIndexer::getOrCreateSymbolId(const clang::NamedDecl* de
 	NameHierarchy symbolName("global", NameDelimiterType::UNKNOWN);
 	if (decl)
 	{
-		std::unique_ptr<CxxDeclName> declName =
-			CxxDeclNameResolver(getAstVisitor()->getCanonicalFilePathCache()).getName(decl);
+		CanonicalFilePathCache *filePathCache = getAstVisitor()->getCanonicalFilePathCache();
+		std::unique_ptr<CxxDeclName> declName = CxxDeclNameResolver(filePathCache).getName(decl);
 		if (declName)
 		{
 			symbolName = declName->toNameHierarchy();
 
-			// TODO: replace duplicate main definition fix with better solution
-			if (dynamic_cast<CxxFunctionDeclName*>(declName.get()) && symbolName.size() == 1 &&
-				symbolName.back().getName() == "main")
-			{
-				NameElement::Signature sig = symbolName.back().getSignature();
-				symbolName.pop();
-				symbolName.push(NameElement(
-					".:main:." +
-						getAstVisitor()->getCanonicalFilePathCache()->getDeclarationFilePath(decl).str(),
-					sig.getPrefix(),
-					sig.getPostfix()));
-			}
+			if (isa<const FunctionDecl>(decl) && isMainFunction(symbolName))
+				uniquifyMainFunction(&symbolName, filePathCache->getDeclarationFilePath(decl).str());
 		}
 	}
 
 	Id symbolId = m_client->recordSymbol(symbolName);
 	m_declSymbolIds.emplace(decl, symbolId);
+
 	return symbolId;
 }
 
-Id CxxAstVisitorComponentIndexer::getOrCreateSymbolId(const clang::Type* type)
+Id CxxAstVisitorComponentIndexer::getOrCreateSymbolId(const clang::Type *type)
 {
 	auto it = m_typeSymbolIds.find(type);
 	if (it != m_typeSymbolIds.end())
@@ -1284,8 +1275,8 @@ Id CxxAstVisitorComponentIndexer::getOrCreateSymbolId(const clang::Type* type)
 	NameHierarchy symbolName("global", NameDelimiterType::UNKNOWN);
 	if (type)
 	{
-		std::unique_ptr<CxxTypeName> typeName =
-			CxxTypeNameResolver(getAstVisitor()->getCanonicalFilePathCache()).getName(type);
+		CanonicalFilePathCache *filePathCache = getAstVisitor()->getCanonicalFilePathCache();
+		std::unique_ptr<CxxTypeName> typeName = CxxTypeNameResolver(filePathCache).getName(type);
 		if (typeName)
 		{
 			symbolName = typeName->toNameHierarchy();
@@ -1294,6 +1285,7 @@ Id CxxAstVisitorComponentIndexer::getOrCreateSymbolId(const clang::Type* type)
 
 	Id symbolId = m_client->recordSymbol(symbolName);
 	m_typeSymbolIds.emplace(type, symbolId);
+
 	return symbolId;
 }
 
@@ -1315,8 +1307,7 @@ Id CxxAstVisitorComponentIndexer::getOrCreateSymbolId(const CxxContext* context)
 	return getOrCreateSymbolId(decl);
 }
 
-Id CxxAstVisitorComponentIndexer::getOrCreateSymbolId(
-	const CxxContext* context, const NameHierarchy& fallback)
+Id CxxAstVisitorComponentIndexer::getOrCreateSymbolId(const CxxContext* context, const NameHierarchy& fallback)
 {
 	if (context)
 	{

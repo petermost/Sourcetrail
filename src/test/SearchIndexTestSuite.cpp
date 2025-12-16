@@ -4,10 +4,20 @@
 #include "SearchIndex.h"
 #include "utility.h"
 
+using namespace std;
+
+static NameHierarchy makeName(const string &prefix, const string &name, const string &postfix, NameDelimiterType delimiterType = NameDelimiterType::CXX)
+{
+	NameHierarchy nameHierarchy(delimiterType);
+	nameHierarchy.push(NameElement(name, prefix, postfix));
+
+	return nameHierarchy;
+}
+
 TEST_CASE("search index finds id of element added")
 {
 	SearchIndex index;
-	index.addNode(1, NameHierarchy::deserialize("::\tmfoo\tsvoid\tp() const").getQualifiedName());
+	index.addNode(1, makeName("void", "foo", "() const").getQualifiedName());
 	index.finishSetup();
 	std::vector<SearchResult> results = index.search("oo", NodeTypeSet::all(), 0);
 
@@ -19,7 +29,7 @@ TEST_CASE("search index finds id of element added")
 TEST_CASE("search index finds correct indices for query")
 {
 	SearchIndex index;
-	index.addNode(1, NameHierarchy::deserialize("::\tmfoo\tsvoid\tp() const").getQualifiedName());
+	index.addNode(1, makeName("void", "foo", "() const").getQualifiedName());
 	index.finishSetup();
 	std::vector<SearchResult> results = index.search("oo", NodeTypeSet::all(), 0);
 
@@ -32,8 +42,8 @@ TEST_CASE("search index finds correct indices for query")
 TEST_CASE("search index finds ids for ambiguous query")
 {
 	SearchIndex index;
-	index.addNode(1, NameHierarchy::deserialize("::\tmfor\tsvoid\tp() const").getQualifiedName());
-	index.addNode(2, NameHierarchy::deserialize("::\tmfos\tsvoid\tp() const").getQualifiedName());
+	index.addNode(1, makeName("void", "for", "() const").getQualifiedName());
+	index.addNode(2, makeName("void", "fos", "() const").getQualifiedName());
 	index.finishSetup();
 	std::vector<SearchResult> results = index.search("fo", NodeTypeSet::all(), 0);
 
@@ -47,7 +57,7 @@ TEST_CASE("search index finds ids for ambiguous query")
 TEST_CASE("search index does not find anything after clear")
 {
 	SearchIndex index;
-	index.addNode(1, NameHierarchy::deserialize("::\tmfoo\tsvoid\tp() const").getQualifiedName());
+	index.addNode(1, makeName("void", "foo", "() const").getQualifiedName());
 	index.finishSetup();
 	index.clear();
 	std::vector<SearchResult> results = index.search("oo", NodeTypeSet::all(), 0);
@@ -58,8 +68,8 @@ TEST_CASE("search index does not find anything after clear")
 TEST_CASE("search index does not find all results when max amount is limited")
 {
 	SearchIndex index;
-	index.addNode(1, NameHierarchy::deserialize("::\tmfoo1\tsvoid\tp() const").getQualifiedName());
-	index.addNode(2, NameHierarchy::deserialize("::\tmfoo2\tsvoid\tp() const").getQualifiedName());
+	index.addNode(1, makeName("void", "foo1", "() const").getQualifiedName());
+	index.addNode(2, makeName("void", "foo2", "() const").getQualifiedName());
 	index.finishSetup();
 	std::vector<SearchResult> results = index.search("oo", NodeTypeSet::all(), 1);
 
@@ -69,8 +79,8 @@ TEST_CASE("search index does not find all results when max amount is limited")
 TEST_CASE("search index query is case insensitive")
 {
 	SearchIndex index;
-	index.addNode(1, NameHierarchy::deserialize("::\tmfoo1\tsvoid\tp() const").getQualifiedName());
-	index.addNode(2, NameHierarchy::deserialize("::\tmFOO2\tsvoid\tp() const").getQualifiedName());
+	index.addNode(1, makeName("void", "foo1", "() const").getQualifiedName());
+	index.addNode(2, makeName("void", "FOO2", "() const").getQualifiedName());
 	index.finishSetup();
 	std::vector<SearchResult> results = index.search("oo", NodeTypeSet::all(), 0);
 
@@ -80,10 +90,8 @@ TEST_CASE("search index query is case insensitive")
 TEST_CASE("search index rates higher on consecutive letters")
 {
 	SearchIndex index;
-	index.addNode(
-		1, NameHierarchy::deserialize("::\tmoaabbcc\tsvoid\tp() const").getQualifiedName());
-	index.addNode(
-		2, NameHierarchy::deserialize("::\tmocbcabc\tsvoid\tp() const").getQualifiedName());
+	index.addNode(1, makeName("void", "oaabbcc", "() const").getQualifiedName());
+	index.addNode(2, makeName("void", "ocbcabc", "() const").getQualifiedName());
 	index.finishSetup();
 	std::vector<SearchResult> results = index.search("abc", NodeTypeSet::all(), 0);
 

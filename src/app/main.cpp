@@ -33,10 +33,6 @@
 	#include "SourceGroupFactoryModuleJava.h"
 #endif	  // BUILD_JAVA_LANGUAGE_PACKAGE
 
-#if BUILD_PYTHON_LANGUAGE_PACKAGE
-	#include "SourceGroupFactoryModulePython.h"
-#endif	  // BUILD_PYTHON_LANGUAGE_PACKAGE
-
 #if BOOST_OS_WINDOWS
 	#include <windows.h>
 #endif
@@ -94,10 +90,6 @@ void addLanguagePackages()
 #if BUILD_JAVA_LANGUAGE_PACKAGE
 	SourceGroupFactory::getInstance()->addModule(std::make_shared<SourceGroupFactoryModuleJava>());
 #endif	  // BUILD_JAVA_LANGUAGE_PACKAGE
-
-#if BUILD_PYTHON_LANGUAGE_PACKAGE
-	SourceGroupFactory::getInstance()->addModule(std::make_shared<SourceGroupFactoryModulePython>());
-#endif	  // BUILD_PYTHON_LANGUAGE_PACKAGE
 
 #if BUILD_CXX_LANGUAGE_PACKAGE
 	LanguagePackageManager::getInstance()->addPackage(std::make_shared<LanguagePackageCxx>());
@@ -170,8 +162,7 @@ int main(int argc, char* argv[])
 			MessageLoadProject(
 				commandLineParser.getProjectFilePath(),
 				false,
-				commandLineParser.getRefreshMode(),
-				commandLineParser.getShallowIndexingRequested())
+				commandLineParser.getRefreshMode())
 				.dispatch();
 		}
 

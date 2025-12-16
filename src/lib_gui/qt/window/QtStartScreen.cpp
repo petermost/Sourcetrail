@@ -77,7 +77,6 @@ QtStartScreen::QtStartScreen(QWidget *parent)
 	: QtWindow(true, parent)
 	, m_cppIcon(QString::fromUtf8(QtResources::ICON_CPP_ICON))
 	, m_cIcon(QString::fromUtf8(QtResources::ICON_C_ICON))
-	, m_pythonIcon(QString::fromUtf8(QtResources::ICON_PYTHON_ICON))
 	, m_javaIcon(QString::fromUtf8(QtResources::ICON_JAVA_ICON))
 	, m_projectIcon(QString::fromUtf8(QtResources::ICON_EMPTY_ICON))
 	, m_githubIcon(QString::fromUtf8(QtResources::STARTSCREEN_GITHUB_ICON))
@@ -262,11 +261,6 @@ void QtStartScreen::setButtonIcon(QtRecentProjectButton *button, LanguageType la
 		button->setIcon(m_javaIcon);
 		break;
 #endif // BUILD_JAVA_LANGUAGE_PACKAGE
-#if BUILD_PYTHON_LANGUAGE_PACKAGE
-	case LanguageType::PYTHON:
-		button->setIcon(m_pythonIcon);
-		break;
-#endif // BUILD_PYTHON_LANGUAGE_PACKAGE
 	case LanguageType::CUSTOM:
 	default:
 		button->setIcon(m_projectIcon);

@@ -1,18 +1,11 @@
 #ifndef SOURCE_GROUP_SETTINGS_WITH_CXX_CROSS_COMPILATION_OPTIONS_H
 #define SOURCE_GROUP_SETTINGS_WITH_CXX_CROSS_COMPILATION_OPTIONS_H
 
-#include <vector>
-
 #include "SourceGroupSettingsComponent.h"
 
 class SourceGroupSettingsWithCxxCrossCompilationOptions: public SourceGroupSettingsComponent
 {
 public:
-	static std::vector<std::string> getAvailableArchTypes();
-	static std::vector<std::string> getAvailableVendorTypes();
-	static std::vector<std::string> getAvailableOsTypes();
-	static std::vector<std::string> getAvailableEnvironmentTypes();
-
 	~SourceGroupSettingsWithCxxCrossCompilationOptions() override = default;
 
 	bool getTargetOptionsEnabled() const;

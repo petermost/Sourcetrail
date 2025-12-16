@@ -6,7 +6,6 @@
 
 #include "LanguageType.h"
 #include "Settings.h"
-#include "SettingsMigrator.h"
 
 class SourceGroupSettings;
 
@@ -26,9 +25,6 @@ public:
 	~ProjectSettings() override;
 
 	bool equalsExceptNameAndLocation(const ProjectSettings& other) const;
-
-	bool needMigration() const;
-	void migrate();
 
 	bool reload();
 
@@ -50,9 +46,6 @@ public:
 
 	std::vector<FilePath> makePathsExpandedAndAbsolute(const std::vector<FilePath>& paths) const;
 	FilePath makePathExpandedAndAbsolute(const FilePath& path) const;
-
-private:
-	SettingsMigrator getMigrations() const;
 };
 
 #endif	  // PROJECT_SETTINGS_H

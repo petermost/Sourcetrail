@@ -15,7 +15,6 @@ QtIndexingReportDialog::QtIndexingReportDialog(
 	size_t totalFileCount,
 	float time,
 	bool interrupted,
-	bool shallow,
 	QWidget* parent)
 	: QtIndexingDialog(true, parent), m_interrupted(interrupted)
 {
@@ -24,10 +23,6 @@ QtIndexingReportDialog::QtIndexingReportDialog(
 	if (interrupted)
 	{
 		QtIndexingDialog::createTitleLabel(QStringLiteral("Interrupted Indexing"), m_layout);
-	}
-	else if (shallow)
-	{
-		QtIndexingDialog::createTitleLabel(QStringLiteral("Finished Shallow Indexing"), m_layout);
 	}
 	else
 	{
@@ -53,14 +48,6 @@ QtIndexingReportDialog::QtIndexingReportDialog(
 
 	m_layout->addStretch();
 
-	if (shallow)
-	{
-		createMessageLabel(m_layout)->setText(QStringLiteral(
-			"<i>You can now browse your project while running a second pass for in-depth "
-			"indexing!</i>"));
-		m_layout->addSpacing(12);
-	}
-
 	{
 		QHBoxLayout* buttons = new QHBoxLayout();
 		if (interrupted)
@@ -71,24 +58,11 @@ QtIndexingReportDialog::QtIndexingReportDialog(
 				discardButton, &QPushButton::clicked, this, &QtIndexingReportDialog::onDiscardPressed);
 			buttons->addWidget(discardButton);
 		}
-		else if (shallow)
-		{
-			QPushButton* startInDepthButton = new QPushButton(
-				QStringLiteral("Start In-Depth Indexing"));
-			startInDepthButton->setObjectName(QStringLiteral("windowButton"));
-			connect(
-				startInDepthButton,
-				&QPushButton::clicked,
-				this,
-				&QtIndexingReportDialog::onStartInDepthPressed);
-			buttons->addWidget(startInDepthButton);
-		}
 
 		buttons->addStretch();
 
 		QPushButton* confirmButton = new QPushButton(
-			interrupted ? QStringLiteral("Keep")
-						: (shallow ? QStringLiteral("Later") : QStringLiteral("OK")));
+			interrupted ? QStringLiteral("Keep") : QStringLiteral("OK"));
 		confirmButton->setObjectName(QStringLiteral("windowButton"));
 		confirmButton->setDefault(true);
 		connect(

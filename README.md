@@ -27,12 +27,12 @@ This is a **fork** of the Sourcetrail project and I want to keep this project at
 
 If you like the changes I've done so far, then please consider [sponsoring me](https://github.com/sponsors/petermost). 
 
-As a **10$ monthly sponsor** you have access to the following **binary releases**:
+By sponsoring me with just **$10 a month**, you’ll get, as a little "Thank You", access to the following **binary releases**:
 
 |Platform|Packaging|Build|
 |--------|---------|-----|
 |Linux   |ZIP Archive, Debian Package|Vcpkg, System|
-|Windows | ZIP Archive|Vcpkg|
+|Windows |ZIP Archive|Vcpkg|
 
 ### Used/Tested/Supported libraries: ###
 
@@ -66,6 +66,16 @@ As a **10$ monthly sponsor** you have access to the following **binary releases*
 |GTest|1.15.0|1.17.0|
 
 ### Changes
+
+#### 2025.12.8
+- C++: Add indexing of structured binding declarations
+- C++: Add indexing of `auto` prvalue casts
+- GUI: Fix error/status view not cleared between indexing ([#51](https://github.com/petermost/Sourcetrail/issues/51))
+- C/C++: Replace msvc mulitithreading library switches with corresponding clang switch
+- C/C++: Add Visual Studio 2026 support
+- Database: Enable simple database performance improvement
+- Python: Remove non-working Python support
+- C/C++: Remove support for Visual Studio 2010 to 2015
 
 #### 2025.10.13
 - C/C++: Add indexing of `concept` type constraints

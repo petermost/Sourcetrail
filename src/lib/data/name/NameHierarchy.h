@@ -23,6 +23,7 @@ public:
 	NameHierarchy &operator=(const NameHierarchy &other) = default;
 	NameHierarchy &operator=(NameHierarchy &&other) = default;
 
+	void setDelimiter(std::string delimiter);
 	const std::string &getDelimiter() const;
 
 	void push(NameElement element);
@@ -55,4 +56,4 @@ private:
 	std::string m_delimiter;
 };
 
-#endif // NAME_ELEMENT_H
+#endif

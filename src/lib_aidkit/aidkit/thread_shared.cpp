@@ -15,4 +15,4 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with CppAidKit. If not, see <http://www.gnu.org/licenses/>.
 
-#include "shared_data.hpp"
+#include "thread_shared.hpp"

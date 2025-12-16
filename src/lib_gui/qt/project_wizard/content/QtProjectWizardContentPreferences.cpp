@@ -425,28 +425,6 @@ void QtProjectWizardContentPreferences::populate(QGridLayout* layout, int& row)
 
 	addGap(layout, row);
 
-
-	addTitle(QStringLiteral("Python"), layout, row);
-
-	m_pythonPostProcessing = addCheckBox(
-		QStringLiteral("Post Processing"),
-		QStringLiteral("Add ambiguous edges for unsolved references (recommended)"),
-		QStringLiteral("<p>Enable a post processing step to solve unsolved references after the "
-					   "indexing is done. "
-					   "</p>"
-					   "<p>These references will be marked \"ambiguous\" to indicate that some of "
-					   "these edges may "
-					   "never "
-					   "be encountered during runtime of the indexed code because the post "
-					   "processing only relies "
-					   "on "
-					   "symbol names and types.</p>"),
-		layout,
-		row);
-
-	addGap(layout, row);
-
-
 	addTitle(QStringLiteral("C/C++"), layout, row);
 }
 
@@ -524,8 +502,6 @@ void QtProjectWizardContentPreferences::load()
 	{
 		m_mavenPath->setText(QString::fromStdString(appSettings->getMavenPath().str()));
 	}
-
-	m_pythonPostProcessing->setChecked(appSettings->getPythonPostProcessingEnabled());
 }
 
 void QtProjectWizardContentPreferences::save()
@@ -600,8 +576,6 @@ void QtProjectWizardContentPreferences::save()
 	{
 		appSettings->setMavenPath(FilePath(m_mavenPath->getText().toStdString()));
 	}
-
-	appSettings->setPythonPostProcessingEnabled(m_pythonPostProcessing->isChecked());
 
 	appSettings->save();
 }

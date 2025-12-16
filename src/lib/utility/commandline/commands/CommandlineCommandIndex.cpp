@@ -22,7 +22,6 @@ void CommandlineCommandIndex::setup()
 	options.add_options()("help,h", "Print this help message")(
 		"incomplete,i", "Also reindex incomplete files (files with errors)")(
 		"full,f", "Index full project (omit to only index new/changed files)")(
-		"shallow,s", "Build a shallow index is supported by the project")(
 		"project-file", po::value<std::string>(), "Project file to index (.srctrlprj)");
 
 	m_options.add(options);
@@ -60,11 +59,6 @@ CommandlineCommand::ReturnStatus CommandlineCommandIndex::parse(std::vector<std:
 	else if (vm.count("incomplete"))
 	{
 		m_parser->incompleteRefresh();
-	}
-
-	if (vm.count("shallow"))
-	{
-		m_parser->setShallowIndexingRequested();
 	}
 
 	if (vm.count("project-file"))

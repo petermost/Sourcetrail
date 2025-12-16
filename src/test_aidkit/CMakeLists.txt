@@ -1,6 +1,6 @@
 add_executable(AidKit_test
 	enum_class_test.cpp
-	shared_data_test.cpp
+	thread_shared_test.cpp
 	
 	qt/StringsTest.cpp
 )

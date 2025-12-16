@@ -330,8 +330,6 @@ void PersistentStorage::setup()
 {
 	m_sqliteIndexStorage.setup();
 	m_sqliteBookmarkStorage.setup();
-
-	m_sqliteBookmarkStorage.migrateIfNecessary();
 }
 
 void PersistentStorage::updateVersion()

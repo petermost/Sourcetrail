@@ -33,8 +33,8 @@ std::string substrAfter(const std::string& str, char delimiter);
 std::string substrAfter(const std::string& str, const std::string& delimiter);
 std::string substrBetween(const std::string& str, const std::string& delimiter1, const std::string& delimiter2);
 
-bool isPrefix(const std::string& prefix, const std::string& text);
-bool isPostfix(const std::string& postfix, const std::string& text);
+bool isPrefix(const std::string_view prefix, const std::string_view text);
+bool isPostfix(const std::string_view postfix, const std::string_view text);
 
 std::string replace(std::string str, const std::string& from, const std::string& to);
 std::string replaceBetween(const std::string& str, char startDelimiter, char endDelimiter, const std::string& to);
@@ -97,15 +97,12 @@ std::string join(const ContainerType& list, const std::string& delimiter)
 //
 
 std::u32string convertToUtf32(const std::string &utf8chars);
-std::string convertToUtf8(const std::u32string &utf32chars);
 
 std::string toLowerCase(const std::string& in);
 
-std::u32string toLowerCase(const std::u32string &in);
+bool isCaseInsensitiveEqual(const std::string& a, const std::string& b);
 
-bool equalsCaseInsensitive(const std::string& a, const std::string& b);
-
-bool caseInsensitiveLess(const std::string& s1, const std::string& s2);
+bool isCaseInsensitiveLess(const std::string& s1, const std::string& s2);
 
 }	 // namespace utility
 

@@ -27,7 +27,6 @@ public:
 
 	virtual bool prepareIndexing();
 	virtual bool allowsPartialClearing() const;
-	virtual bool allowsShallowIndexing() const;
 
 	virtual std::set<FilePath> filterToContainedFilePaths(const std::set<FilePath>& filePaths) const = 0;
 	virtual std::set<FilePath> getAllSourceFilePaths() const = 0;

@@ -76,7 +76,7 @@ private:
 
 	void loadWindow(bool showStartWindow);
 
-	void refreshProject(RefreshMode refreshMode, bool shallowIndexingRequested);
+	void refreshProject(RefreshMode refreshMode);
 	void updateRecentProjects(const FilePath& projectSettingsFilePath);
 
 	void logStorageStats() const;

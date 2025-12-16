@@ -6,6 +6,7 @@
 #include <clang/Tooling/JSONCompilationDatabase.h>
 
 #include "FilePath.h"
+#include "ToolChain.h"
 #include "logging.h"
 #include "utility.h"
 #include "utilityString.h"
@@ -60,10 +61,10 @@ void utility::CompilationDatabase::init()
 	std::set<FilePath> headers;
 
 	{
-		const std::string frameworkIncludeFlag = "-iframework";
-		const std::string systemIncludeFlag = "-isystem";
-		const std::string quoteFlag = "-iquote";
-		const std::string includeFlag = "-I";
+		const std::string frameworkIncludeFlag = ClangCompiler::frameworkIncludeOption();
+		const std::string systemIncludeFlag = ClangCompiler::systemIncludeOption();
+		const std::string quoteFlag = ClangCompiler::quoteIncludeOption();
+		const std::string includeFlag = ClangCompiler::includeOption();
 		for (clang::tooling::CompileCommand& command: commands)
 		{
 			const std::string commandDirectory = command.Directory;

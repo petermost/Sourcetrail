@@ -17,13 +17,11 @@ SqliteStorage::SqliteStorage(const FilePath& dbFilePath): m_dbFilePath(dbFilePat
 	}
 	catch (CppSQLite3Exception& e)
 	{
-		LOG_ERROR(
-			"Failed to load database file \"" + m_dbFilePath.str() + "\" with message: " +
-			e.errorMessage());
+		LOG_ERROR("Failed to load database file \"" + m_dbFilePath.str() + "\" with message: " + e.errorMessage());
 		throw;
 	}
 
-	executeStatement("PRAGMA foreign_keys=ON;");
+	enablePragmas();
 }
 
 SqliteStorage::~SqliteStorage()
@@ -40,7 +38,8 @@ SqliteStorage::~SqliteStorage()
 
 void SqliteStorage::setup()
 {
-	executeStatement("PRAGMA foreign_keys=ON;");
+	enablePragmas();
+
 	setupMetaTable();
 
 	if (isEmpty() || !isIncompatible())
@@ -57,7 +56,8 @@ void SqliteStorage::setup()
 
 void SqliteStorage::clear()
 {
-	executeStatement("PRAGMA foreign_keys=OFF;");
+	disablePragmas();
+
 	clearMetaTable();
 	clearTables();
 
@@ -286,4 +286,16 @@ void SqliteStorage::insertOrUpdateMetaValue(const std::string& key, const std::s
 	stmt.bind(2, key);
 	stmt.bind(3, value);
 	executeStatement(stmt);
+}
+
+void SqliteStorage::enablePragmas() const
+{
+	executeStatement("PRAGMA FOREIGN_KEYS=ON;");
+
+	executeStatement("PRAGMA SYNCHRONOUS=OFF;");
+}
+
+void SqliteStorage::disablePragmas() const
+{
+	executeStatement("PRAGMA FOREIGN_KEYS=OFF;");
 }

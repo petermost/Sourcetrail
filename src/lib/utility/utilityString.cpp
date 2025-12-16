@@ -240,21 +240,14 @@ std::string substrBetween(const std::string &str, const std::string &delimiter1,
 
 
 
-bool isPrefix(const std::string &prefix, const std::string &text)
+bool isPrefix(const string_view prefix, const string_view text)
 {
-	if (prefix.size() <= text.size())
-	{
-		std::pair<typename std::string::const_iterator, typename std::string::const_iterator> res =
-			std::mismatch(prefix.begin(), prefix.end(), text.begin());
-
-		return res.first == prefix.end();
-	}
-	return false;
+	return text.starts_with(prefix);
 }
 
-bool isPostfix(const std::string &postfix, const std::string &text)
+bool isPostfix(const string_view postfix, const string_view text)
 {
-	return text.size() >= postfix.size() && text.rfind(postfix) == (text.size() - postfix.size());
+	return text.ends_with(postfix);
 }
 
 
@@ -564,34 +557,17 @@ std::string toLowerCase(const std::string& in)
     return boost::locale::to_lower(in);
 }
 
-bool equalsCaseInsensitive(const std::string &a, const std::string &b)
+bool isCaseInsensitiveEqual(const std::string &a, const std::string &b)
 {
 	return toLowerCase(a) == toLowerCase(b);
 }
 
-bool caseInsensitiveLess(const std::string& s1, const std::string& s2)
+bool isCaseInsensitiveLess(const std::string& s1, const std::string& s2)
 {
 	return toLowerCase(s1) < toLowerCase(s2);
 }
 
-// Boost.Locale supports UTF-32 only if the library was build with the 'BOOST_LOCALE_ENABLE_CHAR32_T' 
-// switch! So UTF-32 functions convert to UTF-8, do the operation, convert back to UTF-32:
-
-std::u32string toLowerCase(const std::u32string &in)
-{
-	return convertToUtf32(toLowerCase(convertToUtf8(in)));
-}
-
-static std::string doConvertToUtf8(base_converter *converter, char32_t utf32char)
-{
-	std::string utf8chars(converter->max_len(), '\0');
-	utf::len_or_error length = converter->from_unicode(utf32char, utf8chars.data(), utf8chars.data() + utf8chars.size());
-	utf8chars.resize((length != base_converter::illegal) ? length : 0);
-
-	return utf8chars;
-}
-
-static utf::code_point doConvertToUtf32(base_converter *converter, const std::string &utf8chars)
+static inline utf::code_point doConvertToUtf32(base_converter *converter, const std::string &utf8chars)
 {
 	const char *utf8CharsBegin = utf8chars.data();
 	const char *utf8CharsEnd = utf8chars.data() + utf8chars.size();
@@ -610,17 +586,6 @@ std::u32string convertToUtf32(const std::string &utf8chars)
 		utf32chars.push_back(doConvertToUtf32(converter.get(), c));
 
 	return utf32chars;
-}
-
-std::string convertToUtf8(const std::u32string &utf32chars)
-{
-	std::string utf8chars;
-	auto converter = create_utf8_converter();
-	
-	for (char32_t c : utf32chars)
-		utf8chars.append(doConvertToUtf8(converter.get(), c));
-
-	return utf8chars;
 }
 
 } // namespace utility

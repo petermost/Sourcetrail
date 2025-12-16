@@ -571,8 +571,6 @@ TEST_CASE("sourcegroup java maven generates expected output", JAVA_TAG)
 
 #endif	  // BUILD_JAVA_LANGUAGE_PACKAGE
 
-// fixme: test python source group here
-
 TEST_CASE("source group custom command generates expected output")
 {
 	const std::string projectName = "custom_command";

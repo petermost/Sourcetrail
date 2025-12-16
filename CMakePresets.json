@@ -98,6 +98,14 @@
 			]
 		},
 		{
+			"name": "system-relwithdebinfo",
+			"inherits": [
+				"relwithdebinfo-presets",
+				"system-default-presets",
+				"sourcetrail-presets"
+			]
+		},
+		{
 			"name": "system-clang-debug",
 			"inherits": [
 				"system-debug",
@@ -108,6 +116,13 @@
 			"name": "system-clang-release",
 			"inherits": [
 				"system-release",
+				"system-clang-presets"
+			]
+		},
+		{
+			"name": "system-clang-relwithdebinfo",
+			"inherits": [
+				"system-relwithdebinfo",
 				"system-clang-presets"
 			]
 		},

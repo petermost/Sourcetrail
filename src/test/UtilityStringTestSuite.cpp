@@ -274,7 +274,7 @@ TEST_CASE("equals case insensitive with different cases")
 	const std::string foo = "FooBar";
 	const std::string foo2 = "foobar";
 
-	REQUIRE(utility::equalsCaseInsensitive(foo, foo2));
+	REQUIRE(utility::isCaseInsensitiveEqual(foo, foo2));
 }
 
 TEST_CASE("equals case insensitive with same cases")
@@ -282,7 +282,7 @@ TEST_CASE("equals case insensitive with same cases")
 	const std::string foo = "foobar";
 	const std::string foo2 = "foobar";
 
-	REQUIRE(utility::equalsCaseInsensitive(foo, foo2));
+	REQUIRE(utility::isCaseInsensitiveEqual(foo, foo2));
 }
 
 TEST_CASE("equals case insensitive with different strings")
@@ -290,7 +290,7 @@ TEST_CASE("equals case insensitive with different strings")
 	const std::string foo = "foo";
 	const std::string foo2 = "foobar";
 
-	REQUIRE(!utility::equalsCaseInsensitive(foo, foo2));
+	REQUIRE(!utility::isCaseInsensitiveEqual(foo, foo2));
 }
 
 TEST_CASE("replace")
@@ -306,81 +306,81 @@ TEST_CASE("replace")
 
 TEST_CASE("caseInsensitiveLess should return false when comparing empty strings")
 {
-	REQUIRE_FALSE(utility::caseInsensitiveLess("", ""));
+	REQUIRE_FALSE(utility::isCaseInsensitiveLess("", ""));
 }
 
 TEST_CASE("caseInsensitiveLess should return false when both strings are equal")
 {
-	REQUIRE_FALSE(utility::caseInsensitiveLess("ab_cd!", "ab_cd!"));
+	REQUIRE_FALSE(utility::isCaseInsensitiveLess("ab_cd!", "ab_cd!"));
 }
 
 TEST_CASE(
 	"caseInsensitiveLess should return false when both strings have"
 	"different cases but after lower casing are equal")
 {
-	REQUIRE_FALSE(utility::caseInsensitiveLess("ab_CD!", "aB_cD!"));
+	REQUIRE_FALSE(utility::isCaseInsensitiveLess("ab_CD!", "aB_cD!"));
 }
 
 TEST_CASE("caseInsensitiveLess should return true when first string is empty and second not")
 {
-	REQUIRE(utility::caseInsensitiveLess("", "ab"));
+	REQUIRE(utility::isCaseInsensitiveLess("", "ab"));
 }
 
 TEST_CASE("caseInsensitiveLess should return false when second string is empty and first not")
 {
-	REQUIRE_FALSE(utility::caseInsensitiveLess("ab", ""));
+	REQUIRE_FALSE(utility::isCaseInsensitiveLess("ab", ""));
 }
 
 TEST_CASE("caseInsensitiveLess should return true when first string is prefix of second")
 {
-	REQUIRE(utility::caseInsensitiveLess("ab_cd!", "ab_cd!e"));
+	REQUIRE(utility::isCaseInsensitiveLess("ab_cd!", "ab_cd!e"));
 }
 
 TEST_CASE("caseInsensitiveLess should return false when second string is prefix of first")
 {
-	REQUIRE_FALSE(utility::caseInsensitiveLess("ab_cd!e", "ab_cd!"));
+	REQUIRE_FALSE(utility::isCaseInsensitiveLess("ab_cd!e", "ab_cd!"));
 }
 
 TEST_CASE(
 	"caseInsensitiveLess should return true when after lower casing first string, first is prefix "
 	"of second")
 {
-	REQUIRE(utility::caseInsensitiveLess("aB_cd!", "ab_cd!e"));
+	REQUIRE(utility::isCaseInsensitiveLess("aB_cd!", "ab_cd!e"));
 }
 
 TEST_CASE(
 	"caseInsensitiveLess should return true when after lower casing second string, first is "
 	"prefix of second")
 {
-	REQUIRE(utility::caseInsensitiveLess("ab_cd!", "ab_cD!e"));
+	REQUIRE(utility::isCaseInsensitiveLess("ab_cd!", "ab_cD!e"));
 }
 
 TEST_CASE(
 	"caseInsensitiveLess should return true when after lower casing both strings, first is prefix "
 	"of second")
 {
-	REQUIRE(utility::caseInsensitiveLess("aB_cd!", "ab_cD!E"));
+	REQUIRE(utility::isCaseInsensitiveLess("aB_cd!", "ab_cD!E"));
 }
 
 TEST_CASE(
 	"caseInsensitiveLess should return false when after lower casing first string, second is "
 	"prefix of first")
 {
-	REQUIRE_FALSE(utility::caseInsensitiveLess("ab_Cd!e", "ab_cd!"));
+	REQUIRE_FALSE(utility::isCaseInsensitiveLess("ab_Cd!e", "ab_cd!"));
 }
 
 TEST_CASE(
 	"caseInsensitiveLess should return false when after lower casing second string, second is "
 	"prefix of first")
 {
-	REQUIRE_FALSE(utility::caseInsensitiveLess("ab_cd!e", "Ab_cd!"));
+	REQUIRE_FALSE(utility::isCaseInsensitiveLess("ab_cd!e", "Ab_cd!"));
 }
 
 TEST_CASE(
 	"caseInsensitiveLess should return false when after lower casing both strings, second is "
 	"prefix of first")
 {
-	REQUIRE_FALSE(utility::caseInsensitiveLess("ab_cD!E", "aB_cd!"));
+	REQUIRE_FALSE(utility::isCaseInsensitiveLess("ab_cD!E", "aB_cd!"));
 }
 
 TEST_CASE("trim blank spaces of string")

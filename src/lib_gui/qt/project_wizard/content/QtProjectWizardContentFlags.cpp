@@ -5,7 +5,10 @@
 
 #include "QtStringListBox.h"
 #include "SourceGroupSettingsWithCxxPathsAndFlags.h"
+#include "ToolChain.h"
 #include "utilityString.h"
+
+using namespace std;
 
 QtProjectWizardContentFlags::QtProjectWizardContentFlags(
 	std::shared_ptr<SourceGroupSettingsWithCxxPathsAndFlags> settings,
@@ -64,11 +67,10 @@ bool QtProjectWizardContentFlags::check()
 
 	for (const std::string& flag: m_list->getStrings())
 	{
-		if (utility::isPrefix("-include ", flag) ||
-			utility::isPrefix("--include ", flag))
+		if (utility::isPrefix(ClangCompiler::forceIncludeOption() + " "s, flag) ||
+			utility::isPrefix(ClangCompiler::forceIncludeOption2() + " "s, flag))
 		{
-			error = "The entered compiler flag \"" + flag +
-				"\" contains an error. Please remove the intermediate space character.\n";
+			error = "The entered compiler flag \"" + flag + "\" contains an error. Please remove the intermediate space character.\n";
 		}
 	}
 

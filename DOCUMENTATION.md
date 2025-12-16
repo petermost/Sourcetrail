@@ -501,10 +501,6 @@ This dialog displays the number of files for indexing and clearing before indexi
 * **All files:** Deletes the previous index and reindexes all files.
 
 
-**Shallow Python Indexing**
-
-For Python projects a checkbox **Shallow Python Indexing** is additionally displayed. When checked, references within your code base (calls, usages, etc.) are resolved by name, which is imprecise but much faster than in-depth indexing. Use this option for a quick first indexing pass and start browsing the code base while running a second pass for in-depth indexing.
-
 <img src="docs/documentation/start_indexing_dialog.png" width="600" alt="Start Indexing Dialog">
 
 **Interactions:**
