@@ -169,6 +169,9 @@ TEST_CASE("CDB replace msvc arguments")
 		"/std:clatest", "-std:clatest",
 		"/std:c11", "-std:c99",
 
+		"/std:c++23preview", "-std:c++23preview",
+		"/std:c23preview", "-std:c23preview",
+
 		"/MD", "/MDd", "/MT", "/MTd",
 
 		"/SomeUnknownOption"
@@ -187,6 +190,9 @@ TEST_CASE("CDB replace msvc arguments")
 		"-std=c++11", "-std=c++14",
 		"-std=c17", "-std=c17",
 		"-std=c11", "-std=c99",
+
+		"-std=" + ClangCompiler::getLatestCppDraft(), "-std=" + ClangCompiler::getLatestCppDraft(),
+		"-std=" + ClangCompiler::getLatestCDraft(), "-std=" + ClangCompiler::getLatestCDraft(),
 
 		"-pthread", "-pthread", "-pthread", "-pthread"
 

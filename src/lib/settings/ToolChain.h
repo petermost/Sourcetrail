@@ -76,9 +76,11 @@ class ClangCompiler final : public ToolChain {
 		// Language version getters:
 
 		static std::string getLatestCppStandard();
+		static std::string getLatestCppDraft();
 		static std::vector<std::string> getAvailableCppStandards();
 		
 		static std::string getLatestCStandard();
+		static std::string getLatestCDraft();
 		static std::vector<std::string> getAvailableCStandards();
 
 		// Environment queries:

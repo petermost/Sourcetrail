@@ -316,6 +316,11 @@ string ClangCompiler::getLatestCppStandard()
 	return getReleasedCppStandards()[0];
 }
 
+string ClangCompiler::getLatestCppDraft()
+{
+	return getDraftCppStandards()[0];
+}
+
 vector<string> ClangCompiler::getAvailableCppStandards()
 {
 	return concat(getDraftCppStandards(), getReleasedCppStandards());
@@ -324,6 +329,11 @@ vector<string> ClangCompiler::getAvailableCppStandards()
 string ClangCompiler::getLatestCStandard()
 {
 	return getReleasedCStandards()[0];
+}
+
+string ClangCompiler::getLatestCDraft()
+{
+	return getDraftCStandards()[0];
 }
 
 vector<string> ClangCompiler::getAvailableCStandards()
@@ -619,12 +629,22 @@ void replaceMsvcArguments(vector<string> *commandLineArguments)
 		else if ((argumentValue = getArgumentValue(*argument, "/external:I"sv)) || (argumentValue = getArgumentValue(*argument, "-external:I"sv)))
 			*argument++ = ClangCompiler::systemIncludeOption(*argumentValue);
 
-		// C/C++ language version selection (no support for previews):
+		// C/C++ language version selection
+		// Note: 'latest' and 'preview' must be checked before concrete versions!
 
 		else if (argument->starts_with("/std:c++latest"sv) || argument->starts_with("-std:c++latest"sv))
 			*argument++ = ClangCompiler::stdOption(ClangCompiler::getLatestCppStandard());
 		else if (argument->starts_with("/std:clatest"sv) || argument->starts_with("-std:clatest"sv))
 			*argument++ = ClangCompiler::stdOption(ClangCompiler::getLatestCStandard());
+
+		// Only check for 'preview' and ignore the version:
+		// Note: There is no 'c<version>preview', but check it anyway
+
+		else if ((argument->starts_with("/std:c++"sv) || argument->starts_with("-std:c++"sv)) && argument->ends_with("preview"sv))
+			*argument++ = ClangCompiler::stdOption(ClangCompiler::getLatestCppDraft());
+		else if ((argument->starts_with("/std:c"sv) || argument->starts_with("-std:c"sv)) && argument->ends_with("preview"sv))
+			*argument++ = ClangCompiler::stdOption(ClangCompiler::getLatestCDraft());
+
 		else if ((argumentValue = getArgumentValue(*argument, "/std:c++"sv)) || (argumentValue = getArgumentValue(*argument, "-std:c++"sv)))
 			*argument++ = ClangCompiler::stdCppOption(*argumentValue);
 		else if ((argumentValue = getArgumentValue(*argument, "/std:c"sv)) || (argumentValue = getArgumentValue(*argument, "-std:c"sv)))
