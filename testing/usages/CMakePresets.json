@@ -1,0 +1,14 @@
+{
+	"version": 4,
+	"configurePresets": [
+		{
+			"name": "system-clang-release",
+			"generator": "Ninja",
+			"binaryDir": "./build/",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Release",
+				"CMAKE_EXPORT_COMPILE_COMMANDS": "TRUE"
+			}
+		}
+	]
+}
