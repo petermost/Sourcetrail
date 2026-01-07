@@ -4,6 +4,9 @@
 #include "logging.h"
 #include "utilityString.h"
 
+#include <QByteArray>
+#include <QtEnvironmentVariables>
+
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/path.hpp>
 
@@ -223,9 +226,8 @@ std::vector<FilePath> FilePath::expandEnvironmentVariables() const
 	std::smatch match;
 	while (std::regex_search(text, match, env))
 	{
-		const char* s = match[1].matched ? getenv(match[1].str().c_str())
-										 : getenv(match[2].str().c_str());
-		if (s == nullptr)
+		const QByteArray s = match[1].matched ? qgetenv(match[1].str().c_str()) : qgetenv(match[2].str().c_str());
+		if (s.isNull())
 		{
 			LOG_ERROR_STREAM(<< match[1].str() << " is not an environment variable in: " << text);
 			return paths;

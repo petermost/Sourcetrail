@@ -37,6 +37,9 @@
 	#include <windows.h>
 #endif
 
+#include <QByteArray>
+#include <QtEnvironmentVariables>
+
 #include <csignal>
 #include <iostream>
 
@@ -106,7 +109,7 @@ int main(int argc, char* argv[])
 
 	Version version = setupAppDirectories(FilePath(argv[0]).getCanonical().getParentDirectory());
 
-	if (utility::Platform::isLinux() && std::getenv("SOURCETRAIL_VIA_SCRIPT") == nullptr)
+	if (utility::Platform::isLinux() && qgetenv("SOURCETRAIL_VIA_SCRIPT").isNull())
 	{
 		std::cout << "ERROR: Please run Sourcetrail via the Sourcetrail.sh script!" << std::endl;
 	}
