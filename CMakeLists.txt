@@ -35,7 +35,7 @@ endif()
 
 # Project ----------------------------------------------------------------------
 
-project(Sourcetrail VERSION 2026.1.7 HOMEPAGE_URL "http://sourcetrail.de")
+project(Sourcetrail VERSION 2026.1.12 HOMEPAGE_URL "http://sourcetrail.de")
 cmake_print_variables(CMAKE_C_COMPILER)
 cmake_print_variables(CMAKE_CXX_COMPILER)
 
@@ -440,8 +440,9 @@ add_subdirectory(src/indexer)
 
 configure_file(src/app/Sourcetrail.ico app/Sourcetrail.ico COPYONLY)
 if (UNIX)
-	configure_file(scripts/Sourcetrail.sh  app/Sourcetrail.sh COPYONLY)
-	configure_file(scripts/_gdbinit        app/.gdbinit COPYONLY)
+	configure_file(scripts/Sourcetrail.sh      app/Sourcetrail.sh COPYONLY)
+	configure_file(scripts/resetPreferences.sh app/resetPreferences.sh COPYONLY)
+	configure_file(scripts/_gdbinit            app/.gdbinit COPYONLY)
 endif()
 add_subdirectory(src/app)
 

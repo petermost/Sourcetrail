@@ -28,6 +28,18 @@ QtMainWindow *getMainWindowforMainView(ViewLayout *viewLayout);
 
 void copyNewFilesFromDirectory(const QString &src, const QString &dst);
 
+extern const char QT_AUTO_SCREEN_SCALE_FACTOR[];
+
+bool isQtAutoScreenScaleFactorEnabled();
+void setQtAutoScreenScaleFactorEnabled(bool enable);
+
+extern const char QT_SCALE_FACTOR[];
+
+std::optional<double> getQtScaleFactor();
+void setQtScaleFactor(double factor);
+
+
+
 template <typename T>
 T qt_variant_cast(const QVariant &variant)
 {

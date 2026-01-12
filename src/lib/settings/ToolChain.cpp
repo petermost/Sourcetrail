@@ -589,7 +589,7 @@ vector<string> WindowsSdk::getVersions()
 
 static optional<string> getArgumentValue(const string &argument, string_view argumentKey)
 {
-	return argument.starts_with(argumentKey) ? make_optional(argument.substr(argumentKey.length())) : nullopt;
+	return argument.starts_with(argumentKey) ? optional(argument.substr(argumentKey.length())) : nullopt;
 }
 
 void replaceMsvcArguments(vector<string> *commandLineArguments)

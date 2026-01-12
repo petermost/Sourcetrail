@@ -87,30 +87,20 @@ void setupAppEnvironment(int  /*argc*/, char*  /*argv*/[])
 	// This function will be called after setupAppDirectories, so UserPaths::setUserDataDirectoryPath
 	// has been initialized and UserPaths::getAppSettingsFilePath will return the correct path.
 
-	// TODO (petermost): Check https://doc.qt.io/qt-6/highdpi.html#environment-variable-reference
-	if constexpr(Platform::isLinux()) {
-		// Set QT screen scaling factor
-		ApplicationSettings appSettings;
-		appSettings.load(UserPaths::getAppSettingsFilePath(), true);
+	// Set QT screen scaling factor
+	ApplicationSettings appSettings;
+	appSettings.load(UserPaths::getAppSettingsFilePath(), true);
 
-		qputenv("QT_AUTO_SCREEN_SCALE_FACTOR_SOURCETRAIL", qgetenv("QT_AUTO_SCREEN_SCALE_FACTOR"));
-		qputenv("QT_SCALE_FACTOR_SOURCETRAIL", qgetenv("QT_SCALE_FACTOR"));
+	int autoScaling = appSettings.getScreenAutoScaling();
+	if (autoScaling != -1)
+	{
+		setQtAutoScreenScaleFactorEnabled(autoScaling != 0);
+	}
 
-		int autoScaling = appSettings.getScreenAutoScaling();
-		if (autoScaling != -1)
-		{
-			QByteArray bytes;
-			bytes.setNum(autoScaling);
-			qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", bytes);
-		}
-
-		float scaleFactor = appSettings.getScreenScaleFactor();
-		if (scaleFactor > 0.0)
-		{
-			QByteArray bytes;
-			bytes.setNum(scaleFactor);
-			qputenv("QT_SCALE_FACTOR", bytes);
-		}
+	float scaleFactor = appSettings.getScreenScaleFactor();
+	if (scaleFactor > 0.0)
+	{
+		setQtScaleFactor(scaleFactor);
 	}
 }
 

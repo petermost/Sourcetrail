@@ -109,11 +109,13 @@ int main(int argc, char* argv[])
 
 	Version version = setupAppDirectories(FilePath(argv[0]).getCanonical().getParentDirectory());
 
-	if (utility::Platform::isLinux() && qgetenv("SOURCETRAIL_VIA_SCRIPT").isNull())
+	if constexpr (utility::Platform::isLinux())
 	{
-		std::cout << "ERROR: Please run Sourcetrail via the Sourcetrail.sh script!" << std::endl;
+		if (qgetenv("SOURCETRAIL_VIA_SCRIPT").isNull())
+		{
+			std::cout << "ERROR: Please run Sourcetrail via the Sourcetrail.sh script!" << std::endl;
+		}
 	}
-
 	MessageStatus(std::string("Starting Sourcetrail version ") + version.toDisplayString())
 		.dispatch();
 
