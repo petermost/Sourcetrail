@@ -203,8 +203,8 @@ DEF_GETTER_7(
 	bool,
 	std::shared_ptr<Graph>,
 	std::make_shared<Graph>())
-DEF_GETTER_0(getAvailableNodeTypes, NodeKindMask, 0);
-DEF_GETTER_0(getAvailableEdgeTypes, Edge::TypeMask, 0);
+DEF_GETTER_0(getAvailableNodeTypes, NodeKindMask, 0)
+DEF_GETTER_0(getAvailableEdgeTypes, Edge::TypeMask, 0)
 DEF_GETTER_2(getActiveTokenIdsForId, Id, Id*, std::vector<Id>, {})
 DEF_GETTER_1(getNodeIdsForLocationIds, const std::vector<Id>&, std::vector<Id>, {})
 DEF_GETTER_1(

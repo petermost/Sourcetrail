@@ -35,7 +35,7 @@ endif()
 
 # Project ----------------------------------------------------------------------
 
-project(Sourcetrail VERSION 2026.1.12 HOMEPAGE_URL "http://sourcetrail.de")
+project(Sourcetrail VERSION 2026.2.3 HOMEPAGE_URL "http://sourcetrail.de")
 cmake_print_variables(CMAKE_C_COMPILER)
 cmake_print_variables(CMAKE_CXX_COMPILER)
 
@@ -170,7 +170,7 @@ if (isVcpkgBuild)
 endif()
 
 set(BOOST_MIN_VERSION 1.83)
-set(BOOST_MAX_VERSION 1.90)
+set(BOOST_MAX_VERSION 1.91)
 
 find_package(Boost CONFIG REQUIRED 
 	COMPONENTS
@@ -449,7 +449,7 @@ add_subdirectory(src/app)
 # Test ----------------------------------------------------------------------
 
 set(CATCH2_MIN_VERSION 3.7)
-set(CATCH2_MAX_VERSION 3.12)
+set(CATCH2_MAX_VERSION 3.13)
 
 if (BUILD_UNIT_TESTS_PACKAGE)
 	include(CTest)

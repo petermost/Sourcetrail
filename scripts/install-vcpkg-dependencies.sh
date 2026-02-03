@@ -25,4 +25,4 @@ sudo apt install autoconf-archive
 
 # Not sure whether this package is needed for Qt6 but the build failed without it:
 
-sudo apt install python3-jinja2
+sudo apt install python3-jinja2 python3-venv

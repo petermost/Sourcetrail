@@ -29,41 +29,41 @@ If you like the changes I've done so far, then please consider [sponsoring me](h
 
 By sponsoring me with just **$10 a month**, you’ll get, as a little "Thank You", access to the following **binary releases**:
 
-|Platform|Packaging|Build|
-|--------|---------|-----|
+|Platform|Packaging                  |Build        |
+|--------|---------------------------|-------------|
 |Linux   |ZIP Archive, Debian Package|Vcpkg, System|
-|Windows |ZIP Archive|Vcpkg|
+|Windows |ZIP Archive                |Vcpkg        |
 
 ### Used/Tested/Supported libraries: ###
 
 **C++**
 
-|Name|System|Vcpkg|Notes| 
-|----|------|-----|-----|
-|Clang/LLVM|20.1.2|18.1.6|C++23 Support|
+|Name      |System|Vcpkg |
+|----------|------|------|
+|Clang/LLVM|20.1.8|18.1.6|
 
 **Java**
 
-|Name|System/Vcpkg|Notes|
-|----|------------|-----|
-|Eclipse JDT|3.42|Java 24 Support|
-|Maven|3.9.9|
-|Gradle|8.14.2|
+|Name       |System/Vcpkg|
+|-----------|------------|
+|Eclipse JDT|3.42        |
+|Maven      |3.9.9       |
+|Gradle     |9.3.1       |
 
 **Miscellaneous**
 
-|Name|System|Vcpkg|
-|----|------|-----|
-|Qt|6.8.3|6.9.1|
-|Boost|1.88.0|1.89.0|
-|SQLite3|3.46.1|3.50.4|
-|TinyXML|2.6.2|2.6.2|
+|Name   |System|Vcpkg |
+|-------|------|------|
+|Qt     |6.9.2 |6.10.0|
+|Boost  |1.88.0|1.90.0|
+|SQLite3|3.46.1|3.51.2|
+|TinyXML|2.6.2 |2.6.2 |
 
 **Tests**
-|Name|System|Vcpkg|
-|----|------|-----|
-|Catch2|3.7.1|3.11.0|
-|GTest|1.15.0|1.17.0|
+|Name  |System|Vcpkg |
+|------|------|------|
+|Catch2|3.7.1 |3.12.0|
+|GTest |1.17.0|1.17.0|
 
 ### Changes
 
@@ -186,9 +186,9 @@ Depending on the platform and the selected indexer, additional software/packages
     * [OpenJDK](https://jdk.java.net/)
     * [Maven](https://maven.apache.org/)
 * **Linux:** 
-    * **Qt6:** Install additional packages with `scripts/install-qt6-dependencies.sh`.
+    * Install additional packages with `scripts/install-vcpkg-dependencies.sh`.
 * **Windows:**
-    * [Visual Studio 2022 Community Edition](https://visualstudio.microsoft.com/vs/community/) 
+    * [Visual Studio 2026 Community Edition](https://visualstudio.microsoft.com/vs/community/) 
 * **macOS:**
   * [Xcode](https://developer.apple.com/xcode/)
   * libtools, autoconf, autoconf-archive, automake, patchelf, ninja
@@ -214,13 +214,13 @@ $ cmake --build .
 
 ### Linux
 
-To compile it under (K)ubuntu 25.04, "Plucky Puffin", install the following packages:
+To compile it under (K)ubuntu 25.04, "Questing Quokka", install the following packages:
 
 **General packages:** cmake, ninja-build, libboost1.88-all-dev, libboost-charconv1.88-dev, qt6-base-dev, qt6-svg-dev, libsqlite3-dev, libtinyxml-dev
 
 **C++ packages:** clang-20, libclang-20-dev
 
-**Java packages:** maven, openjdk-24-jdk
+**Java packages:** maven, openjdk-25-jdk
 
 **Unit test packages:** catch2, libgtest-dev
 
