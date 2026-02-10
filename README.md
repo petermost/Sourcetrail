@@ -27,14 +27,22 @@ This is a **fork** of the Sourcetrail project and I want to keep this project at
 
 If you like the changes I've done so far, then please consider [sponsoring me](https://github.com/sponsors/petermost). 
 
-By sponsoring me with just **$10 a month**, you’ll get, as a little "Thank You", access to the following **binary releases**:
+By sponsoring me with **$10 per month**, you will gain access to the following **binary releases** in appreciation of your support:
 
-|Platform|Packaging                  |Build        |
-|--------|---------------------------|-------------|
-|Linux   |ZIP Archive, Debian Package|Vcpkg, System|
-|Windows |ZIP Archive                |Vcpkg        |
+* Sourcetrail
+* :new: Visual Studio 2026 Extension
+* :new: QtCreator 18 Plugin
 
-### Used/Tested/Supported libraries: ###
+### Binary Releases
+
+|Name                        |Platform     |Packaging                  |Build        |
+|----------------------------|-------------|---------------------------|-------------|
+|Sourcetrail                 |Linux        |ZIP Archive, Debian Package|Vcpkg, System|
+|Sourcetrail                 |Windows      |ZIP Archive                |Vcpkg        |
+|Visual Studio 2026 Extension|Windows      |VSIX Package               |             |
+|Qt Creator 18 Plugin        |Linux/Windows|ZIP Archive                |             |
+
+### Sourcetrail used/tested/supported libraries: ###
 
 **C++**
 
