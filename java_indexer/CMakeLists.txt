@@ -14,6 +14,9 @@ if (NOT BUILD_UNIT_TESTS_PACKAGE)
 	set(skipTestsSwitch "-Dmaven.test.skip=true")
 endif()
 
+# In case a warning about native access is appearing. Save this content to './.mvn/jvm.config':
+# --enable-native-access=ALL-UNNAMED
+
 add_custom_target(Sourcetrail_java_indexer ALL
 	COMMAND ${CMAKE_COMMAND} -E echo "[Maven]: Building ${jarName}.jar to: ${jarDirectory}"
 	
