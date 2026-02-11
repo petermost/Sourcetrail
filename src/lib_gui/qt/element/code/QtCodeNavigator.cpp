@@ -58,8 +58,8 @@ QtCodeNavigator::QtCodeNavigator(QWidget* parent)
 		navLayout->setContentsMargins(7, 7 - indicatorHeight, 7, 6);
 
 		{
-			m_prevReferenceButton = new QtSearchBarButton(QtResources::CODE_VIEW_ARROW_UP, true);
-			m_nextReferenceButton = new QtSearchBarButton(QtResources::CODE_VIEW_ARROW_DOWN, true);
+			m_prevReferenceButton = new QtSearchBarButton(QtResources::CODE_VIEW_ARROW_UP, QtSearchBarButton::Size::SMALL);
+			m_nextReferenceButton = new QtSearchBarButton(QtResources::CODE_VIEW_ARROW_DOWN, QtSearchBarButton::Size::SMALL);
 
 			m_prevReferenceButton->setObjectName(QStringLiteral("reference_button_previous"));
 			m_nextReferenceButton->setObjectName(QStringLiteral("reference_button_next"));
@@ -85,8 +85,8 @@ QtCodeNavigator::QtCodeNavigator(QWidget* parent)
 		}
 
 		{
-			m_prevLocalReferenceButton = new QtSearchBarButton(QtResources::CODE_VIEW_ARROW_UP, true);
-			m_nextLocalReferenceButton = new QtSearchBarButton(QtResources::CODE_VIEW_ARROW_DOWN, true);
+			m_prevLocalReferenceButton = new QtSearchBarButton(QtResources::CODE_VIEW_ARROW_UP, QtSearchBarButton::Size::SMALL);
+			m_nextLocalReferenceButton = new QtSearchBarButton(QtResources::CODE_VIEW_ARROW_DOWN, QtSearchBarButton::Size::SMALL);
 
 			m_prevLocalReferenceButton->setObjectName(QStringLiteral("local_reference_button_previous"));
 			m_nextLocalReferenceButton->setObjectName(QStringLiteral("local_reference_button_next"));
@@ -118,8 +118,8 @@ QtCodeNavigator::QtCodeNavigator(QWidget* parent)
 			m_localRefLabel->hide();
 		}
 
-		m_listButton = new QtSearchBarButton(QtResources::CODE_VIEW_LIST, true);
-		m_fileButton = new QtSearchBarButton(QtResources::CODE_VIEW_FILE, true);
+		m_listButton = new QtSearchBarButton(QtResources::CODE_VIEW_LIST, QtSearchBarButton::Size::SMALL);
+		m_fileButton = new QtSearchBarButton(QtResources::CODE_VIEW_FILE, QtSearchBarButton::Size::SMALL);
 
 		m_listButton->setObjectName(QStringLiteral("mode_button_list"));
 		m_fileButton->setObjectName(QStringLiteral("mode_button_single"));

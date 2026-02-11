@@ -6,13 +6,19 @@
 class QtSearchBarButton: public QtSelfRefreshIconButton
 {
 public:
-	QtSearchBarButton(const FilePath& iconPath, bool small = false, QWidget* parent = nullptr);
+	enum class Size
+	{
+		SMALL,
+		BIG
+	};
+
+	QtSearchBarButton(const FilePath& iconPath, Size size = Size::BIG);
 
 protected:
 	void refresh() override;
 
 private:
-	bool m_small;
+	Size m_size;
 };
 
 #endif	  // QT_SEARCH_BAR_BUTTON_H
