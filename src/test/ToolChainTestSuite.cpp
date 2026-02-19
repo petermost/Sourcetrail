@@ -88,7 +88,7 @@ TEST_CASE("CDB replace msvc arguments in windows database")
 	vector<CompileCommand> compileCommands = loadDatabase(SOURCETRAIL_WINDOWS_CDB, JSONCommandLineSyntax::Windows);
 	REQUIRE(compileCommands.size() == 4);
 
-	// aidkit command lines:
+	// Command line for 'AidKit' file:
 
 	commandLine = compileCommands[0].CommandLine;
 	REQUIRE(commandLine.size() == 47);
@@ -100,7 +100,7 @@ TEST_CASE("CDB replace msvc arguments in windows database")
 	replaceMsvcArguments(&commandLine);
 	REQUIRE(commandLine.size() == 17);
 
-	// CppSQLite3 command line:
+	// Command line for 'CppSQLite3' file:
 
 	commandLine = compileCommands[2].CommandLine;
 	REQUIRE(commandLine.size() == 22);
@@ -112,7 +112,7 @@ TEST_CASE("CDB replace msvc arguments in windows database")
 	commandLine = compileCommands[3].CommandLine;
 	REQUIRE(commandLine.size() == 280);
 	replaceMsvcArguments(&commandLine);
-	REQUIRE(commandLine.size() == 280);
+	REQUIRE(commandLine.size() == 279);
 }
 
 TEST_CASE("CDB replace msvc arguments in linux database")
@@ -122,7 +122,7 @@ TEST_CASE("CDB replace msvc arguments in linux database")
 	vector<CompileCommand> compileCommands = loadDatabase(SOURCETRAIL_LINUX_CDB, JSONCommandLineSyntax::Gnu);
 	REQUIRE(compileCommands.size() == 3);
 
-	// aidkit command lines:
+   // Command line for 'AidKit' file:
 
 	commandLine = compileCommands[0].CommandLine;
 	REQUIRE(commandLine.size() == 38);
@@ -134,7 +134,7 @@ TEST_CASE("CDB replace msvc arguments in linux database")
 	replaceMsvcArguments(&commandLine);
 	REQUIRE(commandLine.size() == 38);
 
-	// CppSQLite3 command line:
+	// Command line for 'CppSQLite3' file:
 
 	commandLine = compileCommands[2].CommandLine;
 	REQUIRE(commandLine.size() == 16);

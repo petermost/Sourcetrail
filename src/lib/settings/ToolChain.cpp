@@ -596,11 +596,14 @@ static optional<string> getArgumentValue(const string &argument, string_view arg
 
 void replaceMsvcArguments(vector<string> *commandLineArguments)
 {
-	// Replace/Remove arguments only if these are for the Microsoft compiler, otherwise the check for '/' will remove Linux paths:
+	// Replace/Remove arguments only if these are for the Microsoft C/C++/Resource compiler, otherwise the check for '/' will remove Linux paths:
 
-	if (commandLineArguments->size() >= 1 && !(*commandLineArguments)[0].ends_with("cl.exe"s))
-		return;
-
+	if (!commandLineArguments->empty())
+	{
+		string_view toolName = (*commandLineArguments)[0];
+		if (!toolName.ends_with("cl.exe"sv) && !toolName.ends_with("rc.exe"sv))
+			return;
+	}
 	optional<string> argumentValue;
 
 	// - Keep/Replace only those options which are necessary to parse the code correctly
