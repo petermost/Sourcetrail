@@ -21,18 +21,18 @@
 #include <functional>
 #include <type_traits>
 
-namespace aidkit {
+namespace aidkit::concurrent {
 
 // Replacing accessor/const_accessor with unique_ptr is possible but has the undesirable sideeffect
 // that 'if (data.access())' would compile because a unique_ptr is convertible to bool!
 
-template <typename T, typename Mutex = std::mutex>
+template <typename T>
 class thread_shared {
 	public:
 		template <typename U>
 		class accessor_base {
 			protected:
-				accessor_base(U d, Mutex *m) noexcept
+				accessor_base(U d, std::mutex *m) noexcept
 					: m_lock(*m), m_data(d)
 				{ }
 				~accessor_base() = default;
@@ -40,13 +40,13 @@ class thread_shared {
 				accessor_base(const accessor_base &) = delete;
 				accessor_base &operator = (const accessor_base &) = delete;
 
-				mutable std::unique_lock<Mutex> m_lock;
+				mutable std::unique_lock<std::mutex> m_lock;
 				U m_data;
 		};
 
 		class accessor final : public accessor_base<T *> {
 			public:
-				accessor(T *d, Mutex *m) noexcept
+				accessor(T *d, std::mutex *m) noexcept
 					: accessor_base<T *>(d, m)
 				{ }
 
@@ -73,7 +73,7 @@ class thread_shared {
 
 		class const_accessor final : public accessor_base<const T *> {
 			public:
-				const_accessor(const T *d, Mutex *m) noexcept
+				const_accessor(const T *d, std::mutex *m) noexcept
 					: accessor_base<const T *>(d, m)
 				{ }
 
@@ -142,7 +142,7 @@ class thread_shared {
 
 	private:
 		T m_data;
-		mutable Mutex m_mutex;
+		mutable std::mutex m_mutex;
 };
 
 template <typename Functor, typename... Types>

@@ -1,6 +1,8 @@
 add_executable(AidKit_test
 	enum_class_test.cpp
-	thread_shared_test.cpp
+	
+	concurrent/thread_shared_test.cpp
+	concurrent/blocking_queue_test.cpp
 	
 	qt/StringsTest.cpp
 )
