@@ -48,10 +48,14 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clan
 	set(CMAKE_EXE_LINKER_FLAGS_RELEASE    "${CMAKE_EXE_LINKER_FLAGS_RELEASE}    ${linkerFlagsRelease}")
 	set(CMAKE_STATIC_LINKER_FLAGS_RELEASE "${CMAKE_STATIC_LINKER_FLAGS_RELEASE} ${linkerFlagsRelease}")
 	set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} ${linkerFlagsRelease}")
-# elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-# 	# https://learn.microsoft.com/en-us/cpp/build/optimization-best-practices
-# 	set(CMAKE_CXX_FLAGS_RELEASE    "/O2 /GL /fp:precise /GS-")
-# 	set(CMAKE_LINKER_FLAGS_RELEASE "/LTCG")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+	# https://learn.microsoft.com/en-us/cpp/build/optimization-best-practices
+	set(CMAKE_CXX_FLAGS_RELEASE           "/O2 /GL /fp:precise /GS-")
+	
+	set(linkerFlagsRelease "/LTCG")
+	set(CMAKE_EXE_LINKER_FLAGS_RELEASE    "${CMAKE_EXE_LINKER_FLAGS_RELEASE}    ${linkerFlagsRelease}")
+	set(CMAKE_STATIC_LINKER_FLAGS_RELEASE "${CMAKE_STATIC_LINKER_FLAGS_RELEASE} ${linkerFlagsRelease}")
+	set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} ${linkerFlagsRelease}")
 endif()
 
 # Configure which language(s)/package(s) should be supported:
