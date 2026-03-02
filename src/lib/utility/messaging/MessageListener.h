@@ -26,7 +26,7 @@ private:
 		// 	LOG_INFO_STREAM_BARE(<< "handle " << message->str());
 		// }
 
-		handleMessage(dynamic_cast<MessageType*>(message));
+		handleMessage(static_cast<MessageType *>(message));
 	}
 
 	virtual void handleMessage(MessageType* message) = 0;

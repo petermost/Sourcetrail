@@ -1,26 +1,27 @@
 #ifndef MESSAGE_LISTENER_BASE_H
 #define MESSAGE_LISTENER_BASE_H
 
-#include <string>
-
 #include "MessageBase.h"
 #include "MessageQueue.h"
+
+#include <string>
 
 class MessageListenerBase
 {
 public:
-	MessageListenerBase(): m_id(s_nextId++) 
+	MessageListenerBase()
+		: m_id(s_nextId++)
 	{
 		MessageQueue::getInstance()->registerListener(this);
+
+		m_alive = true;
 	}
 
 	virtual ~MessageListenerBase()
 	{
-		if (m_alive)
-		{
-			m_alive = false;
-			MessageQueue::getInstance()->unregisterListener(this);
-		}
+		m_alive = false;
+
+		MessageQueue::getInstance()->unregisterListener(this);
 	}
 
 	Id getId() const
@@ -34,7 +35,7 @@ public:
 		{
 			return doGetType();
 		}
-		return "";
+		return "MessageListenerBase";
 	}
 
 	void handleMessageBase(MessageBase* message)
@@ -43,11 +44,6 @@ public:
 		{
 			doHandleMessageBase(message);
 		}
-	}
-
-	void removedListener()
-	{
-		m_alive = false;
 	}
 
 	virtual TabId getSchedulerId() const
@@ -62,7 +58,7 @@ private:
 	static Id s_nextId;
 
 	Id m_id;
-	bool m_alive = true;
+	bool m_alive = false;
 };
 
 #endif	  // MESSAGE_LISTENER_BASE_H

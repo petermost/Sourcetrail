@@ -1,9 +1,6 @@
 #include "MessageQueue.h"
 
-#include <chrono>
-#include <thread>
-
-#include "MessageBase.h"
+#include "Message.h"
 #include "MessageFilter.h"
 #include "MessageListenerBase.h"
 #include "TabIds.h"
@@ -12,81 +9,158 @@
 #include "TaskLambda.h"
 #include "logging.h"
 
-std::shared_ptr<MessageQueue> MessageQueue::getInstance()
+#include <chrono>
+#include <thread>
+
+using namespace std;
+
+namespace
 {
-	if (!s_instance)
+
+class StopLoopMessage: public Message<StopLoopMessage>
+{
+public:
+	static const std::string getStaticType()
 	{
-		s_instance = std::shared_ptr<MessageQueue>(new MessageQueue());
+		return "StopLoopMessage";
 	}
-	return s_instance;
+};
+
+const std::shared_ptr STOP_LOOP_MESSAGE(std::make_shared<StopLoopMessage>());
+
 }
 
-MessageQueue::~MessageQueue()
+std::shared_ptr<MessageQueue> MessageQueue::getInstance()
 {
-	std::lock_guard<std::mutex> lock(m_listenersMutex);
-	for (size_t i = 0; i < m_listeners.size(); i++)
-	{
-		m_listeners[i]->removedListener();
-	}
-	m_listeners.clear();
+	static std::shared_ptr<MessageQueue> s_instance = std::shared_ptr<MessageQueue>(new MessageQueue());
+
+	return s_instance;
 }
 
 void MessageQueue::registerListener(MessageListenerBase* listener)
 {
-	std::lock_guard<std::mutex> lock(m_listenersMutex);
-	m_listeners.push_back(listener);
+	m_listeners.access()->push_back(listener);
 }
 
 void MessageQueue::unregisterListener(MessageListenerBase* listener)
 {
-	std::lock_guard<std::mutex> lock(m_listenersMutex);
-	for (size_t i = 0; i < m_listeners.size(); i++)
+	aidkit::concurrent::access([listener](std::vector<MessageListenerBase *> &listeners)
 	{
-		if (m_listeners[i] == listener)
-		{
-			m_listeners.erase(m_listeners.begin() + i);
-
-			// m_currentListenerIndex and m_listenersLength need to be updated in case this happens
-			// while a message is handled.
-			if (i <= m_currentListenerIndex)
-			{
-				m_currentListenerIndex--;
-			}
-
-			if (i < m_listenersLength)
-			{
-				m_listenersLength--;
-			}
-
-			return;
-		}
-	}
-
-	LOG_ERROR("Listener was not found");
+		auto it = std::find(listeners.begin(), listeners.end(), listener);
+		if (it != listeners.end())
+			listeners.erase(it);
+		else
+			LOG_ERROR("Listener was not found");
+	}, m_listeners);
 }
 
 MessageListenerBase* MessageQueue::getListenerById(Id listenerId) const
 {
-	std::lock_guard<std::mutex> lock(m_listenersMutex);
-	for (size_t i = 0; i < m_listeners.size(); i++)
+	return aidkit::concurrent::access([listenerId](const std::vector<MessageListenerBase *> &listeners)
 	{
-		if (m_listeners[i]->getId() == listenerId)
+		auto it = std::find_if(listeners.begin(), listeners.end(), [listenerId](MessageListenerBase *listener)
 		{
-			return m_listeners[i];
-		}
-	}
-	return nullptr;
+			return listener->getId() == listenerId;
+		});
+		return (it != listeners.end()) ? *it : nullptr;
+	}, m_listeners);
 }
 
 void MessageQueue::addMessageFilter(std::shared_ptr<MessageFilter> filter)
 {
-	m_filters.push_back(filter);
+	m_filters.access()->push_back(filter);
 }
 
 void MessageQueue::pushMessage(std::shared_ptr<MessageBase> message)
 {
-	std::lock_guard<std::mutex> lock(m_messageBufferMutex);
-	m_messageBuffer.push_back(message);
+	m_messageBuffer.access()->push_back(message);
+}
+
+void MessageQueue::startMessageLoopThread()
+{
+	if (!m_isLoopRunning)
+	{
+		m_thread = std::thread(&MessageQueue::messageLoop, this);
+
+		m_isLoopRunning.wait(false);
+	}
+	else
+	{
+		LOG_ERROR("Loop is already running");
+	}
+}
+
+void MessageQueue::stopMessageLoopThread()
+{
+	// Signal the loop/thread to stop:
+
+	if (m_isLoopRunning)
+	{
+		pushMessage(STOP_LOOP_MESSAGE);
+
+		m_thread.join();
+	}
+	else
+	{
+		LOG_ERROR("Loop is not running");
+	}
+}
+
+bool MessageQueue::isLoopRunning() const
+{
+	return m_isLoopRunning;
+}
+
+bool MessageQueue::hasMessagesQueued() const
+{
+	return !m_messageBuffer.access()->empty();
+}
+
+bool MessageQueue::setSendMessagesAsTasks(bool sendMessagesAsTasks)
+{
+	bool previousValue = m_sendMessagesAsTasks;
+	m_sendMessagesAsTasks = sendMessagesAsTasks;
+
+	return previousValue;
+}
+
+void MessageQueue::messageLoop()
+{
+	m_isLoopRunning = true;
+	m_isLoopRunning.notify_one();
+
+	std::shared_ptr<MessageBase> message;
+
+	while (message != STOP_LOOP_MESSAGE)
+	{
+		message = aidkit::concurrent::access([](MessageBufferType &messageBuffer, std::vector<std::shared_ptr<MessageFilter>> &filters)
+		{
+			for (std::shared_ptr<MessageFilter> filter : filters)
+			{
+				if (!messageBuffer.empty())
+					filter->filter(&messageBuffer);
+				else
+					break;
+			}
+
+			if (!messageBuffer.empty())
+			{
+				std::shared_ptr<MessageBase> message(std::move(messageBuffer.front()));
+				messageBuffer.pop_front();
+
+				return message;
+			}
+			else
+				return std::shared_ptr<MessageBase>(nullptr);
+		}, m_messageBuffer, m_filters);
+
+		if (message != nullptr)
+			processMessage(message, false);
+		else
+			std::this_thread::sleep_for(std::chrono::milliseconds(25));
+	}
+	m_isLoopRunning = false;
+	m_isLoopRunning.notify_one();
 }
 
 void MessageQueue::processMessage(std::shared_ptr<MessageBase> message, bool asNextTask)
@@ -106,155 +180,23 @@ void MessageQueue::processMessage(std::shared_ptr<MessageBase> message, bool asN
 	}
 }
 
-void MessageQueue::startMessageLoopThreaded()
+static inline bool isListenerMatch(const std::shared_ptr<MessageBase> &message, const MessageListenerBase *listener)
 {
-	std::thread(&MessageQueue::startMessageLoop, this).detach();
-
-	std::lock_guard<std::mutex> lock(m_threadMutex);
-	m_threadIsRunning = true;
-}
-
-void MessageQueue::startMessageLoop()
-{
-	{
-		std::lock_guard<std::mutex> lock(m_loopMutex);
-
-		if (m_loopIsRunning)
-		{
-			LOG_ERROR("Loop is already running");
-			return;
-		}
-
-		m_loopIsRunning = true;
-	}
-
-	while (true)
-	{
-		processMessages();
-
-		{
-			std::lock_guard<std::mutex> lock(m_loopMutex);
-
-			if (!m_loopIsRunning)
-			{
-				break;
-			}
-		}
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(25));
-	}
-
-	{
-		std::lock_guard<std::mutex> lock(m_threadMutex);
-		if (m_threadIsRunning)
-		{
-			m_threadIsRunning = false;
-		}
-	}
-}
-
-void MessageQueue::stopMessageLoop()
-{
-	{
-		std::lock_guard<std::mutex> lock(m_loopMutex);
-
-		if (!m_loopIsRunning)
-		{
-			LOG_WARNING("Loop is not running");
-		}
-
-		m_loopIsRunning = false;
-	}
-
-	while (true)
-	{
-		{
-			std::lock_guard<std::mutex> lock(m_threadMutex);
-			if (!m_threadIsRunning)
-			{
-				break;
-			}
-		}
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(25));
-	}
-}
-
-bool MessageQueue::loopIsRunning() const
-{
-	std::lock_guard<std::mutex> lock(m_loopMutex);
-	return m_loopIsRunning;
-}
-
-bool MessageQueue::hasMessagesQueued() const
-{
-	std::lock_guard<std::mutex> lock(m_messageBufferMutex);
-	return m_messageBuffer.size() > 0;
-}
-
-void MessageQueue::setSendMessagesAsTasks(bool sendMessagesAsTasks)
-{
-	m_sendMessagesAsTasks = sendMessagesAsTasks;
-}
-
-std::shared_ptr<MessageQueue> MessageQueue::s_instance;
-
-MessageQueue::MessageQueue() = default;
-
-void MessageQueue::processMessages()
-{
-	while (true)
-	{
-		std::shared_ptr<MessageBase> message;
-		{
-			std::lock_guard<std::mutex> lock(m_messageBufferMutex);
-
-			for (std::shared_ptr<MessageFilter> filter: m_filters)
-			{
-				if (!m_messageBuffer.size())
-				{
-					break;
-				}
-
-				filter->filter(&m_messageBuffer);
-			}
-
-			if (!m_messageBuffer.size())
-			{
-				break;
-			}
-
-			message = m_messageBuffer.front();
-			m_messageBuffer.pop_front();
-		}
-
-		processMessage(message, false);
-	}
+	return listener->getType() == message->getType()
+		&& (message->getSchedulerId() == TabId::NONE || listener->getSchedulerId() == TabId::NONE
+		|| listener->getSchedulerId() == message->getSchedulerId());
 }
 
 void MessageQueue::sendMessage(std::shared_ptr<MessageBase> message)
 {
-	std::lock_guard<std::mutex> lock(m_listenersMutex);
+	// Iterate over a copy of the listeners so that changes to the underlying listeners do not interfere:
 
-	// m_listenersLength is saved, so that new listeners registered within message handling don't
-	// get the current message and the length can be reduced when a listener gets unregistered.
-	m_listenersLength = m_listeners.size();
-
-	// The currentListenerIndex holds the index of the current listener being handled, so it can be
-	// changed when a listener gets removed while message handling.
-	for (m_currentListenerIndex = 0; m_currentListenerIndex < m_listenersLength;
-		 m_currentListenerIndex++)
+	const std::vector<MessageListenerBase *> listeners = *m_listeners.access();
+	for (MessageListenerBase *listener : listeners)
 	{
-		MessageListenerBase* listener = m_listeners[m_currentListenerIndex];
-
-		if (listener->getType() == message->getType() &&
-			(message->getSchedulerId() == TabId::NONE || listener->getSchedulerId() == TabId::NONE ||
-			 listener->getSchedulerId() == message->getSchedulerId()))
+		if (isListenerMatch(message, listener))
 		{
-			// The listenersMutex gets unlocked so changes to listeners are possible while message handling.
-			m_listenersMutex.unlock();
 			listener->handleMessageBase(message.get());
-			m_listenersMutex.lock();
 		}
 	}
 }
@@ -271,26 +213,22 @@ void MessageQueue::sendMessageAsTask(std::shared_ptr<MessageBase> message, bool 
 		taskGroup = std::make_shared<TaskGroupSequence>();
 	}
 
-	{
-		std::lock_guard<std::mutex> lock(m_listenersMutex);
-		for (size_t i = 0; i < m_listeners.size(); i++)
-		{
-			MessageListenerBase* listener = m_listeners[i];
+	// Iterate over a copy of the listeners so that changes to the underlying listeners do not interfere:
 
-			if (listener->getType() == message->getType() &&
-				(message->getSchedulerId() == TabId::NONE || listener->getSchedulerId() == TabId::NONE ||
-				 listener->getSchedulerId() == message->getSchedulerId()))
+	const std::vector<MessageListenerBase *> listeners = *m_listeners.access();
+	for (MessageListenerBase *listener : listeners)
+	{
+		if (isListenerMatch(message, listener))
+		{
+			Id listenerId = listener->getId();
+			taskGroup->addTask(std::make_shared<TaskLambda>([this, listenerId, message]()
 			{
-				Id listenerId = listener->getId();
-				taskGroup->addTask(std::make_shared<TaskLambda>([listenerId, message]() {
-					MessageListenerBase* listener = MessageQueue::getInstance()->getListenerById(
-						listenerId);
-					if (listener)
-					{
-						listener->handleMessageBase(message.get());
-					}
-				}));
-			}
+				MessageListenerBase* listener = getListenerById(listenerId);
+				if (listener != nullptr)
+				{
+					listener->handleMessageBase(message.get());
+				}
+			}));
 		}
 	}
 

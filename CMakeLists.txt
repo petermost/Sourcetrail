@@ -1,9 +1,7 @@
 cmake_minimum_required(VERSION 3.27)
 
-include(CMakePrintHelpers)
-include(cmake/Sourcetrail.cmake)
+# Vcpkg ------------------------------------------------------------------------
 
-# Detect vcpkg build scenario here, so we don't depend on CMakePresets settings:
 if (CMAKE_TOOLCHAIN_FILE MATCHES "vcpkg.cmake$")
 	message(STATUS "Vcpkg Build")
 	set(isVcpkgBuild TRUE)
@@ -26,6 +24,15 @@ if (isVcpkgBuild)
 	)
 endif()
 
+# Project ----------------------------------------------------------------------
+
+project(Sourcetrail VERSION 2026.3.2 HOMEPAGE_URL "http://sourcetrail.de")
+
+# cmake_print_variables(CMAKE_CXX_COMPILER)
+
+#include(CMakePrintHelpers)
+include(cmake/Sourcetrail.cmake)
+
 # Make the build type available as a compiler variable:
 if (isVcpkgBuild)
 	add_compile_definitions(IS_VCPKG_BUILD=1)
@@ -33,11 +40,19 @@ else()
 	add_compile_definitions(IS_VCPKG_BUILD=0)
 endif()
 
-# Project ----------------------------------------------------------------------
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+	# https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
+	set(CMAKE_CXX_FLAGS_RELEASE           "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fno-fast-math -flto=auto")
 
-project(Sourcetrail VERSION 2026.2.11 HOMEPAGE_URL "http://sourcetrail.de")
-cmake_print_variables(CMAKE_C_COMPILER)
-cmake_print_variables(CMAKE_CXX_COMPILER)
+	set(linkerFlagsRelease "-flto=auto")
+	set(CMAKE_EXE_LINKER_FLAGS_RELEASE    "${CMAKE_EXE_LINKER_FLAGS_RELEASE}    ${linkerFlagsRelease}")
+	set(CMAKE_STATIC_LINKER_FLAGS_RELEASE "${CMAKE_STATIC_LINKER_FLAGS_RELEASE} ${linkerFlagsRelease}")
+	set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} ${linkerFlagsRelease}")
+# elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+# 	# https://learn.microsoft.com/en-us/cpp/build/optimization-best-practices
+# 	set(CMAKE_CXX_FLAGS_RELEASE    "/O2 /GL /fp:precise /GS-")
+# 	set(CMAKE_LINKER_FLAGS_RELEASE "/LTCG")
+endif()
 
 # Configure which language(s)/package(s) should be supported:
 option(BUILD_CXX_LANGUAGE_PACKAGE  "Add C/C++ support to the Sourcetrail indexer." OFF)

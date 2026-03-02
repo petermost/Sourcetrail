@@ -32,6 +32,7 @@
 
 std::shared_ptr<Application> Application::s_instance;
 std::string Application::s_uuid;
+bool Application::s_previousSendMessagesAsTasks = false;
 
 void Application::createInstance(const Version& version, ViewFactory* viewFactory, NetworkFactory* networkFactory)
 {
@@ -68,8 +69,7 @@ void Application::createInstance(const Version& version, ViewFactory* viewFactor
 
 	if (networkFactory != nullptr)
 	{
-		s_instance->m_ideCommunicationController = networkFactory->createIDECommunicationController(
-			s_instance->m_storageCache.get());
+		s_instance->m_ideCommunicationController = networkFactory->createIDECommunicationController(s_instance->m_storageCache.get());
 		s_instance->m_ideCommunicationController->startListening();
 	}
 
@@ -83,11 +83,29 @@ std::shared_ptr<Application> Application::getInstance()
 
 void Application::destroyInstance()
 {
-	MessageQueue::getInstance()->stopMessageLoop();
+	MessageQueue::getInstance()->stopMessageLoopThread();
+
+	// It's important to reset this to the previous value (i.e. false), otherwise the MessageQueue tests will fail!
+	MessageQueue::getInstance()->setSendMessagesAsTasks(s_previousSendMessagesAsTasks);
+
 	TaskManager::destroyScheduler(TabIds::background());
 	TaskManager::destroyScheduler(TabIds::app());
 
 	s_instance.reset();
+}
+
+void Application::startMessagingAndScheduling()
+{
+	TaskManager::getScheduler(TabIds::app())->startSchedulerLoopThreaded();
+	TaskManager::getScheduler(TabIds::background())->startSchedulerLoopThreaded();
+
+	std::shared_ptr<MessageQueue> queue = MessageQueue::getInstance();
+	queue->addMessageFilter(std::make_shared<MessageFilterErrorCountUpdate>());
+	queue->addMessageFilter(std::make_shared<MessageFilterFocusInOut>());
+	queue->addMessageFilter(std::make_shared<MessageFilterSearchAutocomplete>());
+
+	s_previousSendMessagesAsTasks = queue->setSendMessagesAsTasks(true);
+	queue->startMessageLoopThread();
 }
 
 std::string Application::getUUID()
@@ -166,7 +184,7 @@ bool Application::isProjectLoaded() const
 	return false;
 }
 
-bool Application::hasGUI()
+bool Application::hasGUI() const
 {
 	return m_hasGUI;
 }
@@ -365,19 +383,6 @@ void Application::handleMessage(MessageSwitchColorScheme* message)
 	MessageRefreshUI().noStyleReload().dispatch();
 }
 
-void Application::startMessagingAndScheduling()
-{
-	TaskManager::getScheduler(TabIds::app())->startSchedulerLoopThreaded();
-	TaskManager::getScheduler(TabIds::background())->startSchedulerLoopThreaded();
-
-	MessageQueue* queue = MessageQueue::getInstance().get();
-	queue->addMessageFilter(std::make_shared<MessageFilterErrorCountUpdate>());
-	queue->addMessageFilter(std::make_shared<MessageFilterFocusInOut>());
-	queue->addMessageFilter(std::make_shared<MessageFilterSearchAutocomplete>());
-
-	queue->setSendMessagesAsTasks(true);
-	queue->startMessageLoopThreaded();
-}
 
 void Application::loadWindow(bool showStartWindow)
 {

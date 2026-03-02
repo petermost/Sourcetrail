@@ -10,12 +10,7 @@
 class MessageBase
 {
 public:
-	MessageBase()
-		: m_id(s_nextId++)
-		, m_schedulerId(TabId::NONE)
-	{
-	}
-
+	MessageBase() = default;
 	virtual ~MessageBase() = default;
 
 	virtual std::string getType() const = 0;
@@ -109,8 +104,9 @@ public:
 private:
 	static Id s_nextId;
 
-	Id m_id;
-	TabId m_schedulerId;
+	Id m_id = s_nextId++;
+
+	TabId m_schedulerId = TabId::NONE;
 
 	bool m_isParallel = false;
 	bool m_isReplayed = false;

@@ -1,11 +1,13 @@
 #include "Catch2.hpp"
 
-#include <chrono>
-#include <thread>
-
 #include "Message.h"
 #include "MessageListener.h"
 #include "MessageQueue.h"
+
+#include <chrono>
+#include <thread>
+
+// IMPORTANT: Ensure that MessageQueue::m_sendMessagesAsTasks is set to false, otherwise the test will fail?
 
 namespace
 {
@@ -98,7 +100,7 @@ public:
 private:
 	void handleMessage(TestMessage*  /*message*/) override
 	{
-		if (!m_listeners.size())
+		if (m_listeners.empty())
 		{
 			for (size_t i = 0; i < 5; i++)
 			{
@@ -111,33 +113,35 @@ private:
 void waitForThread()
 {
 	static const int THREAD_WAIT_TIME_MS = 20;
-	do
+
+	while (MessageQueue::getInstance()->hasMessagesQueued())
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(THREAD_WAIT_TIME_MS));
-	} while (MessageQueue::getInstance()->hasMessagesQueued());
+	}
 }
+
 }	 // namespace
 
-TEST_CASE("message loop starts and stops")
+TEST_CASE("message queue loop starts and stops")
 {
-	REQUIRE(!MessageQueue::getInstance()->loopIsRunning());
+	REQUIRE(!MessageQueue::getInstance()->isLoopRunning());
 
-	MessageQueue::getInstance()->startMessageLoopThreaded();
-
-	waitForThread();
-
-	REQUIRE(MessageQueue::getInstance()->loopIsRunning());
-
-	MessageQueue::getInstance()->stopMessageLoop();
+	MessageQueue::getInstance()->startMessageLoopThread();
 
 	waitForThread();
 
-	REQUIRE(!MessageQueue::getInstance()->loopIsRunning());
+	REQUIRE(MessageQueue::getInstance()->isLoopRunning());
+
+	MessageQueue::getInstance()->stopMessageLoopThread();
+
+	waitForThread();
+
+	REQUIRE(!MessageQueue::getInstance()->isLoopRunning());
 }
 
-TEST_CASE("registered listener receives messages")
+TEST_CASE("message queue registered listener receives messages")
 {
-	MessageQueue::getInstance()->startMessageLoopThreaded();
+	MessageQueue::getInstance()->startMessageLoopThread();
 
 	TestMessageListener listener;
 	Test2MessageListener listener2;
@@ -148,15 +152,15 @@ TEST_CASE("registered listener receives messages")
 
 	waitForThread();
 
-	MessageQueue::getInstance()->stopMessageLoop();
+	MessageQueue::getInstance()->stopMessageLoopThread();
 
 	REQUIRE(3 == listener.m_messageCount);
 	REQUIRE(0 == listener2.m_messageCount);
 }
 
-TEST_CASE("message dispatching within message handling")
+TEST_CASE("message queue dispatching within message handling") // FAIL
 {
-	MessageQueue::getInstance()->startMessageLoopThreaded();
+	MessageQueue::getInstance()->startMessageLoopThread();
 
 	TestMessageListener listener;
 	Test2MessageListener listener2;
@@ -165,15 +169,15 @@ TEST_CASE("message dispatching within message handling")
 
 	waitForThread();
 
-	MessageQueue::getInstance()->stopMessageLoop();
+	MessageQueue::getInstance()->stopMessageLoopThread();
 
 	REQUIRE(1 == listener.m_messageCount);
 	REQUIRE(1 == listener2.m_messageCount);
 }
 
-TEST_CASE("listener registration within message handling")
+TEST_CASE("message queue listener registration within message handling")
 {
-	MessageQueue::getInstance()->startMessageLoopThreaded();
+	MessageQueue::getInstance()->startMessageLoopThread();
 
 	Test3MessageListener listener;
 
@@ -182,7 +186,7 @@ TEST_CASE("listener registration within message handling")
 
 	waitForThread();
 
-	MessageQueue::getInstance()->stopMessageLoop();
+	MessageQueue::getInstance()->stopMessageLoopThread();
 
 	REQUIRE(listener.m_listener);
 	if (listener.m_listener)
@@ -191,9 +195,9 @@ TEST_CASE("listener registration within message handling")
 	}
 }
 
-TEST_CASE("listener unregistration within message handling")
+TEST_CASE("message queue listener unregistration within message handling")
 {
-	MessageQueue::getInstance()->startMessageLoopThreaded();
+	MessageQueue::getInstance()->startMessageLoopThread();
 
 	Test4MessageListener listener;
 
@@ -207,7 +211,7 @@ TEST_CASE("listener unregistration within message handling")
 
 	waitForThread();
 
-	MessageQueue::getInstance()->stopMessageLoop();
+	MessageQueue::getInstance()->stopMessageLoopThread();
 
 	REQUIRE(listener.m_listener);
 	if (listener.m_listener)
@@ -216,9 +220,9 @@ TEST_CASE("listener unregistration within message handling")
 	}
 }
 
-TEST_CASE("listener registration to front and back within message handling")
+TEST_CASE("message queue listener registration to front and back within message handling")
 {
-	MessageQueue::getInstance()->startMessageLoopThreaded();
+	MessageQueue::getInstance()->startMessageLoopThread();
 
 	Test5MessageListener listener;
 
@@ -228,7 +232,7 @@ TEST_CASE("listener registration to front and back within message handling")
 
 	waitForThread();
 
-	MessageQueue::getInstance()->stopMessageLoop();
+	MessageQueue::getInstance()->stopMessageLoopThread();
 
 	REQUIRE(5 == listener.m_listeners.size());
 	REQUIRE(2 == listener.m_listeners[0]->m_messageCount);

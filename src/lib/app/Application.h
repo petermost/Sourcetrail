@@ -33,8 +33,7 @@ class Application
 	, public MessageListener<MessageSwitchColorScheme>
 {
 public:
-	static void createInstance(
-		const Version& version, ViewFactory* viewFactory, NetworkFactory* networkFactory);
+	static void createInstance(const Version& version, ViewFactory* viewFactory, NetworkFactory* networkFactory);
 	static std::shared_ptr<Application> getInstance();
 	static void destroyInstance();
 
@@ -49,7 +48,7 @@ public:
 	FilePath getCurrentProjectPath() const;
 	bool isProjectLoaded() const;
 
-	bool hasGUI();
+	bool hasGUI() const;
 
 	int handleDialog(const std::string& message);
 	int handleDialog(const std::string& message, const std::vector<std::string>& options);
@@ -61,6 +60,7 @@ public:
 private:
 	static std::shared_ptr<Application> s_instance;
 	static std::string s_uuid;
+	static bool s_previousSendMessagesAsTasks;
 
 	Application(bool withGUI = true);
 

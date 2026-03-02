@@ -1,12 +1,15 @@
 #ifndef MESSAGE_QUEUE_H
 #define MESSAGE_QUEUE_H
 
+#include "Id.h"
+
+#include <aidkit/concurrent/thread_shared.hpp>
+
+#include <atomic>
 #include <deque>
 #include <memory>
-#include <mutex>
+#include <thread>
 #include <vector>
-
-#include "types.h"
 
 class MessageBase;
 class MessageFilter;
@@ -19,7 +22,7 @@ public:
 
 	static std::shared_ptr<MessageQueue> getInstance();
 
-	~MessageQueue();
+	~MessageQueue() = default;
 
 	void registerListener(MessageListenerBase* listener);
 	void unregisterListener(MessageListenerBase* listener);
@@ -31,40 +34,31 @@ public:
 	void pushMessage(std::shared_ptr<MessageBase> message);
 	void processMessage(std::shared_ptr<MessageBase> message, bool asNextTask);
 
-	void startMessageLoopThreaded();
-	void startMessageLoop();
-	void stopMessageLoop();
+	void startMessageLoopThread();
+	void stopMessageLoopThread();
 
-	bool loopIsRunning() const;
+	bool isLoopRunning() const;
 	bool hasMessagesQueued() const;
 
-	void setSendMessagesAsTasks(bool sendMessagesAsTasks);
+	bool setSendMessagesAsTasks(bool sendMessagesAsTasks);
 
 private:
-	static std::shared_ptr<MessageQueue> s_instance;
+	MessageQueue() = default;
 
-	MessageQueue();
 	MessageQueue(const MessageQueue&) = delete;
-	void operator=(const MessageQueue&) = delete;
+	MessageQueue &operator=(const MessageQueue&) = delete;
 
-	void processMessages();
+	void messageLoop();
+
 	void sendMessage(std::shared_ptr<MessageBase> message);
 	void sendMessageAsTask(std::shared_ptr<MessageBase> message, bool asNextTask) const;
 
-	MessageBufferType m_messageBuffer;
-	std::vector<MessageListenerBase*> m_listeners;
-	std::vector<std::shared_ptr<MessageFilter>> m_filters;
+	std::thread m_thread;
+	std::atomic<bool> m_isLoopRunning = false;
 
-	size_t m_currentListenerIndex = 0;
-	size_t m_listenersLength = 0;
-
-	bool m_loopIsRunning = false;
-	bool m_threadIsRunning = false;
-
-	mutable std::mutex m_messageBufferMutex;
-	mutable std::mutex m_listenersMutex;
-	mutable std::mutex m_loopMutex;
-	mutable std::mutex m_threadMutex;
+	aidkit::concurrent::thread_shared<MessageBufferType> m_messageBuffer;
+	aidkit::concurrent::thread_shared<std::vector<std::shared_ptr<MessageFilter>>> m_filters;
+	aidkit::concurrent::thread_shared<std::vector<MessageListenerBase *>> m_listeners;
 
 	bool m_sendMessagesAsTasks = false;
 };
