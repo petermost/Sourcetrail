@@ -24,7 +24,7 @@ struct EventListener : Catch2::EventListenerBase
 
 	void testRunStarting(const Catch::TestRunInfo& ) override
 	{
-		FilePath appPath = FilePath(s_argv[0]).getCanonical().getParentDirectory().getParentDirectory().getConcatenated("app");
+		FilePath appPath = FilePath(s_argv[0]).getAbsolute().getParentDirectory().getParentDirectory().getConcatenated("app");
 		cout << "Setting 'app' directory to " << appPath.str() << endl;
 		setupAppDirectories(appPath);
 
@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
 
 	// Set the 'working directory' manually, as a workaround for "Unable to configure working directory
 	// in CMake/Catch" (https://github.com/catchorg/Catch2/issues/2249)
-	path workingDirectory = canonical(path(argv[0])).parent_path();
+	path workingDirectory = absolute(path(argv[0])).parent_path();
 
 	// If something is printed to the screen, then this will lead to a failure in 'catch_discover_tests()'!
 	// cout << "Set working directory to '" << workingDirectory << "'" << endl;
