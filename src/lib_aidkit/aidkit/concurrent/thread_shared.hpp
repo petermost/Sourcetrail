@@ -26,13 +26,13 @@ namespace aidkit::concurrent {
 // Replacing accessor/const_accessor with unique_ptr is possible but has the undesirable sideeffect
 // that 'if (data.access())' would compile because a unique_ptr is convertible to bool!
 
-template <typename T>
+template <typename T, typename Mutex = std::mutex>
 class thread_shared {
 	public:
 		template <typename U>
 		class accessor_base {
 			protected:
-				accessor_base(U d, std::mutex *m) noexcept
+				accessor_base(U d, Mutex *m) noexcept
 					: m_lock(*m), m_data(d)
 				{ }
 				~accessor_base() = default;
@@ -40,13 +40,13 @@ class thread_shared {
 				accessor_base(const accessor_base &) = delete;
 				accessor_base &operator = (const accessor_base &) = delete;
 
-				mutable std::unique_lock<std::mutex> m_lock;
+				mutable std::unique_lock<Mutex> m_lock;
 				U m_data;
 		};
 
 		class accessor final : public accessor_base<T *> {
 			public:
-				accessor(T *d, std::mutex *m) noexcept
+				accessor(T *d, Mutex *m) noexcept
 					: accessor_base<T *>(d, m)
 				{ }
 
@@ -73,7 +73,7 @@ class thread_shared {
 
 		class const_accessor final : public accessor_base<const T *> {
 			public:
-				const_accessor(const T *d, std::mutex *m) noexcept
+				const_accessor(const T *d, Mutex *m) noexcept
 					: accessor_base<const T *>(d, m)
 				{ }
 
@@ -107,21 +107,6 @@ class thread_shared {
 		thread_shared(const thread_shared &) = delete;
 		thread_shared &operator=(const thread_shared &) = delete;
 
-		T operator = (T &&value) noexcept
-		{
-			return *access() = std::move(value);
-		}
-
-		T operator = (const T &value) noexcept
-		{
-			return *access() = value;
-		}
-
-		operator T () const noexcept
-		{
-			return *access();
-		}
-
 		[[nodiscard]]
 		accessor access() noexcept
 		{
@@ -134,19 +119,19 @@ class thread_shared {
 			return const_accessor(&m_data, &m_mutex);
 		}
 
-		template <typename Functor, typename... Types>
-		friend decltype(auto) access(Functor &&, thread_shared<Types> &...);
+		template <typename Functor, typename... Types, typename... Mutexes>
+		friend decltype(auto) access(Functor &&, thread_shared<Types, Mutexes> &...);
 
-		template <typename Functor, typename... Types>
-		friend decltype(auto) access(Functor &&, const thread_shared<Types> &...);
+		template <typename Functor, typename... Types, typename... Mutexes>
+		friend decltype(auto) access(Functor &&, const thread_shared<Types, Mutexes> &...);
 
 	private:
 		T m_data;
-		mutable std::mutex m_mutex;
+		mutable Mutex m_mutex;
 };
 
-template <typename Functor, typename... Types>
-inline decltype(auto) access(Functor &&functor, thread_shared<Types> &...datas)
+template <typename Functor, typename... Types, typename... Mutexes>
+inline decltype(auto) access(Functor &&functor, thread_shared<Types, Mutexes> &...datas)
 {
 	static_assert(std::is_invocable_v<Functor, Types & ...> && !std::is_invocable_v<Functor, Types ...>, "Functor must accept 'Type &' parameter(s)!");
 
@@ -155,8 +140,8 @@ inline decltype(auto) access(Functor &&functor, thread_shared<Types> &...datas)
 	return std::invoke(std::forward<Functor>(functor), datas.m_data...);
 }
 
-template <typename Functor, typename... Types>
-inline decltype(auto) access(Functor &&functor, const thread_shared<Types> &...datas)
+template <typename Functor, typename... Types, typename... Mutexes>
+inline decltype(auto) access(Functor &&functor, const thread_shared<Types, Mutexes> &...datas)
 {
 	static_assert(std::is_invocable_v<Functor, const Types & ...>, "Functor must accept 'const Type &' parameter(s)!");
 

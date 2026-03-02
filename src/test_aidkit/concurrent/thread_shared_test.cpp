@@ -126,14 +126,3 @@ TEST(ThreadSharedTest, testConstAccessFunction)
 	// 	c.set(10);
 	// }, sharedData);
 }
-
-TEST(ThreadSharedTest, testAssignConversion)
-{
-	thread_shared<Data> sharedData(15);
-	Data otherData(30);
-
-	sharedData = otherData;
-	Data copyData = sharedData;
-
-	ASSERT_EQ(copyData, otherData);
-}
