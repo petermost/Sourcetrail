@@ -18,6 +18,8 @@
 #include <gtest/gtest.h>
 
 #include <aidkit/concurrent/blocking_queue.hpp>
+
+#include <chrono>
 #include <string>
 
 using namespace std;
