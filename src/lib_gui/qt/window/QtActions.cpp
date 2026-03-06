@@ -158,7 +158,7 @@ constexpr Qt::Key KEY_GAME_RIGHT = Qt::Key_D;
 constexpr QtStandardKeyCombination MENU_NEW_PROJECT(QKeySequence::New);
 constexpr QtStandardKeyCombination MENU_OPEN_PROJECT(QKeySequence::Open);
 constexpr QtStandardKeyCombination MENU_SAVE_AS(QKeySequence::SaveAs);
-constexpr QtStandardKeyCombination MENU_EXIT(QKeySequence::Quit);
+constexpr QtKeyCombination MENU_EXIT(Qt::Key_Q, Ctrl);
 
 constexpr QtKeyCombination KEYBOARD_CANCEL(Qt::Key_Escape);
 
