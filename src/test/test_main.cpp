@@ -24,9 +24,14 @@ struct EventListener : Catch2::EventListenerBase
 
 	void testRunStarting(const Catch::TestRunInfo& ) override
 	{
-		FilePath appPath = FilePath(s_argv[0]).getCanonical().getParentDirectory().getParentDirectory().getConcatenated("app");
-		cout << "Setting 'app' directory to " << appPath.str() << endl;
-		setupAppDirectories(appPath);
+		// Must get the correct directory for:
+		// Windows: 'Sourcetrail_test' (doesn't exist, so canonical() would fail!)
+		// Windows: 'Sourcetrail_test.exe'
+		// Linux:   './Sourcetrail_test'
+
+		const path appDirectory = weakly_canonical(s_argv[0]).parent_path().parent_path().append("app");
+		cout << "Setting application directory to " << appDirectory.generic_string() << endl;
+		setupAppDirectories(appDirectory.generic_string());
 
 		FilePath settingsFilePath = UserPaths::getAppSettingsFilePath();
 		cout << "Loading settings from " << settingsFilePath.str() << endl;

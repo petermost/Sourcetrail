@@ -90,7 +90,7 @@ std::vector<FileInfo> FileSystem::getFileInfosFromPaths(const std::vector<FilePa
 					// check for duplicates when following directory symlinks
 					if (boost::filesystem::is_directory(*it))
 					{
-						boost::filesystem::path absDir = boost::filesystem::weakly_canonical(p, it->path().parent_path());
+						boost::filesystem::path absDir = boost::filesystem::canonical(p, it->path().parent_path());
 
 						if (symlinkDirs.find(absDir) != symlinkDirs.end())
 						{
@@ -159,7 +159,7 @@ std::set<FilePath> FileSystem::getSymLinkedDirectories(const std::vector<FilePat
 					// check for duplicates when following directory symlinks
 					if (boost::filesystem::is_directory(*it))
 					{
-						boost::filesystem::path absDir = boost::filesystem::weakly_canonical(p, it->path().parent_path());
+						boost::filesystem::path absDir = boost::filesystem::canonical(p, it->path().parent_path());
 
 						if (symlinkDirs.find(absDir) != symlinkDirs.end())
 						{

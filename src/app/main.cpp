@@ -43,6 +43,9 @@
 #include <csignal>
 #include <iostream>
 
+using namespace std;
+using namespace boost::filesystem;
+
 void closeConsoleWindow()
 {
 #if BOOST_OS_WINDOWS
@@ -107,8 +110,13 @@ int main(int argc, char* argv[])
 {
 	setupDefaultLocale();
 
-	const FilePath appDirectory = FilePath(argv[0]).getCanonical().getParentDirectory();
-	Version version = setupAppDirectories(appDirectory);
+	// Must get the correct directory for:
+	// Windows: 'Sourcetrail' (doesn't exist, so canonical() would fail!)
+	// Windows: 'Sourcetrail.exe'
+	// Linux:   './Sourcetrail'
+
+	const path appDirectory = weakly_canonical(argv[0]).parent_path();
+	Version version = setupAppDirectories(appDirectory.generic_string());
 
 	if constexpr (utility::Platform::isLinux())
 	{
@@ -117,8 +125,8 @@ int main(int argc, char* argv[])
 			std::cout << "ERROR: Please run Sourcetrail via the Sourcetrail.sh script!" << std::endl;
 		}
 	}
-	MessageStatus(std::string("Starting Sourcetrail version ") + version.toDisplayString())
-		.dispatch();
+	MessageStatus("Starting Sourcetrail version "s + version.toDisplayString()).dispatch();
+	MessageStatus("Setting application directory to: "s + appDirectory.generic_string()).dispatch();
 
 	commandline::CommandLineParser commandLineParser(version.toDisplayString());
 	commandLineParser.preparse(argc, argv);
@@ -165,11 +173,7 @@ int main(int argc, char* argv[])
 		}
 		else
 		{
-			MessageLoadProject(
-				commandLineParser.getProjectFilePath(),
-				false,
-				commandLineParser.getRefreshMode())
-				.dispatch();
+			MessageLoadProject(commandLineParser.getProjectFilePath(), false, commandLineParser.getRefreshMode()).dispatch();
 		}
 
 		return QtCoreApplication::exec();

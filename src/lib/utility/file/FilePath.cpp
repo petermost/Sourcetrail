@@ -198,7 +198,7 @@ FilePath& FilePath::makeCanonical()
 	}
 	try
 	{
-		boost::filesystem::path canonicalPath = boost::filesystem::weakly_canonical(getPath());
+		boost::filesystem::path canonicalPath = boost::filesystem::canonical(getPath());
 		m_path = std::make_unique<boost::filesystem::path>(canonicalPath);
 		m_canonicalized = true;
 		return *this;
