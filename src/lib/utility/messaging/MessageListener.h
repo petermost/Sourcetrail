@@ -14,12 +14,12 @@ public:
 	MessageListener() = default;
 
 private:
-	std::string doGetType() const override
+	std::string getType() const final
 	{
 		return MessageType::getStaticType();
 	}
 
-	void doHandleMessageBase(MessageBase* message) override
+	void handleMessageBase(MessageBase* message) final
 	{
 		// if (message->isLogged())
 		// {

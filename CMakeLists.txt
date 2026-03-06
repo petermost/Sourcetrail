@@ -26,7 +26,7 @@ endif()
 
 # Project ----------------------------------------------------------------------
 
-project(Sourcetrail VERSION 2026.3.2 HOMEPAGE_URL "http://sourcetrail.de")
+project(Sourcetrail VERSION 2026.3.6 HOMEPAGE_URL "http://sourcetrail.de")
 
 # cmake_print_variables(CMAKE_CXX_COMPILER)
 

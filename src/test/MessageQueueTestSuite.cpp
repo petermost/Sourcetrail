@@ -7,7 +7,7 @@
 #include <chrono>
 #include <thread>
 
-// IMPORTANT: Ensure that MessageQueue::m_sendMessagesAsTasks is set to false, otherwise the test will fail?
+// IMPORTANT: Ensure that MessageQueue::m_sendMessagesAsTasks is set to false, otherwise the test will fail!
 
 namespace
 {

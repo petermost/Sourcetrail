@@ -58,7 +58,10 @@ private:
 
 	aidkit::concurrent::thread_shared<MessageBufferType> m_messageBuffer;
 	aidkit::concurrent::thread_shared<std::vector<std::shared_ptr<MessageFilter>>> m_filters;
-	aidkit::concurrent::thread_shared<std::vector<MessageListenerBase *>> m_listeners;
+
+	aidkit::concurrent::thread_shared<std::size_t, std::recursive_mutex> m_currentListenerIndex = 0;
+	aidkit::concurrent::thread_shared<std::vector<MessageListenerBase *>, std::recursive_mutex> m_listeners;
+	aidkit::concurrent::thread_shared<std::size_t, std::recursive_mutex> m_currentListenersLength = 0;
 
 	bool m_sendMessagesAsTasks = false;
 };

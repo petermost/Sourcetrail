@@ -12,21 +12,23 @@
 #include <chrono>
 #include <thread>
 
+#include <boost/preprocessor/stringize.hpp>
+
 using namespace std;
 
 namespace
 {
 
-class StopLoopMessage: public Message<StopLoopMessage>
+class MessageStopLoop: public Message<MessageStopLoop>
 {
 public:
 	static const std::string getStaticType()
 	{
-		return "StopLoopMessage";
+		return BOOST_PP_STRINGIZE(MessageStopLoop);
 	}
 };
 
-const std::shared_ptr STOP_LOOP_MESSAGE(std::make_shared<StopLoopMessage>());
+const std::shared_ptr STOP_LOOP_MESSAGE(std::make_shared<MessageStopLoop>());
 
 }
 
@@ -44,21 +46,34 @@ void MessageQueue::registerListener(MessageListenerBase* listener)
 
 void MessageQueue::unregisterListener(MessageListenerBase* listener)
 {
-	aidkit::concurrent::access([listener](std::vector<MessageListenerBase *> &listeners)
+	aidkit::concurrent::access([=](size_t &currentListenerIndex, std::vector<MessageListenerBase *> &listeners, size_t &currentListenersLength)
 	{
-		auto it = std::find(listeners.begin(), listeners.end(), listener);
-		if (it != listeners.end())
-			listeners.erase(it);
-		else
-			LOG_ERROR("Listener was not found");
-	}, m_listeners);
+		for (size_t listenerIndex = 0; listenerIndex < listeners.size(); ++listenerIndex)
+		{
+			if (listeners[listenerIndex] == listener)
+			{
+				listeners.erase(listeners.begin() + listenerIndex);
+
+				// Adjust loop control variables for the removed listener:
+
+				if (listenerIndex <= currentListenerIndex)
+					--currentListenerIndex;
+
+				if (listenerIndex < currentListenersLength)
+					--currentListenersLength;
+
+				return;
+			}
+		}
+		LOG_ERROR("Listener was not found");
+	}, m_currentListenerIndex, m_listeners, m_currentListenersLength);
 }
 
 MessageListenerBase* MessageQueue::getListenerById(Id listenerId) const
 {
-	return aidkit::concurrent::access([listenerId](const std::vector<MessageListenerBase *> &listeners)
+	return aidkit::concurrent::access([=](const std::vector<MessageListenerBase *> &listeners)
 	{
-		auto it = std::find_if(listeners.begin(), listeners.end(), [listenerId](MessageListenerBase *listener)
+		auto it = std::find_if(listeners.begin(), listeners.end(), [=](MessageListenerBase *listener)
 		{
 			return listener->getId() == listenerId;
 		});
@@ -189,16 +204,23 @@ static inline bool isListenerMatch(const std::shared_ptr<MessageBase> &message, 
 
 void MessageQueue::sendMessage(std::shared_ptr<MessageBase> message)
 {
-	// Iterate over a copy of the listeners so that changes to the underlying listeners do not interfere:
-
-	const std::vector<MessageListenerBase *> listeners = *m_listeners.access();
-	for (MessageListenerBase *listener : listeners)
+	aidkit::concurrent::access([=](size_t &currentListenerIndex, const std::vector<MessageListenerBase *> &listeners, size_t &currentListenersLength)
 	{
-		if (isListenerMatch(message, listener))
+		// Remember the length, so appended listeners are not getting called for the current message:
+		// Note: It's unclear why that is important, but the unit tests check for this behaviour.
+
+		currentListenersLength = listeners.size();
+
+		for (currentListenerIndex = 0; currentListenerIndex < currentListenersLength; ++currentListenerIndex)
 		{
-			listener->handleMessageBase(message.get());
+			MessageListenerBase *listener = listeners[currentListenerIndex];
+
+			if (isListenerMatch(message, listener))
+			{
+				listener->handleMessageBase(message.get());
+			}
 		}
-	}
+	}, m_currentListenerIndex, m_listeners, m_currentListenersLength);
 }
 
 void MessageQueue::sendMessageAsTask(std::shared_ptr<MessageBase> message, bool asNextTask) const
@@ -213,24 +235,26 @@ void MessageQueue::sendMessageAsTask(std::shared_ptr<MessageBase> message, bool 
 		taskGroup = std::make_shared<TaskGroupSequence>();
 	}
 
-	// Iterate over a copy of the listeners so that changes to the underlying listeners do not interfere:
-
-	const std::vector<MessageListenerBase *> listeners = *m_listeners.access();
-	for (MessageListenerBase *listener : listeners)
+	aidkit::concurrent::access([=, this](const std::vector<MessageListenerBase *> &listeners)
 	{
-		if (isListenerMatch(message, listener))
+		for (size_t listenerIndex = 0; listenerIndex < listeners.size(); ++listenerIndex)
 		{
-			Id listenerId = listener->getId();
-			taskGroup->addTask(std::make_shared<TaskLambda>([this, listenerId, message]()
+			MessageListenerBase *listener = listeners[listenerIndex];
+
+			if (isListenerMatch(message, listener))
 			{
-				MessageListenerBase* listener = getListenerById(listenerId);
-				if (listener != nullptr)
+				Id listenerId = listener->getId();
+				taskGroup->addTask(std::make_shared<TaskLambda>([=, this]()
 				{
-					listener->handleMessageBase(message.get());
-				}
-			}));
+					MessageListenerBase* listener = getListenerById(listenerId);
+					if (listener != nullptr)
+					{
+						listener->handleMessageBase(message.get());
+					}
+				}));
+			}
 		}
-	}
+	}, m_listeners);
 
 	TabId schedulerId = message->getSchedulerId();
 	if (schedulerId == TabId::NONE)

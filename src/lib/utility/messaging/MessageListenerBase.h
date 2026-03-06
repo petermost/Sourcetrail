@@ -10,17 +10,12 @@ class MessageListenerBase
 {
 public:
 	MessageListenerBase()
-		: m_id(s_nextId++)
 	{
 		MessageQueue::getInstance()->registerListener(this);
-
-		m_alive = true;
 	}
 
 	virtual ~MessageListenerBase()
 	{
-		m_alive = false;
-
 		MessageQueue::getInstance()->unregisterListener(this);
 	}
 
@@ -29,22 +24,9 @@ public:
 		return m_id;
 	}
 
-	std::string getType() const
-	{
-		if (m_alive)
-		{
-			return doGetType();
-		}
-		return "MessageListenerBase";
-	}
+	virtual std::string getType() const = 0;
 
-	void handleMessageBase(MessageBase* message)
-	{
-		if (m_alive)
-		{
-			doHandleMessageBase(message);
-		}
-	}
+	virtual void handleMessageBase(MessageBase* message) = 0;
 
 	virtual TabId getSchedulerId() const
 	{
@@ -52,13 +34,9 @@ public:
 	}
 
 private:
-	virtual std::string doGetType() const = 0;
-	virtual void doHandleMessageBase(MessageBase*) = 0;
-
 	static Id s_nextId;
 
-	Id m_id;
-	bool m_alive = false;
+	Id m_id = s_nextId++;
 };
 
 #endif	  // MESSAGE_LISTENER_BASE_H
