@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
 {
 	setupDefaultLocale();
 
-	const FilePath appDirectory = FilePath(argv[0]).getAbsolute().getParentDirectory();
+	const FilePath appDirectory = FilePath(argv[0]).getCanonical().getParentDirectory();
 	Version version = setupAppDirectories(appDirectory);
 
 	if constexpr (utility::Platform::isLinux())
