@@ -126,7 +126,7 @@ int main(int argc, char* argv[])
 		}
 	}
 	MessageStatus("Starting Sourcetrail version "s + version.toDisplayString()).dispatch();
-	MessageStatus("Setting application directory to: "s + appDirectory.generic_string()).dispatch();
+	MessageStatus("Setting application directory: "s + appDirectory.generic_string()).dispatch();
 
 	commandline::CommandLineParser commandLineParser(version.toDisplayString());
 	commandLineParser.preparse(argc, argv);

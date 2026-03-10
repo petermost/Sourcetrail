@@ -620,16 +620,16 @@ void replaceMsvcArguments(vector<string> *commandLineArguments)
 
 		// Preprocessor symbols:
 
-		else if ((argumentValue = getArgumentValue(*argument, "/D"sv)))
+		else if ((argumentValue = getArgumentValue(*argument, "/D"sv)) || (argumentValue = getArgumentValue(*argument, "-D"sv)))
 			*argument++ = ClangCompiler::defineOption(*argumentValue);
-		else if ((argumentValue = getArgumentValue(*argument, "/U"sv)))
+		else if ((argumentValue = getArgumentValue(*argument, "/U"sv)) || (argumentValue = getArgumentValue(*argument, "-U"sv)))
 			*argument++ = ClangCompiler::undefineOption(*argumentValue);
 		else if ((argumentValue = getArgumentValue(*argument, "/FI"sv)) || (argumentValue = getArgumentValue(*argument, "-FI"sv)))
 			*argument++ = ClangCompiler::forceIncludeOption(*argumentValue);
 
 		// Preprocessor include directories:
 
-		else if ((argumentValue = getArgumentValue(*argument, "/I"sv)))
+		else if ((argumentValue = getArgumentValue(*argument, "/I"sv)) || (argumentValue = getArgumentValue(*argument, "-I"sv)))
 			*argument++ = ClangCompiler::includeOption(*argumentValue);
 		else if ((argumentValue = getArgumentValue(*argument, "/external:I"sv)) || (argumentValue = getArgumentValue(*argument, "-external:I"sv)))
 			*argument++ = ClangCompiler::systemIncludeOption(*argumentValue);
@@ -664,7 +664,7 @@ void replaceMsvcArguments(vector<string> *commandLineArguments)
 		}
 		// Remove unknown arguments:
 
-		else if (argument->starts_with('/'))
+		else if (argument->starts_with('/') || argument->starts_with('-'))
 			argument = commandLineArguments->erase(argument);
 		else
 			++argument;

@@ -93,19 +93,19 @@ TEST_CASE("CDB replace msvc arguments in windows database")
 	commandLine = compileCommands[0].CommandLine;
 	REQUIRE(commandLine.size() == 47);
 	replaceMsvcArguments(&commandLine);
-	REQUIRE(commandLine.size() == 17);
+	REQUIRE(commandLine.size() == 16);
 
 	commandLine = compileCommands[1].CommandLine;
 	REQUIRE(commandLine.size() == 47);
 	replaceMsvcArguments(&commandLine);
-	REQUIRE(commandLine.size() == 17);
+	REQUIRE(commandLine.size() == 16);
 
 	// Command line for 'CppSQLite3' file:
 
 	commandLine = compileCommands[2].CommandLine;
 	REQUIRE(commandLine.size() == 22);
 	replaceMsvcArguments(&commandLine);
-	REQUIRE(commandLine.size() == 14);
+	REQUIRE(commandLine.size() == 12);
 
 	// Resource compiler (Sourcetrail.rc):
 
@@ -150,7 +150,7 @@ TEST_CASE("CDB replace msvc arguments in issue database")
 	vector<string> commandLine = compileCommands[0].CommandLine;
 	REQUIRE(commandLine.size() == 55);
 	replaceMsvcArguments(&commandLine);
-	REQUIRE(commandLine.size() == 46);
+	REQUIRE(commandLine.size() == 41);
 }
 
 TEST_CASE("CDB replace msvc arguments")
