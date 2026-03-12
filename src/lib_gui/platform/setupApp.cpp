@@ -10,6 +10,7 @@
 #include <productVersion.h>
 #include <utilityApp.h>
 #include <utilityQt.h>
+#include <utilityString.h>
 
 #include <QCoreApplication>
 #include <QDir>
@@ -26,7 +27,7 @@ using namespace boost::filesystem;
 
 void setupDefaultLocale()
 {
-	locale defaultLocale = generator().generate("");
+	locale defaultLocale = getDefaultLocale();
 
 	locale::global(defaultLocale);
 	cout.imbue(defaultLocale);

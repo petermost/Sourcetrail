@@ -1,13 +1,11 @@
 #include "utilityString.h"
 
-#include <boost/locale/boundary.hpp>
-#include <boost/locale/conversion.hpp>
-#include <boost/locale/encoding_utf.hpp>
-#include <boost/locale/util.hpp>
+#include <boost/locale.hpp>
 
 #include <algorithm>
 #include <cctype>
 #include <iterator>
+#include <locale>
 #include <string>
 
 using namespace std;
@@ -72,7 +70,6 @@ std::string doReplaceBetween(const std::string& str, typename std::string::value
 
 namespace utility
 {
-
 
 std::deque<std::string> split(const std::string& str, char delimiter)
 {
@@ -552,19 +549,33 @@ std::string convertWhiteSpacesToSingleSpaces(const std::string& str)
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+std::locale getDefaultLocale()
+{
+	return boost::locale::generator().generate("en_US.UTF-8");
+}
+
 std::string toLowerCase(const std::string& in)
 {
     return boost::locale::to_lower(in);
 }
 
-bool isCaseInsensitiveEqual(const std::string &a, const std::string &b)
+static const boost::locale::collator<char> &getCollatorFacet()
 {
-	return toLowerCase(a) == toLowerCase(b);
+	// Cache the collator facet:
+	static const std::locale locale = getDefaultLocale();
+	static const auto &facet = std::use_facet<boost::locale::collator<char>>(locale);
+
+	return facet;
 }
 
-bool isCaseInsensitiveLess(const std::string& s1, const std::string& s2)
+bool isCaseInsensitiveEqual(const std::string &s1, const std::string &s2)
 {
-	return toLowerCase(s1) < toLowerCase(s2);
+	return getCollatorFacet().compare(boost::locale::collate_level::secondary, s1, s2) == 0;
+}
+
+bool isCaseInsensitiveLess(const std::string &s1, const std::string &s2)
+{
+	return getCollatorFacet().compare(boost::locale::collate_level::secondary, s1, s2) < 0;
 }
 
 static inline utf::code_point doConvertToUtf32(base_converter *converter, const std::string &utf8chars)

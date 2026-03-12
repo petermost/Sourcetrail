@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <locale>
 
 namespace utility
 {
@@ -95,6 +96,8 @@ std::string join(const ContainerType& list, const std::string& delimiter)
 //
 // Locale specific functions:
 //
+
+std::locale getDefaultLocale();
 
 std::u32string convertToUtf32(const std::string &utf8chars);
 

@@ -30,7 +30,7 @@ project(Sourcetrail VERSION 2026.3.6 HOMEPAGE_URL "http://sourcetrail.de")
 
 # cmake_print_variables(CMAKE_CXX_COMPILER)
 
-#include(CMakePrintHelpers)
+include(CMakePrintHelpers)
 include(cmake/Sourcetrail.cmake)
 
 # Make the build type available as a compiler variable:
@@ -42,21 +42,21 @@ endif()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 	# https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
-	set(CMAKE_CXX_FLAGS_RELEASE           "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fno-fast-math -flto=auto")
-
-	set(linkerFlagsRelease "-flto=auto")
-	set(CMAKE_EXE_LINKER_FLAGS_RELEASE    "${CMAKE_EXE_LINKER_FLAGS_RELEASE}    ${linkerFlagsRelease}")
-	set(CMAKE_STATIC_LINKER_FLAGS_RELEASE "${CMAKE_STATIC_LINKER_FLAGS_RELEASE} ${linkerFlagsRelease}")
-	set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} ${linkerFlagsRelease}")
+	set(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fno-fast-math -flto=auto")
+	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -flto=auto")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 	# https://learn.microsoft.com/en-us/cpp/build/optimization-best-practices
-	set(CMAKE_CXX_FLAGS_RELEASE           "/O2 /GL /fp:precise /GS-")
-	
-	set(linkerFlagsRelease "/LTCG")
-	set(CMAKE_EXE_LINKER_FLAGS_RELEASE    "${CMAKE_EXE_LINKER_FLAGS_RELEASE}    ${linkerFlagsRelease}")
-	set(CMAKE_STATIC_LINKER_FLAGS_RELEASE "${CMAKE_STATIC_LINKER_FLAGS_RELEASE} ${linkerFlagsRelease}")
-	set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} ${linkerFlagsRelease}")
+	# CMakeCache.txt entry: "/O2 /Ob2 /DNDEBUG"
+	set(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE} /O2 /Gy /GL /fp:precise /GS-")
+	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG /OPT:REF,ICF")
+
+	# For profiling:
+	#set(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
+	#set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /DEBUG")
 endif()
+
+#cmake_print_variables(CMAKE_CXX_FLAGS_RELEASE CMAKE_EXE_LINKER_FLAGS_RELEASE)
+#cmake_print_variables(CMAKE_CXX_FLAGS_RELWITHDEBINFO CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO)
 
 # Configure which language(s)/package(s) should be supported:
 option(BUILD_CXX_LANGUAGE_PACKAGE  "Add C/C++ support to the Sourcetrail indexer." OFF)

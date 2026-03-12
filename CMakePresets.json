@@ -13,10 +13,7 @@
 		},
 		{
 			"hidden": true,
-			"name": "system-default-presets",
-			"inherits": [
-				"default-presets"
-			],
+			"name": "linux-presets",
 			"condition": {
 				"type": "equals",
 				"lhs": "${hostSystemName}",
@@ -52,10 +49,7 @@
 		},
 		{
 			"hidden": true,
-			"name": "vcpkg-default-presets",
-			"inherits": [
-				"default-presets"
-			],
+			"name": "vcpkg-presets",
 			"cacheVariables": {
 				"CMAKE_TOOLCHAIN_FILE": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
 				"VCPKG_TARGET_TRIPLET": "x64-arm64-linux-windows-osx-static-md"
@@ -63,7 +57,7 @@
 		},
 		{
 			"hidden": true,
-			"name": "system-clang-presets",
+			"name": "clang-presets",
 			"cacheVariables": {
 				"CMAKE_C_COMPILER"  : "clang",
 				"CMAKE_CXX_COMPILER": "clang++"
@@ -84,46 +78,58 @@
 		{
 			"name": "system-debug",
 			"inherits": [
+				"linux-presets",
+				"default-presets",
 				"debug-presets",
-				"system-default-presets",
 				"sourcetrail-presets"
 			]
 		},
 		{
 			"name": "system-release",
 			"inherits": [
+				"linux-presets",
+				"default-presets",
 				"release-presets",
-				"system-default-presets",
 				"sourcetrail-presets"
 			]
 		},
 		{
 			"name": "system-relwithdebinfo",
 			"inherits": [
+				"linux-presets",
+				"default-presets",
 				"relwithdebinfo-presets",
-				"system-default-presets",
 				"sourcetrail-presets"
 			]
 		},
 		{
 			"name": "system-clang-debug",
 			"inherits": [
-				"system-debug",
-				"system-clang-presets"
+				"linux-presets",
+				"default-presets",
+				"clang-presets",
+				"debug-presets",
+				"sourcetrail-presets"
 			]
 		},
 		{
 			"name": "system-clang-release",
 			"inherits": [
-				"system-release",
-				"system-clang-presets"
+				"linux-presets",
+				"default-presets",
+				"clang-presets",
+				"release-presets",
+				"sourcetrail-presets"
 			]
 		},
 		{
 			"name": "system-clang-relwithdebinfo",
 			"inherits": [
-				"system-relwithdebinfo",
-				"system-clang-presets"
+				"linux-presets",
+				"default-presets",
+				"clang-presets",
+				"relwithdebinfo-presets",
+				"sourcetrail-presets"
 			]
 		},
 
@@ -132,46 +138,28 @@
 		{
 			"name": "vcpkg-debug",
 			"inherits": [
+				"vcpkg-presets",
+				"default-presets",
 				"debug-presets",
-				"vcpkg-default-presets",
 				"sourcetrail-presets"
 			]
 		},
 		{
 			"name": "vcpkg-release",
 			"inherits": [
+				"vcpkg-presets",
+				"default-presets",
 				"release-presets",
-				"vcpkg-default-presets",
 				"sourcetrail-presets"
 			]
 		},
 		{
 			"name": "vcpkg-relwithdebinfo",
 			"inherits": [
+				"vcpkg-presets",
+				"default-presets",
 				"relwithdebinfo-presets",
-				"vcpkg-default-presets",
 				"sourcetrail-presets"
-			]
-		},
-		{
-			"name": "vcpkg-clang-debug",
-			"inherits": [
-				"vcpkg-debug",
-				"system-clang-presets"
-			]
-		},
-		{
-			"name": "vcpkg-clang-release",
-			"inherits": [
-				"vcpkg-release",
-				"system-clang-presets"
-			]
-		},
-		{
-			"name": "vcpkg-clang-relwithdebinfo",
-			"inherits": [
-				"vcpkg-relwithdebinfo",
-				"system-clang-presets"
 			]
 		}
 	]
