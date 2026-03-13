@@ -13,18 +13,11 @@ class Id final {
 public:
 	using type = long long;
 
-	enum class FirstBits : type
-	{
-		ONE   = ~(~type(0) >> 1),
-		TWO   = ~(~type(0) >> 2),
-		THREE = ~(~type(0) >> 3)
-	};
-
-	Id() noexcept
+	constexpr Id() noexcept
 		: m_value(0)
 	{}
 
-	Id(type value) noexcept
+	constexpr Id(type value) noexcept
 		: m_value(value)
 	{
 	}
@@ -44,54 +37,37 @@ public:
 		return m_value += value;
 	}
 
-	bool operator < (const Id other) const noexcept
+	constexpr bool operator < (const Id other) const noexcept
 	{
 		return m_value < other.m_value;
 	}
 
-	bool operator > (const Id other) const noexcept
+	constexpr bool operator > (const Id other) const noexcept
 	{
 		return m_value > other.m_value;
 	}
 
-	bool operator == (const Id other) const noexcept
+	constexpr bool operator == (const Id other) const noexcept
 	{
 		return m_value == other.m_value;
 	}
 
-	bool operator != (const Id other) const noexcept
+	constexpr bool operator != (const Id other) const noexcept
 	{
 		return m_value != other.m_value;
 	}
 
-	explicit operator bool () const noexcept
+	constexpr explicit operator bool () const noexcept
 	{
 		return m_value != 0;
 	}
 
 	template <std::integral T>
-	explicit operator T() const noexcept
+	constexpr explicit operator T() const noexcept
 	{
 		static_assert(sizeof(T) >= sizeof(type));
 
 		return m_value;
-	}
-
-	//
-	// Unusual operations:
-	//
-
-	// In some places certain values are ored/multiplied to the id, but the comments don't explain
-	// the intent properly, only that it is done to avoid collisions.
-
-	Id operator | (FirstBits bits) const noexcept
-	{
-		return m_value | static_cast<type>(bits);
-	}
-
-	Id operator * (const type value) const noexcept
-	{
-		return m_value * value;
 	}
 
 private:
@@ -99,6 +75,21 @@ private:
 };
 
 Q_DECLARE_METATYPE(Id)
+
+// Collision prevention:
+
+enum class CollisionGuardBits : Id::type
+{
+	ONE      = ~(~Id::type(0) >> 1),
+	TWO      = ~(~Id::type(0) >> 2),
+	THREE    = ~(~Id::type(0) >> 3),
+	FOURTEEN = ~(~Id::type(0) >> 14)
+};
+
+constexpr Id addCollisionGuardBits(Id id, CollisionGuardBits bits)
+{
+    return static_cast<Id::type>(id) | static_cast<Id::type>(bits);
+}
 
 std::string to_string(const Id id);
 

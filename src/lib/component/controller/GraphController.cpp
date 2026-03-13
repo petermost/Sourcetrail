@@ -1296,7 +1296,7 @@ void GraphController::bundleNodesAndEdgesMatching(
 	DummyNode* firstNode = bundleNode->bundledNodes.begin()->get();
 
 	// Use token Id of first node and make first bit 1
-	bundleNode->tokenId = firstNode->data->getId() | Id::FirstBits::ONE;
+	bundleNode->tokenId = addCollisionGuardBits(firstNode->data->getId(), CollisionGuardBits::ONE);
 	bundleNode->bundleInfo.layoutVertical = firstNode->bundleInfo.layoutVertical;
 	bundleNode->bundleInfo.isReferenced = firstNode->bundleInfo.isReferenced;
 	bundleNode->bundleInfo.isReferencing = firstNode->bundleInfo.isReferencing;
@@ -1384,7 +1384,7 @@ std::shared_ptr<DummyNode> GraphController::bundleNodesMatching(
 	}
 
 	// Use token Id of first node and make first bit 1
-	bundleNode->tokenId = (*bundleNode->bundledNodes.begin())->data->getId() | Id::FirstBits::ONE;
+	bundleNode->tokenId = addCollisionGuardBits((*bundleNode->bundledNodes.begin())->data->getId(), CollisionGuardBits::ONE);
 	return bundleNode;
 }
 
@@ -1766,7 +1766,7 @@ void GraphController::groupTrailNodes(GroupType groupType)
 		groupNode->groupLayout = GroupLayout::SQUARE;
 
 		// Use token Id of first node and make first 2 bits 1
-		groupNode->tokenId = node.nodeId | Id::FirstBits::TWO;
+		groupNode->tokenId = addCollisionGuardBits(node.nodeId, CollisionGuardBits::TWO);
 		m_topLevelAncestorIds[groupNode->tokenId] = groupNode->tokenId;
 
 		std::shared_ptr<DummyEdge> targetEdge = std::make_shared<DummyEdge>();
@@ -2318,7 +2318,7 @@ void GraphController::relayoutGraph(
 		if (withCharacterIndex && m_dummyNodes.size())
 		{
 			// Use token Id of first node and make first 2 bits 1
-			Id groupId = m_dummyNodes[0]->tokenId | Id::FirstBits::TWO;
+			Id groupId = addCollisionGuardBits(m_dummyNodes[0]->tokenId, CollisionGuardBits::TWO);
 
 			DummyNode* group = groupAllNodes(GroupType::DEFAULT, groupId);
 			group->groupLayout = GroupLayout::LIST;
@@ -2385,7 +2385,7 @@ void GraphController::forEachDummyEdge(std::function<void(DummyEdge*)> func)
 
 void GraphController::createLegendGraph()
 {
-	Id id = Id(0) | Id::FirstBits::ONE;
+	Id id = addCollisionGuardBits(Id(0), CollisionGuardBits::ONE);
 
 	std::map<Id, Vec2i> nodePositions;
 	std::shared_ptr<Graph> graph = std::make_shared<Graph>();
