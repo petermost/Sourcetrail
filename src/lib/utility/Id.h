@@ -80,15 +80,19 @@ Q_DECLARE_METATYPE(Id)
 
 enum class CollisionGuardBits : Id::type
 {
-	ONE      = ~(~Id::type(0) >> 1),
-	TWO      = ~(~Id::type(0) >> 2),
-	THREE    = ~(~Id::type(0) >> 3),
-	FOURTEEN = ~(~Id::type(0) >> 14)
+	ONE   = ~(~Id::type(0) >> 1),
+	TWO   = ~(~Id::type(0) >> 2),
+	THREE = ~(~Id::type(0) >> 3)
 };
 
 constexpr Id addCollisionGuardBits(Id id, CollisionGuardBits bits)
 {
     return static_cast<Id::type>(id) | static_cast<Id::type>(bits);
+}
+
+constexpr Id addCollisionGuardOffset(Id id)
+{
+	return static_cast<Id::type>(id) * 10'000;
 }
 
 std::string to_string(const Id id);

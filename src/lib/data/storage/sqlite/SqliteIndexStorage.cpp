@@ -1083,7 +1083,7 @@ std::vector<ErrorInfo> SqliteIndexStorage::getAllErrorInfos() const
 		if (id != 0)
 		{
 			// There can be multiple errors with the same id, so a count is added to the id
-			Id errorId = addCollisionGuardBits(id, CollisionGuardBits::FOURTEEN);
+			Id errorId = addCollisionGuardOffset(id);
 			auto it = errorIdCount.find(id);
 			if (it != errorIdCount.end())
 			{
