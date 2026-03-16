@@ -356,7 +356,7 @@ if (BUILD_CXX_LANGUAGE_PACKAGE)
 	set(CLANG_MAX_VERSION 21)
 	
 	find_package(Clang CONFIG REQUIRED) # Minimum version and/or version range xx...<yy doesn't work.
-	message(STATUS "Found LLVM ${LLVM_VERSION}: ${LLVM_INCLUDE_DIRS}")
+	message(STATUS "Found LLVM: ${LLVM_VERSION}") # ${LLVM_INSTALL_PREFIX} ${CLANG_INSTALL_PREFIX}")
 	checkVersionRange("Clang" ${LLVM_VERSION} ${CLANG_MIN_VERSION} ${CLANG_MAX_VERSION})
 
 	add_library(External_lib_clang INTERFACE)
@@ -372,53 +372,52 @@ if (BUILD_CXX_LANGUAGE_PACKAGE)
 			${CLANG_INCLUDE_DIRS}
 	)
 	
-	# 'LLVM_LINK_LLVM_DYLIB' is set when LLVM/Clang have been build into seperate single libraries.
-	# Apparently this means for LLVM 'libLLVM' and for Clang 'libclang-cpp'.
-	# For further details see https://llvm.org/docs/CMake.html#embedding-llvm-in-your-project
+	# 'LLVM_LINK_LLVM_DYLIB' is set when LLVM has been build into a single shared library i.e. 'libLLVM'
+	# 'CLANG_LINK_CLANG_DYLIB' is set when Clang has been build into a single shared library i.e. 'libclang-cpp'
 	
-	if (LLVM_LINK_LLVM_DYLIB) # Should be CLANG_LINK_CLANG_DYLIB in future LLVM releases?
-		set(llvmLibraries LLVM)
-		set(clangLibraries clang-cpp)
+	if (LLVM_LINK_LLVM_DYLIB AND CLANG_LINK_CLANG_DYLIB)
+		target_link_libraries(External_lib_clang
+			INTERFACE
+				LLVM
+				clang-cpp
+		)
 	else()
-		llvm_map_components_to_libnames(llvmLibraries
-			${LLVM_TARGETS_TO_BUILD} support core libdriver passes option
-		)
-		# LibTooling libraries:
-		set(clangLibraries
-			clangASTMatchers
-			clangFrontend
-			clangSerialization
-			clangDriver
-			clangTooling
-			clangParse
-			clangSema
-			clangStaticAnalyzerFrontend
-			clangStaticAnalyzerCheckers
-			clangStaticAnalyzerCore
-			clangAnalysis
-			clangRewriteFrontend
-			clangEdit
-			clangAST
-			clangLex
-			clangBasic
-		)
+		llvm_map_components_to_libnames(llvmLibraries ${LLVM_TARGETS_TO_BUILD} support core libdriver passes option)
+		target_link_libraries(External_lib_clang
+			INTERFACE
+				${llvmLibraries}
+				
+				# LibTooling libraries:
+				
+				clangASTMatchers
+				clangFrontend
+				clangSerialization
+				clangDriver
+				clangTooling
+				clangParse
+				clangSema
+				clangStaticAnalyzerFrontend
+				clangStaticAnalyzerCheckers
+				clangStaticAnalyzerCore
+				clangAnalysis
+				clangRewriteFrontend
+				clangEdit
+				clangAST
+				clangLex
+				clangBasic
+			)
 	endif()
-		
-	target_link_libraries(External_lib_clang
-		INTERFACE
-			${llvmLibraries}
-			${clangLibraries}
-	)
 	
-	# Copy required headers:
-	if (isVcpkgBuild)
-		set(headerSourceDir "${LLVM_TOOLS_BINARY_DIR}/lib/clang/${LLVM_VERSION_MAJOR}/include/")
-	else()
-		set(headerSourceDir "${LLVM_TOOLS_BINARY_DIR}/../lib/clang/${LLVM_VERSION_MAJOR}/include/")
-	endif()
-	set(headerTargetDir "${CMAKE_BINARY_DIR}/app/data/cxx/include/")
+	# Copy required header:
 
-	message(STATUS "Copying LLVM header: ${headerSourceDir} -> ${headerTargetDir}")
+	if (isVcpkgBuild)
+		cmake_path(SET headerSourceDir NORMALIZE "${CLANG_INSTALL_PREFIX}/tools/llvm/lib/clang/${LLVM_VERSION_MAJOR}/include/")
+	else()
+		cmake_path(SET headerSourceDir NORMALIZE "${CLANG_INSTALL_PREFIX}/lib/clang/${LLVM_VERSION_MAJOR}/include/")
+	endif()
+	cmake_path(SET headerTargetDir NORMALIZE "${CMAKE_BINARY_DIR}/app/data/cxx/include/")
+
+	message(STATUS "Copying Clang header: ${headerSourceDir} -> ${headerTargetDir}")
 	file(COPY "${headerSourceDir}" DESTINATION "${headerTargetDir}")
 	
 	add_subdirectory(src/lib_cxx)
