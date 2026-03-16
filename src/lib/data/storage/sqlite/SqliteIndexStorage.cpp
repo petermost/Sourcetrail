@@ -8,7 +8,7 @@
 #include "logging.h"
 #include "utilityString.h"
 
-const size_t SqliteIndexStorage::s_storageVersion = 26;
+const size_t SqliteIndexStorage::s_storageVersion = 25;
 
 namespace
 {
