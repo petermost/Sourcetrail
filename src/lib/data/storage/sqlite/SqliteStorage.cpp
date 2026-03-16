@@ -290,9 +290,20 @@ void SqliteStorage::insertOrUpdateMetaValue(const std::string& key, const std::s
 
 void SqliteStorage::enablePragmas() const
 {
+	// Structural settings (must be first):
+	executeStatement("PRAGMA PAGE_SIZE=4096;");
 	executeStatement("PRAGMA FOREIGN_KEYS=ON;");
 
+	// Concurrency & Reliability:
+	executeStatement("PRAGMA JOURNAL_MODE=WAL;");
 	executeStatement("PRAGMA SYNCHRONOUS=OFF;");
+	executeStatement("PRAGMA BUSY_TIMEOUT=5000;");
+	executeStatement("PRAGMA LOCKING_MODE=NORMAL;");
+
+	// Memory & Performance:
+	executeStatement("PRAGMA CACHE_SIZE=-131072;");   // 128MB
+	executeStatement("PRAGMA MMAP_SIZE=2147483648;"); // 2GB
+	executeStatement("PRAGMA TEMP_STORE=MEMORY;");
 }
 
 void SqliteStorage::disablePragmas() const

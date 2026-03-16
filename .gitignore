@@ -13,3 +13,5 @@ CMakeLists.txt.user
 # Sourcetrail databases, bookmarks
 *.srctrlbm
 *.srctrldb
+*-shm
+*-wal
