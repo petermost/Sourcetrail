@@ -12,6 +12,7 @@ QPushButton {
 
 QPushButton:disabled {
 	background: <color:search/button/disabled>;
+	color: <color:search/button/icon_disabled>;
 }
 
 QPushButton:hover, QPushButton:checked {
@@ -54,13 +55,22 @@ QPushButton:pressed {
 
 #depth_slider {
 	background: <color:search/button/normal>;
-	padding-bottom: 5px;
-	border-bottom-left-radius: 7px;
-	border-bottom-right-radius: 7px;
+	border-radius: 0;
 }
 
 #depth_slider:disabled {
 	background: <color:search/button/disabled>;
+}
+
+#depth_plus_button {
+	border-radius: 0;
+}
+
+#depth_minus_button {
+	border-radius: 0;
+	border-bottom-left-radius: 7px;
+	border-bottom-right-radius: 7px;
+	padding-bottom: 5px;
 }
 
 #depth_slider::groove {
