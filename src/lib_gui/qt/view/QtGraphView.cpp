@@ -124,7 +124,7 @@ QtGraphView::QtGraphView(ViewLayout *viewLayout)
 
 			m_trailDepthLabel = new QLabel(ui);
 			m_trailDepthLabel->setObjectName(QStringLiteral("depth_label"));
-			m_trailDepthLabel->setToolTip(tr("adjust trail depth"));
+			m_trailDepthLabel->setToolTip(tr("trail depth"));
 			m_trailDepthLabel->setAlignment(Qt::AlignCenter);
 
 			m_trailDepthSlider = new QSlider(Qt::Vertical, ui);
@@ -136,16 +136,37 @@ QtGraphView::QtGraphView(ViewLayout *viewLayout)
 			connect(m_trailDepthSlider, &QSlider::valueChanged, this, &QtGraphView::trailDepthChanged);
 			connect(m_trailDepthSlider, &QSlider::sliderReleased, this, &QtGraphView::trailDepthUpdated);
 
+			m_trailDepthPlusButton = new QPushButton(QStringLiteral("+"), ui);
+			m_trailDepthPlusButton->setObjectName(QStringLiteral("depth_plus_button"));
+			m_trailDepthPlusButton->setToolTip(tr("increase trail depth"));
+			connect(m_trailDepthPlusButton, &QPushButton::clicked, this, [this]()
+			{
+				m_trailDepthSlider->setValue(m_trailDepthSlider->value() + 1);
+				trailDepthUpdated();
+			});
+
+			m_trailDepthMinusButton = new QPushButton(QStringLiteral("-"), ui);
+			m_trailDepthMinusButton->setObjectName(QStringLiteral("depth_minus_button"));
+			m_trailDepthMinusButton->setToolTip(tr("decrease trail depth"));
+			connect(m_trailDepthMinusButton, &QPushButton::clicked, this, [this]()
+			{
+				m_trailDepthSlider->setValue(m_trailDepthSlider->value() - 1);
+				trailDepthUpdated();
+			});
+
 			m_collapseButton->setGeometry(0, 0, 26, 20);
 			m_customTrailButton->setGeometry(0, 22, 26, 26);
 			m_backwardTrailButton->setGeometry(0, 50, 26, 26);
 			m_forwardTrailButton->setGeometry(0, 78, 26, 26);
+
 			m_trailDepthLabel->setGeometry(0, 106, 26, 26);
-			m_trailDepthSlider->setGeometry(0, 132, 26, 100);
+			m_trailDepthSlider->setGeometry(0, 134, 26, 80);
+			m_trailDepthPlusButton->setGeometry(0, 216, 26, 20);
+			m_trailDepthMinusButton->setGeometry(0, 238, 26, 20);
 		}
 
 		m_trailWidget = new QWidget(widget);
-		m_trailWidget->setGeometry(8, 8, 26, 238);
+		m_trailWidget->setGeometry(8, 8, 26, 262);
 		m_trailWidget->setLayout(stack);
 
 		if (ApplicationSettings::getInstance()->getGraphControlsVisible())
@@ -882,6 +903,8 @@ void QtGraphView::updateTrailButtons()
 	m_forwardTrailButton->setEnabled(message.edgeTypes);
 	m_trailDepthLabel->setEnabled(message.edgeTypes);
 	m_trailDepthSlider->setEnabled(message.edgeTypes);
+	m_trailDepthPlusButton->setEnabled(message.edgeTypes);
+	m_trailDepthMinusButton->setEnabled(message.edgeTypes);
 
 	std::string backwardImagePath = QtResources::GRAPH_VIEW_GRAPH_LEFT;
 	std::string forwardImagePath = QtResources::GRAPH_VIEW_GRAPH_RIGHT;

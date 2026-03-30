@@ -160,6 +160,8 @@ private:
 	QtSelfRefreshIconButton *m_backwardTrailButton;
 	QSlider *m_trailDepthSlider;
 	QLabel *m_trailDepthLabel;
+	QPushButton *m_trailDepthPlusButton;
+	QPushButton *m_trailDepthMinusButton;
 
 	QWidget *m_groupWidget;
 	QtSelfRefreshIconButton *m_groupFileButton;
