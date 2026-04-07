@@ -2,8 +2,18 @@
 #define MESSAGE_QUEUE_H
 
 #include "Id.h"
+#include "MessageListenerBase.h"
 
 #include <aidkit/concurrent/thread_shared.hpp>
+
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/sequenced_index.hpp>
+#include <boost/multi_index/hashed_index.hpp>
+#include <boost/multi_index/member.hpp>
+#include <boost/multi_index/mem_fun.hpp>
+#include <boost/multi_index/identity.hpp>
+#include <boost/multi_index/tag.hpp>
+#include <boost/multi_index/key.hpp>
 
 #include <atomic>
 #include <deque>
@@ -13,7 +23,6 @@
 
 class MessageBase;
 class MessageFilter;
-class MessageListenerBase;
 
 class MessageQueue
 {
@@ -26,8 +35,6 @@ public:
 
 	void registerListener(MessageListenerBase* listener);
 	void unregisterListener(MessageListenerBase* listener);
-
-	MessageListenerBase* getListenerById(Id listenerId) const;
 
 	void addMessageFilter(std::shared_ptr<MessageFilter> filter);
 
@@ -43,6 +50,22 @@ public:
 	bool setSendMessagesAsTasks(bool sendMessagesAsTasks);
 
 private:
+	// Declare a container which allows sequential and hashed access:
+
+	struct ListenerSequenceTag {};
+	struct ListenerHashTag {};
+
+	using ListenerSequenceIndex = boost::multi_index::sequenced<boost::multi_index::tag<ListenerSequenceTag>>;
+	using ListenerHashIndex = boost::multi_index::hashed_unique<boost::multi_index::tag<ListenerHashTag>, boost::multi_index::identity<MessageListenerBase *>>;
+
+	using ListenerContainer = boost::multi_index::multi_index_container<
+		MessageListenerBase *,
+		boost::multi_index::indexed_by<
+			ListenerSequenceIndex,
+			ListenerHashIndex
+		>
+	>;
+
 	MessageQueue() = default;
 
 	MessageQueue(const MessageQueue&) = delete;
@@ -50,8 +73,10 @@ private:
 
 	void messageLoop();
 
-	void sendMessage(std::shared_ptr<MessageBase> message);
+	void sendMessage(std::shared_ptr<MessageBase> message) const;
 	void sendMessageAsTask(std::shared_ptr<MessageBase> message, bool asNextTask) const;
+
+	bool isListenerRegistered(const MessageListenerBase *listener) const;
 
 	std::thread m_thread;
 	std::atomic<bool> m_isLoopRunning = false;
@@ -59,9 +84,7 @@ private:
 	aidkit::concurrent::thread_shared<MessageBufferType> m_messageBuffer;
 	aidkit::concurrent::thread_shared<std::vector<std::shared_ptr<MessageFilter>>> m_filters;
 
-	aidkit::concurrent::thread_shared<std::size_t, std::recursive_mutex> m_currentListenerIndex = 0;
-	aidkit::concurrent::thread_shared<std::vector<MessageListenerBase *>, std::recursive_mutex> m_listeners;
-	aidkit::concurrent::thread_shared<std::size_t, std::recursive_mutex> m_currentListenersLength = 0;
+	aidkit::concurrent::thread_shared<ListenerContainer> m_listeners;
 
 	bool m_sendMessagesAsTasks = false;
 };

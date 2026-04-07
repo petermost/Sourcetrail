@@ -9,10 +9,11 @@
 #include "TaskLambda.h"
 #include "logging.h"
 
+#include <boost/preprocessor/stringize.hpp>
+#include <boost/container/small_vector.hpp>
+
 #include <chrono>
 #include <thread>
-
-#include <boost/preprocessor/stringize.hpp>
 
 using namespace std;
 
@@ -39,45 +40,39 @@ std::shared_ptr<MessageQueue> MessageQueue::getInstance()
 	return s_instance;
 }
 
+// We can't use std::shared_ptr<> for the listener, because:
+// 1) MessageListenerBase ctor calls registerListener() which would call shared_from_this() which will fail when called from a ctor!
+// 2) Some listeners are derived from QObject/QWidget and therefore managed by Qt itself!
+//    Example: QtSearchBarButton -> QtSelfRefreshIconButton -> QPushButton | MessageListener<MessageRefreshUI>
+
 void MessageQueue::registerListener(MessageListenerBase* listener)
 {
-	m_listeners.access()->push_back(listener);
+	aidkit::concurrent::access([=](ListenerContainer &listeners)
+	{
+		listeners.push_back(listener);
+	}, m_listeners);
 }
 
 void MessageQueue::unregisterListener(MessageListenerBase* listener)
 {
-	aidkit::concurrent::access([=](size_t &currentListenerIndex, std::vector<MessageListenerBase *> &listeners, size_t &currentListenersLength)
+	aidkit::concurrent::access([=](ListenerContainer &listeners)
 	{
-		for (size_t listenerIndex = 0; listenerIndex < listeners.size(); ++listenerIndex)
+		auto &listenerHashedIndex = listeners.get<ListenerHashTag>();
+
+		if (listenerHashedIndex.erase(listener) == 0)
 		{
-			if (listeners[listenerIndex] == listener)
-			{
-				listeners.erase(listeners.begin() + listenerIndex);
-
-				// Adjust loop control variables for the removed listener:
-
-				if (listenerIndex <= currentListenerIndex)
-					--currentListenerIndex;
-
-				if (listenerIndex < currentListenersLength)
-					--currentListenersLength;
-
-				return;
-			}
+			LOG_ERROR("Listener was not found");
 		}
-		LOG_ERROR("Listener was not found");
-	}, m_currentListenerIndex, m_listeners, m_currentListenersLength);
+	}, m_listeners);
 }
 
-MessageListenerBase* MessageQueue::getListenerById(Id listenerId) const
+bool MessageQueue::isListenerRegistered(const MessageListenerBase *listener) const
 {
-	return aidkit::concurrent::access([=](const std::vector<MessageListenerBase *> &listeners)
+	return aidkit::concurrent::access([=](const ListenerContainer &listeners)
 	{
-		auto it = std::find_if(listeners.begin(), listeners.end(), [=](MessageListenerBase *listener)
-		{
-			return listener->getId() == listenerId;
-		});
-		return (it != listeners.end()) ? *it : nullptr;
+		const auto &listenerHashedIndex = listeners.get<ListenerHashTag>();
+
+		return listenerHashedIndex.find(const_cast<MessageListenerBase *>(listener)) != listenerHashedIndex.end();
 	}, m_listeners);
 }
 
@@ -202,25 +197,40 @@ static inline bool isListenerMatch(const std::shared_ptr<MessageBase> &message, 
 		|| listener->getSchedulerId() == message->getSchedulerId());
 }
 
-void MessageQueue::sendMessage(std::shared_ptr<MessageBase> message)
+
+void MessageQueue::sendMessage(std::shared_ptr<MessageBase> message) const
 {
-	aidkit::concurrent::access([=](size_t &currentListenerIndex, const std::vector<MessageListenerBase *> &listeners, size_t &currentListenersLength)
+	using SmallListenerVector = boost::container::small_vector<MessageListenerBase *, 10>;
+
+	// Appearantly calling handleMessageBase() while holding the lock, will block QtThreadedFunctor/QtThreadedLambdaFunctor listeners,
+	// so retrieve/store the matching listeners in a separate container:
+
+	SmallListenerVector matchingListeners = aidkit::concurrent::access([=](const ListenerContainer &listeners)
 	{
-		// Remember the length, so appended listeners are not getting called for the current message:
-		// Note: It's unclear why that is important, but the unit tests check for this behaviour.
+		SmallListenerVector matches;
 
-		currentListenersLength = listeners.size();
-
-		for (currentListenerIndex = 0; currentListenerIndex < currentListenersLength; ++currentListenerIndex)
+		for (MessageListenerBase *listener : listeners)
 		{
-			MessageListenerBase *listener = listeners[currentListenerIndex];
-
 			if (isListenerMatch(message, listener))
 			{
-				listener->handleMessageBase(message.get());
+				matches.push_back(listener);
 			}
 		}
-	}, m_currentListenerIndex, m_listeners, m_currentListenersLength);
+		return matches;
+	}, m_listeners);
+
+	// Now call handleMessageBase() after the lock was released.
+	// Note: In theory the listeners could become invalid right after the mutex is released (https://en.wikipedia.org/wiki/Time-of-check_to_time-of-use)
+	// But the original code used a similar approach, so it seems to be safe.
+	// https://github.com/petermost/Sourcetrail/blob/3a75ef0df450466945e3a78f57ce0da5f46645cd/src/lib/utility/messaging/MessageQueue.cpp#L261:
+
+	for (MessageListenerBase *listener : matchingListeners)
+	{
+		if (isListenerRegistered(listener))
+		{
+			listener->handleMessageBase(message.get());
+		}
+	}
 }
 
 void MessageQueue::sendMessageAsTask(std::shared_ptr<MessageBase> message, bool asNextTask) const
@@ -235,19 +245,15 @@ void MessageQueue::sendMessageAsTask(std::shared_ptr<MessageBase> message, bool 
 		taskGroup = std::make_shared<TaskGroupSequence>();
 	}
 
-	aidkit::concurrent::access([=, this](const std::vector<MessageListenerBase *> &listeners)
+	aidkit::concurrent::access([=, this](const ListenerContainer &listeners)
 	{
-		for (size_t listenerIndex = 0; listenerIndex < listeners.size(); ++listenerIndex)
+		for (MessageListenerBase *listener : listeners)
 		{
-			MessageListenerBase *listener = listeners[listenerIndex];
-
 			if (isListenerMatch(message, listener))
 			{
-				Id listenerId = listener->getId();
 				taskGroup->addTask(std::make_shared<TaskLambda>([=, this]()
 				{
-					MessageListenerBase* listener = getListenerById(listenerId);
-					if (listener != nullptr)
+					if (isListenerRegistered(listener))
 					{
 						listener->handleMessageBase(message.get());
 					}
