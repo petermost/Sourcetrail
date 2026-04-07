@@ -28,7 +28,7 @@ private:
 	void handleMessage(MessageActivateTokens* message) override;
 	void handleMessage(MessageActivateTrail* message) override;
 
-	void handleMessageBase(const MessageActivateBase* message);
+	void handleMessageActivateBase(const MessageActivateBase* message);
 
 	virtual void handleActivation(const MessageActivateBase* message);
 	virtual void handleActivation(const std::vector<SearchMatch>& searchMatches);

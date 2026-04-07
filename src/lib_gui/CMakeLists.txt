@@ -210,6 +210,7 @@ add_library(Sourcetrail_lib_gui
 	qt/utility/QtScrollSpeedChangeListener.cpp
 	qt/utility/QtScrollSpeedChangeListener.h
 	qt/utility/QtThreadedFunctor.h
+	qt/utility/QtThreadedFunctor.cpp
 	qt/utility/QtWindowTitleProgress.cpp
 	qt/utility/QtWindowTitleProgress.h
 	qt/utility/utilityQt.cpp

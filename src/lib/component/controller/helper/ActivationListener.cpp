@@ -7,35 +7,35 @@ const std::vector<SearchMatch>& ActivationListener::getSearchMatches() const
 
 void ActivationListener::handleMessage(MessageActivateErrors* message)
 {
-	handleMessageBase(message);
+	handleMessageActivateBase(message);
 }
 
 void ActivationListener::handleMessage(MessageActivateFullTextSearch* message)
 {
-	handleMessageBase(message);
+	handleMessageActivateBase(message);
 }
 
 void ActivationListener::handleMessage(MessageActivateLegend* message)
 {
-	handleMessageBase(message);
+	handleMessageActivateBase(message);
 }
 
 void ActivationListener::handleMessage(MessageActivateOverview* message)
 {
-	handleMessageBase(message);
+	handleMessageActivateBase(message);
 }
 
 void ActivationListener::handleMessage(MessageActivateTokens* message)
 {
-	handleMessageBase(message);
+	handleMessageActivateBase(message);
 }
 
 void ActivationListener::handleMessage(MessageActivateTrail* message)
 {
-	handleMessageBase(message);
+	handleMessageActivateBase(message);
 }
 
-void ActivationListener::handleMessageBase(const MessageActivateBase* message)
+void ActivationListener::handleMessageActivateBase(const MessageActivateBase* message)
 {
 	m_searchMatches = message->getSearchMatches();
 	handleActivation(message);

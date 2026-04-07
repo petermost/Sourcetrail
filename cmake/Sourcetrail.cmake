@@ -77,7 +77,7 @@ function(setGccTargetOptions targetName)
 	)
 	
 	# Add code coverage options:
-	
+	#[[
 	target_compile_options(${targetName}
 		PRIVATE
 			$<$<CONFIG:Debug>:--coverage -fprofile-abs-path>
@@ -85,7 +85,8 @@ function(setGccTargetOptions targetName)
 	target_link_options(${targetName}
 		PRIVATE
 			$<$<CONFIG:Debug>:--coverage>
-	)			
+	)
+	]]
 endfunction()
 
 function(setClangTargetOptions targetName)
