@@ -579,6 +579,8 @@ add_library(Sourcetrail_lib
 	utility/ConfigManager.h
 	utility/Id.cpp
 	utility/Id.h
+	utility/LoopThread.h 
+	utility/LoopThread.cpp
 	utility/LowMemoryStringMap.h
 	utility/OrderedCache.h
 	utility/Platform.cpp

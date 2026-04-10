@@ -26,7 +26,7 @@ endif()
 
 # Project ----------------------------------------------------------------------
 
-project(Sourcetrail VERSION 2026.4.7 HOMEPAGE_URL "http://sourcetrail.de")
+project(Sourcetrail VERSION 2026.4.10 HOMEPAGE_URL "http://sourcetrail.de")
 
 # cmake_print_variables(CMAKE_CXX_COMPILER)
 
@@ -42,6 +42,7 @@ endif()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 	# https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
+	# CMakeCache.txt entry: "-O3 -DNDEBUG"
 	set(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fno-fast-math -flto=auto")
 	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -flto=auto")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")

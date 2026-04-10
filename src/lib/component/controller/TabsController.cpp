@@ -48,7 +48,7 @@ void TabsController::addTab(TabId tabId, SearchMatch match)
 {
 	std::lock_guard<std::mutex> lock(m_tabsMutex);
 
-	TaskManager::createScheduler(tabId)->startSchedulerLoopThreaded();
+	TaskManager::createScheduler(tabId)->startLoopThread();
 
 	m_tabs.emplace(
 		tabId, std::make_shared<Tab>(tabId, m_viewFactory, m_storageAccess, m_screenSearchSender));
@@ -108,7 +108,7 @@ void TabsController::removeTab(TabId tabId)
 
 					   TaskScheduler* scheduler = TaskManager::getScheduler(tabId).get();
 					   scheduler->terminateRunningTasks();
-					   scheduler->stopSchedulerLoop();
+					   scheduler->stopLoopThread();
 
 					   TaskManager::destroyScheduler(tabId);
 

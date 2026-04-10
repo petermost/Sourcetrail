@@ -3,9 +3,6 @@
 #include <chrono>
 #include <thread>
 
-#include "ScopedFunctor.h"
-#include "logging.h"
-
 TaskScheduler::TaskScheduler(TabId schedulerId)
 	: m_schedulerId(schedulerId)
 {
@@ -13,113 +10,32 @@ TaskScheduler::TaskScheduler(TabId schedulerId)
 
 TaskScheduler::~TaskScheduler()
 {
-	stopSchedulerLoop();
+	stopLoopThread();
 }
 
 void TaskScheduler::pushTask(std::shared_ptr<Task> task)
 {
-	std::lock_guard<std::mutex> lock(m_tasksMutex);
-	m_taskRunners.push_back(std::make_shared<TaskRunner>(task));
+	m_taskRunners.access()->push_back(std::make_shared<TaskRunner>(task));
 }
 
 void TaskScheduler::pushNextTask(std::shared_ptr<Task> task)
 {
-	std::lock_guard<std::mutex> lock(m_tasksMutex);
-
-	if (m_taskRunners.size() == 0)
+	aidkit::concurrent::access([=](std::deque<std::shared_ptr<TaskRunner>> &taskRunners)
 	{
-		m_taskRunners.push_front(std::make_shared<TaskRunner>(task));
-	}
-	else
-	{
-		m_taskRunners.insert(m_taskRunners.begin() + 1, std::make_shared<TaskRunner>(task));
-	}
-}
-
-void TaskScheduler::startSchedulerLoopThreaded()
-{
-	std::thread(&TaskScheduler::startSchedulerLoop, this).detach();
-
-	std::lock_guard<std::mutex> lock(m_threadMutex);
-	m_threadIsRunning = true;
-}
-
-void TaskScheduler::startSchedulerLoop()
-{
-	{
-		std::lock_guard<std::mutex> lock(m_loopMutex);
-
-		if (m_loopIsRunning)
+		if (taskRunners.empty())
 		{
-			LOG_ERROR("Unable to start task scheduler. Loop is already running.");
-			return;
+			taskRunners.push_front(std::make_shared<TaskRunner>(task));
 		}
-
-		m_loopIsRunning = true;
-	}
-
-	while (true)
-	{
-		processTasks();
-
+		else
 		{
-			std::lock_guard<std::mutex> lock(m_loopMutex);
-
-			if (!m_loopIsRunning)
-			{
-				break;
-			}
+			taskRunners.insert(taskRunners.begin() + 1, std::make_shared<TaskRunner>(task));
 		}
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(25));
-	}
-
-	{
-		std::lock_guard<std::mutex> lock(m_threadMutex);
-		if (m_threadIsRunning)
-		{
-			m_threadIsRunning = false;
-		}
-	}
-}
-
-void TaskScheduler::stopSchedulerLoop()
-{
-	{
-		std::lock_guard<std::mutex> lock(m_loopMutex);
-
-		if (!m_loopIsRunning)
-		{
-			LOG_WARNING("Unable to stop task scheduler. Loop is not running.");
-		}
-
-		m_loopIsRunning = false;
-	}
-
-	while (true)
-	{
-		{
-			std::lock_guard<std::mutex> lock(m_threadMutex);
-			if (!m_threadIsRunning)
-			{
-				break;
-			}
-		}
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(25));
-	}
-}
-
-bool TaskScheduler::loopIsRunning() const
-{
-	std::lock_guard<std::mutex> lock(m_loopMutex);
-	return m_loopIsRunning;
+	}, m_taskRunners);
 }
 
 bool TaskScheduler::hasTasksQueued() const
 {
-	std::lock_guard<std::mutex> lock(m_tasksMutex);
-	return m_taskRunners.size();
+	return !m_taskRunners.access()->empty();
 }
 
 void TaskScheduler::terminateRunningTasks()
@@ -127,50 +43,60 @@ void TaskScheduler::terminateRunningTasks()
 	m_terminateRunningTasks = true;
 }
 
+void TaskScheduler::doThreadLoop() noexcept
+{
+	for (;;)
+	{
+		processTasks();
+
+		if (isLoopStopping())
+		{
+			break;
+		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(25));
+	}
+}
+
 void TaskScheduler::processTasks()
 {
-	std::lock_guard<std::mutex> lock(m_tasksMutex);
-
-	while (m_taskRunners.size())
+	auto tryFrontFunctor = [](std::deque<std::shared_ptr<TaskRunner>> &taskRunners) -> std::shared_ptr<TaskRunner>
 	{
-		std::shared_ptr<TaskRunner> runner = m_taskRunners.front();
+		if (!taskRunners.empty())
+			return taskRunners.front();
+		else
+			return nullptr;
+	};
+
+	std::shared_ptr<TaskRunner> runner;
+	while ((runner = aidkit::concurrent::access(tryFrontFunctor, m_taskRunners)))
+	{
 		Task::TaskState state = Task::STATE_RUNNING;
 
+		for (;;)
 		{
-			m_tasksMutex.unlock();
-			
-			[[maybe_unused]]
-			ScopedFunctor functor([this]()
+			if (isLoopStopping() || m_terminateRunningTasks)
 			{
-				m_tasksMutex.lock();
-			});
+				runner->terminate();
+				break;
+			}
 
-			while (true)
+			state = runner->update(m_schedulerId);
+			if (state != Task::STATE_RUNNING)
 			{
-				{
-					std::lock_guard<std::mutex> lock(m_loopMutex);
-
-					if (!m_loopIsRunning || m_terminateRunningTasks)
-					{
-						runner->terminate();
-						break;
-					}
-				}
-
-				state = runner->update(m_schedulerId);
-				if (state != Task::STATE_RUNNING)
-				{
-					break;
-				}
+				break;
 			}
 		}
 
-		m_taskRunners.pop_front();
-
-		if (state == Task::STATE_HOLD)
+		aidkit::concurrent::access([=](std::deque<std::shared_ptr<TaskRunner>> &taskRunners)
 		{
-			m_taskRunners.push_back(runner);
-		}
+			taskRunners.pop_front();
+
+			if (state == Task::STATE_HOLD)
+			{
+				taskRunners.push_back(runner);
+			}
+		}, m_taskRunners);
 	}
 
 	m_terminateRunningTasks = false;

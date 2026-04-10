@@ -83,7 +83,7 @@ std::shared_ptr<Application> Application::getInstance()
 
 void Application::destroyInstance()
 {
-	MessageQueue::getInstance()->stopMessageLoopThread();
+	MessageQueue::getInstance()->stopLoopThread();
 
 	// It's important to reset this to the previous value (i.e. false), otherwise the MessageQueue tests will fail!
 	MessageQueue::getInstance()->setSendMessagesAsTasks(s_previousSendMessagesAsTasks);
@@ -96,8 +96,8 @@ void Application::destroyInstance()
 
 void Application::startMessagingAndScheduling()
 {
-	TaskManager::getScheduler(TabIds::app())->startSchedulerLoopThreaded();
-	TaskManager::getScheduler(TabIds::background())->startSchedulerLoopThreaded();
+	TaskManager::getScheduler(TabIds::app())->startLoopThread();
+	TaskManager::getScheduler(TabIds::background())->startLoopThread();
 
 	std::shared_ptr<MessageQueue> queue = MessageQueue::getInstance();
 	queue->addMessageFilter(std::make_shared<MessageFilterErrorCountUpdate>());
@@ -105,7 +105,7 @@ void Application::startMessagingAndScheduling()
 	queue->addMessageFilter(std::make_shared<MessageFilterSearchAutocomplete>());
 
 	s_previousSendMessagesAsTasks = queue->setSendMessagesAsTasks(true);
-	queue->startMessageLoopThread();
+	queue->startLoopThread();
 }
 
 std::string Application::getUUID()

@@ -1,45 +1,39 @@
 #ifndef TASK_SCHEDULER_H
 #define TASK_SCHEDULER_H
 
-#include <deque>
-#include <memory>
-#include <mutex>
-
+#include "LoopThread.h"
 #include "Task.h"
 #include "TaskRunner.h"
 
-class TaskScheduler
+#include <aidkit/concurrent/thread_shared.hpp>
+
+#include <atomic>
+#include <deque>
+#include <memory>
+
+class TaskScheduler final : public LoopThread
 {
 public:
 	TaskScheduler(TabId schedulerId);
-	~TaskScheduler();
+	~TaskScheduler() override;
 
 	void pushTask(std::shared_ptr<Task> task);
 	void pushNextTask(std::shared_ptr<Task> task);
 
-	void startSchedulerLoopThreaded();
-	void startSchedulerLoop();
-	void stopSchedulerLoop();
-
-	bool loopIsRunning() const;
-	bool hasTasksQueued() const;
+	using LoopThread::isLoopRunning; // Only needed for unit tests!
+	bool hasTasksQueued() const; // Only needed for unit tests!
 
 	void terminateRunningTasks();
 
 private:
+	void doThreadLoop() noexcept override;
 	void processTasks();
 
 	const TabId m_schedulerId;
 
-	bool m_loopIsRunning = false;
-	bool m_threadIsRunning = false;
-	bool m_terminateRunningTasks = false;
+	std::atomic<bool> m_terminateRunningTasks = false;
 
-	std::deque<std::shared_ptr<TaskRunner>> m_taskRunners;
-
-	mutable std::mutex m_tasksMutex;
-	mutable std::mutex m_loopMutex;
-	mutable std::mutex m_threadMutex;
+	aidkit::concurrent::thread_shared<std::deque<std::shared_ptr<TaskRunner>>> m_taskRunners;
 };
 
 #endif	  // TASK_SCHEDULER_H

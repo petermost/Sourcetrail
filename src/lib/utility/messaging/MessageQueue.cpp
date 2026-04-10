@@ -1,6 +1,5 @@
 #include "MessageQueue.h"
 
-#include "Message.h"
 #include "MessageFilter.h"
 #include "MessageListenerBase.h"
 #include "TabIds.h"
@@ -9,29 +8,12 @@
 #include "TaskLambda.h"
 #include "logging.h"
 
-#include <boost/preprocessor/stringize.hpp>
 #include <boost/container/small_vector.hpp>
 
 #include <chrono>
 #include <thread>
 
 using namespace std;
-
-namespace
-{
-
-class MessageStopLoop: public Message<MessageStopLoop>
-{
-public:
-	static const std::string getStaticType()
-	{
-		return BOOST_PP_STRINGIZE(MessageStopLoop);
-	}
-};
-
-const std::shared_ptr STOP_LOOP_MESSAGE(std::make_shared<MessageStopLoop>());
-
-}
 
 std::shared_ptr<MessageQueue> MessageQueue::getInstance()
 {
@@ -86,41 +68,6 @@ void MessageQueue::pushMessage(std::shared_ptr<MessageBase> message)
 	m_messageBuffer.access()->push_back(message);
 }
 
-void MessageQueue::startMessageLoopThread()
-{
-	if (!m_isLoopRunning)
-	{
-		m_thread = std::thread(&MessageQueue::messageLoop, this);
-
-		m_isLoopRunning.wait(false);
-	}
-	else
-	{
-		LOG_ERROR("Loop is already running");
-	}
-}
-
-void MessageQueue::stopMessageLoopThread()
-{
-	// Signal the loop/thread to stop:
-
-	if (m_isLoopRunning)
-	{
-		pushMessage(STOP_LOOP_MESSAGE);
-
-		m_thread.join();
-	}
-	else
-	{
-		LOG_ERROR("Loop is not running");
-	}
-}
-
-bool MessageQueue::isLoopRunning() const
-{
-	return m_isLoopRunning;
-}
-
 bool MessageQueue::hasMessagesQueued() const
 {
 	return !m_messageBuffer.access()->empty();
@@ -134,16 +81,11 @@ bool MessageQueue::setSendMessagesAsTasks(bool sendMessagesAsTasks)
 	return previousValue;
 }
 
-void MessageQueue::messageLoop()
+void MessageQueue::doThreadLoop() noexcept
 {
-	m_isLoopRunning = true;
-	m_isLoopRunning.notify_one();
-
-	std::shared_ptr<MessageBase> message;
-
-	while (message != STOP_LOOP_MESSAGE)
+	while (!isLoopStopping())
 	{
-		message = aidkit::concurrent::access([](MessageBufferType &messageBuffer, std::vector<std::shared_ptr<MessageFilter>> &filters)
+		std::shared_ptr<MessageBase> message = aidkit::concurrent::access([](MessageBufferType &messageBuffer, std::vector<std::shared_ptr<MessageFilter>> &filters)
 		{
 			for (std::shared_ptr<MessageFilter> filter : filters)
 			{
@@ -169,8 +111,6 @@ void MessageQueue::messageLoop()
 		else
 			std::this_thread::sleep_for(std::chrono::milliseconds(25));
 	}
-	m_isLoopRunning = false;
-	m_isLoopRunning.notify_one();
 }
 
 void MessageQueue::processMessage(std::shared_ptr<MessageBase> message, bool asNextTask)

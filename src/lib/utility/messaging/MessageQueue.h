@@ -1,7 +1,7 @@
 #ifndef MESSAGE_QUEUE_H
 #define MESSAGE_QUEUE_H
 
-#include "Id.h"
+#include "LoopThread.h"
 #include "MessageListenerBase.h"
 
 #include <aidkit/concurrent/thread_shared.hpp>
@@ -15,23 +15,19 @@
 #include <boost/multi_index/tag.hpp>
 #include <boost/multi_index/key.hpp>
 
-#include <atomic>
 #include <deque>
 #include <memory>
-#include <thread>
 #include <vector>
 
 class MessageBase;
 class MessageFilter;
 
-class MessageQueue
+class MessageQueue final : public LoopThread
 {
 public:
 	typedef std::deque<std::shared_ptr<MessageBase>> MessageBufferType;
 
 	static std::shared_ptr<MessageQueue> getInstance();
-
-	~MessageQueue() = default;
 
 	void registerListener(MessageListenerBase* listener);
 	void unregisterListener(MessageListenerBase* listener);
@@ -41,11 +37,8 @@ public:
 	void pushMessage(std::shared_ptr<MessageBase> message);
 	void processMessage(std::shared_ptr<MessageBase> message, bool asNextTask);
 
-	void startMessageLoopThread();
-	void stopMessageLoopThread();
-
-	bool isLoopRunning() const;
-	bool hasMessagesQueued() const;
+	using LoopThread::isLoopRunning; // Only needed for unit tests!
+	bool hasMessagesQueued() const; // Only needed for unit tests!
 
 	bool setSendMessagesAsTasks(bool sendMessagesAsTasks);
 
@@ -71,15 +64,12 @@ private:
 	MessageQueue(const MessageQueue&) = delete;
 	MessageQueue &operator=(const MessageQueue&) = delete;
 
-	void messageLoop();
+	void doThreadLoop() noexcept override;
 
 	void sendMessage(std::shared_ptr<MessageBase> message) const;
 	void sendMessageAsTask(std::shared_ptr<MessageBase> message, bool asNextTask) const;
 
 	bool isListenerRegistered(const MessageListenerBase *listener) const;
-
-	std::thread m_thread;
-	std::atomic<bool> m_isLoopRunning = false;
 
 	aidkit::concurrent::thread_shared<MessageBufferType> m_messageBuffer;
 	aidkit::concurrent::thread_shared<std::vector<std::shared_ptr<MessageFilter>>> m_filters;

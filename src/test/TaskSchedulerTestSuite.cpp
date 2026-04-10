@@ -110,19 +110,19 @@ void waitForThread(TaskScheduler& scheduler)
 TEST_CASE("scheduler loop starts and stops")
 {
 	TaskScheduler scheduler(TabId::NONE);
-	REQUIRE(!scheduler.loopIsRunning());
+	REQUIRE(!scheduler.isLoopRunning());
 
-	scheduler.startSchedulerLoopThreaded();
-
-	waitForThread(scheduler);
-
-	REQUIRE(scheduler.loopIsRunning());
-
-	scheduler.stopSchedulerLoop();
+	scheduler.startLoopThread();
 
 	waitForThread(scheduler);
 
-	REQUIRE(!scheduler.loopIsRunning());
+	REQUIRE(scheduler.isLoopRunning());
+
+	scheduler.stopLoopThread();
+
+	waitForThread(scheduler);
+
+	REQUIRE(!scheduler.isLoopRunning());
 }
 
 TEST_CASE("tasks get executed without scheduling in correct order")
@@ -142,7 +142,7 @@ TEST_CASE("tasks get executed without scheduling in correct order")
 TEST_CASE("scheduled tasks get processed with callbacks in correct order")
 {
 	TaskScheduler scheduler(TabId::NONE);
-	scheduler.startSchedulerLoopThreaded();
+	scheduler.startLoopThread();
 
 	int order = 0;
 	std::shared_ptr<TestTask> task = std::make_shared<TestTask>(&order, 1);
@@ -151,7 +151,7 @@ TEST_CASE("scheduled tasks get processed with callbacks in correct order")
 
 	waitForThread(scheduler);
 
-	scheduler.stopSchedulerLoop();
+	scheduler.stopLoopThread();
 
 	REQUIRE(3 == order);
 
@@ -163,7 +163,7 @@ TEST_CASE("scheduled tasks get processed with callbacks in correct order")
 TEST_CASE("sequential task group to process tasks in correct order")
 {
 	TaskScheduler scheduler(TabId::NONE);
-	scheduler.startSchedulerLoopThreaded();
+	scheduler.startLoopThread();
 
 	int order = 0;
 	std::shared_ptr<TestTask> task1 = std::make_shared<TestTask>(&order, 1);
@@ -177,7 +177,7 @@ TEST_CASE("sequential task group to process tasks in correct order")
 
 	waitForThread(scheduler);
 
-	scheduler.stopSchedulerLoop();
+	scheduler.stopLoopThread();
 
 	REQUIRE(6 == order);
 
@@ -193,7 +193,7 @@ TEST_CASE("sequential task group to process tasks in correct order")
 TEST_CASE("sequential task group does not evaluate tasks after failure")
 {
 	TaskScheduler scheduler(TabId::NONE);
-	scheduler.startSchedulerLoopThreaded();
+	scheduler.startLoopThread();
 
 	int order = 0;
 	std::shared_ptr<TestTask> task1 = std::make_shared<TestTask>(&order, 1, Task::STATE_FAILURE);
@@ -207,7 +207,7 @@ TEST_CASE("sequential task group does not evaluate tasks after failure")
 
 	waitForThread(scheduler);
 
-	scheduler.stopSchedulerLoop();
+	scheduler.stopLoopThread();
 
 	REQUIRE(1 == task1->enterCallOrder);
 	REQUIRE(2 == task1->updateCallOrder);
@@ -221,7 +221,7 @@ TEST_CASE("sequential task group does not evaluate tasks after failure")
 TEST_CASE("sequential task group does not evaluate tasks after success")
 {
 	TaskScheduler scheduler(TabId::NONE);
-	scheduler.startSchedulerLoopThreaded();
+	scheduler.startLoopThread();
 
 	int order = 0;
 	std::shared_ptr<TestTask> task1 = std::make_shared<TestTask>(&order, 1, Task::STATE_FAILURE);
@@ -237,7 +237,7 @@ TEST_CASE("sequential task group does not evaluate tasks after success")
 
 	waitForThread(scheduler);
 
-	scheduler.stopSchedulerLoop();
+	scheduler.stopLoopThread();
 
 	REQUIRE(1 == task1->enterCallOrder);
 	REQUIRE(2 == task1->updateCallOrder);
@@ -255,7 +255,7 @@ TEST_CASE("sequential task group does not evaluate tasks after success")
 TEST_CASE("task scheduling within task processing")
 {
 	TaskScheduler scheduler(TabId::NONE);
-	scheduler.startSchedulerLoopThreaded();
+	scheduler.startLoopThread();
 
 	int order = 0;
 	std::shared_ptr<TestTaskDispatch> task = std::make_shared<TestTaskDispatch>(
@@ -265,7 +265,7 @@ TEST_CASE("task scheduling within task processing")
 
 	waitForThread(scheduler);
 
-	scheduler.stopSchedulerLoop();
+	scheduler.stopLoopThread();
 
 	REQUIRE(6 == order);
 
