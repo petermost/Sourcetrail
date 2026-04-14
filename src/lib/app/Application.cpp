@@ -24,7 +24,6 @@
 #include "TabIds.h"
 #include "TaskManager.h"
 #include "UserPaths.h"
-#include "Version.h"
 #include "ViewFactory.h"
 #include "logging.h"
 #include "tracing.h"
@@ -34,11 +33,9 @@ std::shared_ptr<Application> Application::s_instance;
 std::string Application::s_uuid;
 bool Application::s_previousSendMessagesAsTasks = false;
 
-void Application::createInstance(const Version& version, ViewFactory* viewFactory, NetworkFactory* networkFactory)
+void Application::createInstance(ViewFactory* viewFactory, NetworkFactory* networkFactory)
 {
 	bool hasGui = (viewFactory != nullptr);
-
-	Version::setApplicationVersion(version);
 
 	if (hasGui)
 	{

@@ -1,5 +1,6 @@
 add_library(Sourcetrail_lib
 	${CMAKE_CURRENT_BINARY_DIR}/language_packages.h
+	${CMAKE_CURRENT_BINARY_DIR}/productVersion.h
 
 	app/paths/AppPath.cpp
 	app/paths/AppPath.h

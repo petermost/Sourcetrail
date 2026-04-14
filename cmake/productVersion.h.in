@@ -3,9 +3,10 @@
 
 // This is a generated file, DO NOT EDIT!
 
-#define PRODUCT_VERSION_MAJOR   @Sourcetrail_VERSION_MAJOR@
-#define PRODUCT_VERSION_MINOR   @Sourcetrail_VERSION_MINOR@
-#define PRODUCT_VERSION_PATCH   @Sourcetrail_VERSION_PATCH@
+#define PRODUCT_VERSION_STRING    "@Sourcetrail_VERSION@"
+// #define PRODUCT_VERSION_MAJOR   @Sourcetrail_VERSION_MAJOR@
+// #define PRODUCT_VERSION_MINOR   @Sourcetrail_VERSION_MINOR@
+// #define PRODUCT_VERSION_PATCH   @Sourcetrail_VERSION_PATCH@
 // #define PRODUCT_VERSION_TWEAK   @Sourcetrail_VERSION_TWEAK@
 
 #endif

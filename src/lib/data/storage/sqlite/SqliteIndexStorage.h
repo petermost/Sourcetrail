@@ -24,7 +24,6 @@
 #include "utilityString.h"
 
 class TextAccess;
-class Version;
 class SourceLocationCollection;
 class SourceLocationFile;
 

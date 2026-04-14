@@ -1,5 +1,4 @@
 add_library(Sourcetrail_lib_gui
-	${CMAKE_CURRENT_BINARY_DIR}/productVersion.h
 	${CMAKE_CURRENT_BINARY_DIR}/licenses.h
 
 	platform/setupApp.h

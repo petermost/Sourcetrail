@@ -65,12 +65,10 @@ static void setupUserDirectory(const FilePath &appPath)
 	}
 }
 
-Version setupAppDirectories(const FilePath &appPath)
+void setupAppDirectories(const FilePath &appPath)
 {
 	QCoreApplication::setApplicationName(QStringLiteral("Sourcetrail"));
-
-	Version version(PRODUCT_VERSION_MAJOR, PRODUCT_VERSION_MINOR, PRODUCT_VERSION_PATCH);
-	QCoreApplication::setApplicationVersion(QString::fromStdString(version.toDisplayString()));
+	QCoreApplication::setApplicationVersion(QString::fromStdString(Version::getApplicationVersion().toDisplayString()));
 
 	// Note: This functions is called from main in 'main.cpp' *AND* the main in 'test_main.cpp'.
 	// If the appPath is incorrect then most of the Java tests will fail because the
@@ -79,8 +77,6 @@ Version setupAppDirectories(const FilePath &appPath)
 	AppPath::setCxxIndexerDirectoryPath(appPath);
 
 	setupUserDirectory(appPath);
-
-	return version;
 }
 
 void setupAppEnvironment(int  /*argc*/, char*  /*argv*/[])

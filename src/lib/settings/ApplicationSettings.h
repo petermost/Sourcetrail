@@ -7,7 +7,6 @@
 #include "Settings.h"
 
 class TimeStamp;
-class Version;
 
 class ApplicationSettings: public Settings
 {

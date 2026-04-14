@@ -26,7 +26,9 @@ endif()
 
 # Project ----------------------------------------------------------------------
 
-project(Sourcetrail VERSION 2026.4.10 HOMEPAGE_URL "http://sourcetrail.de")
+project(Sourcetrail VERSION 2026.4.14 HOMEPAGE_URL "http://sourcetrail.de")
+
+configure_file(cmake/productVersion.h.in src/lib/productVersion.h)
 
 # cmake_print_variables(CMAKE_CXX_COMPILER)
 
@@ -319,8 +321,6 @@ add_subdirectory(src/external)
 # message(STATUS "Using CppSQLite3 ${CppSQLite3_VERSION}")
 
 # Lib Gui ----------------------------------------------------------------------
-
-configure_file(cmake/productVersion.h.in src/lib_gui/productVersion.h)
 
 add_subdirectory(src/resources)
 add_subdirectory(src/lib_gui)

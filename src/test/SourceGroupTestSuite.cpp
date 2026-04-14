@@ -14,7 +14,6 @@
 #include "SourceGroupCustomCommand.h"
 #include "SourceGroupSettingsCustomCommand.h"
 #include "TextAccess.h"
-#include "Version.h"
 #include "utilityPathDetection.h"
 #include "utilityString.h"
 
@@ -277,7 +276,7 @@ TEST_CASE("can create application instance")
 {
 	// required to query in SourceGroup for dialog view... this is not a very elegant solution.
 	// should be refactored to pass dialog view to SourceGroup on creation.
-	Application::createInstance(Version(), nullptr, nullptr);
+	Application::createInstance(nullptr, nullptr);
 	REQUIRE(Application::getInstance().use_count() >= 1);
 }
 

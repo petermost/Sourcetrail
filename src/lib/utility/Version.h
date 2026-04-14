@@ -6,20 +6,14 @@
 class Version
 {
 public:
-	static void setApplicationVersion(const Version& version);
-	static const Version& getApplicationVersion();
-
-	Version() = default;
-	Version(int major, int minor, int patch);
+	static Version getApplicationVersion();
 
 	std::string toDisplayString() const;
 
 private:
-	static Version s_version;
+	Version(const char versionString[]);
 
-	int m_majorNumber = 0;
-	int m_minorNumber = 0;
-	int m_patchNumber = 0;
+	std::string m_versionString;
 };
 
 #endif	  // VERSION_H

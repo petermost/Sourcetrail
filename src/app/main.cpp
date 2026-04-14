@@ -22,6 +22,7 @@
 #include "SourceGroupFactoryModuleCustom.h"
 #include "language_packages.h"
 #include "utilityQt.h"
+#include "Version.h"
 
 #if BUILD_CXX_LANGUAGE_PACKAGE
 	#include "LanguagePackageCxx.h"
@@ -116,7 +117,7 @@ int main(int argc, char* argv[])
 	// Linux:   './Sourcetrail'
 
 	const path appDirectory = weakly_canonical(argv[0]).parent_path();
-	Version version = setupAppDirectories(appDirectory.generic_string());
+	setupAppDirectories(appDirectory.generic_string());
 
 	if constexpr (utility::Platform::isLinux())
 	{
@@ -125,6 +126,7 @@ int main(int argc, char* argv[])
 			std::cout << "ERROR: Please run Sourcetrail via the Sourcetrail.sh script!" << std::endl;
 		}
 	}
+	const Version version = Version::getApplicationVersion();
 	MessageStatus("Starting Sourcetrail version "s + version.toDisplayString()).dispatch();
 	MessageStatus("Setting application directory: "s + appDirectory.generic_string()).dispatch();
 
@@ -145,7 +147,7 @@ int main(int argc, char* argv[])
 
 		setupLogging();
 
-		Application::createInstance(version, nullptr, nullptr);
+		Application::createInstance(nullptr, nullptr);
 		
 		[[maybe_unused]]
 		ScopedFunctor f([]()
@@ -188,7 +190,7 @@ int main(int argc, char* argv[])
 		QtViewFactory viewFactory;
 		QtNetworkFactory networkFactory;
 
-		Application::createInstance(version, &viewFactory, &networkFactory);
+		Application::createInstance(&viewFactory, &networkFactory);
 		
 		[[maybe_unused]]
 		ScopedFunctor f([]()

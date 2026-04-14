@@ -1,24 +1,17 @@
 #include "Version.h"
+#include "productVersion.h"
 
-Version Version::s_version;
-
-void Version::setApplicationVersion(const Version& version)
+Version Version::getApplicationVersion()
 {
-	s_version = version;
+	return Version(PRODUCT_VERSION_STRING);
 }
 
-const Version& Version::getApplicationVersion()
-{
-	return s_version;
-}
-
-Version::Version(int major, int minor, int patch)
-	: m_majorNumber(major), m_minorNumber(minor), m_patchNumber(patch)
+Version::Version(const char versionString[])
+	: m_versionString(versionString)
 {
 }
 
 std::string Version::toDisplayString() const
 {
-	return std::to_string(m_majorNumber) + '.' + std::to_string(m_minorNumber) + '.' +
-		std::to_string(m_patchNumber);
+	return m_versionString;
 }

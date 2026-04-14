@@ -20,7 +20,6 @@ class MainView;
 class NetworkFactory;
 class StorageCache;
 class UpdateChecker;
-class Version;
 class ViewFactory;
 
 class Application
@@ -33,7 +32,7 @@ class Application
 	, public MessageListener<MessageSwitchColorScheme>
 {
 public:
-	static void createInstance(const Version& version, ViewFactory* viewFactory, NetworkFactory* networkFactory);
+	static void createInstance(ViewFactory* viewFactory, NetworkFactory* networkFactory);
 	static std::shared_ptr<Application> getInstance();
 	static void destroyInstance();
 
