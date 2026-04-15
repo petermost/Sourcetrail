@@ -13,6 +13,7 @@
 		"boost-uuid",
 		"boost-asio",
 		"boost-process",
+		"boost-multi-index",
 		{
 			"name": "boost-locale",
 			"features": [
