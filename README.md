@@ -75,6 +75,12 @@ By sponsoring me with **$10 per month**, you will gain access to the following *
 
 ### Changes
 
+#### 2026.4
+- GUI: Add `+`/`-` buttons to trail depth control (Thanks to [@tszwinglitw](https://github.com/tszwinglitw) for the [initial code](https://github.com/tszwinglitw/Sourcetrail/commit/bfbd8b436316c1379ca81865cc079be9ccb8f7b2)) 
+- GUI: Fix missing shortcut for `Exit` menu entry under Windows
+- GUI: Resize the view title bar widgets to fit better with other widgets ([#66](https://github.com/petermost/Sourcetrail/issues/66))
+- GUI: Enable screen scaling for Windows
+
 #### 2025.12.8
 - C++: Add indexing of structured binding declarations
 - C++: Add indexing of `auto` prvalue casts
