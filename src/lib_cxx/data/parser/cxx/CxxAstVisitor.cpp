@@ -298,11 +298,6 @@ bool CxxAstVisitor::TraverseTemplateTemplateParmDecl(clang::TemplateTemplateParm
 	return true;
 }
 
-bool CxxAstVisitor::VisitTranslationUnitDecl(clang::TranslationUnitDecl*  /*d*/)
-{
-	return true;
-}
-
 bool CxxAstVisitor::TraverseNestedNameSpecifierLoc(clang::NestedNameSpecifierLoc loc)
 {
 	bool ret = true;
@@ -625,6 +620,10 @@ DEF_VISIT_TYPE_PTR(CXXDeleteExpr)
 DEF_VISIT_TYPE_PTR(LambdaExpr)
 DEF_VISIT_TYPE_PTR(MSAsmStmt)
 DEF_VISIT_CUSTOM_TYPE_PTR(ConstructorInitializer, CXXCtorInitializer)
+
+DEF_VISIT_TYPE_PTR(TranslationUnitDecl)
+DEF_VISIT_TYPE_PTR(ExportDecl)
+DEF_VISIT_TYPE_PTR(ImportDecl)
 
 #undef DEF_VISIT_CUSTOM_TYPE_PTR
 #undef DEF_VISIT_CUSTOM_TYPE

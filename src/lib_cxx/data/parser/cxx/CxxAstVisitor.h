@@ -153,7 +153,6 @@ public:
 	bool VisitConceptDecl(clang::ConceptDecl *d);
 	bool VisitConceptSpecializationExpr(clang::ConceptSpecializationExpr *d);
 	bool VisitConceptReference(clang::ConceptReference *d);
-	static bool VisitTranslationUnitDecl(clang::TranslationUnitDecl* d);
 
 	bool VisitTypeLoc(clang::TypeLoc tl);
 
@@ -165,6 +164,12 @@ public:
 	bool VisitLambdaExpr(clang::LambdaExpr* s);
 	bool VisitMSAsmStmt(clang::MSAsmStmt* s);
 	bool VisitConstructorInitializer(clang::CXXCtorInitializer* init);
+
+	// Module support:
+
+	bool VisitTranslationUnitDecl(clang::TranslationUnitDecl* d);
+	bool VisitExportDecl(clang::ExportDecl *d);
+	bool VisitImportDecl(clang::ImportDecl *d);
 
 	ParseLocation getParseLocationOfTagDeclBody(clang::TagDecl* decl) const;
 	ParseLocation getParseLocationOfFunctionBody(const clang::FunctionDecl* decl) const;

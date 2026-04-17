@@ -8,12 +8,11 @@ enum class NameDelimiterType
 	UNKNOWN,
 	FILE,
 	CXX,
-	JAVA
+	JAVA,
+	MODULE
 };
 
 std::string nameDelimiterTypeToString(NameDelimiterType delimiter);
 NameDelimiterType stringToNameDelimiterType(const std::string& s);
-
-NameDelimiterType detectDelimiterType(const std::string& name);
 
 #endif	  // NAME_DELIMITER_TYPE_H

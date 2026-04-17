@@ -136,6 +136,10 @@ public:
 
 	void visitConstructorInitializer(clang::CXXCtorInitializer*  /*init*/) {}
 
+	void visitTranslationUnitDecl(clang::TranslationUnitDecl *) {}
+	void visitExportDecl(clang::ExportDecl *) {}
+	void visitImportDecl(clang::ImportDecl *) {}
+
 #undef DEF_TRAVERSE_CUSTOM_TYPE_PTR
 #undef DEF_TRAVERSE_CUSTOM_TYPE
 #undef DEF_TRAVERSE_TYPE_PTR

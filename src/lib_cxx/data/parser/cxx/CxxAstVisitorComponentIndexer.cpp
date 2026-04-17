@@ -20,6 +20,12 @@
 using namespace std;
 using namespace clang;
 
+// - The preliminary modules support is disabled via the FEATURE_TOGGLE_MODULES constant.
+// - This constant is only meant as a 'marker' which can be searched for in an IDE or Sourcetrail.
+// - The code is disabled via 'if constexpr' in order to still get compile-checked.
+
+constexpr bool FEATURE_TOGGLE_MODULES = false;
+
 CxxAstVisitorComponentIndexer::CxxAstVisitorComponentIndexer(
 	CxxAstVisitor* astVisitor, clang::ASTContext* astContext, std::shared_ptr<ParserClient> client)
 	: CxxAstVisitorComponent(astVisitor), m_astContext(astContext), m_client(client)
@@ -1006,6 +1012,79 @@ void CxxAstVisitorComponentIndexer::visitConstructorInitializer(clang::CXXCtorIn
 	}
 }
 
+void CxxAstVisitorComponentIndexer::visitTranslationUnitDecl(clang::TranslationUnitDecl *d)
+{
+	// TODO (modules): Record module declarations
+
+	if constexpr (FEATURE_TOGGLE_MODULES)
+	{
+		for (const Decl *decl : d->decls())
+		{
+			if (const Module *module = decl->getOwningModule())
+			{
+				// if (getAstVisitor()->isLocatedInProjectFile(module->DefinitionLoc))
+				{
+					const string moduleName(module->getFullModuleName());
+					const NameHierarchy moduleHierarchy(moduleName, NameDelimiterType::MODULE);
+					const Id moduleSymbolId(m_client->recordSymbol(moduleHierarchy));
+					m_client->recordSymbolKind(moduleSymbolId, SymbolKind::MODULE);
+					m_client->recordDefinitionKind(moduleSymbolId, DefinitionKind::EXPLICIT);
+
+					// Records the correct file/line, but not the correct location of the name:
+					// TODO (modules): How to get the correct location of the module name?
+					// Hint: getSignatureLocation() seems to solve a similar problem.
+					const ParseLocation moduleLocation = getParseLocation(module->DefinitionLoc);
+					m_client->recordLocation(moduleSymbolId, moduleLocation, ParseLocationType::TOKEN);
+					m_client->recordLocation(moduleSymbolId, moduleLocation, ParseLocationType::SCOPE);
+				}
+			}
+		}
+	}
+}
+
+void CxxAstVisitorComponentIndexer::visitExportDecl(clang::ExportDecl *d)
+{
+	// TODO (modules): Record exported declarations
+
+	if constexpr (FEATURE_TOGGLE_MODULES)
+	{
+		if (const Module *module = d->getOwningModule())
+		{
+			const std::string moduleName(module->getFullModuleName());
+			const NameHierarchy moduleHierarchy(moduleName, NameDelimiterType::MODULE);
+			const Id moduleSymbolId(m_client->recordSymbol(moduleHierarchy));
+			m_client->recordSymbolKind(moduleSymbolId, SymbolKind::MODULE);
+
+			// Record the exported declarations:
+
+			for (const Decl *decl : d->decls())
+			{
+				if (const NamedDecl *namedDecl = dyn_cast<NamedDecl>(decl))
+				{
+					getOrCreateSymbolId(namedDecl);
+
+					NameHierarchy symbolHierarchy(moduleHierarchy);
+					symbolHierarchy.push(makeNameHierarchy<CxxDeclNameResolver>(namedDecl).back());
+					m_client->recordSymbol(symbolHierarchy);
+				}
+			}
+		}
+	}
+}
+
+void CxxAstVisitorComponentIndexer::visitImportDecl(clang::ImportDecl *d)
+{
+	// TODO (modules): Record imported declarations
+
+	if constexpr (FEATURE_TOGGLE_MODULES)
+	{
+		if (const Module *module = d->getImportedModule())
+		{
+			(void)module; // Silence "Variable 'module' set but not used"
+		}
+	}
+}
+
 void CxxAstVisitorComponentIndexer::recordTemplateMemberSpecialization(
 	const clang::MemberSpecializationInfo* memberSpecializationInfo,
 	Id contextId,
@@ -1244,19 +1323,10 @@ Id CxxAstVisitorComponentIndexer::getOrCreateSymbolId(const clang::NamedDecl* de
 		return it->second;
 	}
 
-	NameHierarchy symbolName("global", NameDelimiterType::UNKNOWN);
-	if (decl)
-	{
-		CanonicalFilePathCache *filePathCache = getAstVisitor()->getCanonicalFilePathCache();
-		std::unique_ptr<CxxDeclName> declName = CxxDeclNameResolver(filePathCache).getName(decl);
-		if (declName)
-		{
-			symbolName = declName->toNameHierarchy();
+	NameHierarchy symbolName = makeNameHierarchy<CxxDeclNameResolver>(decl);
 
-			if (isa<const FunctionDecl>(decl) && isMainFunction(symbolName))
-				uniquifyMainFunction(&symbolName, filePathCache->getDeclarationFilePath(decl).str());
-		}
-	}
+	if (decl != nullptr && isa<const FunctionDecl>(decl) && isMainFunction(symbolName))
+		uniquifyMainFunction(&symbolName, getAstVisitor()->getCanonicalFilePathCache()->getDeclarationFilePath(decl).str());
 
 	Id symbolId = m_client->recordSymbol(symbolName);
 	m_declSymbolIds.emplace(decl, symbolId);
@@ -1272,16 +1342,7 @@ Id CxxAstVisitorComponentIndexer::getOrCreateSymbolId(const clang::Type *type)
 		return it->second;
 	}
 
-	NameHierarchy symbolName("global", NameDelimiterType::UNKNOWN);
-	if (type)
-	{
-		CanonicalFilePathCache *filePathCache = getAstVisitor()->getCanonicalFilePathCache();
-		std::unique_ptr<CxxTypeName> typeName = CxxTypeNameResolver(filePathCache).getName(type);
-		if (typeName)
-		{
-			symbolName = typeName->toNameHierarchy();
-		}
-	}
+	NameHierarchy symbolName = makeNameHierarchy<CxxTypeNameResolver>(type);
 
 	Id symbolId = m_client->recordSymbol(symbolName);
 	m_typeSymbolIds.emplace(type, symbolId);
@@ -1291,7 +1352,7 @@ Id CxxAstVisitorComponentIndexer::getOrCreateSymbolId(const clang::Type *type)
 
 Id CxxAstVisitorComponentIndexer::getOrCreateSymbolId(const CxxContext* context)
 {
-	if (context)
+	if (context != nullptr)
 	{
 		if (context->getDecl())
 		{
@@ -1322,4 +1383,20 @@ Id CxxAstVisitorComponentIndexer::getOrCreateSymbolId(const CxxContext* context,
 	}
 
 	return m_client->recordSymbol(fallback);	// TODO: cache result somehow
+}
+
+template <typename NameResolver, typename T>
+NameHierarchy CxxAstVisitorComponentIndexer::makeNameHierarchy(const T *t)
+{
+	NameHierarchy symbolName("global", NameDelimiterType::UNKNOWN);
+	if (t != nullptr)
+	{
+		CanonicalFilePathCache *filePathCache = getAstVisitor()->getCanonicalFilePathCache();
+		auto namePtr = NameResolver(filePathCache).getName(t);
+		if (namePtr)
+		{
+			symbolName = namePtr->toNameHierarchy();
+		}
+	}
+	return symbolName;
 }

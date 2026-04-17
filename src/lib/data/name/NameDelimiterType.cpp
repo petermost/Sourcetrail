@@ -1,14 +1,5 @@
 #include "NameDelimiterType.h"
 
-#include <array>
-
-static const std::array allDelimiters
-{
-	NameDelimiterType::FILE,
-	NameDelimiterType::CXX,
-	NameDelimiterType::JAVA
-};
-
 std::string nameDelimiterTypeToString(NameDelimiterType delimiter)
 {
 	switch (delimiter)
@@ -18,6 +9,8 @@ std::string nameDelimiterTypeToString(NameDelimiterType delimiter)
 		case NameDelimiterType::CXX:
 			return "::";
 		case NameDelimiterType::JAVA:
+			return ".";
+		case NameDelimiterType::MODULE:
 			return ".";
 		default:
 			break;
@@ -39,18 +32,9 @@ NameDelimiterType stringToNameDelimiterType(const std::string &s)
 	{
 		return NameDelimiterType::JAVA;
 	}
-	return NameDelimiterType::UNKNOWN;
-}
-
-NameDelimiterType detectDelimiterType(const std::string &name)
-{
-	for (NameDelimiterType delimiter : allDelimiters)
+	if (s == nameDelimiterTypeToString(NameDelimiterType::MODULE))
 	{
-		if (name.find(nameDelimiterTypeToString(delimiter)) != std::string::npos)
-		{
-			return delimiter;
-		}
+		return NameDelimiterType::MODULE;
 	}
-
 	return NameDelimiterType::UNKNOWN;
 }

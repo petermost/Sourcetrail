@@ -59,12 +59,15 @@ public:
 
 	void visitConstructorInitializer(clang::CXXCtorInitializer* init);
 
+	// Module support:
+
+	void visitTranslationUnitDecl(clang::TranslationUnitDecl *d);
+	void visitExportDecl(clang::ExportDecl *d);
+	void visitImportDecl(clang::ImportDecl *d);
+
 private:
-	void recordTemplateMemberSpecialization(
-		const clang::MemberSpecializationInfo* memberSpecializationInfo,
-		Id contextId,
-		const ParseLocation& location,
-		SymbolKind symbolKind);
+	void recordTemplateMemberSpecialization( const clang::MemberSpecializationInfo* memberSpecializationInfo, Id contextId,
+		const ParseLocation& location, SymbolKind symbolKind);
 
 	void recordTemplateParameterConceptReferences(const clang::TemplateDecl *templateDecl);
 	template <typename T> void recordConceptReference(const T *d);
@@ -90,6 +93,8 @@ private:
 	Id getOrCreateSymbolId(const CxxContext* context);
 	Id getOrCreateSymbolId(const CxxContext* context, const NameHierarchy& fallback);
 
+	template <typename NameResolver, typename T>
+	NameHierarchy makeNameHierarchy(const T *t);
 
 	clang::ASTContext* m_astContext;
 	std::shared_ptr<ParserClient> m_client;
