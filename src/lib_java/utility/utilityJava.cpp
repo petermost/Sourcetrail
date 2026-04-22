@@ -6,26 +6,12 @@
 #include "JavaEnvironment.h"
 #include "JavaEnvironmentFactory.h"
 #include "MessageStatus.h"
-#include "Platform.h"
 #include "ResourcePaths.h"
 #include "ScopedFunctor.h"
 #include "TextAccess.h"
 #include "logging.h"
 #include "utilityGradle.h"
 #include "utilityString.h"
-
-namespace
-{
-
-constexpr const char *getClassPathSeparator()
-{
-	if constexpr (utility::Platform::isWindows())
-		return ";";
-	else
-		return ":";
-}
-
-}
 
 namespace utility
 {
