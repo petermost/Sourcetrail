@@ -17,23 +17,10 @@
 #include <QDirIterator>
 #include <QStandardPaths>
 
-#include <boost/locale/generator.hpp>
-
 using namespace std;
 using namespace utility;
-using namespace boost::locale;
 using namespace boost::system;
 using namespace boost::filesystem;
-
-void setupDefaultLocale()
-{
-	locale defaultLocale = getDefaultLocale();
-
-	locale::global(defaultLocale);
-	cout.imbue(defaultLocale);
-	cerr.imbue(defaultLocale);
-}
-
 
 static void setupUserDirectory(const FilePath &appPath)
 {

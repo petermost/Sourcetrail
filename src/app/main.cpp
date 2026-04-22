@@ -23,6 +23,7 @@
 #include "language_packages.h"
 #include "utilityQt.h"
 #include "Version.h"
+#include "utilityString.h"
 
 #if BUILD_CXX_LANGUAGE_PACKAGE
 	#include "LanguagePackageCxx.h"
@@ -44,6 +45,7 @@
 #include <csignal>
 #include <iostream>
 
+using namespace utility;
 using namespace std;
 using namespace boost::filesystem;
 

@@ -97,6 +97,7 @@ std::string join(const ContainerType& list, const std::string& delimiter)
 // Locale specific functions:
 //
 
+void setupDefaultLocale();
 std::locale getDefaultLocale();
 
 std::u32string convertToUtf32(const std::string &utf8chars);

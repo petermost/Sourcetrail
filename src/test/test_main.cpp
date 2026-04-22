@@ -3,6 +3,7 @@
 #include "ApplicationSettings.h"
 #include "language_packages.h"
 #include "utilityPathDetection.h"
+#include "utilityString.h"
 #include <AppPath.h>
 #include <UserPaths.h>
 #include <setupApp.h>

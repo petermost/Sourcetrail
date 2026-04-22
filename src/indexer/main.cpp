@@ -8,7 +8,7 @@
 #include "LogManager.h"
 #include "UserPaths.h"
 #include "logging.h"
-#include "setupApp.h"
+#include "utilityString.h"
 
 #if BUILD_CXX_LANGUAGE_PACKAGE
 #	include "LanguagePackageCxx.h"
@@ -19,8 +19,10 @@
 #endif	  // BUILD_JAVA_LANGUAGE_PACKAGE
 
 #if BOOST_OS_WINDOWS
-	#include <Windows.h>
+#include <Windows.h>
 #endif
+
+using namespace utility;
 
 void setupLogging(const FilePath& logFilePath)
 {

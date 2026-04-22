@@ -1,5 +1,7 @@
 #include "utilityString.h"
 
+#include "Platform.h"
+
 #include <boost/locale.hpp>
 
 #include <algorithm>
@@ -7,7 +9,9 @@
 #include <iterator>
 #include <locale>
 #include <string>
+#include <iostream>
 
+using namespace utility;
 using namespace std;
 using namespace boost::locale;
 using namespace boost::locale::util;
@@ -548,6 +552,15 @@ std::string convertWhiteSpacesToSingleSpaces(const std::string& str)
 // Locale specific functions:
 //
 ///////////////////////////////////////////////////////////////////////////////
+
+void setupDefaultLocale()
+{
+	locale defaultLocale = getDefaultLocale();
+
+	locale::global(defaultLocale);
+	std::cout.imbue(defaultLocale);
+	cerr.imbue(defaultLocale);
+}
 
 std::locale getDefaultLocale()
 {

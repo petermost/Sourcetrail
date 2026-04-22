@@ -3,8 +3,6 @@
 
 #include <FilePath.h>
 
-void setupDefaultLocale();
-
 void setupAppDirectories(const FilePath &appPath);
 void setupAppEnvironment(int argc, char *argv[]);
 
