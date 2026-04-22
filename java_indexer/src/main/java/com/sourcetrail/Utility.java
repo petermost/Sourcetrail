@@ -6,7 +6,7 @@ import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Javadoc;
 
-public class Utility
+public final class Utility
 {
 	public static Range getRange(ASTNode node, CompilationUnit compilationUnit)
 	{
@@ -29,5 +29,10 @@ public class Utility
 	public static String getFilenameWithoutExtension(Path filePath)
 	{
 		return filePath.getFileName().toString().replaceFirst("[.][^.]+$", "");
+	}
+	
+	public static String getClassPathSeparator()
+	{
+		return java.io.File.pathSeparator;
 	}
 }

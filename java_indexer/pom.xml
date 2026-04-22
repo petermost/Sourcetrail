@@ -204,18 +204,20 @@
 			<artifactId>slf4j-simple</artifactId>
 			<version>2.0.17</version>
 		</dependency>
-		<!-- Tests -->
+		<!--================================================================-->
+		<!-- Tests                                                          -->
+		<!--================================================================-->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
+			<artifactId>junit-jupiter</artifactId>
 			<version>6.0.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-params</artifactId>
-			<version>6.0.2</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.20.0</version>
 			<scope>test</scope>
-		</dependency>
+		</dependency>		
 	</dependencies>
 </project>

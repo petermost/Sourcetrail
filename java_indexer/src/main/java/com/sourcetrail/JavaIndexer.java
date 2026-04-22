@@ -80,7 +80,7 @@ public class JavaIndexer
 			List<String> classpath = new ArrayList<>();
 			List<String> sources = new ArrayList<>();
 
-			for (String classPathEntry: classPath.split("\\;"))
+			for (String classPathEntry: classPath.split("\\" + Utility.getClassPathSeparator()))
 			{
 				if (classPathEntry.endsWith(".jar"))
 				{
