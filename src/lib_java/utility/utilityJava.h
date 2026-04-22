@@ -1,26 +1,14 @@
 #ifndef UTILITY_JAVA_H
 #define UTILITY_JAVA_H
 
-#include "Platform.h"
-
 #include <set>
 #include <string>
 #include <vector>
-
 
 class FilePath;
 
 namespace utility
 {
-
-constexpr const char *getClassPathSeparator()
-{
-	if constexpr (utility::Platform::isWindows())
-		return ";";
-	else
-		return ":";
-}
-
 std::vector<std::string> getRequiredJarNames();
 
 std::string prepareJavaEnvironment();

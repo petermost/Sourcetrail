@@ -6,6 +6,7 @@
 #include "JavaEnvironment.h"
 #include "JavaEnvironmentFactory.h"
 #include "MessageStatus.h"
+#include "Platform.h"
 #include "ResourcePaths.h"
 #include "ScopedFunctor.h"
 #include "TextAccess.h"
@@ -40,7 +41,7 @@ std::string prepareJavaEnvironment(const FilePath &javaDirectoryPath)
 			{
 				if (i != 0)
 				{
-					classPath += getClassPathSeparator();
+					classPath += Platform::getJavaClassPathSeparator();
 				}
 				classPath += javaDirectoryPath.getConcatenated("lib/" + jarNames[i]).str();
 			}

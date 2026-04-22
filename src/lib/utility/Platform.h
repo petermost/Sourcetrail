@@ -39,6 +39,10 @@ class Platform final
 		static Architecture getArchitecture();
 		static std::string getArchitectureName();
 		static std::string getArchitectureName(Architecture architecture);
+
+		static std::string getExecutableExtension();
+		static std::string getJavaClassPathSeparator();
+		static char getEnvironmentVariablePathSeparator();
 };
 
 }

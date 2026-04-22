@@ -1,6 +1,8 @@
 #include "AppPath.h"
 
-#include "utilityApp.h"
+#include "Platform.h"
+
+using namespace utility;
 
 FilePath AppPath::s_sharedDataDirectoryPath("");
 FilePath AppPath::s_cxxIndexerDirectoryPath("");
@@ -17,7 +19,7 @@ void AppPath::setSharedDataDirectoryPath(const FilePath& path)
 
 FilePath AppPath::getCxxIndexerFilePath()
 {
-	std::string cxxIndexerName("sourcetrail_indexer" + FilePath::getExecutableExtension());
+	std::string cxxIndexerName("sourcetrail_indexer" + Platform::getExecutableExtension());
 
 	if (!s_cxxIndexerDirectoryPath.empty())
 		return s_cxxIndexerDirectoryPath.getConcatenated(cxxIndexerName);

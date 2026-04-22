@@ -47,4 +47,28 @@ string Platform::getArchitectureName(Architecture architecture)
 	}
 }
 
+string Platform::getExecutableExtension()
+{
+	if constexpr (isWindows())
+		return ".exe"s;
+	else
+		return ""s;
+}
+
+string Platform::getJavaClassPathSeparator()
+{
+	if constexpr (isWindows())
+		return ";"s;
+	else
+		return ":"s;
+}
+
+char Platform::getEnvironmentVariablePathSeparator()
+{
+	if constexpr (isWindows())
+		return ';';
+	else
+		return ':';
+}
+
 }

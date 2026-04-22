@@ -12,8 +12,11 @@
 #include "utilityJava.h"
 #include "utilityString.h"
 #include "logging.h"
+#include "Platform.h"
 
 #include <utility>
+
+using namespace utility;
 
 int JavaParser::s_nextParserId = 0;
 std::map<int, JavaParser*> JavaParser::s_parsers;
@@ -83,7 +86,7 @@ void JavaParser::buildIndex(std::shared_ptr<IndexerCommandJava> indexerCommand)
 	for (const FilePath& path: indexerCommand->getClassPath())
 	{
 		// the separator used here should be the same as the one returned from Utility.getClassPathSeparator (Utility.java):
-		classPath += path.str() + utility::getClassPathSeparator();
+		classPath += path.str() + Platform::getJavaClassPathSeparator();
 	}
 
 	buildIndex(

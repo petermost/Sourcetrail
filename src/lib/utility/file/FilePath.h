@@ -9,9 +9,6 @@
 class FilePath
 {
 public:
-	static char getEnvironmentVariablePathSeparator();
-	static std::string getExecutableExtension();
-
 	FilePath();
 	FilePath(const char filePath[]);
 	FilePath(const std::string& filePath);

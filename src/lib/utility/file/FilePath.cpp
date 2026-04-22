@@ -16,22 +16,6 @@ using namespace utility;
 using namespace std;
 using namespace std::string_literals;
 
-char FilePath::getEnvironmentVariablePathSeparator()
-{
-	if constexpr (Platform::isWindows())
-		return ';';
-	else
-		return ':';
-}
-
-string FilePath::getExecutableExtension()
-{
-	if constexpr (Platform::isWindows())
-		return ".exe"s;
-	else
-		return ""s;
-}
-
 FilePath::FilePath()
 	: m_path(std::make_unique<boost::filesystem::path>(""))
 	, m_exists(false)
@@ -237,7 +221,7 @@ std::vector<FilePath> FilePath::expandEnvironmentVariables() const
 
 
 
-	for (const std::string& str: utility::splitToVector(text, getEnvironmentVariablePathSeparator()))
+	for (const std::string& str: utility::splitToVector(text, Platform::getEnvironmentVariablePathSeparator()))
 	{
 		if (str.size())
 		{
