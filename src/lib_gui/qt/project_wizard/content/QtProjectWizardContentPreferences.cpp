@@ -285,7 +285,7 @@ void QtProjectWizardContentPreferences::populate(QGridLayout* layout, int& row)
 			tr("<p>Only required for indexing Java projects.</p>"
 			 "<p>Provide the location of the jvm library inside the installation of your %1 runtime environment"
 			 " (for information on how to set this take a look at "
-			 "<a href=\"%1#finding-java-runtime-library-location\">Finding Java Runtime Library Location</a>"
+			 "<a href=\"%2#finding-java-runtime-library-location\">Finding Java Runtime Library Location</a>"
 			 " or use the auto detection below)</p>").arg(javaVersionString.c_str(), utility::getDocumentationLink().c_str()),
 			layout,
 			row);

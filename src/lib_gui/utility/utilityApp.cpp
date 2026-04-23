@@ -252,7 +252,7 @@ int getIdealThreadCount()
 	int threadCount = QThread::idealThreadCount();
 	if constexpr (Platform::isWindows())
 	{
-		threadCount -= 1;
+		threadCount -= 1; // Most likely to keep the GUI thread responsive
 	}
 	return std::max(1, threadCount);
 }
