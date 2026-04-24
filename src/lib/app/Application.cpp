@@ -5,10 +5,8 @@
 #include "ApplicationSettings.h"
 #include "ColorScheme.h"
 #include "DialogView.h"
-#include "FileLogger.h"
 #include "GraphViewStyle.h"
 #include "IDECommunicationController.h"
-#include "LogManager.h"
 #include "MainView.h"
 #include "MessageFilterErrorCountUpdate.h"
 #include "MessageFilterFocusInOut.h"
@@ -122,15 +120,6 @@ void Application::loadSettings()
 	std::shared_ptr<ApplicationSettings> settings = ApplicationSettings::getInstance();
 	settings->load(UserPaths::getAppSettingsFilePath());
 	MessageTextEncodingChanged(settings->getTextEncoding()).dispatch();
-
-	LogManager::getInstance()->setLoggingEnabled(settings->getLoggingEnabled());
-	Logger* logger = LogManager::getInstance()->getLoggerByType("FileLogger");
-	if (logger != nullptr)
-	{
-		auto *fileLogger = dynamic_cast<FileLogger*>(logger);
-		fileLogger->setLogDirectory(settings->getLogDirectoryPath());
-		fileLogger->setFileName(FileLogger::generateDatedFileName("log"));
-	}
 
 	loadStyle(settings->getColorSchemePath());
 }

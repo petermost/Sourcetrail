@@ -1,17 +1,17 @@
 #ifndef FILE_LOGGER_H
 #define FILE_LOGGER_H
 
-#include <string>
 
 #include "FilePath.h"
 #include "LogMessage.h"
 #include "Logger.h"
 
+#include <string>
+
 class FileLogger: public Logger
 {
 public:
-	static std::string generateDatedFileName(
-		const std::string& prefix = "", const std::string& suffix = "", int offsetDays = 0);
+	static std::string generateDatedFileName(const std::string& prefix, int offsetDays = 0);
 
 	FileLogger();
 

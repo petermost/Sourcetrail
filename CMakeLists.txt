@@ -26,7 +26,7 @@ endif()
 
 # Project ----------------------------------------------------------------------
 
-project(Sourcetrail VERSION 2026.4.22 HOMEPAGE_URL "http://sourcetrail.de")
+project(Sourcetrail VERSION 2026.4.24 HOMEPAGE_URL "http://sourcetrail.de")
 
 configure_file(cmake/productVersion.h.in src/lib/productVersion.h)
 

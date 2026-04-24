@@ -22,21 +22,26 @@
 #include <Windows.h>
 #endif
 
+using namespace std;
 using namespace utility;
 
-void setupLogging(const FilePath& logFilePath)
+static void setupLogging(const ApplicationSettings *settings, const string &logFilePath)
 {
-	LogManager* logManager = LogManager::getInstance().get();
+	shared_ptr<LogManager> logManager = LogManager::getInstance();
+	logManager->setLoggingEnabled(settings->getLoggingEnabled());
 
 	// std::shared_ptr<ConsoleLogger> consoleLogger = std::make_shared<ConsoleLogger>();
 	// // consoleLogger->setLogLevel(Logger::LOG_WARNINGS | Logger::LOG_ERRORS);
 	// consoleLogger->setLogLevel(Logger::LOG_ALL);
 	// logManager->addLogger(consoleLogger);
 
-	std::shared_ptr<FileLogger> fileLogger = std::make_shared<FileLogger>();
-	fileLogger->setLogFilePath(logFilePath);
-	fileLogger->setLogLevel(Logger::LOG_ALL);
-	logManager->addLogger(fileLogger);
+	if (!logFilePath.empty())
+	{
+		std::shared_ptr<FileLogger> fileLogger = std::make_shared<FileLogger>();
+		fileLogger->setLogFilePath(logFilePath);
+		fileLogger->setLogLevel(Logger::LOG_ALL);
+		logManager->addLogger(fileLogger);
+	}
 }
 
 void suppressCrashMessage()
@@ -84,20 +89,15 @@ int main(int argc, char* argv[])
 	AppPath::setSharedDataDirectoryPath(FilePath(appPath));
 	UserPaths::setUserDataDirectoryPath(FilePath(userDataPath));
 
-	if (!logFilePath.empty())
-	{
-		setupLogging(FilePath(logFilePath));
-	}
-
 	suppressCrashMessage();
 
-	ApplicationSettings* appSettings = ApplicationSettings::getInstance().get();
+	shared_ptr<ApplicationSettings> appSettings = ApplicationSettings::getInstance();
 	appSettings->load(UserPaths::getAppSettingsFilePath());
-	LogManager::getInstance()->setLoggingEnabled(appSettings->getLoggingEnabled());
+
+	setupLogging(appSettings.get(), logFilePath);
 
 	LOG_INFO("sharedDataPath: " + AppPath::getSharedDataDirectoryPath().str());
 	LOG_INFO("userDataPath: " + UserPaths::getUserDataDirectoryPath().str());
-
 
 #if BUILD_CXX_LANGUAGE_PACKAGE
 	LanguagePackageManager::getInstance()->addPackage(std::make_shared<LanguagePackageCxx>());

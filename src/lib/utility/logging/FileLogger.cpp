@@ -7,8 +7,7 @@
 
 #include "FileSystem.h"
 
-std::string FileLogger::generateDatedFileName(
-	const std::string& prefix, const std::string& suffix, int offsetDays)
+std::string FileLogger::generateDatedFileName(const std::string& prefix, int offsetDays)
 {
 	time_t time;
 	std::time(&time);
@@ -33,11 +32,6 @@ std::string FileLogger::generateDatedFileName(
 	filename << (t.tm_hour < 10 ? "0" : "") << t.tm_hour << "-";
 	filename << (t.tm_min < 10 ? "0" : "") << t.tm_min << "-";
 	filename << (t.tm_sec < 10 ? "0" : "") << t.tm_sec;
-
-	if (!suffix.empty())
-	{
-		filename << "_" << suffix;
-	}
 
 	return filename.str();
 }

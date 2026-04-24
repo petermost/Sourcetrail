@@ -74,9 +74,10 @@ void signalHandler(int  /*signum*/)
 	MessageIndexingInterrupted().dispatch();
 }
 
-void setupLogging()
+static void setupLogging(const ApplicationSettings *settings)
 {
-	LogManager* logManager = LogManager::getInstance().get();
+	std::shared_ptr<LogManager> logManager = LogManager::getInstance();
+	logManager->setLoggingEnabled(settings->getLoggingEnabled());
 
 	std::shared_ptr<ConsoleLogger> consoleLogger = std::make_shared<ConsoleLogger>();
 	consoleLogger->setLogLevel(Logger::LOG_ALL);
@@ -84,8 +85,11 @@ void setupLogging()
 
 	std::shared_ptr<FileLogger> fileLogger = std::make_shared<FileLogger>();
 	fileLogger->setLogLevel(Logger::LOG_ALL);
-	fileLogger->deleteLogFiles(FileLogger::generateDatedFileName("log", "", -30));
+	fileLogger->setLogDirectory(settings->getLogDirectoryPath());
+	fileLogger->setFileName(FileLogger::generateDatedFileName("log"));
 	logManager->addLogger(fileLogger);
+
+	fileLogger->deleteLogFiles(FileLogger::generateDatedFileName("log", -30));
 }
 
 void addLanguagePackages()
@@ -147,9 +151,10 @@ int main(int argc, char* argv[])
 		[[maybe_unused]]
 		QtCoreApplication qtApp(argc, argv);
 
-		setupLogging();
-
 		Application::createInstance(nullptr, nullptr);
+		shared_ptr<ApplicationSettings> appSettings = ApplicationSettings::getInstance();
+
+		setupLogging(appSettings.get());
 		
 		[[maybe_unused]]
 		ScopedFunctor f([]()
@@ -157,7 +162,7 @@ int main(int argc, char* argv[])
 			Application::destroyInstance();
 		});
 
-		ApplicationSettingsPrefiller::prefillPaths(ApplicationSettings::getInstance().get());
+		ApplicationSettingsPrefiller::prefillPaths(appSettings.get());
 		addLanguagePackages();
 
 		signal(SIGINT, signalHandler);
@@ -187,22 +192,22 @@ int main(int argc, char* argv[])
 		[[maybe_unused]]
 		QtApplication qtApp(argc, argv);
 
-		setupLogging();
-
 		QtViewFactory viewFactory;
 		QtNetworkFactory networkFactory;
 
 		Application::createInstance(&viewFactory, &networkFactory);
-		
+		shared_ptr<ApplicationSettings> appSettings = ApplicationSettings::getInstance();
+
+		setupLogging(appSettings.get());
+
 		[[maybe_unused]]
 		ScopedFunctor f([]()
 		{
 			Application::destroyInstance();
 		});
 
-		auto applicationSettings = ApplicationSettings::getInstance();
-		ApplicationSettingsPrefiller::prefillPaths(applicationSettings.get());
-		if (!applicationSettings->getLoggingEnabled())
+		ApplicationSettingsPrefiller::prefillPaths(appSettings.get());
+		if (!appSettings->getLoggingEnabled())
 			closeConsoleWindow();
 
 		addLanguagePackages();
