@@ -104,6 +104,16 @@ class VisualStudio final : public ToolChain {
 		static std::string getLatestMsvcVersion();
 };
 
+class LegacyVisualStudio final : public ToolChain {
+	public:
+		struct Version {
+			std::string name;
+			std::string number;
+		};
+
+		static std::vector<Version> getVersions();
+};
+
 class WindowsSdk final : public ToolChain {
 	public:
 		static std::vector<std::string> getVersions();

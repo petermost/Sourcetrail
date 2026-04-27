@@ -2,11 +2,10 @@
 
 #include "language_packages.h"
 
-#include "utilityApp.h"
-
 #if BUILD_CXX_LANGUAGE_PACKAGE
 #	include "CxxFrameworkPathDetector.h"
 #	include "CxxHeaderPathDetector.h"
+#	include "CxxVs10To15HeaderPathDetector.h"
 #	include "CxxVs17ToLatestHeaderPathDetector.h"
 #	include "ToolChain.h"
 #endif
@@ -18,6 +17,7 @@
 #endif
 
 using namespace std;
+using namespace utility;
 
 std::shared_ptr<CombinedPathDetector> utility::getJavaRuntimePathDetector()
 {
@@ -57,18 +57,29 @@ std::shared_ptr<CombinedPathDetector> utility::getCxxVsHeaderPathDetector()
 {
 	std::shared_ptr<CombinedPathDetector> combinedDetector = std::make_shared<CombinedPathDetector>();
 
-	if constexpr (!utility::Platform::isWindows())
+	if constexpr (Platform::isWindows())
 	{
-		return combinedDetector;
-	}
-
 #if BUILD_CXX_LANGUAGE_PACKAGE
-	for (const string &versionRange : VisualStudio::getVersionRanges())
-	{
-		combinedDetector->addDetector(make_shared<CxxVs17ToLatestHeaderPathDetector>(versionRange));
-	}
-#endif
+		// Current Visual Studio versions:
 
+		for (const string &versionRange : VisualStudio::getVersionRanges())
+		{
+			combinedDetector->addDetector(make_shared<CxxVs17ToLatestHeaderPathDetector>(versionRange));
+		}
+		// Legacy Visual Studio versions:
+
+		for (const LegacyVisualStudio::Version &version : LegacyVisualStudio::getVersions())
+		{
+			for (bool isExpress : { false, true })
+			{
+				for (Platform::Architecture architecture : { Platform::Architecture::BITS_64, Platform::Architecture::BITS_32 })
+				{
+					combinedDetector->addDetector(std::make_shared<CxxVs10To15HeaderPathDetector>(version, isExpress, architecture));
+				}
+			}
+		}
+#endif
+	}
 	return combinedDetector;
 }
 
