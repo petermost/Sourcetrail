@@ -1,41 +1,20 @@
 #include "utilityCxxHeaderDetection.h"
 
-#include <QSettings>
-#include <QSysInfo>
-
-#include "FileSystem.h"
 #include "ToolChain.h"
+#include "utility.h"
 #include "utilityApp.h"
 #include "utilityString.h"
 
+#include <QSettings>
+#include <QSysInfo>
+
+#include <array>
+
 using namespace std;
+using namespace utility;
 
 namespace utility
 {
-
-namespace
-{
-FilePath getWindowsSdkRootPathUsingRegistry(Platform::Architecture architecture, const std::string& sdkVersion)
-{
-	QString key = QStringLiteral("HKEY_LOCAL_MACHINE\\SOFTWARE\\");
-	if (architecture == Platform::Architecture::BITS_32)
-	{
-		key += QStringLiteral("Wow6432Node\\");
-	}
-	key += QStringLiteral("Microsoft\\Microsoft SDKs\\Windows\\") + sdkVersion.c_str();
-
-	QSettings expressKey(key, QSettings::NativeFormat);	  // NativeFormat means from Registry on Windows.
-	QString value = expressKey.value(QStringLiteral("InstallationFolder")).toString();
-
-	FilePath path(value.toStdString());
-	if (path.exists())
-	{
-		return path;
-	}
-	return FilePath();
-}
-
-}
 
 std::vector<std::string> getCxxHeaderPaths(const std::string& compilerName)
 {
@@ -65,56 +44,111 @@ std::vector<std::string> getCxxHeaderPaths(const std::string& compilerName)
 	return paths;
 }
 
-std::vector<FilePath> getWindowsSdkHeaderSearchPaths(Platform::Architecture architecture)
+static std::string getWindowsSdkRegistryValue(const std::string &valueKey, Platform::Architecture architecture, const std::string &sdkVersion)
 {
+	QString key = QStringLiteral("HKEY_LOCAL_MACHINE\\SOFTWARE\\");
+	if (architecture == Platform::Architecture::BITS_32)
+	{
+		key += QStringLiteral("Wow6432Node\\");
+	}
+	key += QStringLiteral("Microsoft\\Microsoft SDKs\\Windows\\") + QString::fromStdString(sdkVersion);
+
+	QSettings registrySettings(key, QSettings::NativeFormat); // NativeFormat means from Registry on Windows.
+	QString value = registrySettings.value(QString::fromStdString(valueKey)).toString();
+
+	return value.toStdString();
+}
+
+static FilePath getWindowsSdkInstallationFolder(Platform::Architecture architecture, const std::string &sdkVersion)
+{
+	return FilePath(getWindowsSdkRegistryValue("InstallationFolder"s, architecture, sdkVersion));
+}
+
+static string getWindowsSdkProductVersion(Platform::Architecture architecture, const std::string &sdkVersion)
+{
+	return getWindowsSdkRegistryValue("ProductVersion"s, architecture, sdkVersion) + ".0"s;
+}
+
+static std::vector<FilePath> getHeaderSearchPaths(const FilePath& sdkIncludePath)
+{
+	const array SUB_DIRECTORIES = {"shared"s, "um"s, "winrt"s, "ucrt"s};
+
 	std::vector<FilePath> headerSearchPaths;
 
-	std::vector<std::string> windowsSdkVersions = WindowsSdk::getVersions();
-
-	for (size_t i = 0; i < windowsSdkVersions.size(); i++)
+	bool usingSubdirectories = false;
+	for (const std::string &subDirectory : SUB_DIRECTORIES)
 	{
-		const FilePath sdkPath = getWindowsSdkRootPathUsingRegistry(architecture, windowsSdkVersions[i]);
+		const FilePath sdkSubdirectory = sdkIncludePath.getConcatenated(subDirectory);
+		if (sdkSubdirectory.exists())
+		{
+			headerSearchPaths.push_back(sdkSubdirectory);
+			usingSubdirectories = true;
+		}
+	}
+
+	if (!usingSubdirectories)
+	{
+		headerSearchPaths.push_back(sdkIncludePath);
+	}
+	return headerSearchPaths;
+}
+
+std::vector<FilePath> getWindowsSdkHeaderSearchPaths(Platform::Architecture architecture)
+{
+	const vector<string> WINDOWS_SDK_VERSION = WindowsSdk::getVersions();
+
+	// Look for unversioned include paths:
+
+	std::vector<FilePath> unversionedSearchPaths;
+	for (const std::string &windowsSdkVersion : WINDOWS_SDK_VERSION)
+	{
+		FilePath sdkPath = getWindowsSdkInstallationFolder(architecture, windowsSdkVersion);
 		if (sdkPath.exists())
 		{
-			const FilePath sdkIncludePath = sdkPath.getConcatenated("include/");
+			FilePath sdkIncludePath = sdkPath.getConcatenated("include"s);
 			if (sdkIncludePath.exists())
 			{
-				bool usingSubdirectories = false;
-				for (const std::string &subDirectory : {"shared"s, "um"s, "winrt"s})
-				{
-					const FilePath sdkSubdirectory = sdkIncludePath.getConcatenated(subDirectory);
-					if (sdkSubdirectory.exists())
-					{
-						headerSearchPaths.push_back(sdkSubdirectory);
-						usingSubdirectories = true;
-					}
-				}
-
-				if (!usingSubdirectories)
-				{
-					headerSearchPaths.push_back(sdkIncludePath);
-				}
+				unversionedSearchPaths = getHeaderSearchPaths(sdkIncludePath);
 				break;
 			}
 		}
 	}
+   // Look for versioned include paths:
+
+	std::vector<FilePath> versionedSearchPaths;
+	for (const std::string &windowsSdkVersion : WINDOWS_SDK_VERSION)
 	{
-		const FilePath sdkPath = getWindowsSdkRootPathUsingRegistry(architecture, "v10.0");
+		FilePath sdkPath = getWindowsSdkInstallationFolder(architecture, windowsSdkVersion);
 		if (sdkPath.exists())
 		{
-			for (const FilePath &versionPath : FileSystem::getDirectSubDirectories(sdkPath.getConcatenated("include/")))
+			std::string productVersion = getWindowsSdkProductVersion(architecture, windowsSdkVersion);
+			FilePath versionedSdkIncludePath = sdkPath.getConcatenated("include"s).getConcatenated(productVersion);
+			if (versionedSdkIncludePath.exists())
 			{
-				const FilePath ucrtPath = versionPath.getConcatenated("ucrt");
-				if (ucrtPath.exists())
-				{
-					headerSearchPaths.push_back(ucrtPath);
-					break;
-				}
+				versionedSearchPaths = getHeaderSearchPaths(versionedSdkIncludePath);
+				break;
 			}
 		}
 	}
 
-	return headerSearchPaths;
+	/*
+	// Look for *all* versioned include paths:
+
+	std::vector<FilePath> versionedSearchPaths;
+	for (const std::string &windowsSdkVersion : WINDOWS_SDK_VERSION)
+	{
+		FilePath sdkPath = getWindowsSdkInstallationFolder(architecture, windowsSdkVersion);
+		if (sdkPath.exists())
+		{
+			for (const FilePath &versionedSdkIncludePath : FileSystem::getDirectSubDirectories(sdkPath.getConcatenated("include"s)))
+			{
+				versionedSearchPaths.append_range(getHeaderSearchPaths(versionedSdkIncludePath));
+			}
+		}
+	}
+	*/
+
+	return concat(unversionedSearchPaths, versionedSearchPaths);
 }
 
 }	 // namespace utility

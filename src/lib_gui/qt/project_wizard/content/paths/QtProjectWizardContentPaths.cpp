@@ -92,9 +92,9 @@ bool QtProjectWizardContentPaths::check()
 								   "remove them before continuing?")
 							   .arg(m_titleString));
 			msgBox.setDetailedText(missingPaths);
-			QPushButton* removeButton = msgBox.addButton(QStringLiteral("Remove"), QtMessageBox::YesRole);
-			QPushButton* keepButton = msgBox.addButton(QStringLiteral("Keep"), QtMessageBox::ButtonRole::NoRole);
-			QPushButton* cancelButton = msgBox.addButton(QStringLiteral("Cancel"), QtMessageBox::ButtonRole::RejectRole);
+			QPushButton* removeButton = msgBox.addButton(tr("Remove"), QtMessageBox::YesRole);
+			QPushButton* keepButton = msgBox.addButton(tr("Keep"), QtMessageBox::ButtonRole::NoRole);
+			QPushButton* cancelButton = msgBox.addButton(tr("Cancel"), QtMessageBox::ButtonRole::RejectRole);
 
 			QAbstractButton *clickedButton = msgBox.execModal();
 
@@ -134,16 +134,16 @@ void QtProjectWizardContentPaths::addDetection(QGridLayout* layout, int row)
 		return;
 	}
 
-	QLabel* label = new QLabel(QStringLiteral("Auto detection from:"));
+	QLabel* label = new QLabel(tr("Auto detection from:"));
 
 	m_detectorBox = new QComboBox();
 
 	for (const std::string& detectorName: detectorNames)
 	{
-		m_detectorBox->addItem(detectorName.c_str());
+		m_detectorBox->addItem(QString::fromStdString(detectorName));
 	}
 
-	QPushButton* button = new QPushButton(QStringLiteral("detect"));
+	QPushButton* button = new QPushButton(tr("detect"));
 	button->setObjectName(QStringLiteral("windowButton"));
 	connect(button, &QPushButton::clicked, this, &QtProjectWizardContentPaths::detectionClicked);
 

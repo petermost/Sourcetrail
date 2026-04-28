@@ -12,8 +12,6 @@ private:
 	const std::string m_versionRange;
 
 	std::vector<FilePath> doGetPaths() const override;
-
-	static std::string getVsWhereProperty(const std::string &versionRange, const std::string &propertyName);
 };
 
 #endif

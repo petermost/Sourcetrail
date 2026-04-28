@@ -559,7 +559,7 @@ vector<string> VisualStudio::getVersionRanges()
 string VisualStudio::getLatestMsvcVersion()
 {
 	// Can be found by calling 'cl /?':
-	return "19.44"s; // TODO (petermost): 19.50?
+	return "19.50"s;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -590,7 +590,7 @@ vector<string> WindowsSdk::getVersions()
 	// Adapted from: https://en.wikipedia.org/wiki/Microsoft_Windows_SDK
 
 	const vector<string> sdkVersions = {
-		"v10"s,   // Windows Standalone SDK for Windows 10 (Also included in Visual Studio 2015)
+		"v10.0"s, // Windows Standalone SDK for Windows 10 (Also included in Visual Studio 2015)
 		"v8.1A"s, // Included in Visual Studio 2013
 		"v8.1"s,  // Windows Software Development Kit (SDK) for Windows 8.1
 		"v8.0A"s, // Included in Visual Studio 2012
