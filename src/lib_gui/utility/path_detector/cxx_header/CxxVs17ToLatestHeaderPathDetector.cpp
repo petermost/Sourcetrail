@@ -2,6 +2,7 @@
 
 #include "FilePath.h"
 #include "TextAccess.h"
+#include "utility.h"
 #include "utilityApp.h"
 #include "utilityCxxHeaderDetection.h"
 #include "utilityString.h"
@@ -96,7 +97,7 @@ std::vector<FilePath> CxxVs17ToLatestHeaderPathDetector::doGetPaths() const
 		{
 			windowsSdkHeaderSearchPaths = utility::getWindowsSdkHeaderSearchPaths(Platform::Architecture::BITS_64);
 		}
-		headerSearchPaths.append_range(windowsSdkHeaderSearchPaths);
+		append(headerSearchPaths, windowsSdkHeaderSearchPaths);
 	}
 	return headerSearchPaths;
 }
