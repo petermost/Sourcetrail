@@ -7,31 +7,19 @@
 
 #include "FileSystem.h"
 
-std::string FileLogger::generateDatedFileName(const std::string& prefix, int offsetDays)
+std::string FileLogger::generateDatedFileName(const std::string &prefix, int offsetDays)
 {
-	time_t time;
-	std::time(&time);
-
+	time_t time = std::time(nullptr);
 	tm t = *std::localtime(&time);
 
-	if (offsetDays != 0)
-	{
-		time = mktime(&t) + offsetDays * 24 * 60 * 60;
-		t = *std::localtime(&time);
-	}
+	// Apply the offset directly to the day field. mktime() will normalizes the struct (e.g., Dec 32nd becomes Jan 1st)
+	// and handles Daylight Saving Time transitions correctly:
+
+	t.tm_mday += offsetDays;
+	mktime(&t);
 
 	std::stringstream filename;
-	if (!prefix.empty())
-	{
-		filename << prefix << "_";
-	}
-
-	filename << t.tm_year + 1900 << "-";
-	filename << (t.tm_mon < 9 ? "0" : "") << t.tm_mon + 1 << "-";
-	filename << (t.tm_mday < 10 ? "0" : "") << t.tm_mday << "_";
-	filename << (t.tm_hour < 10 ? "0" : "") << t.tm_hour << "-";
-	filename << (t.tm_min < 10 ? "0" : "") << t.tm_min << "-";
-	filename << (t.tm_sec < 10 ? "0" : "") << t.tm_sec;
+	filename << prefix << "_" << std::put_time(&t, "%Y-%m-%d_%H-%M-%S");
 
 	return filename.str();
 }

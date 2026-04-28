@@ -133,7 +133,7 @@ void logSomeMessages(
 }
 }	 // namespace
 
-TEST_CASE("new logger can be added to manager")
+TEST_CASE("logger can be added to manager")
 {
 	LogManagerImplementation logManagerImplementation;
 
@@ -237,7 +237,7 @@ TEST_CASE("logger logs only logs of defined log level")
 	REQUIRE(error == logger->getLastError());
 }
 
-TEST_CASE("new logger can be added to manager threaded")
+TEST_CASE("logger can be added to manager threaded")
 {
 	LogManagerImplementation logManagerImplementation;
 	int loggerCount = 100;
