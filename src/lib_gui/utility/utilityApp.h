@@ -10,7 +10,7 @@
 
 namespace utility
 {
-constexpr boost::chrono::milliseconds DEFAULT_TIMEOUT(30000);
+constexpr boost::chrono::milliseconds DEFAULT_TIMEOUT(30'000);
 constexpr boost::chrono::milliseconds INFINITE_TIMEOUT(boost::chrono::milliseconds::max());
 
 struct ProcessOutput

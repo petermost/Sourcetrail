@@ -17,6 +17,8 @@ using namespace boost::chrono;
 
 namespace
 {
+constexpr milliseconds MAVEN_DEFAULT_TIMEOUT(60'000);
+
 void fetchDirectories(
 	std::vector<FilePath>& pathList,
 	std::shared_ptr<TextAccess> xmlAccess,
@@ -104,7 +106,7 @@ std::string mavenGenerateSources(
 	args.push_back("generate-sources");
 
 	std::shared_ptr<TextAccess> outputAccess = TextAccess::createFromString(
-		utility::executeProcess(mavenPath.str(), args, projectDirectoryPath, true, milliseconds(60000)).output);
+		utility::executeProcess(mavenPath.str(), args, projectDirectoryPath, true, MAVEN_DEFAULT_TIMEOUT).output);
 
 	if (outputAccess->isEmpty())
 	{
@@ -128,7 +130,7 @@ bool mavenCopyDependencies(
 	args.push_back("-DoutputDirectory=" + outputDirectoryPath.str());
 
 	std::shared_ptr<TextAccess> outputAccess = TextAccess::createFromString(
-		utility::executeProcess(mavenPath.str(), args, projectDirectoryPath, true, milliseconds(60000)).output);
+		utility::executeProcess(mavenPath.str(), args, projectDirectoryPath, true, MAVEN_DEFAULT_TIMEOUT).output);
 
 	const std::string errorMessage = getErrorMessageFromMavenOutput(outputAccess);
 	if (!errorMessage.empty())
@@ -157,7 +159,7 @@ std::vector<FilePath> mavenGetAllDirectoriesFromEffectivePom(
 	args.push_back("-Doutput=" + outputPath.str());
 
 	std::shared_ptr<TextAccess> outputAccess = TextAccess::createFromString(
-		utility::executeProcess(mavenPath.str(), args, projectDirectoryPath, true, milliseconds(60000)).output);
+		utility::executeProcess(mavenPath.str(), args, projectDirectoryPath, true, MAVEN_DEFAULT_TIMEOUT).output);
 
 	const std::string errorMessage = getErrorMessageFromMavenOutput(outputAccess);
 	if (!errorMessage.empty())

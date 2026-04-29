@@ -4,7 +4,7 @@
 #include "logging.h"
 #include "utilityString.h"
 
-#include <QThread>
+#include <aidkit/concurrent/thread_shared.hpp>
 
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/io_context.hpp>
@@ -29,43 +29,22 @@
 #endif
 
 #include <algorithm>
-#include <mutex>
 #include <set>
 
 using namespace boost;
+using namespace boost::asio;
 using namespace boost::chrono;
+using namespace aidkit;
 
 namespace utility
 {
-std::mutex s_runningProcessesMutex;
-std::set<std::shared_ptr<process_v1::child>> s_runningProcesses;
-
-std::string getDocumentationLink()
-{
-	return "https://github.com/petermost/Sourcetrail/blob/master/DOCUMENTATION.md";
-}
-
-std::string searchPath(const std::string& bin, bool& ok)
-{
-	ok = false;
-	std::string r = process_v1::search_path(bin).generic_string();
-	if (!r.empty())
-	{
-		ok = true;
-		return r;
-	}
-	return bin;
-}
-
-std::string searchPath(const std::string& bin)
-{
-	bool ok;
-	return searchPath(bin, ok);
-}
+static_assert(INFINITE_TIMEOUT.count() > 0, "INFINITE_TIMEOUT must be a positive duration");
 
 namespace
 {
-bool wait_for_process(process_v1::child *process, milliseconds timeout)
+concurrent::thread_shared<std::set<std::shared_ptr<process_v1::child>>> s_runningProcesses;
+
+bool pump_and_wait_for_process(io_context *ctx, process_v1::child *process, milliseconds timeout)
 {
 	// This function used to call 'process::child::wait_for()' which issued the warning "wait_for is unreliable".
 	// See these tickets for further information:
@@ -74,20 +53,27 @@ bool wait_for_process(process_v1::child *process, milliseconds timeout)
 
 	constexpr milliseconds POLL_INTERVAL(100);
 
+	// We deliberately don't use a 'steady clock' approach so this code also works when debugging.
+
 	while (process->running() && timeout > milliseconds::zero())
 	{
+		ctx->poll();
+
 		this_thread::sleep_for(POLL_INTERVAL);
-		timeout -= std::min(timeout, POLL_INTERVAL);
+		if (timeout != INFINITE_TIMEOUT)
+		{
+			timeout -= std::min(timeout, POLL_INTERVAL);
+		}
 	}
-	return process->running();
+	ctx->poll();
+	return !process->running();
 }
-}	 // namespace
+
+} // namespace
 
 ProcessOutput executeProcess(const std::string& command, const std::vector<std::string>& arguments, const FilePath& workingDirectory,
 	const bool waitUntilNoOutput, const milliseconds &timeout, bool logProcessOutput)
 {
-	std::string output;
-	int exitCode = 255;
 	try
 	{
 		boost::asio::io_context ctx;
@@ -123,26 +109,23 @@ ProcessOutput executeProcess(const std::string& command, const std::vector<std::
 				(process_v1::std_out & process_v1::std_err) > ap);
 		}
 
-		{
-			std::lock_guard<std::mutex> lock(s_runningProcessesMutex);
-			s_runningProcesses.insert(process);
-		}
+		s_runningProcesses.access()->insert(process);
 
 		[[maybe_unused]]
 		ScopedFunctor remover([process]()
 		{
-			std::lock_guard<std::mutex> lock(s_runningProcessesMutex);
-			s_runningProcesses.erase(process);
+			s_runningProcesses.access()->erase(process);
 		});
 
+		std::string output;
 		bool outputReceived = false;
 		std::vector<char> buf(128);
 		auto stdOutBuffer = boost::asio::buffer(buf);
 		std::string logBuffer;
 
 		std::function<void(const boost::system::error_code& ec, std::size_t n)> onStdOut =
-			[&output, &buf, &stdOutBuffer, &ap, &onStdOut, &outputReceived, &logBuffer, logProcessOutput](
-				const boost::system::error_code& ec, std::size_t size)
+			[&output, &buf, &stdOutBuffer, &ap, &onStdOut, &outputReceived, &logBuffer, logProcessOutput]
+				(const boost::system::error_code& ec, std::size_t size)
 		{
 			std::string text;
 			text.reserve(size);
@@ -179,18 +162,19 @@ ProcessOutput executeProcess(const std::string& command, const std::vector<std::
 		};
 
 		boost::asio::async_read(ap, stdOutBuffer, onStdOut);
-		ctx.run();
 
 		if (timeout != INFINITE_TIMEOUT)
 		{
+			const std::string commandLine = "'" + command + " " + utility::join(arguments, ' ') + "'";
+			const std::string duration = std::to_string(duration_cast<seconds>(timeout).count());
+
 			if (waitUntilNoOutput)
 			{
-				while (!wait_for_process(process.get(), timeout))
+				while (!pump_and_wait_for_process(&ctx, process.get(), timeout))
 				{
 					if (!outputReceived)
 					{
-						LOG_WARNING("Canceling process because it did not generate any output during the "
-							"last " + boost::chrono::to_string(duration_cast<seconds>(timeout)) + " seconds.");
+						LOG_WARNING("Cancelling process " + commandLine + " because it did not generate any output during the last " + duration + " seconds.");
 						process->terminate();
 						break;
 					}
@@ -199,16 +183,16 @@ ProcessOutput executeProcess(const std::string& command, const std::vector<std::
 			}
 			else
 			{
-				if (!wait_for_process(process.get(), timeout))
+				if (!pump_and_wait_for_process(&ctx, process.get(), timeout))
 				{
-					LOG_WARNING("Canceling process because it timed out after " +
-						boost::chrono::to_string(duration_cast<seconds>(timeout)) + " seconds.");
+					LOG_WARNING("Cancelling process " + commandLine + " because it timed out after " + duration + " seconds.");
 					process->terminate();
 				}
 			}
 		}
 		else
 		{
+			pump_and_wait_for_process(&ctx, process.get(), INFINITE_TIMEOUT);
 			process->wait();
 		}
 
@@ -220,7 +204,12 @@ ProcessOutput executeProcess(const std::string& command, const std::vector<std::
 			}
 		}
 
-		exitCode = process->exit_code();
+		int exitCode = process->exit_code();
+		ProcessOutput ret;
+		ret.output = trim(output);
+		ret.exitCode = exitCode;
+
+		return ret;
 	}
 	catch (const process_v1::process_error& e)
 	{
@@ -231,25 +220,45 @@ ProcessOutput executeProcess(const std::string& command, const std::vector<std::
 
 		return ret;
 	}
-
-	ProcessOutput ret;
-	ret.output = trim(output);
-	ret.exitCode = exitCode;
-	return ret;
 }
 
 void killRunningProcesses()
 {
-	std::lock_guard<std::mutex> lock(s_runningProcessesMutex);
-	for (std::shared_ptr<process_v1::child> process: s_runningProcesses)
+	concurrent::access([](auto &runningProcesses)
 	{
-		process->terminate();
+		for (std::shared_ptr<process_v1::child> process : runningProcesses)
+		{
+			process->terminate();
+		}
+	}, s_runningProcesses);
+}
+
+std::string getDocumentationLink()
+{
+	return "https://github.com/petermost/Sourcetrail/blob/master/DOCUMENTATION.md";
+}
+
+std::string searchPath(const std::string& bin, bool& ok)
+{
+	ok = false;
+	std::string r = process_v1::search_path(bin).generic_string();
+	if (!r.empty())
+	{
+		ok = true;
+		return r;
 	}
+	return bin;
+}
+
+std::string searchPath(const std::string& bin)
+{
+	bool ok;
+	return searchPath(bin, ok);
 }
 
 int getIdealThreadCount()
 {
-	int threadCount = QThread::idealThreadCount();
+	int threadCount = static_cast<int>(thread::hardware_concurrency());
 	if constexpr (Platform::isWindows())
 	{
 		threadCount -= 1; // Most likely to keep the GUI thread responsive
