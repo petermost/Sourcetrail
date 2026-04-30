@@ -18,7 +18,6 @@
 #include <regex>
 
 using namespace utility;
-using namespace boost::chrono;
 
 QtProjectWizardContentSelect::QtProjectWizardContentSelect(QtProjectWizardWindow* window)
 	: QtProjectWizardContent(window)

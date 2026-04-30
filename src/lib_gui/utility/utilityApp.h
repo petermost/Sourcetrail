@@ -1,6 +1,7 @@
 #ifndef UTILITY_APP_H
 #define UTILITY_APP_H
 
+#include <chrono>
 #include <string>
 
 #include <boost/chrono/duration.hpp>
@@ -10,8 +11,8 @@
 
 namespace utility
 {
-constexpr boost::chrono::milliseconds DEFAULT_TIMEOUT(30'000);
-constexpr boost::chrono::milliseconds INFINITE_TIMEOUT(boost::chrono::milliseconds::max());
+constexpr std::chrono::milliseconds DEFAULT_TIMEOUT(30'000);
+constexpr std::chrono::milliseconds INFINITE_TIMEOUT(std::chrono::milliseconds::max());
 
 struct ProcessOutput
 {
@@ -31,7 +32,7 @@ ProcessOutput executeProcess(
 	const std::vector<std::string>& arguments,
 	const FilePath& workingDirectory = FilePath(),
 	const bool waitUntilNoOutput = false,
-	const boost::chrono::milliseconds &timeout = DEFAULT_TIMEOUT,
+	const std::chrono::milliseconds &timeout = DEFAULT_TIMEOUT,
 	bool logProcessOutput = false);
 
 void killRunningProcesses();

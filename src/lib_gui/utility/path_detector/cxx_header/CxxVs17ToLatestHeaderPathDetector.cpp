@@ -11,7 +11,6 @@
 
 using namespace std;
 using namespace utility;
-using namespace boost::chrono;
 using namespace string_literals;
 
 static std::string getVsWhereProperty(const std::string &versionRange, const std::string &propertyName)
@@ -26,7 +25,7 @@ static std::string getVsWhereProperty(const std::string &versionRange, const std
 		const utility::ProcessOutput out = utility::executeProcess(expandedPaths.front().str(), {
 			"-version", versionRange,
 			"-property", propertyName
-			}, FilePath(), false, milliseconds(10'000));
+			}, FilePath(), false, 10'000ms);
 
 		if (out.exitCode == 0)
 			propertyValue = out.output;

@@ -13,7 +13,7 @@
 #include "utilityString.h"
 #include "utilityXml.h"
 
-using namespace boost::chrono;
+using namespace std::chrono;
 
 namespace
 {
