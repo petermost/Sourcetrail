@@ -69,7 +69,9 @@
 			"\\bfriend\\b",
 			"\\bgoto\\b",
 			"\\bif\\b",
+			"\\bimport\\b",
 			"\\binline\\b",
+			"\\bmodule\\b",
 			"\\bmutable\\b",
 			"\\bnamespace\\b",
 			"\\bnew\\b",
@@ -140,7 +142,7 @@
 	},
 	{
 		"type" : "directive",
-		"patterns" : [ 
+		"patterns" : [
 			"#[a-z]+\\b",
 			"\\[\\[.*?\\]\\]"
 		]
