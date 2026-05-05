@@ -21,7 +21,7 @@ class Platform final
 			// These Unix implementations are similar enough for our purpose, so we don't
 			// distinguish them further for now:
 
-			return BOOST_OS_LINUX || BOOST_OS_BSD_FREE;
+			return BOOST_OS_LINUX || BOOST_OS_BSD_FREE || BOOST_OS_HAIKU;
 		}
 
 		static constexpr bool isWindows()

@@ -1,6 +1,7 @@
 #include "utilityPathDetection.h"
 
 #include "language_packages.h"
+#include "Platform.h"
 
 #if BUILD_CXX_LANGUAGE_PACKAGE
 #	include "CxxFrameworkPathDetector.h"
