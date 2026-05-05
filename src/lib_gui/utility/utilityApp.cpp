@@ -51,30 +51,20 @@ bool pump_and_wait_for_process(io_context *ctx, process_v1::child *process, mill
 	// https://github.com/klemens-morgenstern/boost-process/issues/99
 	// https://github.com/klemens-morgenstern/boost-process/issues/112
 
+	// Use adaptive polling based on the expected process lifetime:
+	// 1) Short-lived (e.g., mvn, gcc, clang): Poll frequently to detect fast completion.
+	// 2) Long-lived (e.g., indexers): Poll less often to reduce CPU overhead.
+
+	const milliseconds pollInterval = (timeout != INFINITE_TIMEOUT) ? 100ms : 500ms;
+
 	// We deliberately don't use a 'steady clock' approach so this code also works when debugging.
 
 	while (process->running() && timeout > milliseconds::zero())
 	{
 		ctx->poll();
 
-		// Use adaptive polling based on the expected process lifetime:
-		// 1) Short-lived (e.g., mvn, gcc, clang): Poll frequently (100ms) to detect fast completion.
-		// 2) Long-lived (e.g., indexers): Poll less often (500ms) to reduce CPU overhead.
-
-		if (timeout != INFINITE_TIMEOUT)
-		{
-			constexpr milliseconds SHORT_POLL_INTERVAL = 100ms;
-
-			this_thread::sleep_for(SHORT_POLL_INTERVAL);
-			timeout -= std::min(timeout, SHORT_POLL_INTERVAL);
-		}
-		else
-		{
-			constexpr milliseconds LONG_POLL_INTERVAL = 500ms;
-
-			this_thread::sleep_for(LONG_POLL_INTERVAL);
-			timeout -= std::min(timeout, LONG_POLL_INTERVAL);
-		}
+		this_thread::sleep_for(pollInterval);
+		timeout -= std::min(timeout, pollInterval);
 	}
 	ctx->poll();
 	return !process->running();
