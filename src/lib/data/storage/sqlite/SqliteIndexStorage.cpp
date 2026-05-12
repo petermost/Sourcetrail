@@ -641,20 +641,20 @@ void SqliteIndexStorage::removeAllErrors()
 
 bool SqliteIndexStorage::isEdge(Id elementId) const
 {
-	int count = executeStatementScalar("SELECT count(*) FROM edge WHERE id = " + to_string(elementId) + ";");
-	return (count > 0);
+	int exists = executeStatementScalar("SELECT EXISTS(SELECT 1 FROM edge WHERE id = " + to_string(elementId) + ");");
+	return exists != 0;
 }
 
 bool SqliteIndexStorage::isNode(Id elementId) const
 {
-	int count = executeStatementScalar("SELECT count(*) FROM node WHERE id = " + to_string(elementId) + ";");
-	return (count > 0);
+	int exists = executeStatementScalar("SELECT EXISTS(SELECT 1 FROM node WHERE id = " + to_string(elementId) + ");");
+	return exists != 0;
 }
 
 bool SqliteIndexStorage::isFile(Id elementId) const
 {
-	int count = executeStatementScalar("SELECT count(*) FROM file WHERE id = " + to_string(elementId) + ";");
-	return (count > 0);
+	int exists = executeStatementScalar("SELECT EXISTS(SELECT 1 FROM file WHERE id = " + to_string(elementId) + ");");
+	return exists != 0;
 }
 
 StorageEdge SqliteIndexStorage::getEdgeById(Id edgeId) const
