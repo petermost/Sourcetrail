@@ -26,7 +26,7 @@ endif()
 
 # Project ----------------------------------------------------------------------
 
-project(Sourcetrail VERSION 2026.4.30 HOMEPAGE_URL "http://sourcetrail.de")
+project(Sourcetrail VERSION 2026.5.12 HOMEPAGE_URL "http://sourcetrail.de")
 
 configure_file(cmake/productVersion.h.in src/lib/productVersion.h)
 
@@ -284,7 +284,7 @@ if (isVcpkgBuild)
 	find_package(unofficial-sqlite3 CONFIG REQUIRED)
 	if (NOT DEFINED SQLite3_VERSION)
 		# Use quotes to indicate a version literal:
-		set(SQLite3_VERSION "\"3.50.4\"")
+		set(SQLite3_VERSION "\"3.53.1\"")
 	endif()
 	add_library(External_lib_sqlite3 ALIAS unofficial::sqlite3::sqlite3)
 else()
@@ -370,7 +370,6 @@ if (BUILD_CXX_LANGUAGE_PACKAGE)
 	target_include_directories(External_lib_clang SYSTEM
 		INTERFACE
 			${LLVM_INCLUDE_DIRS}
-			${CLANG_INCLUDE_DIRS}
 	)
 	
 	# 'LLVM_LINK_LLVM_DYLIB' is set when LLVM has been build into a single shared library i.e. 'libLLVM'
@@ -410,14 +409,10 @@ if (BUILD_CXX_LANGUAGE_PACKAGE)
 	endif()
 	
 	# Copy required header:
+	# Regular vcpkg (non-overlay-port) path was: "${CLANG_INSTALL_PREFIX}/tools/llvm/lib/clang/${LLVM_VERSION_MAJOR}/include/"
 
-	if (isVcpkgBuild)
-		cmake_path(SET headerSourceDir NORMALIZE "${CLANG_INSTALL_PREFIX}/tools/llvm/lib/clang/${LLVM_VERSION_MAJOR}/include/")
-	else()
-		cmake_path(SET headerSourceDir NORMALIZE "${CLANG_INSTALL_PREFIX}/lib/clang/${LLVM_VERSION_MAJOR}/include/")
-	endif()
+	cmake_path(SET headerSourceDir NORMALIZE "${LLVM_INSTALL_PREFIX}/lib/clang/${Clang_VERSION_MAJOR}/include/")
 	cmake_path(SET headerTargetDir NORMALIZE "${CMAKE_BINARY_DIR}/app/data/cxx/include/")
-
 	message(STATUS "Copying Clang header: ${headerSourceDir} -> ${headerTargetDir}")
 	file(COPY "${headerSourceDir}" DESTINATION "${headerTargetDir}")
 	
@@ -468,7 +463,7 @@ add_subdirectory(src/app)
 # Test ----------------------------------------------------------------------
 
 set(CATCH2_MIN_VERSION 3.7)
-set(CATCH2_MAX_VERSION 3.13)
+set(CATCH2_MAX_VERSION 3.15)
 
 if (BUILD_UNIT_TESTS_PACKAGE)
 	include(CTest)

@@ -31,7 +31,7 @@ By sponsoring me with **$10 per month**, you will gain access to the following *
 
 * Sourcetrail
 * :new: Visual Studio 2026 Extension
-* :new: QtCreator 18 Plugin
+* :new: QtCreator 18/19 Plugin
 
 ### Binary Releases
 
@@ -40,7 +40,7 @@ By sponsoring me with **$10 per month**, you will gain access to the following *
 |Sourcetrail                 |Linux        |ZIP Archive, Debian Package|Vcpkg, System|
 |Sourcetrail                 |Windows      |ZIP Archive                |Vcpkg        |
 |Visual Studio 2026 Extension|Windows      |VSIX Package               |             |
-|Qt Creator 18 Plugin        |Linux/Windows|ZIP Archive                |             |
+|Qt Creator 18/19 Plugin     |Linux/Windows|ZIP Archive                |             |
 
 ### Sourcetrail used/tested/supported libraries: ###
 
@@ -48,7 +48,7 @@ By sponsoring me with **$10 per month**, you will gain access to the following *
 
 |Name      |System|Vcpkg |
 |----------|------|------|
-|Clang/LLVM|20.1.8|18.1.6|
+|Clang/LLVM|20.1.8|20.1.8|
 
 **Java**
 
@@ -62,15 +62,14 @@ By sponsoring me with **$10 per month**, you will gain access to the following *
 
 |Name   |System|Vcpkg |
 |-------|------|------|
-|Qt     |6.9.2 |6.10.0|
+|Qt     |6.9.2 |6.10.3|
 |Boost  |1.88.0|1.90.0|
-|SQLite3|3.46.1|3.51.2|
-|TinyXML|2.6.2 |2.6.2 |
+|SQLite3|3.46.1|3.53.1|
 
 **Tests**
 |Name  |System|Vcpkg |
 |------|------|------|
-|Catch2|3.7.1 |3.12.0|
+|Catch2|3.7.1 |3.14.0|
 |GTest |1.17.0|1.17.0|
 
 ### Changes

@@ -32,11 +32,7 @@
 		"qtimageformats",
 		{
 			"name": "llvm",
-			"default-features": false,
-			"features": [
-				"clang",
-				"enable-rtti"
-			]
+			"$comment": "LLVM features are not supported with our overlay-port"
 		},
 		"catch2",
 		"gtest"

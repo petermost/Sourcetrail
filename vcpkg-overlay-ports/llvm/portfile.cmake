@@ -1,0 +1,73 @@
+vcpkg_cmake_get_vars(cmake_vars_file)
+include("${cmake_vars_file}")
+
+vcpkg_check_linkage(
+	ONLY_STATIC_LIBRARY
+	ONLY_DYNAMIC_CRT
+)
+
+vcpkg_from_github(
+    OUT_SOURCE_PATH SOURCE_PATH
+    REPO llvm/llvm-project
+    REF "llvmorg-${VERSION}"
+    SHA512 3db4660b629bd1b45fb5c3a10bb1bf4d78133dda60e44a9a34d3bc797b833985b94153195e3fcec31b6413ed0ed61439322a8da51d58629d0bf47e52e4c8ad94
+    HEAD_REF main
+)
+
+vcpkg_find_acquire_program(PYTHON3)
+get_filename_component(PYTHON3_DIR ${PYTHON3} DIRECTORY)
+vcpkg_add_to_path("${PYTHON3_DIR}")
+
+#set(VCPKG_POLICY_ALLOW_DEBUG_INCLUDE enabled)
+#set(VCPKG_POLICY_ALLOW_DEBUG_SHARE enabled)
+#set(VCPKG_POLICY_SKIP_MISPLACED_CMAKE_FILES_CHECK enabled)
+#set(VCPKG_POLICY_SKIP_LIB_CMAKE_MERGE_CHECK enabled)
+#set(VCPKG_POLICY_SKIP_COPYRIGHT_CHECK enabled)
+#set(VCPKG_POLICY_ALLOW_EMPTY_FOLDERS enabled)
+#
+#set(VCPKG_POLICY_DLLS_IN_STATIC_LIBRARY enabled)
+
+vcpkg_cmake_configure(
+    SOURCE_PATH "${SOURCE_PATH}/llvm"
+    OPTIONS
+        -DLLVM_TARGETS_TO_BUILD="host"
+        -DLLVM_ENABLE_PROJECTS="clang"
+        -DLLVM_ENABLE_RTTI=ON
+        -DLLVM_OPTIMIZED_TABLEGEN=ON
+        -DLLVM_INSTALL_PACKAGE_DIR:PATH=share/llvm
+        -DPACKAGE_VERSION=${VERSION}
+
+		-DLLVM_BUILD_TOOLS=OFF
+		-DLLVM_INCLUDE_TOOLS=ON
+		-DLLVM_TOOLS_INSTALL_DIR:PATH=tools/llvm
+		
+        -DLLVM_BUILD_EXAMPLES=OFF
+		-DLLVM_INCLUDE_EXAMPLES=OFF
+		-DLLVM_BUILD_TESTS=OFF
+        -DLLVM_INCLUDE_TESTS=OFF
+		-DLLVM_BUILD_BENCHMARKS=OFF
+        -DLLVM_INCLUDE_BENCHMARKS=OFF
+		-DLLVM_BUILD_UTILS=OFF
+		-DLLVM_INCLUDE_UTILS=OFF
+        -DLLVM_INSTALL_UTILS=OFF
+		-DLLVM_BUILD_DOCS=OFF
+        
+        -DLLVM_PARALLEL_LINK_JOBS=1
+        -DLLVM_ABI_BREAKING_CHECKS=FORCE_OFF
+        -DLLVM_ENABLE_BINDINGS=OFF
+        -DLLVM_ENABLE_IDE=OFF
+)
+vcpkg_cmake_install(ADD_BIN_TO_PATH)
+
+vcpkg_cmake_config_fixup(
+    PACKAGE_NAME llvm
+    DO_NOT_DELETE_PARENT_CONFIG_PATH
+)
+
+vcpkg_cmake_config_fixup(
+    PACKAGE_NAME clang
+    DO_NOT_DELETE_PARENT_CONFIG_PATH
+)
+
+# vcpkg_copy_tool_dependencies("${CURRENT_PACKAGES_DIR}/tools/${PORT}")
+
