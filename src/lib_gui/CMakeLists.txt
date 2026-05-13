@@ -146,8 +146,6 @@ add_library(Sourcetrail_lib_gui
 	qt/network/QtIDECommunicationController.h
 	qt/network/QtNetworkFactory.cpp
 	qt/network/QtNetworkFactory.h
-	qt/network/QtRequest.cpp
-	qt/network/QtRequest.h
 	qt/network/QtTcpWrapper.cpp
 	qt/network/QtTcpWrapper.h
 

@@ -156,7 +156,7 @@ find_package(ICU REQUIRED
 	COMPONENTS 
 		i18n uc data
 )
-message(STATUS "Found ICU ${ICU_VERSION}: ${ICU_INCLUDE_DIRS}, ${ICU_LIBRARIES}")
+message(STATUS "Found ICU ${ICU_VERSION}: ${ICU_INCLUDE_DIRS}") # ${ICU_LIBRARIES}
 
 add_library(External_lib_icu INTERFACE)
 
@@ -246,12 +246,11 @@ set(QT_MIN_VERSION 6.8.3)
 
 find_package(Qt6 ${QT_MIN_VERSION} CONFIG REQUIRED 
 	COMPONENTS
-		Network 
-		# PrintSupport 
-		Svg
 		Widgets 
+		Network 
+		Svg
 )
-message(STATUS "Found Qt ${Qt6_VERSION}")
+message(STATUS "Found Qt ${Qt6_VERSION}: ${Qt6Core_INCLUDE_DIRS}")
 
 add_library(External_lib_qt INTERFACE)
 
@@ -272,10 +271,9 @@ target_compile_definitions(External_lib_qt
 
 target_link_libraries(External_lib_qt
 	INTERFACE
-		Qt6::Network
-		# Qt6::PrintSupport
-		Qt6::Svg
 		Qt6::Widgets
+		Qt6::Network
+		Qt6::Svg
 )
 
 # SQLite3 ----------------------------------------------------------------------
@@ -309,7 +307,7 @@ else()
 	pkg_check_modules(tinyxml tinyxml IMPORTED_TARGET REQUIRED)
 	add_library(External_lib_tinyxml ALIAS PkgConfig::tinyxml)
 endif()
-message(STATUS "Found tinyxml ${tinyxml_VERSION}")
+message(STATUS "Found tinyxml ${tinyxml_VERSION}: ${tinyxml_INCLUDE_DIRS}")
 
 # AidKit  -----------------------------------------------------------------------------------
 

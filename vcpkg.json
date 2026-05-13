@@ -3,11 +3,14 @@
 	"name": "sourcetrail",
 	"version": "1.0.0",
 	"dependencies": [
+		{
+			"name": "llvm",
+			"$comment": "LLVM features are not supported with our overlay-port"
+		},
 		"boost-system",
 		"boost-date-time",
 		"boost-filesystem",
 		"boost-program-options",
-
 		"boost-dll",
 		"boost-interprocess",
 		"boost-uuid",
@@ -16,24 +19,17 @@
 		"boost-multi-index",
 		{
 			"name": "boost-locale",
-			"features": [
-				"icu"
-			]
+			"features": [ "icu" ]
 		},
-
-		"sqlite3",
-
-		"tinyxml",
-
 		"icu",
 
 		"qtsvg",
 		"qtbase",
 		"qtimageformats",
-		{
-			"name": "llvm",
-			"$comment": "LLVM features are not supported with our overlay-port"
-		},
+
+		"sqlite3",
+		"tinyxml",
+
 		"catch2",
 		"gtest"
 	]
