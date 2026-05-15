@@ -12,7 +12,7 @@ class CxxDiagnosticConsumer: public clang::TextDiagnosticPrinter
 public:
 	CxxDiagnosticConsumer(
 		clang::raw_ostream& os,
-		clang::DiagnosticOptions* diags,
+		clang::DiagnosticOptions &diags,
 		std::shared_ptr<ParserClient> client,
 		std::shared_ptr<CanonicalFilePathCache> canonicalFilePathCache,
 		const FilePath& sourceFilePath,

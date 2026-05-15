@@ -459,7 +459,7 @@ TEST_CASE("source gropup cxx c correct default standard")
 	string defaultCStandard = SourceGroupSettingsWithCStandard::getDefaultCStandard();
 	string defaultCppStandard = SourceGroupSettingsWithCppStandard::getDefaultCppStandard();
 
-	REQUIRE(  defaultCStandard == "c17");
+	REQUIRE(  defaultCStandard == "c23");
 	REQUIRE(defaultCppStandard == "c++23");
 }
 

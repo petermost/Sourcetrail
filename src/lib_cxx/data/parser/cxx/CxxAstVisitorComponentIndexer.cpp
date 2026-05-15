@@ -66,7 +66,6 @@ void CxxAstVisitorComponentIndexer::beginTraverseNestedNameSpecifierLoc(
 	case clang::NestedNameSpecifier::Super:
 		break;
 	case clang::NestedNameSpecifier::TypeSpec:
-	case clang::NestedNameSpecifier::TypeSpecWithTemplate:
 		if (const clang::CXXRecordDecl* recordDecl = loc.getNestedNameSpecifier()->getAsRecordDecl())
 		{
 			SymbolKind symbolKind = SymbolKind::UNDEFINED;

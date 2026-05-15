@@ -161,18 +161,29 @@ TEST_CASE("CDB replace msvc arguments")
 		"/UUndefine",
 
 		"/IIncludeDirectory",
-		"/external:IExternalIncludeDirectory1", "-external:IExternalIncludeDirectory2",
-		"/FIIncludeFile1", 	"-FIIncludeFile2",
+		"/external:IExternalIncludeDirectory1",
+		"-external:IExternalIncludeDirectory2",
+		"/FIIncludeFile1",
+		"-FIIncludeFile2",
 
-		"/std:c++latest", "-std:c++latest",
-		"/std:c++11", "-std:c++14",
-		"/std:clatest", "-std:clatest",
-		"/std:c11", "-std:c99",
+		"/std:c++latest",
+		"-std:c++latest",
+		"/std:c++11",
+		"-std:c++14",
+		"/std:clatest",
+		"-std:clatest",
+		"/std:c11",
+		"-std:c99",
 
-		"/std:c++23preview", "-std:c++23preview",
-		"/std:c23preview", "-std:c23preview",
+		"/std:c++23preview",
+		"-std:c++23preview",
+		"/std:c23preview",
+		"-std:c23preview",
 
-		"/MD", "/MDd", "/MT", "/MTd",
+		"/MD",
+		"/MDd",
+		"/MT",
+		"/MTd",
 
 		"/SomeUnknownOption"
 	};
@@ -183,24 +194,38 @@ TEST_CASE("CDB replace msvc arguments")
 		"-UUndefine",
 
 		"-IIncludeDirectory",
-		"-isystemExternalIncludeDirectory1", "-isystemExternalIncludeDirectory2",
-		"-includeIncludeFile1", "-includeIncludeFile2",
+		"-isystemExternalIncludeDirectory1",
+		"-isystemExternalIncludeDirectory2",
+		"-includeIncludeFile1",
+		"-includeIncludeFile2",
 
-		"-std=c++23", "-std=c++23",
-		"-std=c++11", "-std=c++14",
-		"-std=c17", "-std=c17",
-		"-std=c11", "-std=c99",
+		"-std=c++23",
+		"-std=c++23",
+		"-std=c++11",
+		"-std=c++14",
+		"-std=c23",
+		"-std=c23",
+		"-std=c11",
+		"-std=c99",
 
-		"-std=" + ClangCompiler::getLatestCppDraft(), "-std=" + ClangCompiler::getLatestCppDraft(),
-		"-std=" + ClangCompiler::getLatestCDraft(), "-std=" + ClangCompiler::getLatestCDraft(),
+		"-std=c++2c",
+		"-std=c++2c",
+		"-std=c2y",
+		"-std=c2y",
 
-		"-pthread", "-pthread", "-pthread", "-pthread"
+		"-pthread",
+		"-pthread",
+		"-pthread",
+		"-pthread"
 
 		// Removed: "/SomeUnknownOption"
 	};
 	replaceMsvcArguments(&arguments);
 
 	for (size_t i = 0; i < arguments.size() && i < expectedClangArguments.size(); ++i)
+	{
+		INFO("i == " << i);
 		REQUIRE(arguments[i] == expectedClangArguments[i]);
+	}
 }
 

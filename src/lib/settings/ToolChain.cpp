@@ -1,58 +1,22 @@
 #include "ToolChain.h"
-#include "language_packages.h"
 #include "utility.h"
-
-#if BUILD_CXX_LANGUAGE_PACKAGE
-	#include <llvm/Config/llvm-config.h>
-#endif
 
 using namespace std;
 using namespace string_literals;
 using namespace utility;
 
-// Note: We do the '#if LLVM_VERSION_MAJOR ==' check in case we need to support two different clang
-// versions in the system build and the vcpkg build!
-//
-// From llvm-config.h:
-// #define LLVM_VERSION_MAJOR 18
-// #define LLVM_VERSION_MAJOR 19
-//
-// C++
-// /usr/bin/clang-20 -std=xxx empty.cpp
-// vcpkg_installed/x64-arm64-linux-windows-osx-static-md/tools/llvm/clang-18 -std=xxx empty.cpp
-//
-// Released standards:
-// note: use 'c++98' or 'c++03' for 'ISO C++ 1998 with amendments' standard
-// note: use 'gnu++98' or 'gnu++03' for 'ISO C++ 1998 with amendments and GNU extensions' standard
-// note: use 'c++11' for 'ISO C++ 2011 with amendments' standard
-// note: use 'gnu++11' for 'ISO C++ 2011 with amendments and GNU extensions' standard
-// note: use 'c++14' for 'ISO C++ 2014 with amendments' standard
-// note: use 'gnu++14' for 'ISO C++ 2014 with amendments and GNU extensions' standard
-// note: use 'c++17' for 'ISO C++ 2017 with amendments' standard
-// note: use 'gnu++17' for 'ISO C++ 2017 with amendments and GNU extensions' standard
-// note: use 'c++20' for 'ISO C++ 2020 DIS' standard
-// note: use 'gnu++20' for 'ISO C++ 2020 DIS with GNU extensions' standard
-// note: use 'c++23' for 'ISO C++ 2023 DIS' standard
-// note: use 'gnu++23' for 'ISO C++ 2023 DIS with GNU extensions' standard
-//
-// Draft standards:
-// note: use 'c++2c' or 'c++26' for 'Working draft for C++2c' standard
-// note: use 'gnu++2c' or 'gnu++26' for 'Working draft for C++2c with GNU extensions' standard
+// Query supported C++ standards with: clang-xx -std=xxx empty.cpp
 
 static vector<string> getReleasedCppStandards()
 {
 	const vector<string> releasedCppStandards = {
-		#ifdef LLVM_VERSION_MAJOR
-			#if LLVM_VERSION_MAJOR >= 18
-				"c++23"s, "gnu++23"s,
-				"c++20"s, "gnu++20"s,
-				"c++17"s, "gnu++17"s,
-				"c++14"s, "gnu++14"s,
-				"c++11"s, "gnu++11"s,
-				"c++03"s, "gnu++03"s,
-				"c++98"s, "gnu++98"s,
-			#endif
-		#endif
+		"c++23"s, "gnu++23"s,
+		"c++20"s, "gnu++20"s,
+		"c++17"s, "gnu++17"s,
+		"c++14"s, "gnu++14"s,
+		"c++11"s, "gnu++11"s,
+		"c++03"s, "gnu++03"s,
+		"c++98"s, "gnu++98"s,
 	};
 	return releasedCppStandards;
 }
@@ -60,48 +24,22 @@ static vector<string> getReleasedCppStandards()
 static vector<string> getDraftCppStandards()
 {
 	const vector<string> draftCppStandards = {
-		#ifdef LLVM_VERSION_MAJOR
-			#if LLVM_VERSION_MAJOR >= 18
-				"c++2c"s, "c++26"s,
-				"gnu++2c"s, "gnu++26"s,
-			#endif
-		#endif
+		"c++2c"s, "c++26"s,
+		"gnu++2c"s, "gnu++26"s,
 	};
 	return draftCppStandards;
 }
 
-// C
-// /usr/bin/clang-20 -std=xxx empty.c
-// vcpkg_installed/x64-arm64-linux-windows-osx-static-md/tools/llvm/clang-18 -std=xxx empty.c
-//
-// Released standards:
-// note: use 'c89', 'c90', or 'iso9899:1990' for 'ISO C 1990' standard
-// note: use 'iso9899:199409' for 'ISO C 1990 with amendment 1' standard
-// note: use 'gnu89' or 'gnu90' for 'ISO C 1990 with GNU extensions' standard
-// note: use 'c99' or 'iso9899:1999' for 'ISO C 1999' standard
-// note: use 'gnu99' for 'ISO C 1999 with GNU extensions' standard
-// note: use 'c11' or 'iso9899:2011' for 'ISO C 2011' standard
-// note: use 'gnu11' for 'ISO C 2011 with GNU extensions' standard
-// note: use 'c17', 'iso9899:2017', 'c18', or 'iso9899:2018' for 'ISO C 2017' standard
-// note: use 'gnu17' or 'gnu18' for 'ISO C 2017 with GNU extensions' standard
-//
-// Draft standards:
-// note: use 'c23' for 'Working Draft for ISO C23' standard
-// note: use 'gnu23' for 'Working Draft for ISO C23 with GNU extensions' standard
-// note: use 'c2y' for 'Working Draft for ISO C2y' standard
-// note: use 'gnu2y' for 'Working Draft for ISO C2y with GNU extensions' standard
+// Query supported C standards with: clang-xx -std=xxx empty.c
 
 static vector<string> getReleasedCStandards()
 {
 	const vector<string> releasedCStandards = {
-		#ifdef LLVM_VERSION_MAJOR
-			#if LLVM_VERSION_MAJOR >= 18
-				"c17"s, "gnu17"s,
-				"c11"s, "gnu11"s,
-				"c99"s, "gnu99"s,
-				"c89"s, "gnu89"s,
-			#endif
-		#endif
+		"c23"s, "gnu23"s,
+		"c17"s, "gnu17"s,
+		"c11"s, "gnu11"s,
+		"c99"s, "gnu99"s,
+		"c89"s, "gnu89"s,
 	};
 	return releasedCStandards;
 }
@@ -109,14 +47,7 @@ static vector<string> getReleasedCStandards()
 static vector<string> getDraftCStandards()
 {
 	const vector<string> draftCStandards = {
-		#ifdef LLVM_VERSION_MAJOR
-			#if LLVM_VERSION_MAJOR == 18 || LLVM_VERSION_MAJOR == 19
-				"c23"s, "gnu23"s
-			#endif
-			#if LLVM_VERSION_MAJOR >= 19
-				"c2y"s, "gnu2y"s
-			#endif
-		#endif
+		"c2y"s, "gnu2y"s
 	};
 	return draftCStandards;
 }

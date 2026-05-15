@@ -217,8 +217,9 @@ std::unique_ptr<CxxTypeName> CxxTypeNameResolver::getName(const clang::Type* typ
 		{
 			const clang::DependentTemplateSpecializationType* dependentType =
 				clang::dyn_cast<clang::DependentTemplateSpecializationType>(type);
+			const clang::DependentTemplateStorage &dependentTemplateName = dependentType->getDependentTemplateName();
 			std::unique_ptr<CxxName> specifierName = CxxSpecifierNameResolver(this).getName(
-				dependentType->getQualifier());
+				dependentTemplateName.getQualifier());
 
 			std::vector<std::string> templateArguments;
 			CxxTemplateArgumentNameResolver resolver(this);
@@ -229,7 +230,7 @@ std::unique_ptr<CxxTypeName> CxxTypeNameResolver::getName(const clang::Type* typ
 			}
 
 			return std::make_unique<CxxTypeName>(
-				dependentType->getIdentifier()->getName().str(),
+				dependentTemplateName.getName().getIdentifier()->getName().str(),
 				std::move(templateArguments),
 				std::move(specifierName));
 		}

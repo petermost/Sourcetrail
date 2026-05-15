@@ -3,11 +3,11 @@
 
 #include <string>
 
-#include <boost/interprocess/containers/deque.hpp>
-#include <boost/interprocess/containers/map.hpp>
-#include <boost/interprocess/containers/set.hpp>
-#include <boost/interprocess/containers/string.hpp>
-#include <boost/interprocess/containers/vector.hpp>
+#include <boost/container/deque.hpp>
+#include <boost/container/map.hpp>
+#include <boost/container/set.hpp>
+#include <boost/container/string.hpp>
+#include <boost/container/vector.hpp>
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/interprocess/sync/named_mutex.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
@@ -24,22 +24,19 @@ public:
 
 	using Allocator = boost::interprocess::managed_shared_memory::segment_manager;
 
-	using String = boost::interprocess::
-		basic_string<char, std::char_traits<char>, boost::interprocess::allocator<char, Allocator>>;
+	using String = boost::container::basic_string<char, std::char_traits<char>, boost::interprocess::allocator<char, Allocator>>;
 
 	template <typename T>
-	using Vector = boost::interprocess::vector<T, boost::interprocess::allocator<T, Allocator>>;
+	using Vector = boost::container::vector<T, boost::interprocess::allocator<T, Allocator>>;
 
 	template <typename T>
-	using Queue = boost::interprocess::deque<T, boost::interprocess::allocator<T, Allocator>>;
+	using Queue = boost::container::deque<T, boost::interprocess::allocator<T, Allocator>>;
 
 	template <typename T, typename T2>
-	using Map = boost::interprocess::
-		map<T, T2, std::less<T>, boost::interprocess::allocator<std::pair<const T, T2>, Allocator>>;
+	using Map = boost::container::map<T, T2, std::less<T>, boost::interprocess::allocator<std::pair<const T, T2>, Allocator>>;
 
 	template <typename T>
-	using Set =
-		boost::interprocess::set<T, std::less<T>, boost::interprocess::allocator<T, Allocator>>;
+	using Set = boost::container::set<T, std::less<T>, boost::interprocess::allocator<T, Allocator>>;
 
 	// Names addressing shared memory objects longer than 29 characters can throw an exception
 	static std::string checkName(const std::string& name);

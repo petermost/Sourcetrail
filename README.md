@@ -44,11 +44,20 @@ By sponsoring me with **$10 per month**, you will gain access to the following *
 
 ### Sourcetrail used/tested/supported libraries: ###
 
+**General**
+
+|Name   |System|Vcpkg |
+|-------|------|------|
+|Qt6    |6.9.2 |6.10.3|
+|Boost  |1.88.0|1.91.0|
+|SQLite3|3.46.1|3.53.1|
+|TinyXML|2.6.2 |2.6.2 |
+
 **C++**
 
-|Name      |System|Vcpkg |
-|----------|------|------|
-|Clang/LLVM|20.1.8|20.1.8|
+|Name      |System/Vcpkg|
+|----------|------------|
+|Clang/LLVM|21.1.2      |
 
 **Java**
 
@@ -58,18 +67,11 @@ By sponsoring me with **$10 per month**, you will gain access to the following *
 |Maven      |3.9.9       |
 |Gradle     |9.3.1       |
 
-**Miscellaneous**
-
-|Name   |System|Vcpkg |
-|-------|------|------|
-|Qt     |6.9.2 |6.10.3|
-|Boost  |1.88.0|1.90.0|
-|SQLite3|3.46.1|3.53.1|
 
 **Tests**
 |Name  |System|Vcpkg |
 |------|------|------|
-|Catch2|3.7.1 |3.14.0|
+|Catch2|3.7.1 |3.15.0|
 |GTest |1.17.0|1.17.0|
 
 ### Changes
@@ -199,7 +201,7 @@ Depending on the platform and the selected indexer, additional software/packages
     * [OpenJDK](https://jdk.java.net/)
     * [Maven](https://maven.apache.org/)
 * **Linux:** 
-    * Install additional packages with `scripts/install-vcpkg-dependencies.sh`.
+    * Install additional packages with `scripts/install-vcpkg-build-dependencies.sh`.
 * **Windows:**
     * [Visual Studio 2026 Community Edition](https://visualstudio.microsoft.com/vs/community/) 
 * **macOS:**
@@ -227,15 +229,8 @@ $ cmake --build .
 
 ### Linux
 
-To compile it under (K)ubuntu 25.04, "Questing Quokka", install the following packages:
-
-**General packages:** cmake, ninja-build, libboost1.88-all-dev, libboost-charconv1.88-dev, qt6-base-dev, qt6-svg-dev, libsqlite3-dev, libtinyxml-dev
-
-**C++ packages:** clang-20, libclang-20-dev
-
-**Java packages:** maven, openjdk-25-jdk
-
-**Unit test packages:** catch2, libgtest-dev
+To compile it under (K)ubuntu 25.10:
+* Install the required dependencies with `scripts/install-system-build-dependencies.sh`.
 
 Prepare the build:
 ```

@@ -103,7 +103,6 @@ std::string CxxTemplateParameterStringResolver::getTemplateParameterTypeString(c
 		ss << parameterStringResolver.getTemplateParameterString(parameterList->getParam(i));
 	}
 
-#if LLVM_VERSION_MAJOR >= 20
 	if (parameter->wasDeclaredWithTypename())
 	{
 		ss << "> typename";
@@ -112,9 +111,6 @@ std::string CxxTemplateParameterStringResolver::getTemplateParameterTypeString(c
 	{
 		ss << "> class";
 	}
-#else
-	ss << "> typename";
-#endif
 
 	if (parameter->isTemplateParameterPack())
 	{

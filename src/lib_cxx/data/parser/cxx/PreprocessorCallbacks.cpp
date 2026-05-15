@@ -60,9 +60,7 @@ void PreprocessorCallbacks::InclusionDirective(clang::SourceLocation  /*hashLoca
 	llvm::StringRef  /*searchPath*/,
 	llvm::StringRef  /*relativePath*/,
 	const clang::Module*  /*suggestedModule*/,
-#if LLVM_VERSION_MAJOR >= 19
 	bool /*moduleImported*/,
-#endif
 	clang::SrcMgr::CharacteristicKind  /*fileType*/)
 {
 	if (m_currentFileSymbolId && fileEntry)

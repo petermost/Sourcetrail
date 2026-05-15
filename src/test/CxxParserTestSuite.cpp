@@ -3874,12 +3874,8 @@ TEST_CASE(
 		"{\n"
 		"};\n");
 
-	REQUIRE(utility::containsElement<std::string>(
-		client->typeUses, "A<&g_p, q> -> P g_p <8:10 8:12>"	// TODO: this is completely wrong?
-																// should be a normal usage
-		));
-	REQUIRE(utility::containsElement<std::string>(
-		client->localSymbols, "input.cc<7:14> <8:15 8:15>"));
+	REQUIRE(containsElement(client->typeUses, "A<&g_p, q> -> P g_p <8:10 8:12>"s));
+	REQUIRE(containsElement(client->localSymbols, "input.cc<7:14> <8:15 8:15>"s));
 }
 
 TEST_CASE(
@@ -3898,10 +3894,8 @@ TEST_CASE(
 		"{\n"
 		"};\n");
 
-	REQUIRE(
-		utility::containsElement<std::string>(client->typeUses, "A<g_p, q> -> P g_p <8:9 8:11>"));
-	REQUIRE(utility::containsElement<std::string>(
-		client->localSymbols, "input.cc<7:14> <8:14 8:14>"));
+	REQUIRE(containsElement(client->typeUses, "A<g_p, q> -> P g_p <8:9 8:11>"s));
+	REQUIRE(containsElement(client->localSymbols, "input.cc<7:14> <8:14 8:14>"s));
 }
 
 TEST_CASE("cxx parser finds template argument for template template parameter of explicit partial class template specialization")

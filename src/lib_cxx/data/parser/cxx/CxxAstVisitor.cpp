@@ -258,11 +258,7 @@ bool CxxAstVisitor::TraverseTemplateTypeParmDecl(clang::TemplateTypeParmDecl* d)
 	if (d->hasDefaultArgument() && !d->defaultArgumentWasInherited())
 	{
 		FOREACH_COMPONENT(beginTraverseTemplateDefaultArgumentLoc());
-#if LLVM_VERSION_MAJOR >= 19
 		TraverseTypeLoc(d->getDefaultArgument().getTypeSourceInfo()->getTypeLoc());
-#else
-		TraverseTypeLoc(d->getDefaultArgumentInfo()->getTypeLoc());
-#endif
 		FOREACH_COMPONENT(endTraverseTemplateDefaultArgumentLoc());
 	}
 
@@ -409,7 +405,6 @@ bool CxxAstVisitor::TraverseClassTemplateSpecializationDecl(clang::ClassTemplate
 
 	if (ReturnValue)
 	{
-#if LLVM_VERSION_MAJOR >= 19
 		if (const clang::ASTTemplateArgumentListInfo *TALI = D->getTemplateArgsAsWritten())
 		{
 			for (const clang::TemplateArgumentLoc &TAL : TALI->arguments())
@@ -420,24 +415,6 @@ bool CxxAstVisitor::TraverseClassTemplateSpecializationDecl(clang::ClassTemplate
 				}
 			}
 		}
-#else
-		if (clang::TypeSourceInfo* TSI = D->getTypeAsWritten())
-		{
-			// clang::TypeLoc::TypeLocClass ccccc = TSI->getTypeLoc().getTypeLocClass();
-			const clang::TemplateSpecializationTypeLoc tstl =
-				TSI->getTypeLoc().getAs<clang::TemplateSpecializationTypeLoc>();
-			if (!tstl.isNull())
-			{
-				for (unsigned I = 0, E = tstl.getNumArgs(); I != E; ++I)
-				{
-					if (!TraverseTemplateArgumentLoc(tstl.getArgLoc(I)))
-					{
-						ReturnValue = false;
-					}
-				}
-			}
-		}
-#endif
 	}
 
 	if (ReturnValue)

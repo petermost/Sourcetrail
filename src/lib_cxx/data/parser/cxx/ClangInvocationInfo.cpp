@@ -45,18 +45,18 @@ ClangInvocationInfo ClangInvocationInfo::getClangInvocationString(
 		for (const std::string& Str: CommandLine)
 			Argv.push_back(Str.c_str());
 		const char* const BinaryName = Argv[0];
-		clang::IntrusiveRefCntPtr<clang::DiagnosticOptions> DiagOpts = new clang::DiagnosticOptions();
+		clang::DiagnosticOptions DiagOpts;
 		unsigned MissingArgIndex, MissingArgCount;
 		const llvm::opt::OptTable &Opts = clang::driver::getDriverOptTable();
 		llvm::opt::InputArgList ParsedArgs = Opts.ParseArgs(
 			clang::ArrayRef<const char*>(Argv).slice(1), MissingArgIndex, MissingArgCount);
-		clang::ParseDiagnosticArgs(*DiagOpts, ParsedArgs);
+		clang::ParseDiagnosticArgs(DiagOpts, ParsedArgs);
 
 		llvm::raw_string_ostream diagnosticsStream(invocationInfo.errors);
-		clang::TextDiagnosticPrinter DiagnosticPrinter(diagnosticsStream, &*DiagOpts);
+		clang::TextDiagnosticPrinter DiagnosticPrinter(diagnosticsStream, DiagOpts);
 		clang::DiagnosticsEngine Diagnostics(
 			clang::IntrusiveRefCntPtr<clang::DiagnosticIDs>(new clang::DiagnosticIDs()),
-			&*DiagOpts,
+			DiagOpts,
 			&DiagnosticPrinter,
 			false);
 

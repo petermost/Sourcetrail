@@ -26,7 +26,7 @@ endif()
 
 # Project ----------------------------------------------------------------------
 
-project(Sourcetrail VERSION 2026.5.12 HOMEPAGE_URL "http://sourcetrail.de")
+project(Sourcetrail VERSION 2026.5.15 HOMEPAGE_URL "http://sourcetrail.de")
 
 configure_file(cmake/productVersion.h.in src/lib/productVersion.h)
 
@@ -192,7 +192,7 @@ if (isVcpkgBuild)
 endif()
 
 set(BOOST_MIN_VERSION 1.83)
-set(BOOST_MAX_VERSION 1.91)
+set(BOOST_MAX_VERSION 1.92)
 
 find_package(Boost CONFIG REQUIRED 
 	COMPONENTS
@@ -344,21 +344,24 @@ set_target_properties(Sourcetrail_lib_gui
 		LINK_INTERFACE_MULTIPLICITY 3
 )
 
-# Lib Cxx ----------------------------------------------------------------------
+# LLVM/Clang ----------------------------------------------------------------------
 
 if (BUILD_CXX_LANGUAGE_PACKAGE)
 
-	# Integrate LLVM/LibTooling. 
-	# For further details see https://llvm.org/docs/CMake.html#embedding-llvm-in-your-project
-
-	set(CLANG_MIN_VERSION 18)
-	set(CLANG_MAX_VERSION 21)
+	# With the LLVM-overlay-port in place, we can use the exact same LLVM version 
+	# for system- and vcpkg-build, so we don't accept a range anymore, but only a
+	# single version.
 	
+	set(CLANG_MIN_VERSION 21)
+	set(CLANG_MAX_VERSION 22)
 	find_package(Clang CONFIG REQUIRED) # Minimum version and/or version range xx...<yy doesn't work.
 	message(STATUS "Found LLVM: ${LLVM_VERSION}") # ${LLVM_INSTALL_PREFIX} ${CLANG_INSTALL_PREFIX}")
 	checkVersionRange("Clang" ${LLVM_VERSION} ${CLANG_MIN_VERSION} ${CLANG_MAX_VERSION})
 
 	add_library(External_lib_clang INTERFACE)
+
+	# Integrate LLVM/LibTooling. 
+	# For further details see https://llvm.org/docs/CMake.html#embedding-llvm-in-your-project
 	
 	separate_arguments(llvmDefinitions NATIVE_COMMAND ${LLVM_DEFINITIONS})
 	target_compile_definitions(External_lib_clang
@@ -380,7 +383,14 @@ if (BUILD_CXX_LANGUAGE_PACKAGE)
 				clang-cpp
 		)
 	else()
-		llvm_map_components_to_libnames(llvmLibraries ${LLVM_TARGETS_TO_BUILD} support core libdriver passes option)
+		llvm_map_components_to_libnames(llvmLibraries 
+			${LLVM_TARGETS_TO_BUILD} 
+			support 
+			core 
+			libdriver 
+			passes 
+			option
+		)
 		target_link_libraries(External_lib_clang
 			INTERFACE
 				${llvmLibraries}
@@ -461,7 +471,7 @@ add_subdirectory(src/app)
 # Test ----------------------------------------------------------------------
 
 set(CATCH2_MIN_VERSION 3.7)
-set(CATCH2_MAX_VERSION 3.15)
+set(CATCH2_MAX_VERSION 3.16)
 
 if (BUILD_UNIT_TESTS_PACKAGE)
 	include(CTest)

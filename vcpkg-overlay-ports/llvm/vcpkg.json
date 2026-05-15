@@ -1,6 +1,6 @@
 {
   "name": "llvm",
-  "version-string": "20.1.8",
+  "version-string": "21.1.2",
   "description": "The LLVM Compiler Infrastructure.",
   "homepage": "https://llvm.org",
   "license": "Apache-2.0 WITH LLVM-exception",

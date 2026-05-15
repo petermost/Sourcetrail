@@ -4,6 +4,7 @@
 #include "utilityClang.h"
 
 #include <clang/AST/DeclTemplate.h>
+#include <clang/AST/Expr.h>
 #include <clang/AST/PrettyPrinter.h>
 
 using namespace utility;
@@ -28,13 +29,26 @@ std::string CxxTemplateArgumentNameResolver::getTemplateArgumentName(
 			typeNameResolver.getName(argument.getAsType()));
 		return typeName->toString();
 	}
+	case clang::TemplateArgument::Expression:
+	{
+		if (const clang::DeclRefExpr *declRefExpr = clang::dyn_cast<clang::DeclRefExpr>(argument.getAsExpr()))
+		{
+			if (const clang::NonTypeTemplateParmDecl *nonTypeTemplateParmDecl = clang::dyn_cast<clang::NonTypeTemplateParmDecl>(declRefExpr->getDecl()))
+			{
+				if (const clang::IdentifierInfo *identifierInfo = nonTypeTemplateParmDecl->getIdentifier())
+				{
+					return identifierInfo->getName().str();
+				}
+			}
+		}
+		[[fallthrough]];
+	}
 	case clang::TemplateArgument::Integral:
 	case clang::TemplateArgument::Null:
 	case clang::TemplateArgument::Declaration:
 	case clang::TemplateArgument::NullPtr:
 	case clang::TemplateArgument::Template:
 	case clang::TemplateArgument::TemplateExpansion:	// handled correctly? template template parameter...
-	case clang::TemplateArgument::Expression:
 	case clang::TemplateArgument::StructuralValue:
 	{
 		clang::PrintingPolicy pp = makePrintingPolicyForCPlusPlus();
