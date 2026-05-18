@@ -23,13 +23,17 @@ CxxTypeNameResolver::CxxTypeNameResolver(const CxxNameResolver* other): CxxNameR
 
 std::unique_ptr<CxxTypeName> CxxTypeNameResolver::getName(const clang::QualType& qualType, const VarDecl *varDecl)
 {
-	std::unique_ptr<CxxTypeName> typeName = getName(qualType.getTypePtr());
-	if (typeName)
+	std::unique_ptr<CxxTypeName> typeName;
+	if (!qualType.isNull())
 	{
-		if (varDecl != nullptr && varDecl->isConstexpr())
-			typeName->addQualifier(CxxQualifierFlags::QualifierType::CONSTEXPR);
-		else if (qualType.isConstQualified())
-			typeName->addQualifier(CxxQualifierFlags::QualifierType::CONST);
+		typeName = getName(qualType.getTypePtr());
+		if (typeName)
+		{
+			if (varDecl != nullptr && varDecl->isConstexpr())
+				typeName->addQualifier(CxxQualifierFlags::QualifierType::CONSTEXPR);
+			else if (qualType.isConstQualified())
+				typeName->addQualifier(CxxQualifierFlags::QualifierType::CONST);
+		}
 	}
 	return typeName;
 }
