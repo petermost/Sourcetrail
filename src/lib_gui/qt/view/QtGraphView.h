@@ -9,6 +9,7 @@
 
 #include <QGraphicsView>
 #include <QPointF>
+#include <QSequentialAnimationGroup>
 
 #include <set>
 
@@ -18,7 +19,6 @@ class MessageActivateTrail;
 class QLabel;
 class QMouseEvent;
 class QPushButton;
-class QSequentialAnimationGroup;
 class QSlider;
 class QtGraphEdge;
 class QtGraphicsView;
@@ -146,7 +146,7 @@ private:
 	Vec2i m_scrollValues;
 	bool m_isIndexedList = false;
 
-	std::shared_ptr<QSequentialAnimationGroup> m_transition;
+	std::unique_ptr<QSequentialAnimationGroup> m_transition;
 	QPointF m_sceneRectOffset;
 
 	QtScrollSpeedChangeListener m_scrollSpeedChangeListenerHorizontal;

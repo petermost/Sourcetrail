@@ -333,7 +333,6 @@ void QtGraphView::rebuildGraph(std::shared_ptr<Graph> graph, const std::vector<s
 	{
 		if (isTransitioning())
 		{
-			m_transition->stop();
 			m_transition.reset();
 			finishedTransition();
 		}
@@ -563,7 +562,6 @@ void QtGraphView::activateEdge(Id edgeId)
 	{
 		if (isTransitioning())
 		{
-			m_transition->stop();
 			m_transition.reset();
 			finishedTransition();
 		}
@@ -1303,7 +1301,7 @@ void QtGraphView::createTransition()
 	QGraphicsView *view = getView();
 	view->setInteractive(false);
 
-	m_transition = std::make_shared<QSequentialAnimationGroup>();
+	m_transition = std::make_unique<QSequentialAnimationGroup>();
 
 	// fade out
 	if (vanishingNodes.size() || m_oldEdges.size())
