@@ -200,6 +200,24 @@ void CxxAstVisitorComponentIndexer::visitCastExpr(clang::CastExpr *d)
 	}
 }
 
+void CxxAstVisitorComponentIndexer::visitCStyleCastExpr(clang::CStyleCastExpr *d)
+{
+	// TODO (petermost) filter/record only 'interesting' casts.
+
+	if (getAstVisitor()->shouldVisitStmt(d))
+	{
+		// The search box will also find 'c-cast'
+		NameHierarchy castName("c-style-cast"s, NameDelimiterType::CXX);
+		castName.push(d->getCastKindName());
+
+		const Id referencedSymbolId = m_client->recordSymbol(castName);
+		const Id contextSymbolId = getOrCreateSymbolId(getAstVisitor()->getContextComponent()->getContext());
+		const ParseLocation location = getParseLocation({d->getLParenLoc(), d->getRParenLoc()});
+
+		m_client->recordReference(ReferenceKind::CALL, referencedSymbolId, contextSymbolId, location);
+	}
+}
+
 void CxxAstVisitorComponentIndexer::visitCXXFunctionalCastExpr(clang::CXXFunctionalCastExpr *d)
 {
 	if (getAstVisitor()->shouldVisitStmt(d))

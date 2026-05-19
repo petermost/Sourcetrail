@@ -558,6 +558,7 @@ bool CxxAstVisitor::TraverseAssignCommon(clang::BinaryOperator* s)
 #define DEF_VISIT_TYPE(__TYPE__) DEF_VISIT_CUSTOM_TYPE(__TYPE__, __TYPE__)
 
 DEF_VISIT_TYPE_PTR(CastExpr)
+DEF_VISIT_TYPE_PTR(CStyleCastExpr)
 DEF_VISIT_TYPE_PTR(CXXFunctionalCastExpr)
 DEF_VISIT_CUSTOM_TYPE_PTR(UnaryAddrOf, UnaryOperator)
 DEF_VISIT_CUSTOM_TYPE_PTR(UnaryDeref, UnaryOperator)

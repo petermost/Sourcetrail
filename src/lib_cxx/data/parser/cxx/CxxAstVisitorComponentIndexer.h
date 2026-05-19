@@ -25,6 +25,7 @@ public:
 	void beginTraverseLambdaCapture(clang::LambdaExpr* lambdaExpr, const clang::LambdaCapture* capture);
 
 	void visitCastExpr(clang::CastExpr *d);
+	void visitCStyleCastExpr(clang::CStyleCastExpr *d);
 	void visitCXXFunctionalCastExpr(clang::CXXFunctionalCastExpr *d);
 	void visitTagDecl(clang::TagDecl* d);
 	void visitClassTemplateDecl(clang::ClassTemplateDecl *d);

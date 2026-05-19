@@ -85,12 +85,8 @@ public:
 	void beginTraverseTemplateArgumentLoc(const clang::TemplateArgumentLoc&  /*loc*/) {}
 	void endTraverseTemplateArgumentLoc(const clang::TemplateArgumentLoc&  /*loc*/) {}
 
-	void beginTraverseLambdaCapture(clang::LambdaExpr*  /*lambdaExpr*/, const clang::LambdaCapture*  /*capture*/)
-	{
-	}
-	void endTraverseLambdaCapture(clang::LambdaExpr*  /*lambdaExpr*/, const clang::LambdaCapture*  /*capture*/)
-	{
-	}
+	void beginTraverseLambdaCapture(clang::LambdaExpr*  /*lambdaExpr*/, const clang::LambdaCapture*  /*capture*/) {}
+	void endTraverseLambdaCapture(clang::LambdaExpr*  /*lambdaExpr*/, const clang::LambdaCapture*  /*capture*/) {}
 
 	void visitTagDecl(clang::TagDecl*  /*d*/) {}
 	void visitClassTemplateDecl(clang::ClassTemplateDecl * /*d*/) {}
@@ -119,6 +115,7 @@ public:
 	void visitTypeLoc(clang::TypeLoc  /*tl*/) {}
 
 	void visitCastExpr(clang::CastExpr*  /*s*/) {}
+	void visitCStyleCastExpr(clang::CStyleCastExpr *) {}
 	void visitCXXFunctionalCastExpr(clang::CXXFunctionalCastExpr *) {}
 	void visitUnaryAddrOf(clang::UnaryOperator*  /*s*/) {}
 	void visitUnaryDeref(clang::UnaryOperator*  /*s*/) {}
