@@ -1,19 +1,19 @@
 #ifndef CXX_AST_VISITOR_H
 #define CXX_AST_VISITOR_H
 
-#include <memory>
-
-#pragma warning(push)
-#pragma warning(disable: 4702) // unreachable code
-#include <clang/AST/RecursiveASTVisitor.h>
-#pragma warning(pop)
-
 #include "CxxAstVisitorComponentBraceRecorder.h"
 #include "CxxAstVisitorComponentContext.h"
 #include "CxxAstVisitorComponentDeclRefKind.h"
 #include "CxxAstVisitorComponentImplicitCode.h"
 #include "CxxAstVisitorComponentIndexer.h"
 #include "CxxAstVisitorComponentTypeRefKind.h"
+
+#pragma warning(push)
+#pragma warning(disable: 4702) // unreachable code
+#include <clang/AST/RecursiveASTVisitor.h>
+#pragma warning(pop)
+
+#include <memory>
 
 class CanonicalFilePathCache;
 class ParserClient;
@@ -35,6 +35,8 @@ struct ParseLocation;
 
 // The "curiously recurring template pattern (CRTP)" doesn't need virtual functions. So the
 // existing virtual functions exist only for 'CxxVerboseAstVisitor'.
+// Note: Helper functions are named 'visit|traverse<Xxx>Helper()'
+
 class CxxAstVisitor: public clang::RecursiveASTVisitor<CxxAstVisitor>
 {
 public:
@@ -57,21 +59,21 @@ public:
 	// Indexing entry point
 	void indexDecl(clang::Decl* d);
 
-	// Visitor options
-	virtual bool shouldVisitTemplateInstantiations() const;
-	virtual bool shouldVisitImplicitCode() const;
+	// Visitor CRTP options
+	bool shouldVisitTemplateInstantiations() const;
+	bool shouldVisitImplicitCode() const;
 
-	static bool shouldHandleTypeLoc(const clang::TypeLoc& tl);
+	// Traversal CRTP methods. These specify how to traverse the AST and record context info.
 
-	// Traversal methods. These specify how to traverse the AST and record context info.
+	// Virtual for CxxVerboseAstVisitor:
 	virtual bool TraverseDecl(clang::Decl* d);
-	bool TraverseQualifiedTypeLoc(clang::QualifiedTypeLoc tl);
 	virtual bool TraverseTypeLoc(clang::TypeLoc tl);
-	bool TraverseType(clang::QualType t);
 	virtual bool TraverseStmt(clang::Stmt* stmt);
 
+	bool TraverseQualifiedTypeLoc(clang::QualifiedTypeLoc tl);
+	bool TraverseType(clang::QualType t);
 	bool TraverseCXXRecordDecl(clang::CXXRecordDecl* d);
-	bool traverseCXXBaseSpecifier(const clang::CXXBaseSpecifier& d);
+	bool traverseCXXBaseSpecifierHelper(const clang::CXXBaseSpecifier& d);
 	bool TraverseCXXMethodDecl(clang::CXXMethodDecl* d);
 	bool TraverseTemplateTypeParmDecl(clang::TemplateTypeParmDecl* d);
 	bool TraverseTemplateTemplateParmDecl(clang::TemplateTemplateParmDecl* d);
@@ -93,33 +95,14 @@ public:
 	bool TraverseUnresolvedMemberExpr(clang::UnresolvedMemberExpr* S);
 	bool TraverseTemplateArgumentLoc(const clang::TemplateArgumentLoc& loc);
 	bool TraverseLambdaCapture(clang::LambdaExpr* lambdaExpr, const clang::LambdaCapture* capture, clang::Expr* Init);
-	bool TraverseBinComma(clang::BinaryOperator* s);
-
-	static bool TraverseDeclarationNameInfo(clang::DeclarationNameInfo NameInfo);
-
-#define OPERATOR(NAME)                                                                             \
-	bool TraverseBin##NAME##Assign(clang::CompoundAssignOperator* s)                       \
-	{                                                                                              \
-		return TraverseAssignCommon(s);                                                            \
-	}
-	OPERATOR(Mul)
-	OPERATOR(Div)
-	OPERATOR(Rem)
-	OPERATOR(Add)
-	OPERATOR(Sub)
-	OPERATOR(Shl)
-	OPERATOR(Shr)
-	OPERATOR(And)
-	OPERATOR(Or)
-	OPERATOR(Xor)
-#undef OPERATOR
-
-
+	bool TraverseBinaryOperator(clang::BinaryOperator* s);
+	bool TraverseDeclarationNameInfo(clang::DeclarationNameInfo NameInfo);
+	bool TraverseCompoundAssignOperator(clang::CompoundAssignOperator *s);
 	void traverseDeclContextHelper(clang::DeclContext* d);
-	bool TraverseCallCommon(clang::CallExpr* s);
-	bool TraverseAssignCommon(clang::BinaryOperator* s);
+	bool traverseCallExprHelper(clang::CallExpr* s);
 
-	// Visitor methods. These actually record stuff and store it in the database.
+	// Visitor CRTP methods. These actually record stuff and store it in the database.
+
 	bool VisitCastExpr(clang::CastExpr* s);
 	bool VisitCStyleCastExpr(clang::CStyleCastExpr *s);
 	bool VisitCXXFunctionalCastExpr(clang::CXXFunctionalCastExpr *s);
@@ -129,8 +112,6 @@ public:
 	bool VisitReturnStmt(clang::ReturnStmt* s);
 	bool VisitCompoundStmt(clang::CompoundStmt* s);
 	bool VisitInitListExpr(clang::InitListExpr* s);
-
-
 	bool VisitTagDecl(clang::TagDecl* d);
 	bool VisitClassTemplateDecl(clang::ClassTemplateDecl *d);
 	bool VisitClassTemplateSpecializationDecl(clang::ClassTemplateSpecializationDecl* d);
@@ -154,9 +135,7 @@ public:
 	bool VisitConceptDecl(clang::ConceptDecl *d);
 	bool VisitConceptSpecializationExpr(clang::ConceptSpecializationExpr *d);
 	bool VisitConceptReference(clang::ConceptReference *d);
-
 	bool VisitTypeLoc(clang::TypeLoc tl);
-
 	bool VisitDeclRefExpr(clang::DeclRefExpr* s);
 	bool VisitMemberExpr(clang::MemberExpr* s);
 	bool VisitCXXDependentScopeMemberExpr(clang::CXXDependentScopeMemberExpr* s);
@@ -164,7 +143,7 @@ public:
 	bool VisitCXXDeleteExpr(clang::CXXDeleteExpr* s);
 	bool VisitLambdaExpr(clang::LambdaExpr* s);
 	bool VisitMSAsmStmt(clang::MSAsmStmt* s);
-	bool VisitConstructorInitializer(clang::CXXCtorInitializer* init);
+	bool visitConstructorInitializerHelper(clang::CXXCtorInitializer* init);
 
 	// Module support:
 
@@ -177,6 +156,9 @@ public:
 	ParseLocation getParseLocation(const clang::SourceLocation& loc) const;
 	ParseLocation getParseLocation(const clang::SourceRange& sourceRange) const;
 
+	// *Not* CRTP methods:
+
+	bool shouldHandleTypeLoc(const clang::TypeLoc& tl) const;
 	bool shouldVisitStmt(const clang::Stmt* stmt) const;
 	bool shouldVisitDecl(const clang::Decl* decl) const;
 	bool shouldVisitReference(const clang::SourceLocation& referenceLocation) const;
@@ -200,5 +182,4 @@ protected:
 	CxxAstVisitorComponentBraceRecorder m_braceRecorderComponent;
 };
 
-
-#endif	  // CXX_AST_VISITOR_H
+#endif
