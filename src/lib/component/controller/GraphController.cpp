@@ -2390,7 +2390,8 @@ void GraphController::createLegendGraph()
 	std::map<Id, Vec2i> nodePositions;
 	std::shared_ptr<Graph> graph = std::make_shared<Graph>();
 
-	auto addText = [this](std::string text, int fontSizeDiff, Vec2i position) {
+	auto addText = [this](std::string text, int fontSizeDiff, Vec2i position)
+	{
 		std::shared_ptr<DummyNode> node = std::make_shared<DummyNode>(DummyNode::DUMMY_TEXT);
 		node->name = text;
 		node->visible = true;
@@ -2400,21 +2401,19 @@ void GraphController::createLegendGraph()
 		return node;
 	};
 
-	auto addNode = [&id, &graph, &nodePositions](
-					   NodeKind kind,
-					   const std::string& name,
-					   Vec2i position,
-					   DefinitionKind defKind = DefinitionKind::EXPLICIT) {
+	auto addNode = [&id, &graph, &nodePositions](NodeKind kind, const std::string &name, Vec2i position, DefinitionKind defKind = DefinitionKind::EXPLICIT)
+	{
 		nodePositions.emplace(++id, position);
-		return graph->createNode(
-			id, NodeType(kind), NameHierarchy(name, NameDelimiterType::UNKNOWN), defKind);
+		return graph->createNode(id, NodeType(kind), NameHierarchy(name, NameDelimiterType::UNKNOWN), defKind);
 	};
 
-	auto addEdge = [&id, &graph](Edge::EdgeType type, Node* from, Node* to) {
+	auto addEdge = [&id, &graph](Edge::EdgeType type, Node *from, Node *to)
+	{
 		return graph->createEdge(++id, type, from, to);
 	};
 
-	auto addMember = [&id, &graph](Node* from, Node* to, AccessKind access = AccessKind::NONE) {
+	auto addMember = [&id, &graph](Node *from, Node *to, AccessKind access = AccessKind::NONE)
+	{
 		if (access != AccessKind::NONE)
 		{
 			to->addComponent(std::make_shared<TokenComponentAccess>(access));
@@ -2525,6 +2524,9 @@ void GraphController::createLegendGraph()
 		y -= 15;
 
 		addNode(NODE_CONCEPT, "concept", Vec2i(x, y + dy * ++i));
+		y -= 15;
+
+		addNode(NODE_C_CAST, "C cast", Vec2i(x, y + dy * ++i));
 		y -= 15;
 
 		Node* typeNode = addNode(NODE_TYPE, "Type with Members", Vec2i(x, y + dy * ++i));

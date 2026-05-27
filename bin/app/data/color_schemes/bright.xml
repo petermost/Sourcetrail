@@ -282,6 +282,9 @@
 			<type_parameter>
 				<like>type</like>
 			</type_parameter>
+			<c_cast>
+				<like>type</like>
+			</c_cast>
 
 			<function>
 				<fill>

@@ -343,6 +343,8 @@ std::string TestStorage::nodeTypeToString(NodeKind nodeType)
 		return "SYMBOL_RECORD";
 	case NODE_CONCEPT:
 		return "SYMBOL_CONCEPT";
+	case NODE_C_CAST:
+		return "SYMBOL_C_CAST";
 	default:
 		break;
 	}
@@ -425,6 +427,8 @@ std::vector<std::string> *TestStorage::getBinForNodeType(NodeKind nodeType)
 		return &records;
 	case NODE_CONCEPT:
 		return &concepts;
+	case NODE_C_CAST:
+		return &casts;
 	default:
 		break;
 	}

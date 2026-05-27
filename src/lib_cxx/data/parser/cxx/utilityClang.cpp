@@ -144,6 +144,16 @@ string utility::getFileNameOfFileEntry(const FileEntryRef &entry)
 	return fileName;
 }
 
+string utility::getSourceText(const clang::ASTContext *astContext, const clang::SourceRange &sourceRange)
+{
+	const SourceManager &sourceManager = astContext->getSourceManager();
+	const LangOptions &langOptions = astContext->getLangOpts();
+	const CharSourceRange charSourceRange = CharSourceRange::getTokenRange(sourceRange);
+	const StringRef sourceText = Lexer::getSourceText(charSourceRange, sourceManager, langOptions);
+
+	return sourceText.str();
+}
+
 ParseLocation utility::getParseLocation(
 	const clang::SourceLocation& sourceLocation,
 	const clang::SourceManager& sourceManager,

@@ -49,6 +49,8 @@ NodeKind intToEnum(int value)
 		return NODE_RECORD;
 	case NODE_CONCEPT:
 		return NODE_CONCEPT;
+	case NODE_C_CAST:
+		return NODE_C_CAST;
 	}
 	return NODE_SYMBOL;
 }
@@ -108,13 +110,17 @@ std::string getReadableNodeKindString(NodeKind kind)
 		return "record";
 	case NODE_CONCEPT:
 		return "concept";
+	case NODE_C_CAST:
+		return "c cast";
+	case NODE_LAST:
+		break;
 	}
 	return "";
 }
 
 NodeKind getNodeKindForReadableNodeKindString(const std::string& str)
 {
-	for (NodeKindMask mask = NODE_KIND_FIRST_VALUE; mask <= NODE_KIND_LAST_VALUE; mask <<= 1)
+	for (NodeKindMask mask = NODE_SYMBOL; mask < NODE_LAST; mask <<= 1)
 	{
 		NodeKind kind = intToEnum<NodeKind>(mask);
 		if (getReadableNodeKindString(kind) == str)

@@ -14,6 +14,7 @@ class FilePath;
 
 namespace clang
 {
+class ASTContext;
 class SourceRange;
 class Preprocessor;
 class SourceManager;
@@ -34,6 +35,7 @@ bool isLocalVariable(const clang::ValueDecl* d);
 bool isParameter(const clang::ValueDecl* d);
 SymbolKind getSymbolKind(const clang::VarDecl* d);
 std::string getFileNameOfFileEntry(const clang::FileEntryRef &entry);
+std::string getSourceText(const clang::ASTContext *context, const clang::SourceRange &sourceRange);
 
 ParseLocation getParseLocation(
 	const clang::SourceLocation& sourceLocation,

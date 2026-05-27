@@ -23,7 +23,8 @@ std::vector<NodeType> NodeType::getOverviewBundleNodes()
 		NodeType(NODE_TYPE),
 		NodeType(NODE_TYPEDEF),
 		NodeType(NODE_ENUM),
-		NodeType(NODE_CONCEPT)
+		NodeType(NODE_CONCEPT),
+		NodeType(NODE_C_CAST)
 	};
 }
 
@@ -131,7 +132,7 @@ bool NodeType::hasSearchFilter() const
 	const NodeKindMask mask = NODE_BUILTIN_TYPE | NODE_MODULE | NODE_NAMESPACE | NODE_PACKAGE |
 		NODE_STRUCT | NODE_CLASS | NODE_INTERFACE | NODE_ANNOTATION | NODE_GLOBAL_VARIABLE |
 		NODE_FIELD | NODE_FUNCTION | NODE_METHOD | NODE_ENUM | NODE_ENUM_CONSTANT | NODE_TYPEDEF |
-		NODE_FILE | NODE_MACRO | NODE_UNION | NODE_RECORD | NODE_CONCEPT;
+		NODE_FILE | NODE_MACRO | NODE_UNION | NODE_RECORD | NODE_CONCEPT | NODE_C_CAST;
 	return ((m_kind & mask) > 0);
 }
 
@@ -146,11 +147,10 @@ Tree<NodeType::BundleInfo> NodeType::getOverviewBundleTree() const
 	case NODE_NAMESPACE:
 	{
 		Tree<BundleInfo> tree(BundleInfo("Namespaces"));
-		tree.children.push_back(Tree<BundleInfo>(BundleInfo(
-			[](const std::string& nodeName) {
-				return nodeName.find("anonymous namespace") != std::string::npos;
-			},
-			"Anonymous Namespaces")));
+		tree.children.push_back(Tree<BundleInfo>(BundleInfo([](const std::string &nodeName)
+		{
+			return nodeName.find("anonymous namespace") != std::string::npos;
+		}, "Anonymous Namespaces")));
 		return tree;
 	}
 	case NODE_MODULE:
@@ -181,7 +181,16 @@ Tree<NodeType::BundleInfo> NodeType::getOverviewBundleTree() const
 		return Tree<BundleInfo>(BundleInfo("Records"));
 	case NODE_CONCEPT:
 		return Tree<BundleInfo>(BundleInfo("Concepts"));
-	default:
+	case NODE_C_CAST:
+		return Tree<BundleInfo>(BundleInfo("C Casts"));
+	case NODE_UNDEFINED:
+	case NODE_SYMBOL:
+	case NODE_BUILTIN_TYPE:
+	case NODE_FIELD:
+	case NODE_METHOD:
+	case NODE_ENUM_CONSTANT:
+	case NODE_TYPE_PARAMETER:
+	case NODE_LAST:
 		break;
 	}
 	return Tree<BundleInfo>();
@@ -252,9 +261,13 @@ NodeType::StyleType NodeType::getNodeStyle() const
 	case NODE_FIELD:
 	case NODE_ENUM_CONSTANT:
 	case NODE_CONCEPT:
-	default:
+	case NODE_C_CAST:
 		return STYLE_SMALL_NODE;
+	case NODE_UNDEFINED:
+	case NODE_LAST:
+		break;
 	}
+	return STYLE_SMALL_NODE;
 }
 
 bool NodeType::hasOverviewBundle() const

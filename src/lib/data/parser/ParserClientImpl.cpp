@@ -51,7 +51,9 @@ NodeKind symbolKindToNodeKind(SymbolKind symbolKind)
 			return NODE_RECORD;
 		case SymbolKind::CONCEPT:
 			return NODE_CONCEPT;
-		default:
+		case SymbolKind::C_CAST:
+			return NODE_C_CAST;
+		case SymbolKind::UNDEFINED:
 			break;
 	}
 	return NODE_SYMBOL;

@@ -4790,6 +4790,43 @@ TEST_CASE("cxx parser finds location of block comment")
 	REQUIRE(utility::containsElement<std::string>(client->comments, "comment <1:1 2:17>"));
 }
 
+TEST_CASE("cxx parser finds c cast")
+{
+	// We added spaces in the casts to ensure that we get unified type names i.e. without the spaces.
+
+	std::shared_ptr<TestStorage> client = parseCode(
+	R"(
+		void function()
+		{
+			void *ptrFromInt = ( void * )1000;
+
+			const int constInt = 10;
+			int *ptrToMutableInt = ( int * )&constInt;
+
+			const int *const *ptrToConstPtrToConstInt = nullptr;
+			const int **ptrToPtrToConstInt = ( const int * * )ptrToConstPtrToConstInt;
+		}
+	)");
+
+	REQUIRE(client->errors.empty());
+	REQUIRE(client->casts.size() == 3);
+
+	// function() --> (void *) --> int
+	REQUIRE(containsElement(client->typeUses, "void function() -> void * <4:23 4:32>"s));
+	REQUIRE(containsElement(client->casts, "void * <4:23 4:32>"s));
+	REQUIRE(containsElement(client->typeUses, "void * -> int <4:33 4:36>"s));
+
+	// function() --> (int *) --> const int *
+	REQUIRE(containsElement(client->typeUses, "void function() -> int * <7:27 7:35>"s));
+	REQUIRE(containsElement(client->casts, "int * <7:27 7:35>"s));
+	REQUIRE(containsElement(client->typeUses, "int * -> const int * <7:36 7:44>"s));
+
+	// function() --> (const int **) --> const int *const *
+	REQUIRE(containsElement(client->typeUses, "void function() -> const int ** <10:37 10:53>"s));
+	REQUIRE(containsElement(client->casts, "const int ** <10:37 10:53>"s));
+	REQUIRE(containsElement(client->typeUses, "const int ** -> const int *const * <10:54 10:76>"s));
+}
+
 /*
 void _test_TEST()
 {

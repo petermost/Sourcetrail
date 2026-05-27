@@ -1,8 +1,8 @@
 # Minimum required version for module support:
 cmake_minimum_required(VERSION 3.31) 
 
-set(CMAKE_C_COMPILER clang)
-set(CMAKE_CXX_COMPILER clang++)
+set(CMAKE_C_COMPILER clang-21)
+set(CMAKE_CXX_COMPILER clang++-21)
 
 project(Usages)
 
@@ -21,6 +21,7 @@ target_sources(Usages
 	
 	PRIVATE
 		data/auto_usages.cpp
+		data/cast_usages.cpp
 		data/concept_usages.cpp
 		
 		data/module_a_exporter.cpp

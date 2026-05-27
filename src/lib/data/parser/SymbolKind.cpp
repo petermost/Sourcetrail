@@ -24,7 +24,8 @@ const SymbolKind SYMBOL_KINDS[] = {
 	SymbolKind::TYPE_PARAMETER,
 	SymbolKind::UNION,
 	SymbolKind::RECORD,
-	SymbolKind::CONCEPT
+	SymbolKind::CONCEPT,
+	SymbolKind::C_CAST
 };
 
 }

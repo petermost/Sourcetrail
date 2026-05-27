@@ -49,6 +49,7 @@ public:
 	std::vector<std::string> usages;	   // for variables
 	std::vector<std::string> typeUses;	   // for types
 	std::vector<std::string> macroUses;
+	std::vector<std::string> casts;
 	std::vector<std::string> annotationUses;
 	std::vector<std::string> typeArguments;
 	std::vector<std::string> templateSpecializations;

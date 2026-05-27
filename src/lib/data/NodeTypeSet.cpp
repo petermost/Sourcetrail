@@ -31,7 +31,8 @@ std::vector<NodeType> getAllNodeTypes()
 		NodeType(NODE_MACRO),
 		NodeType(NODE_UNION),
 		NodeType(NODE_RECORD),
-		NodeType(NODE_CONCEPT)
+		NodeType(NODE_CONCEPT),
+		NodeType(NODE_C_CAST)
 	};
 	return s_allNodeTypes;
 }

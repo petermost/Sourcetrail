@@ -9,7 +9,8 @@ enum class NameDelimiterType
 	FILE,
 	CXX,
 	JAVA,
-	MODULE
+	MODULE,
+	C_CAST
 };
 
 std::string nameDelimiterTypeToString(NameDelimiterType delimiter);

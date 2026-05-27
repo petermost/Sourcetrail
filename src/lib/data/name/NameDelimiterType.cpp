@@ -12,7 +12,10 @@ std::string nameDelimiterTypeToString(NameDelimiterType delimiter)
 			return ".";
 		case NameDelimiterType::MODULE:
 			return ".";
-		default:
+			break;
+		case NameDelimiterType::C_CAST:
+			return "()";
+		case NameDelimiterType::UNKNOWN:
 			break;
 	}
 	return "@";
@@ -35,6 +38,10 @@ NameDelimiterType stringToNameDelimiterType(const std::string &s)
 	if (s == nameDelimiterTypeToString(NameDelimiterType::MODULE))
 	{
 		return NameDelimiterType::MODULE;
+	}
+	if (s == nameDelimiterTypeToString(NameDelimiterType::C_CAST))
+	{
+		return NameDelimiterType::C_CAST;
 	}
 	return NameDelimiterType::UNKNOWN;
 }

@@ -200,21 +200,96 @@ void CxxAstVisitorComponentIndexer::visitCastExpr(clang::CastExpr *d)
 	}
 }
 
+static inline bool isBraceExpressionLessQualified(QualType braceExprType, QualType subExprType)
+{
+	if (subExprType.isConstQualified() && !braceExprType.isConstQualified())
+		return true;
+
+	if (subExprType.isVolatileQualified() && !braceExprType.isVolatileQualified())
+		return true;
+
+	return false;
+}
+
+static inline bool isConstOrVolatileCast(const CStyleCastExpr *cast)
+{
+	QualType braceExprType = cast->getType().getNonReferenceType();
+	QualType subExprType = cast->getSubExpr()->getType().getNonReferenceType();
+
+	if (isBraceExpressionLessQualified(braceExprType, subExprType))
+		return true;
+
+	while (braceExprType->isAnyPointerType() && subExprType->isAnyPointerType())
+	{
+		braceExprType = braceExprType->getPointeeType();
+		subExprType = subExprType->getPointeeType();
+
+		if (isBraceExpressionLessQualified(braceExprType, subExprType))
+			return true;
+	}
+	return false;
+}
+
+static inline bool isDangerousCast(const CStyleCastExpr *cast)
+{
+	// These are the same clang-tidy checks then 'ProTypeCstyleCastCheck::check' does:
+	// See: https://github.com/llvm/llvm-project/blob/main/clang-tools-extra/clang-tidy/cppcoreguidelines/ProTypeCstyleCastCheck.cpp#L35
+
+	switch (cast->getCastKind())
+	{
+		case CK_BitCast:
+		case CK_LValueBitCast:
+		case CK_IntegralToPointer:
+		case CK_PointerToIntegral:
+		case CK_ReinterpretMemberPointer:
+			return true;
+		case CK_NoOp:
+			return isConstOrVolatileCast(cast);
+		default:
+			return false;
+	}
+}
+
 void CxxAstVisitorComponentIndexer::visitCStyleCastExpr(clang::CStyleCastExpr *d)
 {
-	// TODO (petermost) filter/record only 'interesting' casts.
+	// TODO (petermost): Fix getOrCreateSymbolId(d->getTypeAsWritten().getTypePtr()) returns 'void' for 'void *' ?
 
-	if (getAstVisitor()->shouldVisitStmt(d))
+	if (getAstVisitor()->shouldVisitStmt(d) && isDangerousCast(d))
 	{
-		// The search box will also find 'c-cast'
-		NameHierarchy castName("c-style-cast"s, NameDelimiterType::CXX);
-		castName.push(d->getCastKindName());
+		// Note: (brace-expression)sub-expression i.e.: (braceExpr...)subExpr...
 
-		const Id referencedSymbolId = m_client->recordSymbol(castName);
+		PrintingPolicy printingPolicy(m_astContext->getLangOpts());
+		printingPolicy.PrintAsCanonical = false;
+
 		const Id contextSymbolId = getOrCreateSymbolId(getAstVisitor()->getContextComponent()->getContext());
-		const ParseLocation location = getParseLocation({d->getLParenLoc(), d->getRParenLoc()});
 
-		m_client->recordReference(ReferenceKind::CALL, referencedSymbolId, contextSymbolId, location);
+		// Record a reference from the context (scope) to the brace-expression:
+
+		const SourceRange braceExprRange(d->getLParenLoc(), d->getRParenLoc());
+		const string braceExprString = d->getTypeAsWritten().getAsString(printingPolicy);
+		const NameHierarchy braceExprName(braceExprString, NameDelimiterType::C_CAST);
+		const ParseLocation braceExprLocation = getParseLocation(braceExprRange);
+
+		const Id braceExprId = m_client->recordSymbol(braceExprName);
+		m_client->recordSymbolKind(braceExprId, SymbolKind::C_CAST);
+
+		m_client->recordDefinitionKind(braceExprId, DefinitionKind::EXPLICIT);
+		m_client->recordLocation(braceExprId, braceExprLocation, ParseLocationType::TOKEN);
+		m_client->recordReference(ReferenceKind::TYPE_USAGE, braceExprId, contextSymbolId, braceExprLocation);
+
+		// Record a reference from the sub-expression to the brace-expression:
+
+		const Expr *subExpr = d->getSubExprAsWritten();
+		const SourceRange subExprRange = subExpr->getSourceRange();
+		const string subExprString = subExpr->getType().getAsString(printingPolicy);
+		const NameHierarchy subExprName(subExprString, NameDelimiterType::CXX);
+		const ParseLocation subExprLocation = getParseLocation(subExprRange);
+
+		const Id subExprId = m_client->recordSymbol(subExprName);
+
+		m_client->recordDefinitionKind(subExprId, DefinitionKind::EXPLICIT);
+		m_client->recordLocation(subExprId, subExprLocation, ParseLocationType::TOKEN);
+		m_client->recordReference(ReferenceKind::TYPE_USAGE, subExprId, braceExprId, subExprLocation);
 	}
 }
 

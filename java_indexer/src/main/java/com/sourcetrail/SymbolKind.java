@@ -23,7 +23,8 @@ public enum SymbolKind {
 	TYPE_PARAMETER(17),
 	UNION(18),
 	RECORD(19),
-	CONCEPT(20);
+	CONCEPT(20),
+	C_CAST(21);
 
 	private final int m_value;
 		
