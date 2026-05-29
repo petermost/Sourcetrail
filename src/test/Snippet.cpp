@@ -1,3 +1,5 @@
+// TODO (petermost): Move these snippets to 'testing/code_view' or 'testing/usages'
+// These snippets are meant to test syntax highlighting i.e. 'bin/app/data/syntax_highlighting_rules/cpp.rules'
 /*
 ää ÄÄ
 😀😀😀😀
@@ -56,10 +58,16 @@ static constexpr int integerLiterals[] = {
 	// 42Z
 };
 
+[[maybe_unused]]
 static constexpr float floatLiteral = 13.4f;
+
+[[maybe_unused]]
 static constexpr double doubleLiteral = 13.4;
 
+[[maybe_unused]]
 static constexpr double scientificLiteral_1 = 1.22e11;
+
+[[maybe_unused]]
 static constexpr double scientificLiteral_2 = 1.22e-11;
 
 void callFunction(const std::string &)

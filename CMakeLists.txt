@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.27)
 
+include(CMakePrintHelpers)
+
 # Vcpkg ------------------------------------------------------------------------
 
 if (CMAKE_TOOLCHAIN_FILE MATCHES "vcpkg.cmake$")
@@ -26,14 +28,35 @@ endif()
 
 # Project ----------------------------------------------------------------------
 
-project(Sourcetrail VERSION 2026.5.27 HOMEPAGE_URL "http://sourcetrail.de")
+project(Sourcetrail VERSION 2026.5.29 HOMEPAGE_URL "http://sourcetrail.de")
 
 configure_file(cmake/productVersion.h.in src/lib/productVersion.h)
 
-# cmake_print_variables(CMAKE_CXX_COMPILER)
-
-include(CMakePrintHelpers)
 include(cmake/Sourcetrail.cmake)
+
+# Prohibit in-source-builds:
+if (${CMAKE_BINARY_DIR} STREQUAL ${CMAKE_SOURCE_DIR})
+	message(FATAL_ERROR "In-source-builds are not supported!")
+endif()
+
+# Prohibit Multi-Config generators:
+if (isMultiConfigGenerator)
+	message(FATAL_ERROR "Multi-Config generators are not supported!")
+endif()
+
+# Set default build type to 'Release':
+# Adapted from https://www.kitware.com//cmake-and-the-default-build-type/
+if (NOT CMAKE_BUILD_TYPE)
+	message(STATUS "Set unset build type to 'Release'")
+	set(CMAKE_BUILD_TYPE Release CACHE STRING "Programmatically set build type" FORCE)
+	# Present a combobox in the cmake-gui:
+	set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Release" "Debug" "RelWithDebInfo" "MinSizeRel")
+endif()
+
+# Make Ninja build verbose as well (https://github.com/ninja-build/ninja/issues/900):
+if (CMAKE_VERBOSE_MAKEFILE)
+	set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "Verbose Makefile" FORCE)
+endif()
 
 # Make the build type available as a compiler variable:
 if (isVcpkgBuild)
@@ -42,24 +65,41 @@ else()
 	add_compile_definitions(IS_VCPKG_BUILD=0)
 endif()
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+set(CMAKE_C_STANDARD 17)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
+
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Find includes in corresponding build directories:
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+if (isGccCompiler OR isClangCompiler)
 	# https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 	# CMakeCache.txt entry: "-O3 -DNDEBUG"
-	set(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fno-fast-math -flto=auto")
-	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -flto=auto")
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+	add_compile_options("$<$<CONFIG:Release>:-O3;-fno-fast-math;-flto=auto>")
+	add_link_options("$<$<CONFIG:Release>:-flto=auto>")
+	
+	# Release-Build with Clang v21 on (K)Ubuntu v25.10 fails:
+	# 1) `-flto=auto` fails with: "error loading plugin: /usr/lib/llvm-21/bin/../lib/LLVMgold.so: cannot open shared object file"
+	# 2) `-fuse-ld=lld` fails with: "ld.lld: error: relocation refers to a discarded section: .text._ZN7testing4Test5SetupEv"
+	#
+	# Try to prevent build problems on Clang based distributions:
+	if (isClangCompiler)
+		add_link_options("$<$<CONFIG:Release>:-fuse-ld=lld>")
+	endif()
+elseif (isMsvcCompiler)
 	# https://learn.microsoft.com/en-us/cpp/build/optimization-best-practices
 	# CMakeCache.txt entry: "/O2 /Ob2 /DNDEBUG"
-	set(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE} /O2 /Gy /GL /fp:precise /GS-")
-	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG /OPT:REF,ICF")
+	add_compile_options("$<$<CONFIG:Release>:/O2;/Gy;/GL;/fp:precise;/GS->")
+	add_link_options("$<$<CONFIG:Release>:/LTCG;/OPT:REF,ICF>")
 
 	# For profiling:
-	#set(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
-	#set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /DEBUG")
+	#add_compile_options("$<$<CONFIG:RELEASE>:/Zi>")
+	#add_link_options("$<$<CONFIG:Release>:/DEBUG>")
 endif()
-
-#cmake_print_variables(CMAKE_CXX_FLAGS_RELEASE CMAKE_EXE_LINKER_FLAGS_RELEASE)
-#cmake_print_variables(CMAKE_CXX_FLAGS_RELWITHDEBINFO CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO)
 
 # Configure which language(s)/package(s) should be supported:
 option(BUILD_CXX_LANGUAGE_PACKAGE  "Add C/C++ support to the Sourcetrail indexer." OFF)
@@ -68,17 +108,18 @@ option(BUILD_UNIT_TESTS_PACKAGE    "Build the corresponding language unit tests.
 
 configure_file(cmake/language_packages.h.in src/lib/language_packages.h)
 
+# Some sanity checks:
 
-# Make Ninja build verbose as well (https://github.com/ninja-build/ninja/issues/900):
-if (CMAKE_VERBOSE_MAKEFILE)
-	set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "Verbose Makefile" FORCE)
+if (NOT BUILD_CXX_LANGUAGE_PACKAGE AND NOT BUILD_JAVA_LANGUAGE_PACKAGE)
+	message(WARNING "Building ONLY the GUI, because all language indexers are disabled!")
 endif()
 
-# Find includes in corresponding build directories
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-# set Standard build type to Release
-set(CMAKE_BUILD_TYPE_INIT "Release")
+if (BUILD_PYTHON_LANGUAGE_PACKAGE)
+	message(FATAL_ERROR "Python support has been removed!")
+	# See:
+	# - https://github.com/petermost/Sourcetrail/issues/34
+	# - https://github.com/CoatiSoftware/SourcetrailPythonIndexer
+endif()
 
 #[[
 #RPATH
@@ -89,18 +130,7 @@ if (UNIX)
 endif()
 ]]
 
-# Specify the requested standards:
-# https://cmake.org/cmake/help/latest/prop_tgt/C_STANDARD.html
-# https://cmake.org/cmake/help/latest/prop_tgt/CXX_STANDARD.html
-
-set(CMAKE_C_STANDARD 17)
-set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_C_EXTENSIONS OFF)
-
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
+# Ensure <library-v2.0> is found before <library-v1.0>:
 set(CMAKE_FIND_PACKAGE_SORT_ORDER NATURAL)
 
 # Prepare Data ----------------------------------------------------------------
@@ -109,44 +139,33 @@ if (UNIX)
 	configure_file(scripts/generate_coverage_report.sh generate_coverage_report.sh COPYONLY)
 endif()
 
-get_property(isMultiConfigGenerator GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
-if (isMultiConfigGenerator)
-	message(FATAL_ERROR "Multi-configuration generators are not supported!")
-	# TODO: Test/Support multi-configutration generators
-	# foreach(CONFIGURATION_TYPE ${CMAKE_CONFIGURATION_TYPES})
-	# 	file(COPY "bin/app/data/"  DESTINATION "${CONFIGURATION_TYPE}/app/data/")
-	# 	file(COPY "bin/app/user/"  DESTINATION "${CONFIGURATION_TYPE}/app/user/")
-	# 	file(COPY "bin/test/data/" DESTINATION "${CONFIGURATION_TYPE}/test/data/")
-	# endforeach()
-else()
-	set(appDataSourceDir "${CMAKE_SOURCE_DIR}/bin/app/")
-	set(appDataTargetDir "${CMAKE_BINARY_DIR}/app/")
-	
-	message(STATUS "Copying: ${appDataSourceDir} -> ${appDataTargetDir}")
-	file(COPY "${appDataSourceDir}" DESTINATION "${appDataTargetDir}")
+cmake_path(SET appDataSourceDir NORMALIZE "${CMAKE_SOURCE_DIR}/bin/app/")
+cmake_path(SET appDataTargetDir NORMALIZE "${CMAKE_BINARY_DIR}/app/")
 
-	if (BUILD_UNIT_TESTS_PACKAGE)
-		# The test data contains symlinked files and directories which are used from 'FilePathTestSuite' 
-		# and 'FileSystemTestSuite'. CMake, as of this writing (2025-03-07), doesn't copy symlinks 
-		# correctly (https://gitlab.kitware.com/cmake/cmake/-/issues/14609) or rather it depends on the 
-		# underlying platform.
-		
-		set(testDataSourceDir "${CMAKE_SOURCE_DIR}/bin/test/data/")
-		set(testDataTargetParentDir "${CMAKE_BINARY_DIR}/test/")
-		set(testDataTargetDir "${testDataTargetParentDir}data") # Without a '/' at the end!
-		
-		if (UNIX)
-			# Under Linux the symlinks are copied correctly, so copy the data:
-			message(STATUS "Copying: ${testDataSourceDir} -> ${testDataTargetDir}")
-			file(COPY "${testDataSourceDir}" DESTINATION "${testDataTargetDir}")
-		else()
-			# Under Windows the symlinks are *not* copied correctly (results in invalid files), so 
-			# symlink the data.
-			# Note: Temporary test files will show up in version control!
-			message(STATUS "Linking: ${testDataSourceDir} -> ${testDataTargetDir}")
-			file(MAKE_DIRECTORY "${testDataTargetParentDir}")
-			file(CREATE_LINK "${testDataSourceDir}" "${testDataTargetDir}" SYMBOLIC)
-		endif()
+message(STATUS "Copying: ${appDataSourceDir} -> ${appDataTargetDir}")
+file(COPY "${appDataSourceDir}" DESTINATION "${appDataTargetDir}")
+
+if (BUILD_UNIT_TESTS_PACKAGE)
+	# The test data contains symlinked files and directories which are used from 'FilePathTestSuite' 
+	# and 'FileSystemTestSuite'. CMake, as of this writing (2025-03-07), doesn't copy symlinks 
+	# correctly (https://gitlab.kitware.com/cmake/cmake/-/issues/14609) or rather it depends on the 
+	# underlying platform.
+	
+	cmake_path(SET testDataSourceDir NORMALIZE "${CMAKE_SOURCE_DIR}/bin/test/data/")
+	cmake_path(SET testDataTargetParentDir NORMALIZE "${CMAKE_BINARY_DIR}/test/")
+	cmake_path(SET testDataTargetDir NORMALIZE "${testDataTargetParentDir}data") # Without a '/' at the end!
+	
+	if (UNIX)
+		# Under Linux the symlinks are copied correctly, so copy the data:
+		message(STATUS "Copying: ${testDataSourceDir} -> ${testDataTargetDir}")
+		file(COPY "${testDataSourceDir}" DESTINATION "${testDataTargetDir}")
+	else()
+		# Under Windows the symlinks are *not* copied correctly (results in invalid files), so 
+		# symlink the data.
+		# Note: Temporary test files will show up in version control!
+		message(STATUS "Linking: ${testDataSourceDir} -> ${testDataTargetDir}")
+		file(MAKE_DIRECTORY "${testDataTargetParentDir}")
+		file(CREATE_LINK "${testDataSourceDir}" "${testDataTargetDir}" SYMBOLIC)
 	endif()
 endif()
 
@@ -493,25 +512,6 @@ endif()
 # Create license information:
 include(cmake/licenses.cmake)
 configureLicenseFile(src/lib_gui/licenses.h)
-
-# Some sanity checks:
-# Note: We doing these checks last so the messages are at the end of a possible long output from cmake.
-
-if (NOT BUILD_CXX_LANGUAGE_PACKAGE AND NOT BUILD_JAVA_LANGUAGE_PACKAGE)
-	message(WARNING "Building ONLY the GUI, because all language indexers are disabled!")
-endif()
-
-# prohibit in-source-builds
-if (${CMAKE_BINARY_DIR} STREQUAL ${CMAKE_SOURCE_DIR})
-	message(FATAL_ERROR "In-source-builds are not supported!")
-endif()
-
-if (BUILD_PYTHON_LANGUAGE_PACKAGE)
-	message(FATAL_ERROR "Python support has been removed!")
-	# See:
-	# - https://github.com/petermost/Sourcetrail/issues/34
-	# - https://github.com/CoatiSoftware/SourcetrailPythonIndexer
-endif()
 
 # Enable this code to find out *all* imported targets:
 # get_property(importedTargets DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY IMPORTED_TARGETS)

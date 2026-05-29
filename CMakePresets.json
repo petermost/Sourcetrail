@@ -4,12 +4,19 @@
 		{
 			"hidden": true,
 			"name": "default-presets",
-			"generator": "Ninja",
 			"warnings": {
 				"dev": false,
 				"uninitialized": false
 			},
 			"binaryDir": "${sourceParentDir}/build/${presetName}"
+		},
+		{
+			"hidden": true,
+			"name": "ninja-presets",
+			"generator": "Ninja",
+			"cacheVariables": {
+				"CMAKE_EXPORT_COMPILE_COMMANDS": "TRUE"
+			}
 		},
 		{
 			"hidden": true,
@@ -25,8 +32,7 @@
 			"name": "debug-presets",
 			"cacheVariables": {
 				"CMAKE_BUILD_TYPE": "Debug",
-				"CMAKE_VERBOSE_MAKEFILE": "TRUE",
-				"CMAKE_EXPORT_COMPILE_COMMANDS": "TRUE"
+				"CMAKE_VERBOSE_MAKEFILE": "TRUE"
 			}
 		},
 		{
@@ -34,8 +40,7 @@
 			"name": "release-presets",
 			"cacheVariables": {
 				"CMAKE_BUILD_TYPE": "Release",
-				"CMAKE_VERBOSE_MAKEFILE": "FALSE",
-				"CMAKE_EXPORT_COMPILE_COMMANDS": "TRUE"
+				"CMAKE_VERBOSE_MAKEFILE": "FALSE"
 			}
 		},
 		{
@@ -43,8 +48,7 @@
 			"name": "relwithdebinfo-presets",
 			"cacheVariables": {
 				"CMAKE_BUILD_TYPE": "RelWithDebInfo",
-				"CMAKE_VERBOSE_MAKEFILE": "FALSE",
-				"CMAKE_EXPORT_COMPILE_COMMANDS": "TRUE"
+				"CMAKE_VERBOSE_MAKEFILE": "FALSE"
 			}
 		},
 		{
@@ -59,8 +63,8 @@
 			"hidden": true,
 			"name": "clang-presets",
 			"cacheVariables": {
-				"CMAKE_C_COMPILER"  : "clang",
-				"CMAKE_CXX_COMPILER": "clang++"
+				"CMAKE_C_COMPILER"  : "clang-21",
+				"CMAKE_CXX_COMPILER": "clang++-21"
 			}
 		},
 		{
@@ -78,8 +82,9 @@
 		{
 			"name": "system-debug",
 			"inherits": [
-				"linux-presets",
 				"default-presets",
+				"linux-presets",
+				"ninja-presets",
 				"debug-presets",
 				"sourcetrail-presets"
 			]
@@ -87,8 +92,9 @@
 		{
 			"name": "system-release",
 			"inherits": [
-				"linux-presets",
 				"default-presets",
+				"linux-presets",
+				"ninja-presets",
 				"release-presets",
 				"sourcetrail-presets"
 			]
@@ -96,8 +102,9 @@
 		{
 			"name": "system-relwithdebinfo",
 			"inherits": [
-				"linux-presets",
 				"default-presets",
+				"linux-presets",
+				"ninja-presets",
 				"relwithdebinfo-presets",
 				"sourcetrail-presets"
 			]
@@ -105,8 +112,9 @@
 		{
 			"name": "system-clang-debug",
 			"inherits": [
-				"linux-presets",
 				"default-presets",
+				"linux-presets",
+				"ninja-presets",
 				"clang-presets",
 				"debug-presets",
 				"sourcetrail-presets"
@@ -115,8 +123,9 @@
 		{
 			"name": "system-clang-release",
 			"inherits": [
-				"linux-presets",
 				"default-presets",
+				"linux-presets",
+				"ninja-presets",
 				"clang-presets",
 				"release-presets",
 				"sourcetrail-presets"
@@ -125,8 +134,9 @@
 		{
 			"name": "system-clang-relwithdebinfo",
 			"inherits": [
-				"linux-presets",
 				"default-presets",
+				"linux-presets",
+				"ninja-presets",
 				"clang-presets",
 				"relwithdebinfo-presets",
 				"sourcetrail-presets"
@@ -138,8 +148,9 @@
 		{
 			"name": "vcpkg-debug",
 			"inherits": [
-				"vcpkg-presets",
 				"default-presets",
+				"vcpkg-presets",
+				"ninja-presets",
 				"debug-presets",
 				"sourcetrail-presets"
 			]
@@ -147,8 +158,9 @@
 		{
 			"name": "vcpkg-release",
 			"inherits": [
-				"vcpkg-presets",
 				"default-presets",
+				"vcpkg-presets",
+				"ninja-presets",
 				"release-presets",
 				"sourcetrail-presets"
 			]
@@ -156,8 +168,9 @@
 		{
 			"name": "vcpkg-relwithdebinfo",
 			"inherits": [
-				"vcpkg-presets",
 				"default-presets",
+				"vcpkg-presets",
+				"ninja-presets",
 				"relwithdebinfo-presets",
 				"sourcetrail-presets"
 			]
