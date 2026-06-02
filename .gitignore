@@ -8,7 +8,7 @@ vcpkg_installed/
 # IntelliJ, Eclipse, Qt Creator:
 .vs
 .vscode
-CMakeLists.txt.user
+.qtcreator
 
 # Sourcetrail databases, bookmarks
 *.srctrlbm

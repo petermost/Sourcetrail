@@ -2,8 +2,6 @@ if (NOT PROJECT_NAME)
 	message(FATAL_ERROR "'Sourcetrail.cmake' must be called after project()!")
 endif()
 
-get_property(isMultiConfigGenerator GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
-
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	set(isGccCompiler TRUE)
 endif()
@@ -15,6 +13,85 @@ endif()
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 	set(isMsvcCompiler TRUE)
 endif()
+
+get_property(isMultiConfigGenerator GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+
+function(forEachBuildConfiguration callbackFunction)
+	if(isMultiConfigGenerator)
+		foreach(configurationType ${CMAKE_CONFIGURATION_TYPES})
+			cmake_language(CALL ${callbackFunction} "${configurationType}")
+		endforeach()
+	else()
+		cmake_language(CALL ${callbackFunction} ".")
+	endif()
+endfunction()
+
+function(makeBuildConfigurationPath relativeSubPath outputVariable)
+	if(isMultiConfigGenerator)
+		cmake_path(SET multiConfigPath NORMALIZE "${CMAKE_BINARY_DIR}/$<CONFIG>/${relativeSubPath}")
+	else()
+		cmake_path(SET multiConfigPath NORMALIZE "${CMAKE_BINARY_DIR}/${relativeSubPath}")
+	endif()
+
+	set(${outputVariable} "${multiConfigPath}" PARENT_SCOPE)
+endfunction()
+
+function(setTargetOutputDirectory targetName relativeSubPath)
+	makeBuildConfigurationPath("${relativeSubPath}" multiConfigPath)
+
+	set_target_properties(${targetName}
+		PROPERTIES
+			RUNTIME_OUTPUT_DIRECTORY "${multiConfigPath}"
+			PDB_OUTPUT_DIRECTORY     "${multiConfigPath}"
+	)
+endfunction()
+
+function(setAppOutputDirectory targetName)
+	setTargetOutputDirectory(${targetName} "/app/")
+endfunction()
+
+function(setTestOutputDirectory targetName)
+	setTargetOutputDirectory(${targetName} "/test/")
+endfunction()
+
+function(configureFile inputFile outputFile)
+	cmake_path(SET inputFile NORMALIZE "${inputFile}")
+	cmake_path(SET outputFile NORMALIZE "${outputFile}")
+
+	message(STATUS "Configuring: ${inputFile} -> ${outputFile}")
+
+	configure_file("${inputFile}" "${outputFile}")
+endfunction()
+
+function(copyFile sourceFile targetFile)
+	cmake_path(SET sourceFile NORMALIZE "${sourceFile}")
+	cmake_path(SET targetFile NORMALIZE "${targetFile}")
+
+	message(STATUS "Copying: ${sourceFile} -> ${targetFile}")
+
+	# Note: file(COPY_FILE is not copying relative to the current build directory!
+	configure_file(${sourceFile} ${targetFile} COPYONLY)
+endfunction()
+
+function(copyDirectory sourceDirectory targetDirectory)
+	cmake_path(SET sourceDirectory NORMALIZE "${sourceDirectory}")
+	cmake_path(SET targetDirectory NORMALIZE "${targetDirectory}")
+
+	message(STATUS "Copying: ${sourceDirectory} -> ${targetDirectory}")
+
+	file(COPY "${sourceDirectory}" DESTINATION "${targetDirectory}")
+endfunction()
+
+function(symlinkDirectory sourceDirectory targetDirectory)
+	cmake_path(SET sourceDirectory NORMALIZE "${sourceDirectory}")
+	cmake_path(SET targetDirectory NORMALIZE "${targetDirectory}")
+	cmake_path(GET targetDirectory PARENT_PATH targetParentDirectory)
+
+	message(STATUS "Linking: ${sourceDirectory} -> ${targetDirectory}")
+
+	file(MAKE_DIRECTORY "${targetParentDirectory}")
+	file(CREATE_LINK "${sourceDirectory}" "${targetDirectory}" SYMBOLIC)
+endfunction()
 
 function(checkVersionRange libraryName version versionMin versionMax)
 	# Version range in find_package has quite often not the desired effect, so check version ranges manually:

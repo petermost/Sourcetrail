@@ -8,11 +8,7 @@ add_executable(AidKit_test
 )
 setDefaultTargetOptions(AidKit_test)
 
-set_target_properties(AidKit_test
-	PROPERTIES
-		RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/test/"
-		PDB_OUTPUT_DIRECTORY     "${CMAKE_BINARY_DIR}/test/"
-)
+setTestOutputDirectory(AidKit_test)
 
 target_link_libraries(AidKit_test
 	PRIVATE

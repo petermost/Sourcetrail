@@ -1,24 +1,41 @@
 {
-	"version": 4,
+	"version": 10,
+	"$comment" : "Hidden presets and ending with '-presets' are meant to be aggregated via 'inherits'",
 	"configurePresets": [
 		{
+			"$comment" : "Presets to setup build directory",
 			"hidden": true,
 			"name": "default-presets",
 			"warnings": {
 				"dev": false,
-				"uninitialized": false
+				"uninitialized": false,
+				"unusedCli": false
 			},
 			"binaryDir": "${sourceParentDir}/build/${presetName}"
 		},
 		{
+			"$comment" : "Presets to setup Ninja single-config generator",
 			"hidden": true,
-			"name": "ninja-presets",
+			"name": "ninja-single-config-presets",
 			"generator": "Ninja",
 			"cacheVariables": {
 				"CMAKE_EXPORT_COMPILE_COMMANDS": "TRUE"
 			}
 		},
 		{
+			"$comment" : "Presets to setup Ninja multi-config generator",
+			"hidden": true,
+			"name": "ninja-multi-config-presets",
+			"generator": "Ninja Multi-Config",
+			"cacheVariables": {
+				"$comment" : "VCPKG has problems with 'RelWithDebInfo' so ommit it",
+				"CMAKE_CONFIGURATION_TYPES": "Release;Debug",
+				"CMAKE_VERBOSE_MAKEFILE": "TRUE",
+				"CMAKE_EXPORT_COMPILE_COMMANDS": "TRUE"
+			}
+		},
+		{
+			"$comment" : "Presets to restrict the build to Linux",
 			"hidden": true,
 			"name": "linux-presets",
 			"condition": {
@@ -84,7 +101,7 @@
 			"inherits": [
 				"default-presets",
 				"linux-presets",
-				"ninja-presets",
+				"ninja-single-config-presets",
 				"debug-presets",
 				"sourcetrail-presets"
 			]
@@ -94,7 +111,7 @@
 			"inherits": [
 				"default-presets",
 				"linux-presets",
-				"ninja-presets",
+				"ninja-single-config-presets",
 				"release-presets",
 				"sourcetrail-presets"
 			]
@@ -104,7 +121,7 @@
 			"inherits": [
 				"default-presets",
 				"linux-presets",
-				"ninja-presets",
+				"ninja-single-config-presets",
 				"relwithdebinfo-presets",
 				"sourcetrail-presets"
 			]
@@ -114,7 +131,7 @@
 			"inherits": [
 				"default-presets",
 				"linux-presets",
-				"ninja-presets",
+				"ninja-single-config-presets",
 				"clang-presets",
 				"debug-presets",
 				"sourcetrail-presets"
@@ -125,7 +142,7 @@
 			"inherits": [
 				"default-presets",
 				"linux-presets",
-				"ninja-presets",
+				"ninja-single-config-presets",
 				"clang-presets",
 				"release-presets",
 				"sourcetrail-presets"
@@ -136,7 +153,7 @@
 			"inherits": [
 				"default-presets",
 				"linux-presets",
-				"ninja-presets",
+				"ninja-single-config-presets",
 				"clang-presets",
 				"relwithdebinfo-presets",
 				"sourcetrail-presets"
@@ -150,7 +167,7 @@
 			"inherits": [
 				"default-presets",
 				"vcpkg-presets",
-				"ninja-presets",
+				"ninja-single-config-presets",
 				"debug-presets",
 				"sourcetrail-presets"
 			]
@@ -160,7 +177,7 @@
 			"inherits": [
 				"default-presets",
 				"vcpkg-presets",
-				"ninja-presets",
+				"ninja-single-config-presets",
 				"release-presets",
 				"sourcetrail-presets"
 			]
@@ -170,8 +187,29 @@
 			"inherits": [
 				"default-presets",
 				"vcpkg-presets",
-				"ninja-presets",
+				"ninja-single-config-presets",
 				"relwithdebinfo-presets",
+				"sourcetrail-presets"
+			]
+		},
+
+
+
+		{
+			"name": "system-multi-config",
+			"inherits": [
+				"default-presets",
+				"linux-presets",
+				"ninja-multi-config-presets",
+				"sourcetrail-presets"
+			]
+		},
+		{
+			"name": "vcpkg-multi-config",
+			"inherits": [
+				"default-presets",
+				"vcpkg-presets",
+				"ninja-multi-config-presets",
 				"sourcetrail-presets"
 			]
 		}

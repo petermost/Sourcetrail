@@ -46,5 +46,5 @@ function(configureLicenseFile outputFile)
 
 	set(LICENSE_ARRAY "${LICENSE_ARRAY}\n")
 
-	configure_file(cmake/licenses.h.in ${outputFile})
+	configureFile("cmake/licenses.h.in" ${outputFile})
 endfunction()

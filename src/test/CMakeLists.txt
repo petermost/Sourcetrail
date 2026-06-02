@@ -58,11 +58,7 @@ target_include_directories(Sourcetrail_test
 		helper
 )
 
-set_target_properties(Sourcetrail_test
-	PROPERTIES
-		RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/test/"
-		PDB_OUTPUT_DIRECTORY     "${CMAKE_BINARY_DIR}/test/"
-)
+setTestOutputDirectory(Sourcetrail_test)
 
 target_link_libraries(Sourcetrail_test
 	PRIVATE

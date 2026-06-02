@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.27)
 
 include(CMakePrintHelpers)
 
-# Vcpkg ------------------------------------------------------------------------
+###############################################################################
+# Vcpkg
+###############################################################################
 
 if (CMAKE_TOOLCHAIN_FILE MATCHES "vcpkg.cmake$")
 	message(STATUS "Vcpkg Build")
@@ -26,39 +28,55 @@ if (isVcpkgBuild)
 	)
 endif()
 
-# Project ----------------------------------------------------------------------
+###############################################################################
+# Project
+###############################################################################
 
-project(Sourcetrail VERSION 2026.5.29 HOMEPAGE_URL "http://sourcetrail.de")
-
-configure_file(cmake/productVersion.h.in src/lib/productVersion.h)
+project(Sourcetrail VERSION 2026.6.2 HOMEPAGE_URL "http://sourcetrail.de")
 
 include(cmake/Sourcetrail.cmake)
 
+configureFile(cmake/productVersion.h.in src/lib/productVersion.h)
+
 # Prohibit in-source-builds:
+
 if (${CMAKE_BINARY_DIR} STREQUAL ${CMAKE_SOURCE_DIR})
 	message(FATAL_ERROR "In-source-builds are not supported!")
 endif()
 
-# Prohibit Multi-Config generators:
-if (isMultiConfigGenerator)
-	message(FATAL_ERROR "Multi-Config generators are not supported!")
-endif()
-
 # Set default build type to 'Release':
-# Adapted from https://www.kitware.com//cmake-and-the-default-build-type/
-if (NOT CMAKE_BUILD_TYPE)
-	message(STATUS "Set unset build type to 'Release'")
-	set(CMAKE_BUILD_TYPE Release CACHE STRING "Programmatically set build type" FORCE)
-	# Present a combobox in the cmake-gui:
-	set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Release" "Debug" "RelWithDebInfo" "MinSizeRel")
+
+set(buildConfigurations "Release" "Debug" "RelWithDebInfo" "MinSizeRel")
+if (isMultiConfigGenerator)
+	if (NOT CMAKE_DEFAULT_BUILD_TYPE)
+		message(STATUS "Set multi-config default build type to 'Release'")
+		set(CMAKE_DEFAULT_BUILD_TYPE Release CACHE STRING "Multi-config default build type" FORCE)
+
+		# Present a combobox in the cmake-gui:
+		set_property(CACHE CMAKE_DEFAULT_BUILD_TYPE PROPERTY STRINGS ${buildConfigurations})
+	endif()
+	if(NOT CMAKE_CONFIGURATION_TYPES)
+		set(CMAKE_CONFIGURATION_TYPES ${buildConfigurations} CACHE STRING "Multi-config available build types" FORCE)
+	endif()
+else()
+	# Adapted from https://www.kitware.com//cmake-and-the-default-build-type/
+	if (NOT CMAKE_BUILD_TYPE)
+		message(STATUS "Set single-config default build type to 'Release'")
+		set(CMAKE_BUILD_TYPE Release CACHE STRING "Single-config default build type" FORCE)
+
+		# Present a combobox in the cmake-gui:
+		set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS ${buildConfigurations})
+	endif()
 endif()
 
 # Make Ninja build verbose as well (https://github.com/ninja-build/ninja/issues/900):
+
 if (CMAKE_VERBOSE_MAKEFILE)
 	set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "Verbose Makefile" FORCE)
 endif()
 
 # Make the build type available as a compiler variable:
+
 if (isVcpkgBuild)
 	add_compile_definitions(IS_VCPKG_BUILD=1)
 else()
@@ -75,6 +93,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Find includes in corresponding build directories:
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+# Use recommended optimization switches:
 
 if (isGccCompiler OR isClangCompiler)
 	# https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
@@ -101,14 +121,31 @@ elseif (isMsvcCompiler)
 	#add_link_options("$<$<CONFIG:Release>:/DEBUG>")
 endif()
 
-# Configure which language(s)/package(s) should be supported:
+###############################################################################
+# Configure which language(s)/package(s) should be build
+###############################################################################
+
 option(BUILD_CXX_LANGUAGE_PACKAGE  "Add C/C++ support to the Sourcetrail indexer." OFF)
 option(BUILD_JAVA_LANGUAGE_PACKAGE "Add Java support to the Sourcetrail indexer." OFF)
 option(BUILD_UNIT_TESTS_PACKAGE    "Build the corresponding language unit tests." OFF)
 
-configure_file(cmake/language_packages.h.in src/lib/language_packages.h)
+configureFile(cmake/language_packages.h.in src/lib/language_packages.h)
 
 # Some sanity checks:
+
+if (NOT BUILD_CXX_LANGUAGE_PACKAGE)
+	message(STATUS "Building the C++ indexer is disabled. You can enable it by setting 'BUILD_CXX_LANGUAGE_PACKAGE' to 'ON'.")
+endif()
+
+if (NOT BUILD_JAVA_LANGUAGE_PACKAGE)
+	message(STATUS "Building the Java indexer is disabled. You can enable it by setting 'BUILD_JAVA_LANGUAGE_PACKAGE' to 'ON'.")
+endif()
+
+if (BUILD_UNIT_TESTS_PACKAGE)
+	include(CTest)
+else()
+	message(STATUS "Building the tests is disabled. You can enable them by setting 'BUILD_UNIT_TESTS_PACKAGE' to 'ON'.")
+endif()
 
 if (NOT BUILD_CXX_LANGUAGE_PACKAGE AND NOT BUILD_JAVA_LANGUAGE_PACKAGE)
 	message(WARNING "Building ONLY the GUI, because all language indexers are disabled!")
@@ -131,45 +168,51 @@ endif()
 ]]
 
 # Ensure <library-v2.0> is found before <library-v1.0>:
+
 set(CMAKE_FIND_PACKAGE_SORT_ORDER NATURAL)
 
-# Prepare Data ----------------------------------------------------------------
+###############################################################################
+# Prepare Data
+###############################################################################
 
-if (UNIX)
-	configure_file(scripts/generate_coverage_report.sh generate_coverage_report.sh COPYONLY)
-endif()
+function(copyGenerateCoverageReportScript configDir)
+	if (UNIX)
+		# copyFile("scripts/generate_coverage_report.sh" "${configDir}/generate_coverage_report.sh")
+	endif()
+endfunction()
+forEachBuildConfiguration(copyGenerateCoverageReportScript)
 
-cmake_path(SET appDataSourceDir NORMALIZE "${CMAKE_SOURCE_DIR}/bin/app/")
-cmake_path(SET appDataTargetDir NORMALIZE "${CMAKE_BINARY_DIR}/app/")
-
-message(STATUS "Copying: ${appDataSourceDir} -> ${appDataTargetDir}")
-file(COPY "${appDataSourceDir}" DESTINATION "${appDataTargetDir}")
+function(copyAppData configDir)
+	copyDirectory("bin/app/" "${configDir}/app/")
+endfunction()
+forEachBuildConfiguration(copyAppData)
 
 if (BUILD_UNIT_TESTS_PACKAGE)
 	# The test data contains symlinked files and directories which are used from 'FilePathTestSuite' 
 	# and 'FileSystemTestSuite'. CMake, as of this writing (2025-03-07), doesn't copy symlinks 
 	# correctly (https://gitlab.kitware.com/cmake/cmake/-/issues/14609) or rather it depends on the 
 	# underlying platform.
-	
-	cmake_path(SET testDataSourceDir NORMALIZE "${CMAKE_SOURCE_DIR}/bin/test/data/")
-	cmake_path(SET testDataTargetParentDir NORMALIZE "${CMAKE_BINARY_DIR}/test/")
-	cmake_path(SET testDataTargetDir NORMALIZE "${testDataTargetParentDir}data") # Without a '/' at the end!
-	
-	if (UNIX)
-		# Under Linux the symlinks are copied correctly, so copy the data:
-		message(STATUS "Copying: ${testDataSourceDir} -> ${testDataTargetDir}")
-		file(COPY "${testDataSourceDir}" DESTINATION "${testDataTargetDir}")
-	else()
-		# Under Windows the symlinks are *not* copied correctly (results in invalid files), so 
-		# symlink the data.
-		# Note: Temporary test files will show up in version control!
-		message(STATUS "Linking: ${testDataSourceDir} -> ${testDataTargetDir}")
-		file(MAKE_DIRECTORY "${testDataTargetParentDir}")
-		file(CREATE_LINK "${testDataSourceDir}" "${testDataTargetDir}" SYMBOLIC)
-	endif()
+
+	function(copyTestData configDir)	
+		set(testDataSourceDir "bin/test/data/")
+		set(testDataTargetDir "${configDir}/test/data") # Without a '/' at the end!
+		
+		if (UNIX)
+			# Under Linux the symlinks are copied correctly, so copy the data:
+			copyDirectory("${testDataSourceDir}" "${testDataTargetDir}/")
+		else()
+			# Under Windows the symlinks are *not* copied correctly (results in invalid files), so 
+			# symlink the data.
+			# Note: Temporary test files will show up in version control!
+			symlinkDirectory("${testDataSourceDir}" "${testDataTargetDir}")
+		endif()
+	endfunction()
+	forEachBuildConfiguration(copyTestData)
 endif()
 
-# ICU --------------------------------------------------------------------------
+###############################################################################
+# ICU
+###############################################################################
 
 find_package(ICU REQUIRED 
 	COMPONENTS 
@@ -201,7 +244,9 @@ target_link_libraries(External_lib_icu
 		${ICU_LIBRARIES}
 )
 		
-# Boost ------------------------------------------------------------------------
+###############################################################################
+# Boost / External_lib_boost
+###############################################################################
 
 set(Boost_NO_WARN_NEW_VERSIONS ON)
 
@@ -256,7 +301,9 @@ target_link_libraries(External_lib_boost
 		External_lib_icu
 )
 
-# Qt ---------------------------------------------------------------------------
+###############################################################################
+# Qt / External_lib_qt
+###############################################################################
 
 set(QT_NO_PRIVATE_MODULE_WARNING ON)
 
@@ -295,7 +342,9 @@ target_link_libraries(External_lib_qt
 		Qt6::Svg
 )
 
-# SQLite3 ----------------------------------------------------------------------
+###############################################################################
+# SQLite / External_lib_sqlite3 / External_lib_cppsqlite3
+###############################################################################
 
 if (isVcpkgBuild)
 	find_package(unofficial-sqlite3 CONFIG REQUIRED)
@@ -310,7 +359,12 @@ else()
 endif()
 message(STATUS "Found SQLite3 ${SQLite3_VERSION}")
 
-# TinyXML ----------------------------------------------------------------------
+add_subdirectory(src/external)
+# message(STATUS "Using CppSQLite3 ${CppSQLite3_VERSION}")
+
+###############################################################################
+# TinyXML / External_lib_tinyxml
+###############################################################################
 
 if (isVcpkgBuild)
 	find_package(tinyxml CONFIG REQUIRED)
@@ -328,21 +382,30 @@ else()
 endif()
 message(STATUS "Found tinyxml ${tinyxml_VERSION}: ${tinyxml_INCLUDE_DIRS}")
 
-# AidKit  -----------------------------------------------------------------------------------
+###############################################################################
+# AidKit / AidKit_lib / AidKit_test
+###############################################################################
 
 add_subdirectory(src/lib_aidkit)
 
-# External Lib CppSQlite3  ------------------------------------------------------------------
+if (BUILD_UNIT_TESTS_PACKAGE)
+	find_package(GTest CONFIG REQUIRED)
+	message(STATUS "Found GTest ${GTest_VERSION}")
+	include(GoogleTest)
 
-add_subdirectory(src/external)
-# message(STATUS "Using CppSQLite3 ${CppSQLite3_VERSION}")
+	add_subdirectory(src/test_aidkit)
+endif()
 
-# Lib Gui ----------------------------------------------------------------------
+###############################################################################
+# Sourcetrail_lib_gui
+###############################################################################
 
 add_subdirectory(src/resources)
 add_subdirectory(src/lib_gui)
 
-# Lib --------------------------------------------------------------------------
+###############################################################################
+# Sourcetrail_lib
+###############################################################################
 
 if (UNIX)
 	find_package(Threads REQUIRED)
@@ -363,7 +426,9 @@ set_target_properties(Sourcetrail_lib_gui
 		LINK_INTERFACE_MULTIPLICITY 3
 )
 
-# LLVM/Clang ----------------------------------------------------------------------
+###############################################################################
+# Clang / External_lib_clang
+###############################################################################
 
 if (BUILD_CXX_LANGUAGE_PACKAGE)
 
@@ -437,18 +502,17 @@ if (BUILD_CXX_LANGUAGE_PACKAGE)
 	
 	# Copy required header:
 	# Regular vcpkg (non-overlay-port) path was: "${CLANG_INSTALL_PREFIX}/tools/llvm/lib/clang/${LLVM_VERSION_MAJOR}/include/"
-
-	cmake_path(SET headerSourceDir NORMALIZE "${LLVM_INSTALL_PREFIX}/lib/clang/${Clang_VERSION_MAJOR}/include/")
-	cmake_path(SET headerTargetDir NORMALIZE "${CMAKE_BINARY_DIR}/app/data/cxx/include/")
-	message(STATUS "Copying Clang header: ${headerSourceDir} -> ${headerTargetDir}")
-	file(COPY "${headerSourceDir}" DESTINATION "${headerTargetDir}")
+	function(copyClangHeader configDir)
+		copyDirectory("${LLVM_INSTALL_PREFIX}/lib/clang/${Clang_VERSION_MAJOR}/include/" "${configDir}/app/data/cxx/include/")
+	endfunction()
+	forEachBuildConfiguration(copyClangHeader)
 	
 	add_subdirectory(src/lib_cxx)
-else()
-	message(STATUS "Building the C++ indexer is disabled. You can enable it by setting 'BUILD_CXX_LANGUAGE_PACKAGE' to 'ON'.")
 endif()
 
-# Lib Java ---------------------------------------------------------------------
+###############################################################################
+# Sourcetrail_lib_java / Sourcetrail_java_indexer
+###############################################################################
 
 # To set the `JAVA_HOME` environment variable automatically on Linux, you can use this line:
 # export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which javac))))
@@ -469,44 +533,44 @@ if (BUILD_JAVA_LANGUAGE_PACKAGE)
 
 	add_subdirectory(src/lib_java)
 	add_subdirectory(java_indexer)
-else()
-	message(STATUS "Building the Java indexer is disabled. You can enable it by setting 'BUILD_JAVA_LANGUAGE_PACKAGE' to 'ON'.")
 endif()
 
-# Indexer App ------------------------------------------------------------------
+###############################################################################
+# Sourcetrail_indexer
+###############################################################################
 
 add_subdirectory(src/indexer)
 
-# App --------------------------------------------------------------------------
+###############################################################################
+# App / Sourcetrail
+###############################################################################
 
-configure_file(src/app/Sourcetrail.ico app/Sourcetrail.ico COPYONLY)
-if (UNIX)
-	configure_file(scripts/Sourcetrail.sh      app/Sourcetrail.sh COPYONLY)
-	configure_file(scripts/resetPreferences.sh app/resetPreferences.sh COPYONLY)
-	configure_file(scripts/_gdbinit            app/.gdbinit COPYONLY)
-endif()
+function(copyAppFiles configDir)
+	copyFile("src/app/Sourcetrail.ico" "${configDir}/app/Sourcetrail.ico")
+	if (UNIX)
+		copyFile("scripts/Sourcetrail.sh"      "${configDir}/app/Sourcetrail.sh")
+		copyFile("scripts/resetPreferences.sh" "${configDir}/app/resetPreferences.sh")
+		copyFile("scripts/_gdbinit"            "${configDir}/app/.gdbinit")
+	endif()
+endfunction()
+forEachBuildConfiguration(copyAppFiles)
+
 add_subdirectory(src/app)
 
-# Test ----------------------------------------------------------------------
-
-set(CATCH2_MIN_VERSION 3.7)
-set(CATCH2_MAX_VERSION 3.16)
+###############################################################################
+# Sourcetrail_test
+###############################################################################
 
 if (BUILD_UNIT_TESTS_PACKAGE)
-	include(CTest)
-
-	find_package(GTest CONFIG REQUIRED)
-	message(STATUS "Found GTest ${GTest_VERSION}")
-	include(GoogleTest)
-	add_subdirectory(src/test_aidkit)
+	set(CATCH2_MIN_VERSION 3.7)
+	set(CATCH2_MAX_VERSION 3.16)
 
 	find_package(Catch2 CONFIG REQUIRED)
 	message(STATUS "Found Catch2 ${Catch2_VERSION}")
 	checkVersionRange("Catch2" ${Catch2_VERSION} ${CATCH2_MIN_VERSION} ${CATCH2_MAX_VERSION})
 	include(Catch)
+
 	add_subdirectory(src/test)
-else()
-	message(STATUS "Building the tests is disabled. You can enable them by setting 'BUILD_UNIT_TESTS_PACKAGE' to 'ON'.")
 endif()
 
 # Create license information:
@@ -517,7 +581,9 @@ configureLicenseFile(src/lib_gui/licenses.h)
 # get_property(importedTargets DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY IMPORTED_TARGETS)
 # message(STATUS "Imported targets: ${importedTargets}")
 
-# Installing/Packaging ---------------------------------------------------------
+###############################################################################
+# Installing/Packaging
+###############################################################################
 
 install(DIRECTORY "${CMAKE_BINARY_DIR}/app/" DESTINATION "${PROJECT_NAME}/app/" USE_SOURCE_PERMISSIONS)
 set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
