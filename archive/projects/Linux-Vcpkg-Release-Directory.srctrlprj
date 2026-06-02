@@ -125,6 +125,7 @@
                 <header_search_path>../src/lib_java/data/parser/java</header_search_path>
                 <header_search_path>../src/lib_java/project</header_search_path>
                 <header_search_path>../src/lib_java/utility</header_search_path>
+                <header_search_path>../src/resources</header_search_path>
                 <header_search_path>../src/test/helper</header_search_path>
                 <header_search_path>../../build/vcpkg-release/src/lib</header_search_path>
                 <header_search_path>../../build/vcpkg-release/src/lib_gui</header_search_path>

@@ -11,9 +11,10 @@
             </header_search_paths>
             <indexed_header_paths>
                 <indexed_header_path>/usr/include/x86_64-linux-gnu/qt6</indexed_header_path>
-                <indexed_header_path>/usr/lib/llvm-20/include</indexed_header_path>
-                <indexed_header_path>..</indexed_header_path>
+                <indexed_header_path>/usr/lib/jvm/java-25-openjdk-amd64/include</indexed_header_path>
+                <indexed_header_path>/usr/lib/llvm-21/include</indexed_header_path>
                 <indexed_header_path>/usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++</indexed_header_path>
+                <indexed_header_path>..</indexed_header_path>
                 <indexed_header_path>../../build/system-release</indexed_header_path>
             </indexed_header_paths>
             <name>C/C++ from Compilation Database</name>
