@@ -46,26 +46,27 @@ endif()
 
 # Set default build type to 'Release':
 
-set(buildConfigurations "Release" "Debug" "RelWithDebInfo" "MinSizeRel")
+set(defaultBuildType "Release")
+set(defaultBuildConfigurations ${defaultBuildType} "Debug" "RelWithDebInfo" "MinSizeRel")
 if (isMultiConfigGenerator)
 	if (NOT CMAKE_DEFAULT_BUILD_TYPE)
 		message(STATUS "Set multi-config default build type to 'Release'")
-		set(CMAKE_DEFAULT_BUILD_TYPE Release CACHE STRING "Multi-config default build type" FORCE)
+		set(CMAKE_DEFAULT_BUILD_TYPE ${defaultBuildType} CACHE STRING "Multi-config default build type" FORCE)
 
 		# Present a combobox in the cmake-gui:
-		set_property(CACHE CMAKE_DEFAULT_BUILD_TYPE PROPERTY STRINGS ${buildConfigurations})
+		set_property(CACHE CMAKE_DEFAULT_BUILD_TYPE PROPERTY STRINGS ${defaultBuildConfigurations})
 	endif()
 	if(NOT CMAKE_CONFIGURATION_TYPES)
-		set(CMAKE_CONFIGURATION_TYPES ${buildConfigurations} CACHE STRING "Multi-config available build types" FORCE)
+		set(CMAKE_CONFIGURATION_TYPES ${defaultBuildConfigurations} CACHE STRING "Multi-config available build types" FORCE)
 	endif()
 else()
 	# Adapted from https://www.kitware.com//cmake-and-the-default-build-type/
 	if (NOT CMAKE_BUILD_TYPE)
 		message(STATUS "Set single-config default build type to 'Release'")
-		set(CMAKE_BUILD_TYPE Release CACHE STRING "Single-config default build type" FORCE)
+		set(CMAKE_BUILD_TYPE ${defaultBuildType} CACHE STRING "Single-config default build type" FORCE)
 
 		# Present a combobox in the cmake-gui:
-		set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS ${buildConfigurations})
+		set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS ${defaultBuildConfigurations})
 	endif()
 endif()
 

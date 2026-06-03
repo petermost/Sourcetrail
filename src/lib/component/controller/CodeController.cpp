@@ -169,7 +169,7 @@ void CodeController::handleMessage(MessageActivateOverview* message)
 	file.isMinimized = false;
 	file.locationFile = statsSnippet.locationFile;
 	file.snippetParams.push_back(statsSnippet);
-	file.fileParams = std::make_shared<CodeSnippetParams>(statsSnippet);
+	file.fileParams = std::make_optional(statsSnippet);
 
 	m_currentFilePath = file.locationFile->getFilePath();
 	m_files = {file};
@@ -1398,8 +1398,7 @@ void CodeController::setFileState(
 	case MessageChangeFileView::FILE_MAXIMIZED:
 		if (!file.fileParams)
 		{
-			file.fileParams = std::make_shared<CodeSnippetParams>(
-				getSnippetParamsForWholeFile(file.locationFile, useSingleFileCache));
+			file.fileParams = std::make_optional(getSnippetParamsForWholeFile(file.locationFile, useSingleFileCache));
 		}
 
 		if (file.locationFile)

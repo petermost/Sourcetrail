@@ -1,10 +1,11 @@
 #ifndef CODE_SNIPPET_PARAMS_H
 #define CODE_SNIPPET_PARAMS_H
 
-#include <memory>
-
 #include "TimeStamp.h"
 #include "SourceLocationFile.h"
+
+#include <memory>
+#include <optional>
 
 struct CodeSnippetParams
 {
@@ -39,7 +40,7 @@ struct CodeFileParams
 	bool isDefinition = false;
 
 	std::vector<CodeSnippetParams> snippetParams;
-	std::shared_ptr<CodeSnippetParams> fileParams;	  // TODO: replace with std::optional
+	std::optional<CodeSnippetParams> fileParams;
 };
 
 #endif	  // CODE_SNIPPET_PARAMS_H
