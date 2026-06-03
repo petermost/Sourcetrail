@@ -1,11 +1,14 @@
 #ifndef JAVA_ENVIRONMENT_FACTORY_H
 #define JAVA_ENVIRONMENT_FACTORY_H
 
-#include <boost/dll/shared_library.hpp>
 #include <jni.h>
+
+#include <aidkit/concurrent/thread_shared.hpp>
+
+#include <boost/dll/shared_library.hpp>
+
 #include <map>
 #include <memory>
-#include <mutex>
 #include <string>
 #include <thread>
 
@@ -34,8 +37,7 @@ private:
 	void unregisterEnvironment();
 
 	JavaVM* m_jvm;
-	std::map<std::thread::id, std::pair<JNIEnv*, int>> m_threadIdToEnvAndUserCount;
-	std::mutex m_threadIdToEnvAndUserCountMutex;
+	aidkit::concurrent::thread_shared<std::map<std::thread::id, std::pair<JNIEnv*, int>>> m_threadIdToEnvAndUserCount;
 };
 
 #endif	  // JAVA_ENVIRONMENT_FACTORY_H
