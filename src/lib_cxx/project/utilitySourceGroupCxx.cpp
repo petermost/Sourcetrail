@@ -80,14 +80,15 @@ std::shared_ptr<Task> createBuildPchTask(const SourceGroupSettingsWithCxxPchOpti
 		
 		CxxCompilationDatabaseSingle compilationDatabase(pchCommand);
 		clang::tooling::ClangTool tool(compilationDatabase, {pchInputFilePath.str()});
-		GeneratePCHAction *action = new GeneratePCHAction(client, canonicalFilePathCache); // TODO (petermost): Memory leak?
+		std::unique_ptr<GeneratePCHAction> action = std::make_unique<GeneratePCHAction>(client, canonicalFilePathCache);
 		
 		clang::DiagnosticOptions options;
 		CxxDiagnosticConsumer diagnostics(llvm::errs(), options, client, canonicalFilePathCache, pchInputFilePath, true);
-		
+		SingleFrontendActionFactory singleFrontendActionFactory(std::move(action));
+
 		tool.setDiagnosticConsumer(&diagnostics);
 		tool.clearArgumentsAdjusters();
-		tool.run(new SingleFrontendActionFactory(action)); // TODO (petermost): Memory leak?
+		tool.run(&singleFrontendActionFactory);
 		
 		storageProvider->insert(storage);
 	});

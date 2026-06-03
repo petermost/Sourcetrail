@@ -3,14 +3,16 @@
 
 #include <clang/Tooling/Tooling.h>
 
+#include <memory>
+
 class SingleFrontendActionFactory: public clang::tooling::FrontendActionFactory
 {
 public:
-	SingleFrontendActionFactory(clang::FrontendAction* action);
+	SingleFrontendActionFactory(std::unique_ptr<clang::FrontendAction> action);
 	std::unique_ptr<clang::FrontendAction> create() override;
 
 private:
-	clang::FrontendAction* m_action;
+	std::unique_ptr<clang::FrontendAction> m_action;
 };
 
 #endif	  // SINGLE_FRONTEND_ACTION_FACTORY

@@ -1,11 +1,11 @@
 #include "SingleFrontendActionFactory.h"
 
-SingleFrontendActionFactory::SingleFrontendActionFactory(clang::FrontendAction* action)
-	: m_action(action)
+SingleFrontendActionFactory::SingleFrontendActionFactory(std::unique_ptr<clang::FrontendAction> action)
+	: m_action(std::move(action))
 {
 }
 
 std::unique_ptr<clang::FrontendAction> SingleFrontendActionFactory::create()
 {
-	return std::unique_ptr<clang::FrontendAction>(m_action);
+	return std::unique_ptr<clang::FrontendAction>(std::move(m_action));
 }

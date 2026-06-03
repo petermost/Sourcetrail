@@ -182,9 +182,9 @@ void CxxParser::runTool(clang::tooling::CompilationDatabase* compilationDatabase
 		}
 	}
 
-	clang::ASTFrontendAction* action = new ASTAction(
-		m_client, canonicalFilePathCache, m_indexerStateInfo);
-	tool.run(new SingleFrontendActionFactory(action));
+	std::unique_ptr<clang::ASTFrontendAction> action = std::make_unique<ASTAction>(m_client, canonicalFilePathCache, m_indexerStateInfo);
+	SingleFrontendActionFactory singleFrontendActionFactory(std::move(action));
+	tool.run(&singleFrontendActionFactory);
 
 	if (!m_client->hasContent())
 	{
