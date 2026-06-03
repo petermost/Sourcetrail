@@ -54,19 +54,19 @@ JavaParser::JavaParser(std::shared_ptr<ParserClient> client, std::shared_ptr<Ind
 
 		std::vector<JavaEnvironment::NativeMethod> methods;
 
-		methods.push_back({"getInterrupted", "(I)Z", (void *)&JavaParser::GetInterrupted});
-		methods.push_back({"logInfo", "(ILjava/lang/String;)V", (void *)&JavaParser::LogInfo});
-		methods.push_back({"logWarning", "(ILjava/lang/String;)V", (void *)&JavaParser::LogWarning});
-		methods.push_back({"logError", "(ILjava/lang/String;)V", (void *)&JavaParser::LogError});
-		methods.push_back({"recordSymbol", "(ILjava/lang/String;III)V", (void *)&JavaParser::RecordSymbol});
-		methods.push_back({"recordSymbolWithLocation", "(ILjava/lang/String;IIIIIII)V", (void *)&JavaParser::RecordSymbolWithLocation});
-		methods.push_back({"recordSymbolWithLocationAndScope", "(ILjava/lang/String;IIIIIIIIIII)V", (void *)&JavaParser::RecordSymbolWithLocationAndScope});
-		methods.push_back({"recordSymbolWithLocationAndScopeAndSignature", "(ILjava/lang/String;IIIIIIIIIIIIIII)V", (void *)&JavaParser::RecordSymbolWithLocationAndScopeAndSignature});
-		methods.push_back({"recordReference", "(IILjava/lang/String;Ljava/lang/String;IIII)V", (void *)&JavaParser::RecordReference});
-		methods.push_back({"recordQualifierLocation", "(ILjava/lang/String;IIII)V", (void *)&JavaParser::RecordQualifierLocation});
-		methods.push_back({"recordLocalSymbol", "(ILjava/lang/String;IIII)V", (void *)&JavaParser::RecordLocalSymbol});
-		methods.push_back({"recordComment", "(IIIII)V", (void *)&JavaParser::RecordComment});
-		methods.push_back({"recordError", "(ILjava/lang/String;IIIIII)V", (void *)&JavaParser::RecordError});
+		methods.push_back({"getInterrupted", "(I)Z", reinterpret_cast<void *>(&JavaParser::GetInterrupted)});
+		methods.push_back({"logInfo", "(ILjava/lang/String;)V", reinterpret_cast<void *>(&JavaParser::LogInfo)});
+		methods.push_back({"logWarning", "(ILjava/lang/String;)V", reinterpret_cast<void *>(&JavaParser::LogWarning)});
+		methods.push_back({"logError", "(ILjava/lang/String;)V", reinterpret_cast<void *>(&JavaParser::LogError)});
+		methods.push_back({"recordSymbol", "(ILjava/lang/String;III)V", reinterpret_cast<void *>(&JavaParser::RecordSymbol)});
+		methods.push_back({"recordSymbolWithLocation", "(ILjava/lang/String;IIIIIII)V", reinterpret_cast<void *>(&JavaParser::RecordSymbolWithLocation)});
+		methods.push_back({"recordSymbolWithLocationAndScope", "(ILjava/lang/String;IIIIIIIIIII)V", reinterpret_cast<void *>(&JavaParser::RecordSymbolWithLocationAndScope)});
+		methods.push_back({"recordSymbolWithLocationAndScopeAndSignature", "(ILjava/lang/String;IIIIIIIIIIIIIII)V", reinterpret_cast<void *>(&JavaParser::RecordSymbolWithLocationAndScopeAndSignature)});
+		methods.push_back({"recordReference", "(IILjava/lang/String;Ljava/lang/String;IIII)V", reinterpret_cast<void *>(&JavaParser::RecordReference)});
+		methods.push_back({"recordQualifierLocation", "(ILjava/lang/String;IIII)V", reinterpret_cast<void *>(&JavaParser::RecordQualifierLocation)});
+		methods.push_back({"recordLocalSymbol", "(ILjava/lang/String;IIII)V", reinterpret_cast<void *>(&JavaParser::RecordLocalSymbol)});
+		methods.push_back({"recordComment", "(IIIII)V", reinterpret_cast<void *>(&JavaParser::RecordComment)});
+		methods.push_back({"recordError", "(ILjava/lang/String;IIIIII)V", reinterpret_cast<void *>(&JavaParser::RecordError)});
 
 		m_javaEnvironment->registerNativeMethods("com/sourcetrail/JavaIndexer", methods);
 	}

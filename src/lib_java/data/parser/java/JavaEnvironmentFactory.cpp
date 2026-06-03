@@ -105,7 +105,7 @@ void JavaEnvironmentFactory::createInstance(const std::string &classPath, std::s
 	vm_args.options = options.data();
 	vm_args.ignoreUnrecognized = JNI_FALSE; // invalid options make the JVM init fail
 
-	jint rc = createInstanceFunction(&jvm, (void**)&env, &vm_args);
+	jint rc = createInstanceFunction(&jvm, reinterpret_cast<void**>(&env), &vm_args);
 
 	if (rc != JNI_OK)
 	{
@@ -165,7 +165,7 @@ std::shared_ptr<JavaEnvironment> JavaEnvironmentFactory::createEnvironment()
 		}
 		else
 		{
-			m_jvm->AttachCurrentThread((void**)&env, nullptr);
+			m_jvm->AttachCurrentThread(reinterpret_cast<void**>(&env), nullptr);
 			m_threadIdToEnvAndUserCount.insert(
 				std::make_pair(currentThreadId, std::make_pair(env, 0)));
 		}
