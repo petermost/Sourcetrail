@@ -208,6 +208,7 @@
 			"name": "vcpkg-multi-config",
 			"inherits": [
 				"default-presets",
+				"linux-presets",
 				"vcpkg-presets",
 				"ninja-multi-config-presets",
 				"sourcetrail-presets"

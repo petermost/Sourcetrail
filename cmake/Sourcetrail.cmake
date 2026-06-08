@@ -16,6 +16,19 @@ endif()
 
 get_property(isMultiConfigGenerator GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 
+# Only some commands treat a relative path with respect to the value of CMAKE_CURRENT_SOURCE_DIR|CMAKE_CURRENT_BINARY_DIR
+# So always resolve paths with respect to CMAKE_CURRENT_SOURCE_DIR|CMAKE_CURRENT_BINARY_DIR
+
+function(resolveSourcePath pathVar)
+	cmake_path(ABSOLUTE_PATH ${pathVar} BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" NORMALIZE)
+	set(${pathVar} "${${pathVar}}" PARENT_SCOPE)
+endfunction()
+
+function(resolveBinaryPath pathVar)
+	cmake_path(ABSOLUTE_PATH ${pathVar} BASE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}" NORMALIZE)
+	set(${pathVar} "${${pathVar}}" PARENT_SCOPE)
+endfunction()
+
 function(forEachBuildConfiguration callbackFunction)
 	if(isMultiConfigGenerator)
 		foreach(configurationType ${CMAKE_CONFIGURATION_TYPES})
@@ -55,8 +68,8 @@ function(setTestOutputDirectory targetName)
 endfunction()
 
 function(configureFile inputFile outputFile)
-	cmake_path(SET inputFile NORMALIZE "${inputFile}")
-	cmake_path(SET outputFile NORMALIZE "${outputFile}")
+	resolveSourcePath(inputFile)
+	resolveBinaryPath(outputFile)
 
 	message(STATUS "Configuring: ${inputFile} -> ${outputFile}")
 
@@ -64,18 +77,17 @@ function(configureFile inputFile outputFile)
 endfunction()
 
 function(copyFile sourceFile targetFile)
-	cmake_path(SET sourceFile NORMALIZE "${sourceFile}")
-	cmake_path(SET targetFile NORMALIZE "${targetFile}")
+	resolveSourcePath(sourceFile)
+	resolveBinaryPath(targetFile)
 
 	message(STATUS "Copying: ${sourceFile} -> ${targetFile}")
 
-	# Note: file(COPY_FILE is not copying relative to the current build directory!
-	configure_file(${sourceFile} ${targetFile} COPYONLY)
+	file(COPY_FILE "${sourceFile}" "${targetFile}")
 endfunction()
 
 function(copyDirectory sourceDirectory targetDirectory)
-	cmake_path(SET sourceDirectory NORMALIZE "${sourceDirectory}")
-	cmake_path(SET targetDirectory NORMALIZE "${targetDirectory}")
+	resolveSourcePath(sourceDirectory)
+	resolveBinaryPath(targetDirectory)
 
 	message(STATUS "Copying: ${sourceDirectory} -> ${targetDirectory}")
 
@@ -83,8 +95,9 @@ function(copyDirectory sourceDirectory targetDirectory)
 endfunction()
 
 function(symlinkDirectory sourceDirectory targetDirectory)
-	cmake_path(SET sourceDirectory NORMALIZE "${sourceDirectory}")
-	cmake_path(SET targetDirectory NORMALIZE "${targetDirectory}")
+	resolveSourcePath(sourceDirectory)
+	resolveBinaryPath(targetDirectory)
+	
 	cmake_path(GET targetDirectory PARENT_PATH targetParentDirectory)
 
 	message(STATUS "Linking: ${sourceDirectory} -> ${targetDirectory}")

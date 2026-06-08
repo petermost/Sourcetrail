@@ -596,7 +596,7 @@ set(CPACK_PACKAGE_DESCRIPTION "Free and open-source cross-platform source explor
 set(CPACK_PACKAGE_CONTACT "P. Most <pmost@pera-software.com>")
 set(CPACK_PACKAGE_VENDOR "PERA Software Solutions GmbH")
 set(CPACK_PACKAGE_HOMEPAGE_URL ${PROJECT_HOMEPAGE_URL})
-set(CPACK_PACKAGE_ICON "${CMAKE_BINARY_DIR}/app/Sourcetrail.ico")
+set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/src/app/Sourcetrail.ico")
 
 if (isVcpkgBuild)
 	set(CPACK_GENERATOR ZIP)

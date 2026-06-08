@@ -733,7 +733,7 @@ endif()
 target_include_directories(Sourcetrail_lib
 	PUBLIC
 		.
-		"${CMAKE_BINARY_DIR}/src/lib"
+		"${CMAKE_CURRENT_BINARY_DIR}"
 )
 
 target_link_libraries(Sourcetrail_lib
