@@ -542,24 +542,15 @@ static optional<string> getArgumentValue(const string &argument, string_view arg
 	return argument.starts_with(argumentKey) ? optional(argument.substr(argumentKey.length())) : nullopt;
 }
 
-void replaceMsvcArguments(vector<string> *commandLineArguments)
+static void replaceMsvcArguments(vector<string> *commandLineArguments)
 {
-	// Replace/Remove arguments only if these are for the Microsoft C/C++/Resource compiler, otherwise the check for '/' will remove Linux paths:
-
-	if (!commandLineArguments->empty())
-	{
-		string_view toolName = (*commandLineArguments)[0];
-		if (!toolName.ends_with("cl.exe"sv) && !toolName.ends_with("rc.exe"sv))
-			return;
-	}
-	optional<string> argumentValue;
-
 	// - Keep/Replace only those options which are necessary to parse the code correctly
 	//
 	// From https://learn.microsoft.com/en-us/cpp/build/reference/compiler-options:
 	// - All compiler options are case-sensitive.
 	// - You may use either a forward slash (/) or a dash (-) to specify a compiler option.
 
+	optional<string> argumentValue;
 	auto argument = commandLineArguments->begin();
 	while (argument != commandLineArguments->end())
 	{
@@ -617,4 +608,25 @@ void replaceMsvcArguments(vector<string> *commandLineArguments)
 		else
 			++argument;
 	}
+}
+
+bool convertMsvcCompileCommand(vector<string> *commandLine, string *inputFileName)
+{
+	// Replace/Remove arguments only if these are for the Microsoft C/C++/Resource compiler, otherwise the check for '/' will remove Linux paths:
+
+	if (!commandLine->empty())
+	{
+		const string_view command = (*commandLine)[0];
+
+		if (command.ends_with("cl.exe"sv))
+		{
+			replaceMsvcArguments(commandLine);
+			return true;
+		}
+		else if (command.ends_with("rc.exe"sv) && inputFileName->ends_with(".rc"sv))
+		{
+			return false;
+		}
+	}
+	return true;
 }

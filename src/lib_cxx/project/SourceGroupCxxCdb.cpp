@@ -95,7 +95,7 @@ std::shared_ptr<IndexerCommandProvider> SourceGroupCxxCdb::getIndexerCommandProv
 	const std::set<FilePathFilter> excludeFilters = utility::toSet(m_settings->getExcludeFiltersExpandedAndAbsolute());
 	const std::set<FilePath> &sourceFilePaths = getAllSourceFilePaths(cdb);
 
-	for (const clang::tooling::CompileCommand &command : cdb->getAllCompileCommands())
+	for (clang::tooling::CompileCommand &command : cdb->getAllCompileCommands())
 	{
 		FilePath sourcePath = FilePath(command.Filename).makeCanonical();
 		if (!sourcePath.isAbsolute())
@@ -107,13 +107,15 @@ std::shared_ptr<IndexerCommandProvider> SourceGroupCxxCdb::getIndexerCommandProv
 			}
 		}
 
-		if (info.filesToIndex.find(sourcePath) != info.filesToIndex.end() && sourceFilePaths.find(sourcePath) != sourceFilePaths.end())
+		if (info.filesToIndex.contains(sourcePath) && sourceFilePaths.contains(sourcePath))
 		{
-			std::vector<std::string> commandLine = command.CommandLine;
-			
-			utility::removeIncludePchFlag(commandLine);
-			replaceMsvcArguments(&commandLine);
+			if (!convertMsvcCompileCommand(&command.CommandLine, &command.Filename))
+			{
+				continue;
+			}
 
+			std::vector<std::string> commandLine = command.CommandLine;
+			utility::removeIncludePchFlag(commandLine);
 			if (command.CommandLine.size() != commandLine.size())
 			{
 				utility::append(commandLine, includePchFlags);

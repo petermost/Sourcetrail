@@ -83,63 +83,62 @@ static vector<CompileCommand> loadDatabase(string_view cdbContent, JSONCommandLi
 
 TEST_CASE("CDB replace msvc arguments in windows database")
 {
-	vector<string> commandLine;
+	CompileCommand compileCommand;
 
 	vector<CompileCommand> compileCommands = loadDatabase(SOURCETRAIL_WINDOWS_CDB, JSONCommandLineSyntax::Windows);
 	REQUIRE(compileCommands.size() == 4);
 
 	// Command line for 'AidKit' file:
 
-	commandLine = compileCommands[0].CommandLine;
-	REQUIRE(commandLine.size() == 47);
-	replaceMsvcArguments(&commandLine);
-	REQUIRE(commandLine.size() == 16);
+	compileCommand = compileCommands[0];
+	REQUIRE(compileCommand.CommandLine.size() == 47);
+	REQUIRE(convertMsvcCompileCommand(&compileCommand.CommandLine, &compileCommand.Filename));
+	REQUIRE(compileCommand.CommandLine.size() == 16);
 
-	commandLine = compileCommands[1].CommandLine;
-	REQUIRE(commandLine.size() == 47);
-	replaceMsvcArguments(&commandLine);
-	REQUIRE(commandLine.size() == 16);
+	compileCommand = compileCommands[1];
+	REQUIRE(compileCommand.CommandLine.size() == 47);
+	REQUIRE(convertMsvcCompileCommand(&compileCommand.CommandLine, &compileCommand.Filename));
+	REQUIRE(compileCommand.CommandLine.size() == 16);
 
 	// Command line for 'CppSQLite3' file:
 
-	commandLine = compileCommands[2].CommandLine;
-	REQUIRE(commandLine.size() == 22);
-	replaceMsvcArguments(&commandLine);
-	REQUIRE(commandLine.size() == 12);
+	compileCommand = compileCommands[2];
+	REQUIRE(compileCommand.CommandLine.size() == 22);
+	REQUIRE(convertMsvcCompileCommand(&compileCommand.CommandLine, &compileCommand.Filename));
+	REQUIRE(compileCommand.CommandLine.size() == 12);
 
 	// Resource compiler (Sourcetrail.rc):
 
-	commandLine = compileCommands[3].CommandLine;
-	REQUIRE(commandLine.size() == 280);
-	replaceMsvcArguments(&commandLine);
-	REQUIRE(commandLine.size() == 279);
+	compileCommand = compileCommands[3];
+	REQUIRE(compileCommand.CommandLine.size() == 280);
+	REQUIRE(!convertMsvcCompileCommand(&compileCommand.CommandLine, &compileCommand.Filename));
 }
 
 TEST_CASE("CDB replace msvc arguments in linux database")
 {
-	vector<string> commandLine;
+	CompileCommand compileCommand;
 
 	vector<CompileCommand> compileCommands = loadDatabase(SOURCETRAIL_LINUX_CDB, JSONCommandLineSyntax::Gnu);
 	REQUIRE(compileCommands.size() == 3);
 
    // Command line for 'AidKit' file:
 
-	commandLine = compileCommands[0].CommandLine;
-	REQUIRE(commandLine.size() == 38);
-	replaceMsvcArguments(&commandLine);
-	REQUIRE(commandLine.size() == 38);
+	compileCommand = compileCommands[0];
+	REQUIRE(compileCommand.CommandLine.size() == 38);
+	REQUIRE(convertMsvcCompileCommand(&compileCommand.CommandLine, &compileCommand.Filename));
+	REQUIRE(compileCommand.CommandLine.size() == 38);
 
-	commandLine = compileCommands[1].CommandLine;
-	REQUIRE(commandLine.size() == 38);
-	replaceMsvcArguments(&commandLine);
-	REQUIRE(commandLine.size() == 38);
+	compileCommand = compileCommands[1];
+	REQUIRE(compileCommand.CommandLine.size() == 38);
+	REQUIRE(convertMsvcCompileCommand(&compileCommand.CommandLine, &compileCommand.Filename));
+	REQUIRE(compileCommand.CommandLine.size() == 38);
 
 	// Command line for 'CppSQLite3' file:
 
-	commandLine = compileCommands[2].CommandLine;
-	REQUIRE(commandLine.size() == 16);
-	replaceMsvcArguments(&commandLine);
-	REQUIRE(commandLine.size() == 16);
+	compileCommand = compileCommands[2];
+	REQUIRE(compileCommand.CommandLine.size() == 16);
+	REQUIRE(convertMsvcCompileCommand(&compileCommand.CommandLine, &compileCommand.Filename));
+	REQUIRE(compileCommand.CommandLine.size() == 16);
 }
 
 TEST_CASE("CDB replace msvc arguments in issue database")
@@ -147,10 +146,10 @@ TEST_CASE("CDB replace msvc arguments in issue database")
 	vector<CompileCommand> compileCommands = loadDatabase(ISSUE_WINDOWS_CDB, JSONCommandLineSyntax::Windows);
 	REQUIRE(compileCommands.size() == 1);
 
-	vector<string> commandLine = compileCommands[0].CommandLine;
-	REQUIRE(commandLine.size() == 55);
-	replaceMsvcArguments(&commandLine);
-	REQUIRE(commandLine.size() == 41);
+	CompileCommand compileCommand = compileCommands[0];
+	REQUIRE(compileCommand.CommandLine.size() == 55);
+	REQUIRE(convertMsvcCompileCommand(&compileCommand.CommandLine, &compileCommand.Filename));
+	REQUIRE(compileCommand.CommandLine.size() == 41);
 }
 
 TEST_CASE("CDB replace msvc arguments")
@@ -220,7 +219,8 @@ TEST_CASE("CDB replace msvc arguments")
 
 		// Removed: "/SomeUnknownOption"
 	};
-	replaceMsvcArguments(&arguments);
+	string inputFileName = "test.cpp";
+	REQUIRE(convertMsvcCompileCommand(&arguments, &inputFileName));
 
 	for (size_t i = 0; i < arguments.size() && i < expectedClangArguments.size(); ++i)
 	{
