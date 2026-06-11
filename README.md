@@ -76,6 +76,12 @@ By sponsoring me with **$10 per month**, you will gain access to the following *
 
 ### Changes
 
+#### 2026.6
+- C/C++: Add indexing of C-style casts
+- Logging: Fix deletion of old log files
+- C/C++: Updates for LLVM/Clang 21.1.2
+- C/C++: Restore support for Visual Studio 2010 to 2015
+
 #### 2026.4
 - GUI: Add `+`/`-` buttons to trail depth control (Thanks to [@tszwinglitw](https://github.com/tszwinglitw) for the [initial code](https://github.com/tszwinglitw/Sourcetrail/commit/bfbd8b436316c1379ca81865cc079be9ccb8f7b2)) 
 - GUI: Fix missing shortcut for `Exit` menu entry under Windows
