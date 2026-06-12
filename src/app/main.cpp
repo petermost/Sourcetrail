@@ -49,21 +49,62 @@ using namespace utility;
 using namespace std;
 using namespace boost::filesystem;
 
-void closeConsoleWindow()
+// Sourcetrail is now a GUI application i.e.: add_executable(Sourcetrail WIN32 ...), which means that Windows will not open a console window.
+// See issue "The console window is not hidden under Windows 11" (https://github.com/petermost/Sourcetrail/issues/19)
+// To still get log messages in the console, we try to attach to an existing console.
+// This means Sourcetrail will have the same behaviour under Linux and Windows:
+// - Start from file manager: No console with log messages
+// - Start from console and logging disabled: No log messages
+// - Start from console and logging enabled: Log messages
+// Summary: To get console log messages, Sourcetrail must be started from within a console and logging must be enabled.
+
+void setupConsoleWindow()
 {
 #if BOOST_OS_WINDOWS
-	// Hide the console which Windows creates if Sourcetrail was not started from one:
-	if (HWND consoleWnd = GetConsoleWindow(); consoleWnd != nullptr) {
-		DWORD consoleOwnerProcessId;
-		if (GetWindowThreadProcessId(consoleWnd, &consoleOwnerProcessId) != 0) {
-			if (consoleOwnerProcessId == GetCurrentProcessId()) {
-				// Hiding will not work if the default terminal is *not* the 'Windows console host'
-				// as is the case for Windows 11. See https://github.com/petermost/Sourcetrail/issues/19
-				// for further details.
+	bool hasConsole = false;
 
-				ShowWindow(consoleWnd, SW_HIDE);
-			}
-		}
+	// Try to attach to the existing parent console:
+	if (AttachConsole(ATTACH_PARENT_PROCESS))
+	{
+		hasConsole = true;
+	}
+#if 0 // Disabled for now, until we know that the new behaviour is satisfactory.
+	// Otherwise create/open a new console:
+	else if (AllocConsole())
+	{
+		// The newly opened console window will gain the focus and will be in front of the main window,
+		// but this seems acceptable for users who have explicitly enabled/requested console logging.
+
+		hasConsole = true;
+		SetConsoleTitleW(L"Sourcetrail Console Logging");
+	}
+#endif
+	if (hasConsole)
+	{
+		// Redirect C streams:
+
+		FILE* fpDummy;
+		freopen_s(&fpDummy, "CONOUT$", "w", stdout);
+		freopen_s(&fpDummy, "CONOUT$", "w", stderr);
+		freopen_s(&fpDummy, "CONIN$", "r", stdin);
+
+		// Redirect Windows handles:
+
+		HANDLE hOut = CreateFileW(L"CONOUT$", GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
+		HANDLE hIn = CreateFileW(L"CONIN$", GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0, nullptr);
+
+		SetStdHandle(STD_OUTPUT_HANDLE, hOut);
+		SetStdHandle(STD_ERROR_HANDLE, hOut);
+		SetStdHandle(STD_INPUT_HANDLE, hIn);
+
+		// Clear error flags and sync C++ streams:
+
+		std::clog.clear();
+		std::cerr.clear();
+		std::cout.clear();
+		std::cin.clear();
+
+		std::ios::sync_with_stdio(true);
 	}
 #endif
 }
@@ -98,19 +139,19 @@ void addLanguagePackages()
 
 #if BUILD_CXX_LANGUAGE_PACKAGE
 	SourceGroupFactory::getInstance()->addModule(std::make_shared<SourceGroupFactoryModuleCxx>());
-#endif	  // BUILD_CXX_LANGUAGE_PACKAGE
+#endif
 
 #if BUILD_JAVA_LANGUAGE_PACKAGE
 	SourceGroupFactory::getInstance()->addModule(std::make_shared<SourceGroupFactoryModuleJava>());
-#endif	  // BUILD_JAVA_LANGUAGE_PACKAGE
+#endif
 
 #if BUILD_CXX_LANGUAGE_PACKAGE
 	LanguagePackageManager::getInstance()->addPackage(std::make_shared<LanguagePackageCxx>());
-#endif	  // BUILD_CXX_LANGUAGE_PACKAGE
+#endif
 
 #if BUILD_JAVA_LANGUAGE_PACKAGE
 	LanguagePackageManager::getInstance()->addPackage(std::make_shared<LanguagePackageJava>());
-#endif	  // BUILD_JAVA_LANGUAGE_PACKAGE
+#endif
 }
 
 int main(int argc, char* argv[])
@@ -198,6 +239,9 @@ int main(int argc, char* argv[])
 		Application::createInstance(&viewFactory, &networkFactory);
 		shared_ptr<ApplicationSettings> appSettings = ApplicationSettings::getInstance();
 
+		if (appSettings->getLoggingEnabled())
+			setupConsoleWindow();
+
 		setupLogging(appSettings.get());
 
 		[[maybe_unused]]
@@ -207,9 +251,6 @@ int main(int argc, char* argv[])
 		});
 
 		ApplicationSettingsPrefiller::prefillPaths(appSettings.get());
-		if (!appSettings->getLoggingEnabled())
-			closeConsoleWindow();
-
 		addLanguagePackages();
 
 		utility::loadFontsFromDirectory(ResourcePaths::getFontsDirectoryPath(), ".otf");

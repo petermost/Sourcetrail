@@ -1,4 +1,4 @@
-add_executable(Sourcetrail
+add_executable(Sourcetrail WIN32
 	main.cpp
 	Sourcetrail.rc
 )
