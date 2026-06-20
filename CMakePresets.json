@@ -1,9 +1,7 @@
 {
-	"version": 10,
-	"$comment" : "Hidden presets and ending with '-presets' are meant to be aggregated via 'inherits'",
+	"version": 9,
 	"configurePresets": [
 		{
-			"$comment" : "Presets to setup build directory",
 			"hidden": true,
 			"name": "default-presets",
 			"warnings": {
@@ -14,7 +12,6 @@
 			"binaryDir": "${sourceParentDir}/build/${presetName}"
 		},
 		{
-			"$comment" : "Presets to setup Ninja single-config generator",
 			"hidden": true,
 			"name": "ninja-single-config-presets",
 			"generator": "Ninja",
@@ -23,19 +20,16 @@
 			}
 		},
 		{
-			"$comment" : "Presets to setup Ninja multi-config generator",
 			"hidden": true,
 			"name": "ninja-multi-config-presets",
 			"generator": "Ninja Multi-Config",
 			"cacheVariables": {
-				"$comment" : "VCPKG has problems with 'RelWithDebInfo' so ommit it",
 				"CMAKE_CONFIGURATION_TYPES": "Release;Debug",
 				"CMAKE_VERBOSE_MAKEFILE": "TRUE",
 				"CMAKE_EXPORT_COMPILE_COMMANDS": "TRUE"
 			}
 		},
 		{
-			"$comment" : "Presets to restrict the build to Linux",
 			"hidden": true,
 			"name": "linux-presets",
 			"condition": {
