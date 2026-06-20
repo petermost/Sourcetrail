@@ -119,6 +119,6 @@ class WindowsSdk final : public ToolChain {
 		static std::vector<std::string> getVersions();
 };
 
-bool convertMsvcCompileCommand(std::vector<std::string> *commandLine, std::string *inputFileName);
+void replaceMsvcArguments(std::vector<std::string> *commandLineArguments);
 
 #endif

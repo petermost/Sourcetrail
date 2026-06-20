@@ -5,6 +5,9 @@
             <build_file_path>
                 <compilation_db_path>../../build/vcpkg-release/compile_commands.json</compilation_db_path>
             </build_file_path>
+            <exclude_filters>
+                <exclude_filter>**.rc</exclude_filter>
+            </exclude_filters>
             <header_search_paths>
                 <header_search_path>../src/external/sqlite</header_search_path>
                 <header_search_path>../../build/vcpkg-release/vcpkg_installed/x64-arm64-linux-windows-osx-static-md/include</header_search_path>

@@ -109,10 +109,7 @@ std::shared_ptr<IndexerCommandProvider> SourceGroupCxxCdb::getIndexerCommandProv
 
 		if (info.filesToIndex.contains(sourcePath) && sourceFilePaths.contains(sourcePath))
 		{
-			if (!convertMsvcCompileCommand(&command.CommandLine, &command.Filename))
-			{
-				continue;
-			}
+			replaceMsvcArguments(&command.CommandLine);
 
 			std::vector<std::string> commandLine = command.CommandLine;
 			utility::removeIncludePchFlag(commandLine);

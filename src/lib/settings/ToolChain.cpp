@@ -542,8 +542,18 @@ static optional<string> getArgumentValue(const string &argument, string_view arg
 	return argument.starts_with(argumentKey) ? optional(argument.substr(argumentKey.length())) : nullopt;
 }
 
-static void replaceMsvcArguments(vector<string> *commandLineArguments)
+void replaceMsvcArguments(vector<string> *commandLineArguments)
 {
+	// Replace/Remove arguments only if these are for MSVC, otherwise the check for '/' would remove Linux paths.
+	// Note: To prevent errors for .rc files, exclude them in 'Excluded Files & Directories' with '**.rc'.
+
+	if (!commandLineArguments->empty())
+	{
+		string_view command = (*commandLineArguments)[0];
+		if (!command.ends_with("cl.exe"sv))
+			return;
+	}
+
 	// - Keep/Replace only those options which are necessary to parse the code correctly
 	//
 	// From https://learn.microsoft.com/en-us/cpp/build/reference/compiler-options:
@@ -608,25 +618,4 @@ static void replaceMsvcArguments(vector<string> *commandLineArguments)
 		else
 			++argument;
 	}
-}
-
-bool convertMsvcCompileCommand(vector<string> *commandLine, string *inputFileName)
-{
-	// Replace/Remove arguments only if these are for the Microsoft C/C++/Resource compiler, otherwise the check for '/' will remove Linux paths:
-
-	if (!commandLine->empty())
-	{
-		const string_view command = (*commandLine)[0];
-
-		if (command.ends_with("cl.exe"sv))
-		{
-			replaceMsvcArguments(commandLine);
-			return true;
-		}
-		else if (command.ends_with("rc.exe"sv) && inputFileName->ends_with(".rc"sv))
-		{
-			return false;
-		}
-	}
-	return true;
 }
