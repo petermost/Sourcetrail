@@ -1,4 +1,4 @@
-add_executable(Sourcetrail_indexer
+add_executable(Sourcetrail_indexer WIN32
 	main.cpp
 )
 setDefaultTargetOptions(Sourcetrail_indexer)

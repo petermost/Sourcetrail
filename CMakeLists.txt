@@ -32,7 +32,7 @@ endif()
 # Project
 ###############################################################################
 
-project(Sourcetrail VERSION 2026.6.12 HOMEPAGE_URL "http://sourcetrail.de")
+project(Sourcetrail VERSION 2026.6.20 HOMEPAGE_URL "http://sourcetrail.de")
 
 include(cmake/Sourcetrail.cmake)
 

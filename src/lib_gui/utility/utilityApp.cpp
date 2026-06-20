@@ -18,7 +18,9 @@
 	#include <boost/process/v1/io.hpp>
 	#include <boost/process/v1/search_path.hpp>
 	#include <boost/process/v1/start_dir.hpp>
-
+	#if BOOST_OS_WINDOWS
+		#include <boost/process/v1/windows.hpp>
+	#endif
 	namespace process_v1 = boost::process::v1;
 #else
 	#include <boost/process.hpp>
@@ -70,6 +72,19 @@ bool pump_and_wait_for_process(io_context *ctx, process_v1::child *process, mill
 	return !process->running();
 }
 
+template <class... Args>
+std::shared_ptr<process_v1::child> make_child(const FilePath &workingDirectory, Args &&...args)
+{
+	if (workingDirectory.empty())
+	{
+		return std::make_shared<process_v1::child>(std::forward<Args>(args)...);
+	}
+	else
+	{
+		return std::make_shared<process_v1::child>(std::forward<Args>(args)..., process_v1::start_dir(workingDirectory.str()));
+	}
+}
+
 } // namespace
 
 ProcessOutput executeProcess(const std::string& command, const std::vector<std::string>& arguments, const FilePath& workingDirectory,
@@ -80,8 +95,6 @@ ProcessOutput executeProcess(const std::string& command, const std::vector<std::
 		boost::asio::io_context ctx;
 		process_v1::async_pipe ap(ctx);
 
-		std::shared_ptr<process_v1::child> process;
-
 		process_v1::environment env = boost::this_process::environment();
 		std::vector<std::string> previousPath = env["PATH"].to_vector();
 		env["PATH"] = {"/opt/local/bin", "/usr/local/bin", "$HOME/bin"};
@@ -90,25 +103,17 @@ ProcessOutput executeProcess(const std::string& command, const std::vector<std::
 			env["PATH"].append(entry);
 		}
 
-		if (workingDirectory.empty())
-		{
-			process = std::make_shared<process_v1::child>(
-				searchPath(command),
-				process_v1::args(arguments),
-				env,
-				process_v1::std_in.close(),
-				(process_v1::std_out & process_v1::std_err) > ap);
-		}
-		else
-		{
-			process = std::make_shared<process_v1::child>(
-				searchPath(command),
-				process_v1::args(arguments),
-				process_v1::start_dir(workingDirectory.str()),
-				env,
-				process_v1::std_in.close(),
-				(process_v1::std_out & process_v1::std_err) > ap);
-		}
+		std::shared_ptr<process_v1::child> process = make_child(
+			workingDirectory,
+			searchPath(command),
+			process_v1::args(arguments),
+			env,
+			process_v1::std_in.close(),
+			#if BOOST_OS_WINDOWS
+				process_v1::windows::hide,
+			#endif
+			(process_v1::std_out & process_v1::std_err) > ap
+		);
 
 		s_runningProcesses.access()->insert(process);
 
