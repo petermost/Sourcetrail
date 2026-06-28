@@ -8,7 +8,7 @@
 
 std::vector<FilePath> utility::partitionFilePathsBySize(std::vector<FilePath> filePaths, int partitionCount)
 {
-	typedef std::pair<unsigned long long int, FilePath> PairType;
+	typedef std::pair<FileSize, FilePath> PairType;
 	std::vector<PairType> sourceFileSizesToCommands;
 	for (const FilePath& path: filePaths)
 	{

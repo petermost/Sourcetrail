@@ -8,6 +8,8 @@
 #include "FileInfo.h"
 #include "TimeStamp.h"
 
+using FileSize = boost::uintmax_t;
+
 class FileSystem
 {
 public:
@@ -21,7 +23,7 @@ public:
 	static std::set<FilePath> getSymLinkedDirectories(const FilePath &path);
 	static std::set<FilePath> getSymLinkedDirectories(const std::vector<FilePath> &paths);
 
-	static unsigned long long getFileByteSize(const FilePath &filePath);
+	static FileSize getFileByteSize(const FilePath &filePath);
 
 	static TimeStamp getLastWriteTime(const FilePath &filePath);
 

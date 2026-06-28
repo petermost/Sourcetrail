@@ -182,7 +182,7 @@ std::set<FilePath> FileSystem::getSymLinkedDirectories(const std::vector<FilePat
 	return files;
 }
 
-unsigned long long FileSystem::getFileByteSize(const FilePath &filePath)
+FileSize FileSystem::getFileByteSize(const FilePath &filePath)
 {
 	return boost::filesystem::file_size(filePath.getPath());
 }
