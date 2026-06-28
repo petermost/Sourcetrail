@@ -38,6 +38,8 @@
 #include <string>
 #include <string_view>
 
+using CppSQLite3Integer = sqlite3_int64;
+
 constexpr int CPPSQLITE_ERROR = 1000;
 
 class CppSQLite3Exception
@@ -79,7 +81,7 @@ public:
 	
 	int fieldDataType(int nCol);
 	
-	long long getIntField(int nField, int nNullValue = 0);
+	CppSQLite3Integer getIntField(int nField, int nNullValue = 0);
 	std::string getStringField(int nField, const std::string &szNullValue = "");
 
 	bool eof();
@@ -114,7 +116,7 @@ public:
 	CppSQLite3Query execQuery();
 	
 	void bind(int nParam, const std::string_view szValue);
-	void bind(int nParam, const long long nValue);
+	void bind(int nParam, const CppSQLite3Integer nValue);
 
 	void reset();
 	
@@ -143,11 +145,11 @@ public:
 	
 	CppSQLite3Query execQuery(std::string_view szSQL);
 	
-	long long execScalar(std::string_view szSQL, int nNullValue = 0);
+	CppSQLite3Integer execScalar(std::string_view szSQL, int nNullValue = 0);
 	
 	CppSQLite3Statement compileStatement(std::string_view szSQL);
 	
-	long long lastRowId();
+	CppSQLite3Integer lastRowId();
 	
 	void interrupt();
 	

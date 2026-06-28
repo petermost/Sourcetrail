@@ -3,6 +3,10 @@
 #include "FileSystem.h"
 #include "TimeStamp.h"
 #include "logging.h"
+#include "Id.h"
+
+// Ensure an Id can hold a SQLite integer:
+static_assert(sizeof(SqliteInteger) <= sizeof(Id::type));
 
 SqliteStorage::SqliteStorage(const FilePath& dbFilePath): m_dbFilePath(dbFilePath.getCanonical())
 {
@@ -189,9 +193,9 @@ bool SqliteStorage::executeStatement(CppSQLite3Statement& statement)
 	return true;
 }
 
-long long SqliteStorage::executeStatementScalar(const std::string& statement, const int nullValue) const
+SqliteInteger SqliteStorage::executeStatementScalar(const std::string& statement, const int nullValue) const
 {
-	long long ret = 0;
+	SqliteInteger ret = 0;
 	try
 	{
 		ret = m_database.execScalar(statement, nullValue);
@@ -203,9 +207,9 @@ long long SqliteStorage::executeStatementScalar(const std::string& statement, co
 	return ret;
 }
 
-long long SqliteStorage::executeStatementScalar(CppSQLite3Statement& statement, const int nullValue) 
+SqliteInteger SqliteStorage::executeStatementScalar(CppSQLite3Statement& statement, const int nullValue) 
 {
-	long long ret = 0;
+	SqliteInteger ret = 0;
 	try
 	{
 		CppSQLite3Query q = executeQuery(statement);

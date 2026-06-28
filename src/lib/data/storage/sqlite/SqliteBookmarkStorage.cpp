@@ -143,11 +143,6 @@ void SqliteBookmarkStorage::removeBookmarkCategory(Id id)
 	executeStatement("DELETE FROM bookmark_category WHERE id = (" + to_string(id) + ");");
 }
 
-std::vector<std::pair<int, SqliteDatabaseIndex>> SqliteBookmarkStorage::getIndices() const
-{
-	return std::vector<std::pair<int, SqliteDatabaseIndex>>();
-}
-
 void SqliteBookmarkStorage::clearTables()
 {
 	try

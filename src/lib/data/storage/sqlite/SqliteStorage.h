@@ -1,12 +1,13 @@
 #ifndef SQLITE_STORAGE_H
 #define SQLITE_STORAGE_H
 
+#include "FilePath.h"
+
 #include "CppSQLite3.h"
 
-#include "FilePath.h"
-#include "SqliteDatabaseIndex.h"
-
 class TimeStamp;
+
+using SqliteInteger = CppSQLite3Integer;
 
 class SqliteStorage
 {
@@ -40,8 +41,8 @@ protected:
 
 	bool executeStatement(const std::string& statement) const;
 	static bool executeStatement(CppSQLite3Statement& statement);
-	long long executeStatementScalar(const std::string& statement, const int nullValue = 0) const;
-	static long long executeStatementScalar(CppSQLite3Statement& statement, const int nullValue = 0);
+	SqliteInteger executeStatementScalar(const std::string& statement, const int nullValue = 0) const;
+	static SqliteInteger executeStatementScalar(CppSQLite3Statement& statement, const int nullValue = 0);
 	CppSQLite3Query executeQuery(const std::string& statement) const;
 	static CppSQLite3Query executeQuery(CppSQLite3Statement& statement);
 
@@ -61,8 +62,6 @@ private:
 
 	void enablePragmas() const;
 	void disablePragmas() const;
-
-	std::vector<std::pair<int, SqliteDatabaseIndex>> m_indices;
 
 	bool m_precompiledStatementsInitialized = false;
 };

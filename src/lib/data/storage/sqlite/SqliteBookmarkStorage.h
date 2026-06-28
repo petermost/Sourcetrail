@@ -36,7 +36,6 @@ public:
 private:
 	static const size_t s_storageVersion;
 
-	virtual std::vector<std::pair<int, SqliteDatabaseIndex>> getIndices() const;
 	void clearTables() override;
 	void setupTables() override;
 	void setupPrecompiledStatements() override;
