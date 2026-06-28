@@ -50,7 +50,7 @@ By sponsoring me with **$10 per month**, you will gain access to the following *
 |-------|------|------|
 |Qt6    |6.9.2 |6.11.1|
 |Boost  |1.88.0|1.91.0|
-|SQLite3|3.46.1|3.53.1|
+|SQLite3|3.46.1|3.53.2|
 |TinyXML|2.6.2 |2.6.2 |
 
 **C++**
@@ -71,7 +71,7 @@ By sponsoring me with **$10 per month**, you will gain access to the following *
 **Tests**
 |Name  |System|Vcpkg |
 |------|------|------|
-|Catch2|3.7.1 |3.15.0|
+|Catch2|3.7.1 |3.15.1|
 |GTest |1.17.0|1.17.0|
 
 ### Changes

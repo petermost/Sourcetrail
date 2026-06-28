@@ -135,7 +135,7 @@ function(setCommonGccClangTargetOptions targetName)
 			-Wnon-virtual-dtor
 			-Wwrite-strings
 			
-			-Wformat=2 #-Wformat-nonliteral
+			# -Wformat=2 #-Wformat-nonliteral
 			
 			# GCC: '-Winit-self' is enabled by '-Wall', but '-Wuninitialized' ?
 			# Clang: '-Winit-self' is ignored
