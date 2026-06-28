@@ -7,11 +7,10 @@
 #include <cstddef>
 #include <iosfwd>
 #include <string>
-#include <type_traits>
 
 class Id final {
 public:
-	using type = long long;
+	using type = std::int64_t;
 
 	constexpr Id() noexcept
 		: m_value(0)
@@ -65,6 +64,7 @@ public:
 	template <std::integral T>
 	constexpr explicit operator T() const noexcept
 	{
+		// Ensure the destination type is big enough:
 		static_assert(sizeof(T) >= sizeof(type));
 
 		return m_value;

@@ -3062,7 +3062,7 @@ void PersistentStorage::addBundledEdgesToGraph(
 	}
 }
 
-void PersistentStorage::addFileContentsToGraph(Id fileId, Graph* graph) const
+void PersistentStorage::addFileContentsToGraph(Id fileId, Graph *graph) const
 {
 	FilePath path = getFileNodePath(fileId);
 	if (path.empty())
@@ -3073,15 +3073,15 @@ void PersistentStorage::addFileContentsToGraph(Id fileId, Graph* graph) const
 	std::vector<Id> tokenIds;
 	std::set<Id> tokenIdsSet;
 
-	std::shared_ptr<SourceLocationFile> locationFile =
-		m_sqliteIndexStorage.getSourceLocationsForFile(path);
-	locationFile->forEachStartSourceLocation([this, &tokenIds, &tokenIdsSet](SourceLocation* location) {
+	std::shared_ptr<SourceLocationFile> locationFile = m_sqliteIndexStorage.getSourceLocationsForFile(path);
+	locationFile->forEachStartSourceLocation([this, &tokenIds, &tokenIdsSet](SourceLocation *location)
+	{
 		if (location->getType() != LocationType::TOKEN)
 		{
 			return;
 		}
 
-		for (Id tokenId: location->getTokenIds())
+		for (Id tokenId : location->getTokenIds())
 		{
 			if (tokenIdsSet.insert(tokenId).second)
 			{
@@ -3096,12 +3096,12 @@ void PersistentStorage::addFileContentsToGraph(Id fileId, Graph* graph) const
 
 	addNodesWithParentsAndEdgesToGraph(tokenIds, {}, graph, true);
 
-	Node* fileNode = graph->getNodeById(fileId);
-	Id memberEdgeId = 0;
-	for (Id tokenId: tokenIds)
+	Node *fileNode = graph->getNodeById(fileId);
+	size_t memberEdgeId = 0;
+	for (Id tokenId : tokenIds)
 	{
 		Id nodeId = m_hierarchyCache.getLastVisibleParentNodeId(tokenId);
-		Node* node = graph->getNodeById(nodeId);
+		Node *node = graph->getNodeById(nodeId);
 		if (node && !node->getMemberEdge())
 		{
 			// Set first bit to 1 to avoid collisions
@@ -3109,7 +3109,7 @@ void PersistentStorage::addFileContentsToGraph(Id fileId, Graph* graph) const
 		}
 	}
 
-	fileNode->setChildCount(static_cast<size_t>(memberEdgeId));
+	fileNode->setChildCount(memberEdgeId);
 }
 
 void PersistentStorage::addComponentAccessToGraph(Graph* graph) const
