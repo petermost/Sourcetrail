@@ -284,7 +284,7 @@ constexpr QtStandardKeyCombination MENU_NEW_TAB(QKeySequence::AddTab);
 constexpr QtKeyCombination KEYBOARD_SELECT_NEXT_TAB(    Qt::Key_Tab, Ctrl);
 constexpr QtKeyCombination KEYBOARD_SELECT_PREVIOUS_TAB(Qt::Key_Tab, Ctrl | Shift);
 
-constexpr QtStandardKeyCombination MENU_CLOSE_TAB(QKeySequence::Close);
+constexpr QtKeyCombination         MENU_CLOSE_TAB(Qt::Key_W, Ctrl);
 constexpr QtKeyCombination         KEYBOARD_CLOSE_TAB(Qt::Key_F4, Ctrl);
 constexpr QtMouseActionCombination MOUSE_CLOSE_TAB(MouseAction::MiddleClick);
 

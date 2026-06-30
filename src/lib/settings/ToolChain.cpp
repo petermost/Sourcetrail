@@ -573,8 +573,6 @@ void replaceMsvcArguments(vector<string> *commandLineArguments)
 			*argument++ = ClangCompiler::defineOption(*argumentValue);
 		else if ((argumentValue = getArgumentValue(*argument, "/U"sv)) || (argumentValue = getArgumentValue(*argument, "-U"sv)))
 			*argument++ = ClangCompiler::undefineOption(*argumentValue);
-		else if ((argumentValue = getArgumentValue(*argument, "/FI"sv)) || (argumentValue = getArgumentValue(*argument, "-FI"sv)))
-			*argument++ = ClangCompiler::forceIncludeOption(*argumentValue);
 
 		// Preprocessor include directories:
 
@@ -582,6 +580,8 @@ void replaceMsvcArguments(vector<string> *commandLineArguments)
 			*argument++ = ClangCompiler::includeOption(*argumentValue);
 		else if ((argumentValue = getArgumentValue(*argument, "/external:I"sv)) || (argumentValue = getArgumentValue(*argument, "-external:I"sv)))
 			*argument++ = ClangCompiler::systemIncludeOption(*argumentValue);
+		else if ((argumentValue = getArgumentValue(*argument, "/FI"sv)) || (argumentValue = getArgumentValue(*argument, "-FI"sv)))
+			*argument++ = ClangCompiler::forceIncludeOption(*argumentValue);
 
 		// C/C++ language version selection
 		// Note: 'latest' and 'preview' must be checked before concrete versions!
