@@ -11,9 +11,9 @@ public:
 	MessageListenerBase();
 	virtual ~MessageListenerBase();
 
-	virtual std::string getType() const = 0;
+	virtual std::string getType() const;
 
-	virtual void handleMessageBase(MessageBase* message) = 0;
+	virtual void handleMessageBase(MessageBase* message);
 
 	virtual TabId getSchedulerId() const;
 };
