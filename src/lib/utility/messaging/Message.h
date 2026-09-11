@@ -5,7 +5,6 @@
 #include "MessageQueue.h"
 
 #include <memory>
-#include <string>
 
 template <typename MessageType>
 class Message : public MessageBase
@@ -13,9 +12,9 @@ class Message : public MessageBase
 public:
 	~Message() override = default;
 
-	std::string getType() const final
+	const std::type_info &getType() const final
 	{
-		return MessageType::getStaticType();
+		return typeid(MessageType);
 	}
 
 	void dispatch() final

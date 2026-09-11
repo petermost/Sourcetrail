@@ -10,11 +10,6 @@
 class MessageSearch: public Message<MessageSearch>
 {
 public:
-	static const std::string getStaticType()
-	{
-		return "MessageSearch";
-	}
-
 	MessageSearch(const std::vector<SearchMatch>& matches, NodeTypeSet acceptedNodeTypes)
 		: acceptedNodeTypes(acceptedNodeTypes), m_matches(matches)
 	{

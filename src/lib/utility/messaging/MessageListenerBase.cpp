@@ -11,9 +11,9 @@ MessageListenerBase::~MessageListenerBase()
 	MessageQueue::getInstance()->unregisterListener(this);
 }
 
-std::string MessageListenerBase::getType() const
+const std::type_info &MessageListenerBase::getType() const
 {
-	return "MessageListenerBase";
+	return typeid(MessageListenerBase);
 }
 
 void MessageListenerBase::handleMessageBase(MessageBase * /* message */)

@@ -12,12 +12,7 @@ public:
 		setSchedulerId(TabIds::currentTab());
 	}
 
-	static const std::string getStaticType()
-	{
-		return "MessageFind";
-	}
-
-	bool findFulltext;
+	const bool findFulltext;
 };
 
 #endif	  // MESSAGE_FIND_H

@@ -7,11 +7,6 @@ class MessageProjectEdit: public Message<MessageProjectEdit>
 {
 public:
 	MessageProjectEdit() = default;
-
-	static const std::string getStaticType()
-	{
-		return "MessageProjectEdit";
-	}
 };
 
 #endif	  // MESSAGE_PROJECT_EDIT_H

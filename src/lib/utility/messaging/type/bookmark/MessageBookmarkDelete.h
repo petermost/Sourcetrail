@@ -6,10 +6,6 @@
 class MessageBookmarkDelete: public Message<MessageBookmarkDelete>
 {
 public:
-	static const std::string getStaticType()
-	{
-		return "MessageBookmarkDelete";
-	}
 };
 
 #endif	  // MESSAGE_BOOKMARK_DELETE_H

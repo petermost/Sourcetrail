@@ -8,11 +8,6 @@ class MessagePingReceived: public Message<MessagePingReceived>
 public:
 	MessagePingReceived() = default;
 
-	static const std::string getStaticType()
-	{
-		return "MessagePingReceived";
-	}
-
 	std::string ideName;
 };
 

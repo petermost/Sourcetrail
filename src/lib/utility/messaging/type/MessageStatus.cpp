@@ -18,11 +18,6 @@ MessageStatus::MessageStatus(
 	setSendAsTask(false);
 }
 
-const std::string MessageStatus::getStaticType()
-{
-	return "MessageStatus";
-}
-
 const std::vector<std::string>& MessageStatus::stati() const
 {
 	return m_stati;

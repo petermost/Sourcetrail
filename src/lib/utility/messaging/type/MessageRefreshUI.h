@@ -6,11 +6,6 @@
 class MessageRefreshUI: public Message<MessageRefreshUI>
 {
 public:
-	static const std::string getStaticType()
-	{
-		return "MessageRefreshUI";
-	}
-
 	MessageRefreshUI() = default;
 
 	MessageRefreshUI& noStyleReload()

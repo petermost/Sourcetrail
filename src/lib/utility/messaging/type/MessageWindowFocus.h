@@ -8,11 +8,6 @@ class MessageWindowFocus: public Message<MessageWindowFocus>
 public:
 	MessageWindowFocus(bool focusIn): focusIn(focusIn) {}
 
-	static const std::string getStaticType()
-	{
-		return "MessageWindowFocus";
-	}
-
 	const bool focusIn;
 };
 

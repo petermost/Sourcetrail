@@ -12,12 +12,7 @@ public:
 		setSchedulerId(TabIds::currentTab());
 	}
 
-	static const std::string getStaticType()
-	{
-		return "MessageDeactivateEdge";
-	}
-
-	bool scrollToDefinition;
+	const bool scrollToDefinition;
 };
 
 #endif	  // MESSAGE_DEACTIVATE_EDGE_H

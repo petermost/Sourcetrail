@@ -14,11 +14,6 @@ public:
 		setSchedulerId(TabIds::currentTab());
 	}
 
-	static const std::string getStaticType()
-	{
-		return "MessageActivateSourceLocations";
-	}
-
 	void print(std::ostream& os) const override
 	{
 		for (const Id& id: locationIds)

@@ -18,11 +18,6 @@ public:
 		symbolIds.push_back(symbolId);
 	}
 
-	static const std::string getStaticType()
-	{
-		return "MessageActivateLocalSymbols";
-	}
-
 	void print(std::ostream& os) const override
 	{
 		for (const Id& symbolId: symbolIds)

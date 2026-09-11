@@ -40,11 +40,6 @@ public:
 		nodes.push_back(node);
 	}
 
-	static const std::string getStaticType()
-	{
-		return "MessageActivateNodes";
-	}
-
 	void print(std::ostream& os) const override
 	{
 		for (const ActiveNode& node: nodes)

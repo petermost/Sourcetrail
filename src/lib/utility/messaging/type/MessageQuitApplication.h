@@ -7,11 +7,6 @@ class MessageQuitApplication: public Message<MessageQuitApplication>
 {
 public:
 	MessageQuitApplication() = default;
-
-	static const std::string getStaticType()
-	{
-		return "MessageQuitApplication";
-	}
 };
 
 #endif	  // MESSAGE_QUIT_APPLICATION_H

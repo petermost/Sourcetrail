@@ -13,18 +13,13 @@ public:
 		setSchedulerId(TabIds::currentTab());
 	}
 
-	static const std::string getStaticType()
-	{
-		return "MessageScrollToLine";
-	}
-
 	void print(std::ostream& os) const override
 	{
 		os << filePath.str() << ":" << line;
 	}
 
 	const FilePath filePath;
-	size_t line;
+	const size_t line;
 };
 
 #endif	  // MESSAGE_SCROLL_TO_LINE_H

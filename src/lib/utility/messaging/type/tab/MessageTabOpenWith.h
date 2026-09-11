@@ -8,11 +8,6 @@
 class MessageTabOpenWith: public Message<MessageTabOpenWith>
 {
 public:
-	static const std::string getStaticType()
-	{
-		return "MessageTabOpenWith";
-	}
-
 	MessageTabOpenWith(Id tokenId, Id locationId = 0): tokenId(tokenId), locationId(locationId) {}
 
 	MessageTabOpenWith(const FilePath& path, size_t line = 0): filePath(path), line(line) {}

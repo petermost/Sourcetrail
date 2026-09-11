@@ -8,11 +8,6 @@ class MessageSwitchColorScheme: public Message<MessageSwitchColorScheme>
 public:
 	MessageSwitchColorScheme(const FilePath& filePath): colorSchemePath(filePath) {}
 
-	static const std::string getStaticType()
-	{
-		return "MessageSwitchColorScheme";
-	}
-
 	void print(std::ostream& os) const override
 	{
 		os << colorSchemePath.str();

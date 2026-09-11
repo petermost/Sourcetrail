@@ -14,11 +14,6 @@ public:
 	{
 	}
 
-	static const std::string getStaticType()
-	{
-		return "MessageBookmarkBrowse";
-	}
-
 	const Bookmark::BookmarkFilter filter;
 	const Bookmark::BookmarkOrder order;
 };

@@ -14,19 +14,11 @@ namespace
 class TestMessage: public Message<TestMessage>
 {
 public:
-	static const std::string getStaticType()
-	{
-		return "TestMessage";
-	}
 };
 
 class Test2Message: public Message<Test2Message>
 {
 public:
-	static const std::string getStaticType()
-	{
-		return "TestMessage2";
-	}
 };
 
 class TestMessageListener: public MessageListener<TestMessage>

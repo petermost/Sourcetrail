@@ -6,11 +6,6 @@
 class MessageErrorsHelpMessage: public Message<MessageErrorsHelpMessage>
 {
 public:
-	static const std::string getStaticType()
-	{
-		return "MessageErrorsHelpMessage";
-	}
-
 	MessageErrorsHelpMessage(bool force = false): force(force) {}
 
 	const bool force;

@@ -7,11 +7,6 @@ class MessageActivateWindow: public Message<MessageActivateWindow>
 {
 public:
 	MessageActivateWindow() = default;
-
-	static const std::string getStaticType()
-	{
-		return "MessageActivateWindow";
-	}
 };
 
 #endif	  // MESSAGE_ACTIVATE_WINDOW_H

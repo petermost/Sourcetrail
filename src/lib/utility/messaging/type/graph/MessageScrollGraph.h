@@ -13,11 +13,6 @@ public:
 		setSchedulerId(TabIds::currentTab());
 	}
 
-	static const std::string getStaticType()
-	{
-		return "MessageScrollGraph";
-	}
-
 	int xValue;
 	int yValue;
 };

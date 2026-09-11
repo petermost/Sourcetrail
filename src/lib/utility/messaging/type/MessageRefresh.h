@@ -6,11 +6,6 @@
 class MessageRefresh: public Message<MessageRefresh>
 {
 public:
-	static const std::string getStaticType()
-	{
-		return "MessageRefresh";
-	}
-
 	MessageRefresh() = default;
 
 	MessageRefresh& refreshAll()

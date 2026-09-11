@@ -7,11 +7,6 @@
 class MessageHistoryToPosition: public Message<MessageHistoryToPosition>
 {
 public:
-	static const std::string getStaticType()
-	{
-		return "MessageHistoryToPosition";
-	}
-
 	MessageHistoryToPosition(size_t index): index(index)
 	{
 		setSchedulerId(TabIds::currentTab());

@@ -12,11 +12,6 @@ class MessageActivateTokens
 	, public MessageActivateBase
 {
 public:
-	static const std::string getStaticType()
-	{
-		return "MessageActivateTokens";
-	}
-
 	MessageActivateTokens(const MessageBase* other)
 	{
 		setIsParallel(true);

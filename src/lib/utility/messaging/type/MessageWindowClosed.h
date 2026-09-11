@@ -10,11 +10,6 @@ public:
 	{
 		setSendAsTask(false);
 	}
-
-	static const std::string getStaticType()
-	{
-		return "MessageWindowClosed";
-	}
 };
 
 #endif	  // MESSAGE_WINDOW_CLOSED_H

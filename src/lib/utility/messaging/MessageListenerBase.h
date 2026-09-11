@@ -3,15 +3,13 @@
 
 #include "MessageBase.h"
 
-#include <string>
-
 class MessageListenerBase
 {
 public:
 	MessageListenerBase();
 	virtual ~MessageListenerBase();
 
-	virtual std::string getType() const;
+	virtual const std::type_info &getType() const;
 
 	virtual void handleMessageBase(MessageBase* message);
 

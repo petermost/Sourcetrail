@@ -13,11 +13,6 @@ public:
 		ALREADY_CREATED
 	};
 
-	static const std::string getStaticType()
-	{
-		return "MessageBookmarkButtonState";
-	}
-
 	MessageBookmarkButtonState(TabId schedulerId, ButtonState state): state(state)
 	{
 		setSchedulerId(schedulerId);

@@ -14,11 +14,11 @@ class MessageFilterSearchAutocomplete: public MessageFilter
 		}
 
 		MessageBase* message = messageBuffer->front().get();
-		if (message->getType() == MessageSearchAutocomplete::getStaticType())
+		if (message->getType() == typeid(MessageSearchAutocomplete))
 		{
 			for (auto it = messageBuffer->begin() + 1; it != messageBuffer->end(); it++)
 			{
-				if ((*it)->getType() == MessageSearchAutocomplete::getStaticType())
+				if ((*it)->getType() == typeid(MessageSearchAutocomplete))
 				{
 					messageBuffer->pop_front();
 					return;

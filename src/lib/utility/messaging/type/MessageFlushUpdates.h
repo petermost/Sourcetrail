@@ -12,11 +12,6 @@ public:
 		setKeepContent(keepsContent);
 		setSchedulerId(TabIds::currentTab());
 	}
-
-	static const std::string getStaticType()
-	{
-		return "MessageFlushUpdates";
-	}
 };
 
 #endif	  // MESSAGE_FLUSH_UPDATES_H

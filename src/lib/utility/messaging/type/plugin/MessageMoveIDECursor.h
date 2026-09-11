@@ -12,11 +12,6 @@ public:
 	{
 	}
 
-	static const std::string getStaticType()
-	{
-		return "MessageMoveIDECursor";
-	}
-
 	void print(std::ostream& os) const override
 	{
 		os << filePath.str() << ":" << row << ":" << column;

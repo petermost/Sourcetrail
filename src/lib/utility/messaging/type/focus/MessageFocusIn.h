@@ -18,11 +18,6 @@ public:
 		setSchedulerId(TabIds::currentTab());
 	}
 
-	static const std::string getStaticType()
-	{
-		return "MessageFocusIn";
-	}
-
 	void print(std::ostream& os) const override
 	{
 		for (const Id& id: tokenIds)

@@ -3,8 +3,6 @@
 
 #include "Message.h"
 
-#include <boost/preprocessor/stringize.hpp>
-
 class MessageTextEncodingChanged : public Message<MessageTextEncodingChanged>
 {
 public:
@@ -13,11 +11,6 @@ public:
 	{
 	}
 
-	static const std::string getStaticType()
-	{
-		return BOOST_PP_STRINGIZE(MessageTextEncodingChanged);
-	}
-	
 	const std::string textEncoding;
 };
 

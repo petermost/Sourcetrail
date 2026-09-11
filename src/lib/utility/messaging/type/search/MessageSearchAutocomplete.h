@@ -15,11 +15,6 @@ public:
 		setSchedulerId(TabIds::currentTab());
 	}
 
-	static const std::string getStaticType()
-	{
-		return "MessageSearchAutocomplete";
-	}
-
 	void print(std::ostream& os) const override
 	{
 		os << query << "[";

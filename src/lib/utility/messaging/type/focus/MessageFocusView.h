@@ -20,11 +20,6 @@ public:
 		setSchedulerId(TabIds::currentTab());
 	}
 
-	static const std::string getStaticType()
-	{
-		return "MessageFocusView";
-	}
-
 	void print(std::ostream& os) const override
 	{
 		switch (type)

@@ -15,11 +15,11 @@ class MessageFilterFocusInOut: public MessageFilter
 		}
 
 		MessageBase* message = messageBuffer->front().get();
-		if (message->getType() == MessageFocusIn::getStaticType())
+		if (message->getType() == typeid(MessageFocusIn))
 		{
 			for (auto it = messageBuffer->begin() + 1; it != messageBuffer->end(); it++)
 			{
-				if ((*it)->getType() == MessageFocusOut::getStaticType() &&
+				if ((*it)->getType() == typeid(MessageFocusOut) &&
 					dynamic_cast<MessageFocusIn*>(message)->tokenIds ==
 						dynamic_cast<MessageFocusOut*>(it->get())->tokenIds)
 				{

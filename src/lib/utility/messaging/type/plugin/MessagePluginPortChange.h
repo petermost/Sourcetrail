@@ -7,11 +7,6 @@ class MessagePluginPortChange: public Message<MessagePluginPortChange>
 {
 public:
 	MessagePluginPortChange() = default;
-
-	static const std::string getStaticType()
-	{
-		return "MessagePluginPortChange";
-	}
 };
 
 #endif	  // MESSAGE_PLUGIN_PORT_CHANGE_H

@@ -28,11 +28,6 @@ public:
 		setSchedulerId(TabIds::currentTab());
 	}
 
-	static const std::string getStaticType()
-	{
-		return "MessageActivateEdge";
-	}
-
 	bool isBundledEdges() const
 	{
 		return type == Edge::EDGE_BUNDLED_EDGES;

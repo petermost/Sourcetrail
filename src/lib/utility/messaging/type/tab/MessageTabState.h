@@ -12,11 +12,6 @@ public:
 	{
 	}
 
-	static const std::string getStaticType()
-	{
-		return "MessageTabState";
-	}
-
 	const TabId tabId;
 	const std::vector<SearchMatch> searchMatches;
 };

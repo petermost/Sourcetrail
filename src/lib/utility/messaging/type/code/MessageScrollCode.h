@@ -13,13 +13,8 @@ public:
 		setSchedulerId(TabIds::currentTab());
 	}
 
-	static const std::string getStaticType()
-	{
-		return "MessageScrollCode";
-	}
-
 	int value;
-	bool inListMode;
+	const bool inListMode;
 };
 
 #endif	  // MESSAGE_SCROLL_CODE_H

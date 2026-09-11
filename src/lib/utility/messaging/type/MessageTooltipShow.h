@@ -25,11 +25,6 @@ public:
 		setIsLogged(false);
 	}
 
-	static const std::string getStaticType()
-	{
-		return "MessageTooltipShow";
-	}
-
 	const TooltipInfo tooltipInfo;
 
 	const std::vector<Id> sourceLocationIds;

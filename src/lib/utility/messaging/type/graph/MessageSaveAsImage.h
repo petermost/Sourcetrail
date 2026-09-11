@@ -7,14 +7,9 @@
 class MessageSaveAsImage: public Message<MessageSaveAsImage>
 {
 public:
-	MessageSaveAsImage(QString path) : path(path) {}
+	MessageSaveAsImage(const QString &path) : path(path) {}
 
-	static const std::string getStaticType()
-	{
-		return "MessageSaveAsImage";
-	}
-
-	QString path;
+	const QString path;
 };
 
 #endif /* MESSAGE_SAVE_AS_IMAGE_H */

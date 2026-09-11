@@ -10,11 +10,6 @@ class MessageActivateFullTextSearch
 	, public MessageActivateBase
 {
 public:
-	static const std::string getStaticType()
-	{
-		return "MessageActivateFullTextSearch";
-	}
-
 	MessageActivateFullTextSearch(const std::string& searchTerm, bool caseSensitive = false)
 		: searchTerm(searchTerm), caseSensitive(caseSensitive)
 	{
@@ -35,7 +30,7 @@ public:
 	}
 
 	const std::string searchTerm;
-	bool caseSensitive;
+	const bool caseSensitive;
 };
 
 #endif	  // MESSAGE_ACTIVATE_FULLTEXT_SEARCH_H

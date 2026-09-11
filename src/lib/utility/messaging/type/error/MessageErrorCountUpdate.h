@@ -8,11 +8,6 @@
 class MessageErrorCountUpdate: public Message<MessageErrorCountUpdate>
 {
 public:
-	static const std::string getStaticType()
-	{
-		return "MessageErrorCountUpdate";
-	}
-
 	MessageErrorCountUpdate(const ErrorCountInfo& errorCount, const std::vector<ErrorInfo>& newErrors)
 		: errorCount(errorCount), newErrors(newErrors)
 	{

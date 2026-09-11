@@ -8,11 +8,6 @@
 class MessageCodeShowDefinition: public Message<MessageCodeShowDefinition>
 {
 public:
-	static const std::string getStaticType()
-	{
-		return "MessageCodeShowDefinition";
-	}
-
 	MessageCodeShowDefinition(Id nodeId, bool inIDE = false): nodeId(nodeId), inIDE(inIDE)
 	{
 		setSchedulerId(TabIds::currentTab());

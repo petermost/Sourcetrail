@@ -40,7 +40,7 @@ set(QT_CREATOR_SKIP_PACKAGE_MANAGER_SETUP ON)
 # Project
 ###############################################################################
 
-project(Sourcetrail VERSION 2026.9.9 HOMEPAGE_URL "http://sourcetrail.de")
+project(Sourcetrail VERSION 2026.9.11 HOMEPAGE_URL "http://sourcetrail.de")
 
 include(cmake/Sourcetrail.cmake)
 

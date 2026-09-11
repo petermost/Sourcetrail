@@ -7,11 +7,6 @@ class MessageShowStatus: public Message<MessageShowStatus>
 {
 public:
 	MessageShowStatus() = default;
-
-	static const std::string getStaticType()
-	{
-		return "MessageShowStatus";
-	}
 };
 
 #endif	  // MESSAGE_SHOW_STATUS_H

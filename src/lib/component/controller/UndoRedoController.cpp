@@ -456,7 +456,7 @@ void UndoRedoController::replayCommands()
 
 void UndoRedoController::replayCommands(std::list<Command>::iterator it)
 {
-	std::map<std::string, std::list<Command>::iterator> lastOfType;
+	std::map<std::type_index, std::list<Command>::iterator> lastOfType;
 	std::list<Command>::iterator at = it;
 	while (at != m_iterator)
 	{
@@ -494,7 +494,7 @@ void UndoRedoController::replayCommand(std::list<Command>::iterator it)
 {
 	std::shared_ptr<MessageBase> m = it->message;
 
-	if (m->getType() == MessageActivateTokens::getStaticType())
+	if (m->getType() == typeid(MessageActivateTokens))
 	{
 		MessageActivateTokens* msg = dynamic_cast<MessageActivateTokens*>(m.get());
 
@@ -521,7 +521,7 @@ void UndoRedoController::replayCommand(std::list<Command>::iterator it)
 			}
 		}
 	}
-	else if (m->getType() == MessageActivateErrors::getStaticType())
+	else if (m->getType() == typeid(MessageActivateErrors))
 	{
 		std::shared_ptr<const Project> currentProject =
 			Application::getInstance()->getCurrentProject();

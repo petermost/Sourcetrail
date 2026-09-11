@@ -14,11 +14,11 @@ class MessageFilterErrorCountUpdate: public MessageFilter
 		}
 
 		MessageBase* message = messageBuffer->front().get();
-		if (message->getType() == MessageErrorCountUpdate::getStaticType())
+		if (message->getType() == typeid(MessageErrorCountUpdate))
 		{
 			for (auto it = messageBuffer->begin() + 1; it != messageBuffer->end(); it++)
 			{
-				if ((*it)->getType() == MessageErrorCountUpdate::getStaticType())
+				if ((*it)->getType() == typeid(MessageErrorCountUpdate))
 				{
 					MessageErrorCountUpdate* frontErrorsMessage =
 						dynamic_cast<MessageErrorCountUpdate*>(message);

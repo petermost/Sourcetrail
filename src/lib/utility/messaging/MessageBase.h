@@ -1,11 +1,14 @@
 #ifndef MESSAGE_BASE_H
 #define MESSAGE_BASE_H
 
-#include <ostream>
-#include <sstream>
-
 #include "Id.h"
 #include "TabIds.h"
+
+#include <ostream>
+#include <sstream>
+#include <typeinfo>
+
+std::ostream &operator << (std::ostream &, const std::type_info &);
 
 class MessageBase
 {
@@ -13,7 +16,7 @@ public:
 	MessageBase() = default;
 	virtual ~MessageBase() = default;
 
-	virtual std::string getType() const = 0;
+	virtual const std::type_info &getType() const = 0;
 	virtual void dispatch() = 0;
 
 	Id getId() const

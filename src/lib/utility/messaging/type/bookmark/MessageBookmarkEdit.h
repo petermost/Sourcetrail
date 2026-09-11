@@ -6,10 +6,6 @@
 class MessageBookmarkEdit: public Message<MessageBookmarkEdit>
 {
 public:
-	static const std::string getStaticType()
-	{
-		return "MessageBookmarkEdit";
-	}
 };
 
 #endif	  // MESSAGE_BOOKMARK_EDIT_H

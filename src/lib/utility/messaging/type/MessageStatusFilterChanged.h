@@ -9,11 +9,6 @@ class MessageStatusFilterChanged: public Message<MessageStatusFilterChanged>
 public:
 	MessageStatusFilterChanged(const StatusFilter filter): statusFilter(filter) {}
 
-	static const std::string getStaticType()
-	{
-		return "MessageStatusFilterChanged";
-	}
-
 	const StatusFilter statusFilter;
 };
 

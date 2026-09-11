@@ -11,11 +11,6 @@ class MessageCloseProject: public Message<MessageCloseProject>
 public:
 	MessageCloseProject() = default;
 
-	static const std::string getStaticType()
-	{
-		return "MessageCloseProject";
-	}
-
 	void print(std::ostream&  /*os*/) const override {}
 };
 

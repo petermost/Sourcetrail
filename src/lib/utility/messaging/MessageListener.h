@@ -1,8 +1,6 @@
 #ifndef MESSAGE_LISTENER_H
 #define MESSAGE_LISTENER_H
 
-#include <string>
-
 #include "MessageBase.h"
 #include "MessageListenerBase.h"
 #include "MessageQueue.h"
@@ -14,9 +12,9 @@ public:
 	MessageListener() = default;
 
 private:
-	std::string getType() const final
+	const std::type_info &getType() const final
 	{
-		return MessageType::getStaticType();
+		return typeid(MessageType);
 	}
 
 	void handleMessageBase(MessageBase* message) final

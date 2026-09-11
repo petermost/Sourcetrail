@@ -12,11 +12,6 @@ class MessageActivateOverview
 	, public MessageActivateBase
 {
 public:
-	static const std::string getStaticType()
-	{
-		return "MessageActivateOverview";
-	}
-
 	MessageActivateOverview(NodeTypeSet acceptedNodeTypes = NodeTypeSet::all())
 		: acceptedNodeTypes(acceptedNodeTypes)
 	{
@@ -33,7 +28,7 @@ public:
 		return {SearchMatch::createCommand(SearchMatch::COMMAND_ALL)};
 	}
 
-	NodeTypeSet acceptedNodeTypes;
+	const NodeTypeSet acceptedNodeTypes;
 };
 
 #endif	  // MESSAGE_ACTIVATE_ALL_H

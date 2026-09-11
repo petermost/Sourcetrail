@@ -15,11 +15,6 @@ public:
 		setSchedulerId(TabIds::currentTab());
 	}
 
-	static const std::string getStaticType()
-	{
-		return "MessageActivateLegend";
-	}
-
 	std::vector<SearchMatch> getSearchMatches() const override
 	{
 		return {SearchMatch::createCommand(SearchMatch::COMMAND_LEGEND)};

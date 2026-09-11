@@ -7,11 +7,6 @@
 class MessageHistoryUndo: public Message<MessageHistoryUndo>
 {
 public:
-	static const std::string getStaticType()
-	{
-		return "MessageHistoryUndo";
-	}
-
 	MessageHistoryUndo()
 	{
 		setSchedulerId(TabIds::currentTab());

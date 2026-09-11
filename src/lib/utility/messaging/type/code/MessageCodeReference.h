@@ -19,11 +19,6 @@ public:
 		setSchedulerId(TabIds::currentTab());
 	}
 
-	static const std::string getStaticType()
-	{
-		return "MessageCodeReference";
-	}
-
 	void print(std::ostream& os) const override
 	{
 		if (type == Type::PREVIOUS)
@@ -42,7 +37,7 @@ public:
 	}
 
 	const Type type;
-	bool localReference;
+	const bool localReference;
 };
 
 #endif	  // MESSAGE_CODE_REFERENCE_H

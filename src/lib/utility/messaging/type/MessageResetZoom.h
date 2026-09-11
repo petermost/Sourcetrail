@@ -7,11 +7,6 @@ class MessageResetZoom: public Message<MessageResetZoom>
 {
 public:
 	MessageResetZoom() = default;
-
-	static const std::string getStaticType()
-	{
-		return "MessageResetZoom";
-	}
 };
 
 #endif	  // MESSAGE_RESET_ZOOM_H

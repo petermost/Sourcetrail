@@ -20,11 +20,6 @@ public:
 	{
 	}
 
-	static const std::string getStaticType()
-	{
-		return "MessageLoadProject";
-	}
-
 	void print(std::ostream& os) const override
 	{
 		os << projectSettingsFilePath.str();

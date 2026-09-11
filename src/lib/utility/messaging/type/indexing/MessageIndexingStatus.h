@@ -6,11 +6,6 @@
 class MessageIndexingStatus: public Message<MessageIndexingStatus>
 {
 public:
-	static const std::string getStaticType()
-	{
-		return "MessageIndexingStatus";
-	}
-
 	MessageIndexingStatus(bool showProgress, size_t progressPercent = 0)
 		: showProgress(showProgress), progressPercent(progressPercent)
 	{

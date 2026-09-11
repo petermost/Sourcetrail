@@ -20,8 +20,6 @@ public:
 		bool showLoader = false,
 		bool showInStatusBar = true);
 
-	static const std::string getStaticType();
-
 	const std::vector<std::string>& stati() const;
 	std::string status() const;
 	void print(std::ostream& os) const override;

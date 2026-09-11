@@ -14,11 +14,6 @@ public:
 		setSchedulerId(TabIds::currentTab());
 	}
 
-	static const std::string getStaticType()
-	{
-		return "MessageShowReference";
-	}
-
 	void print(std::ostream& os) const override
 	{
 		os << "index: " << refIndex << " token: " << tokenId << " location: " << locationId;

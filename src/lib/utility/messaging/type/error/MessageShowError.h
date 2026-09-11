@@ -7,11 +7,6 @@
 class MessageShowError: public Message<MessageShowError>
 {
 public:
-	static const std::string getStaticType()
-	{
-		return "MessageShowError";
-	}
-
 	MessageShowError(Id errorId): errorId(errorId)
 	{
 		setSchedulerId(TabIds::currentTab());

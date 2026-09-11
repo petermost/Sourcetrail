@@ -23,11 +23,6 @@ public:
 		setSchedulerId(TabIds::currentTab());
 	}
 
-	static const std::string getStaticType()
-	{
-		return "MessageActivateTrailEdge";
-	}
-
 	std::string getFullName() const
 	{
 		std::string name = Edge::getReadableTypeString(type) + ":";

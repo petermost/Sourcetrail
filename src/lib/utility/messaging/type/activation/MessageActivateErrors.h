@@ -12,11 +12,6 @@ class MessageActivateErrors
 	, public MessageActivateBase
 {
 public:
-	static const std::string getStaticType()
-	{
-		return "MessageActivateErrors";
-	}
-
 	MessageActivateErrors(const ErrorFilter& filter, const FilePath& file = FilePath())
 		: filter(filter), file(file)
 	{

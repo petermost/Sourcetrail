@@ -46,11 +46,6 @@ public:
 		setSchedulerId(TabIds::currentTab());
 	}
 
-	static const std::string getStaticType()
-	{
-		return "MessageActivateTrail";
-	}
-
 	std::vector<SearchMatch> getSearchMatches() const override
 	{
 		return searchMatches;
