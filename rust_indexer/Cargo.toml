@@ -1,0 +1,20 @@
+[package]
+name = "sourcetrail-rust-indexer"
+version = "0.1.0"
+edition = "2021"
+description = "Rust indexer for Sourcetrail: writes .srctrldb files from Rust sources"
+license = "GPL-3.0-or-later"
+
+[[bin]]
+name = "sourcetrail_rust_indexer"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1"
+rusqlite = { version = "0.37", features = ["bundled"] }
+syn = { version = "2", features = ["full", "visit", "extra-traits"] }
+proc-macro2 = { version = "1", features = ["span-locations"] }
+walkdir = "2"
+
+[profile.release]
+opt-level = 2
