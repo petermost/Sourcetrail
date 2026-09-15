@@ -174,6 +174,26 @@ impl Db {
             let (name, id) = row?;
             self.nodes.insert(name, id);
         }
+        // Sourcetrail runs the custom command once per source file against the same
+        // database, so the caches have to survive across processes or every edge
+        // shared by two files gets inserted twice.
+        let mut stmt = self
+            .conn
+            .prepare("SELECT type, source_node_id, target_node_id, id FROM edge")?;
+        for row in stmt.query_map([], |r| {
+            Ok((
+                (r.get::<_, i32>(0)?, r.get::<_, i64>(1)?, r.get::<_, i64>(2)?),
+                r.get::<_, i64>(3)?,
+            ))
+        })? {
+            let (key, id) = row?;
+            self.edges.insert(key, id);
+        }
+        let mut stmt = self.conn.prepare("SELECT name, id FROM local_symbol")?;
+        for row in stmt.query_map([], |r| Ok((r.get::<_, String>(0)?, r.get::<_, i64>(1)?)))? {
+            let (name, id) = row?;
+            self.locals.insert(name, id);
+        }
         Ok(())
     }
 
@@ -362,4 +382,33 @@ mod tests {
         assert_eq!(serialize_name(&["Foo"], "", ""), "::\tmFoo\ts\tp");
         assert_eq!(serialize_file_name("/a/b.rs"), "/\tm/a/b.rs\ts\tp");
     }
+}
+
+#[test]
+fn caches_survive_reopen() {
+    let dir = std::env::temp_dir().join("srctrl_reopen_test");
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    let path = dir.join("t.srctrldb");
+
+    let emit = |p: &std::path::Path| {
+        let mut db = Db::open(p).unwrap();
+        db.begin().unwrap();
+        let a = db.node("::\tmA\ts\tp", node::STRUCT).unwrap();
+        let b = db.node("::\tmB\ts\tp", node::STRUCT).unwrap();
+        db.edge(edge::USAGE, a, b).unwrap();
+        db.local("x").unwrap();
+        db.commit().unwrap();
+    };
+    emit(&path);
+    emit(&path);
+
+    let conn = rusqlite::Connection::open(&path).unwrap();
+    let count = |t: &str| -> i64 {
+        conn.query_row(&format!("SELECT COUNT(*) FROM {t}"), [], |r| r.get(0)).unwrap()
+    };
+    assert_eq!(count("node"), 2, "nodes duplicated across runs");
+    assert_eq!(count("edge"), 1, "edges duplicated across runs");
+    assert_eq!(count("local_symbol"), 1, "local symbols duplicated across runs");
+    let _ = std::fs::remove_dir_all(&dir);
 }
