@@ -265,7 +265,7 @@ if (isVcpkgBuild)
 endif()
 
 set(BOOST_MIN_VERSION 1.83)
-set(BOOST_MAX_VERSION 1.92)
+set(BOOST_MAX_VERSION 1.93)
 
 find_package(Boost CONFIG REQUIRED 
 	COMPONENTS

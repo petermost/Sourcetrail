@@ -86,3 +86,19 @@ The database layout is Sourcetrail's storage version **25**
 (`src/lib/data/storage/sqlite/SqliteIndexStorage.cpp`). The indexer refuses to
 run when Sourcetrail passes a different `%{DATABASE_VERSION}`, rather than
 writing a database that would be silently misread.
+
+## Sourcetrail selbst bauen (Arch, ohne C++/Java-Indexer)
+
+Die mitgelieferten Presets erzwingen `BUILD_CXX_LANGUAGE_PACKAGE=ON`, was Clang 21.1
+verlangt. Für Rust wird davon nichts gebraucht:
+
+```bash
+cmake --preset system-release \
+  -DBUILD_CXX_LANGUAGE_PACKAGE=OFF \
+  -DBUILD_JAVA_LANGUAGE_PACKAGE=OFF \
+  -DBUILD_UNIT_TESTS_PACKAGE=OFF
+cmake --build ../../build/system-release -j$(nproc)
+```
+
+Systempakete: `boost tinyxml qt6-base qt6-svg sqlite`. Boost-Header und
+`boost-libs` müssen dieselbe Version haben (sonst fehlt `libboost_filesystem.so.<ver>`).
