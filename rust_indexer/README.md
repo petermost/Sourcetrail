@@ -102,3 +102,38 @@ cmake --build ../../build/system-release -j$(nproc)
 
 Systempakete: `boost tinyxml qt6-base qt6-svg sqlite`. Boost-Header und
 `boost-libs` müssen dieselbe Version haben (sonst fehlt `libboost_filesystem.so.<ver>`).
+
+## MCP-Server
+
+`mcp_server.py` stellt den fertigen Index als MCP-Werkzeuge bereit (stdio,
+JSON-RPC, nur Python-stdlib — keine Abhängigkeiten):
+
+| Werkzeug | Zweck |
+|---|---|
+| `search_symbols` | Symbole per Namensfragment finden, optional nach Art gefiltert |
+| `symbol` | Ein Symbol komplett: Art, Signatur, Definitionsort, was es aufruft/nutzt, wer es aufruft/nutzt — je mit Fundstellen |
+| `file_symbols` | Alle Definitionen einer Datei mit Zeilenbereichen |
+| `reindex` | Index von Grund auf neu bauen |
+
+Anbinden:
+
+```bash
+claude mcp add --scope user asset-bridge-index -- \
+  python3 /home/elisha/surcetai/Sourcetrail/rust_indexer/mcp_server.py \
+  --db /home/elisha/surcetai/asset-bridge-index/AssetBridge.srctrldb \
+  --crate-root /home/elisha/surcetai/Asset-Bridge/src-tauri
+```
+
+Selbsttest (Namensdekodierung + kompletter MCP-Handshake):
+
+```bash
+python3 mcp_server.py --db INDEX.srctrldb --crate-root DIR --self-test
+```
+
+### Bekannte Decke
+
+Der Indexer hängt Quellpositionen an Knoten, nicht an Kanten. Der MCP-Server
+leitet Fundstellen deshalb ab: ein Treffer ist ein Token des benutzten Symbols
+innerhalb des Gültigkeitsbereichs des benutzenden. Das ist genau, solange ein
+Symbol pro Zeile einmal vorkommt. Positionen an Kanten zu hängen wäre der
+Ausbau — anzufassen erst, wenn die Ableitung tatsächlich stört.

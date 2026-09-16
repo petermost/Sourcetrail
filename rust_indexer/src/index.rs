@@ -333,7 +333,15 @@ impl Resolver {
     }
 
     /// Fully qualified name for a path as written, plus whether it is crate-local.
-    pub fn resolve(&self, path: &syn::Path, index: &CrateIndex, scope: &[String]) -> String {
+    /// `want` is the node kind the reference expects; it only constrains the
+    /// last-resort bare-name lookup, where a wrong guess is otherwise silent.
+    pub fn resolve(
+        &self,
+        path: &syn::Path,
+        index: &CrateIndex,
+        scope: &[String],
+        want: i32,
+    ) -> String {
         let segs: Vec<String> = path.segments.iter().map(|s| s.ident.to_string()).collect();
         if segs.is_empty() {
             return String::new();
@@ -367,11 +375,16 @@ impl Resolver {
                 return cand;
             }
         }
-        // Unique bare name anywhere in the crate.
+        // Unique bare name anywhere in the crate, of a compatible kind. Without
+        // the kind filter `format!` binds to a struct field called `format`.
         if segs.len() == 1 {
             if let Some(cands) = index.by_name.get(first) {
-                if cands.len() == 1 {
-                    return cands[0].clone();
+                let mut ok = cands.iter().filter(|c| {
+                    let got = index.defs.get(*c).copied().unwrap_or(0);
+                    if want == db::node::MACRO { got == db::node::MACRO } else { got != db::node::MACRO }
+                });
+                if let (Some(only), None) = (ok.next(), ok.next()) {
+                    return only.clone();
                 }
             }
         }
@@ -627,6 +640,7 @@ impl<'a> Emitter<'a> {
                         let vid = self.define_node(&vf, db::node::ENUM_CONSTANT)?;
                         self.db.edge(db::edge::MEMBER, id, vid)?;
                         self.at(vid, v.ident.span(), db::loc::TOKEN)?;
+                        self.at(vid, v.span(), db::loc::SCOPE)?;
                         self.emit_fields(&v.fields, &vf, vid, scope)?;
                     }
                 }
@@ -638,7 +652,7 @@ impl<'a> Emitter<'a> {
                     self.at(id, t.span(), db::loc::SCOPE)?;
                     for sup in &t.supertraits {
                         if let syn::TypeParamBound::Trait(tb) = sup {
-                            let target = self.r.resolve(&tb.path, self.index, scope);
+                            let target = self.r.resolve(&tb.path, self.index, scope, db::node::INTERFACE);
                             let tid = self.node_for(&target, db::node::INTERFACE)?;
                             self.db.edge(db::edge::INHERITANCE, id, tid)?;
                             self.at(tid, tb.path.span(), db::loc::TOKEN)?;
@@ -650,6 +664,7 @@ impl<'a> Emitter<'a> {
                             let mfqn = join(&[fqn.clone()], &f.sig.ident.to_string());
                             let mid = self.emit_signature(&f.sig, &mfqn, db::node::METHOD, scope)?;
                             self.db.edge(db::edge::MEMBER, id, mid)?;
+                            self.at(mid, f.span(), db::loc::SCOPE)?;
                             if let Some(block) = &f.default {
                                 self.emit_body(mid, &f.sig, Some(block), scope)?;
                             }
@@ -670,6 +685,7 @@ impl<'a> Emitter<'a> {
                     let id = self.define_node(&fqn, db::node::GLOBAL_VARIABLE)?;
                     self.db.edge(db::edge::MEMBER, parent, id)?;
                     self.at(id, c.ident.span(), db::loc::TOKEN)?;
+                    self.at(id, c.span(), db::loc::SCOPE)?;
                     self.emit_type(&c.ty, id, scope)?;
                 }
                 syn::Item::Static(s) => {
@@ -677,6 +693,7 @@ impl<'a> Emitter<'a> {
                     let id = self.define_node(&fqn, db::node::GLOBAL_VARIABLE)?;
                     self.db.edge(db::edge::MEMBER, parent, id)?;
                     self.at(id, s.ident.span(), db::loc::TOKEN)?;
+                    self.at(id, s.span(), db::loc::SCOPE)?;
                     self.emit_type(&s.ty, id, scope)?;
                 }
                 syn::Item::Type(t) => {
@@ -684,6 +701,7 @@ impl<'a> Emitter<'a> {
                     let id = self.define_node(&fqn, db::node::TYPEDEF)?;
                     self.db.edge(db::edge::MEMBER, parent, id)?;
                     self.at(id, t.ident.span(), db::loc::TOKEN)?;
+                    self.at(id, t.span(), db::loc::SCOPE)?;
                     self.emit_type(&t.ty, id, scope)?;
                 }
                 syn::Item::Macro(m) => {
@@ -708,7 +726,7 @@ impl<'a> Emitter<'a> {
         self.at(owner_id, i.self_ty.span(), db::loc::TOKEN)?;
 
         // `impl Trait for Type` reads as Type inheriting Trait in the graph.
-        let trait_fqn = i.trait_.as_ref().map(|(_, p, _)| self.r.resolve(p, self.index, scope));
+        let trait_fqn = i.trait_.as_ref().map(|(_, p, _)| self.r.resolve(p, self.index, scope, db::node::TYPE));
         if let (Some(tf), Some((_, p, _))) = (trait_fqn.as_ref(), i.trait_.as_ref()) {
             let tid = self.node_for(tf, db::node::INTERFACE)?;
             self.db.edge(db::edge::INHERITANCE, owner_id, tid)?;
@@ -739,12 +757,14 @@ impl<'a> Emitter<'a> {
                     let id = self.define_node(&cf, db::node::GLOBAL_VARIABLE)?;
                     self.db.edge(db::edge::MEMBER, owner_id, id)?;
                     self.at(id, c.ident.span(), db::loc::TOKEN)?;
+                    self.at(id, c.span(), db::loc::SCOPE)?;
                 }
                 syn::ImplItem::Type(t) => {
                     let tf = join(&[owner.clone()], &t.ident.to_string());
                     let id = self.define_node(&tf, db::node::TYPEDEF)?;
                     self.db.edge(db::edge::MEMBER, owner_id, id)?;
                     self.at(id, t.ident.span(), db::loc::TOKEN)?;
+                    self.at(id, t.span(), db::loc::SCOPE)?;
                     self.emit_type(&t.ty, id, &inner)?;
                 }
                 _ => {}
@@ -770,6 +790,9 @@ impl<'a> Emitter<'a> {
                 Some(i) => self.at(id, i.span(), db::loc::TOKEN)?,
                 None => self.at(id, f.ty.span(), db::loc::TOKEN)?,
             }
+            // SCOPE marks "defined here"; without it a leaf symbol's definition is
+            // indistinguishable from its uses, which are TOKEN locations too.
+            self.at(id, f.span(), db::loc::SCOPE)?;
             self.emit_type(&f.ty, id, scope)?;
         }
         Ok(())
@@ -802,7 +825,7 @@ impl<'a> Emitter<'a> {
         let mut paths = Vec::new();
         collect_type_paths(ty, &mut paths);
         for p in paths {
-            let fqn = self.r.resolve(p, self.index, scope);
+            let fqn = self.r.resolve(p, self.index, scope, db::node::TYPE);
             let id = self.node_for(&fqn, db::node::TYPE)?;
             if id != 0 && id != from {
                 self.db.edge(db::edge::TYPE_USAGE, from, id)?;
@@ -875,7 +898,7 @@ impl Body<'_, '_> {
     }
 
     fn reference(&mut self, path: &syn::Path, kind: i32, fallback: i32) {
-        let fqn = self.e.r.resolve(path, self.e.index, &self.scope);
+        let fqn = self.e.r.resolve(path, self.e.index, &self.scope, fallback);
         if fqn.is_empty() {
             return;
         }
@@ -952,7 +975,7 @@ impl<'ast> syn::visit::Visit<'ast> for Body<'_, '_> {
 
     fn visit_expr_struct(&mut self, node: &'ast syn::ExprStruct) {
         self.reference(&node.path, db::edge::TYPE_USAGE, db::node::STRUCT);
-        let base = self.e.r.resolve(&node.path, self.e.index, &self.scope);
+        let base = self.e.r.resolve(&node.path, self.e.index, &self.scope, db::node::METHOD);
         for f in &node.fields {
             if let syn::Member::Named(id) = &f.member {
                 let fqn = format!("{base}::{id}");
