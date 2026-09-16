@@ -22,6 +22,7 @@ struct Args {
     crate_root: Option<PathBuf>,
     database_version: Option<i64>,
     write_project: Option<PathBuf>,
+    project_file: Option<PathBuf>,
 }
 
 fn parse_args() -> Result<Args> {
@@ -31,6 +32,7 @@ fn parse_args() -> Result<Args> {
         crate_root: None,
         database_version: None,
         write_project: None,
+        project_file: None,
     };
     let mut it = std::env::args().skip(1);
     while let Some(flag) = it.next() {
@@ -41,6 +43,7 @@ fn parse_args() -> Result<Args> {
             "--crate-root" | "--project-root" => a.crate_root = Some(PathBuf::from(value()?)),
             "--database-version" => a.database_version = value()?.parse().ok(),
             "--write-project" => a.write_project = Some(PathBuf::from(value()?)),
+            "--project-file" => a.project_file = Some(PathBuf::from(value()?)),
             "-h" | "--help" => {
                 println!("{}", HELP);
                 std::process::exit(0);
@@ -60,6 +63,8 @@ sourcetrail_rust_indexer --database-file-path <db> [options]
   --source-file-path <file>   index only this file (repeatable); default: whole crate
   --crate-root <dir>          crate directory holding Cargo.toml
   --database-version <n>      Sourcetrail's storage version, checked against this build
+  --project-file <file>       store this .srctrlprj in the database, so Sourcetrail
+                              does not call the index outdated on every open
   --write-project <file>      also write a .srctrlprj pointing at the database";
 
 fn main() -> Result<()> {
@@ -113,6 +118,13 @@ fn main() -> Result<()> {
         let xml = project_xml(&src_root);
         database.set_project_settings(&xml)?;
         std::fs::write(project, &xml)?;
+    }
+    // Sourcetrail compares the project file against the copy stored in the
+    // database; without a match it declares the index outdated on every open.
+    if let Some(project) = &args.project_file {
+        let xml = std::fs::read_to_string(project)
+            .with_context(|| format!("reading {}", project.display()))?;
+        database.set_project_settings(&xml)?;
     }
     database.commit()?;
 

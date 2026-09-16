@@ -228,10 +228,12 @@ class Index:
             stale = self.db_path.replace(".srctrldb", extra)
             if os.path.exists(stale):
                 os.remove(stale)
-        p = subprocess.run(
-            [self.indexer, "--database-file-path", self.db_path, "--crate-root", self.crate_root],
-            capture_output=True, text=True, timeout=600,
-        )
+        cmd = [self.indexer, "--database-file-path", self.db_path,
+               "--crate-root", self.crate_root]
+        project = self.db_path.replace(".srctrldb", ".srctrlprj")
+        if os.path.exists(project):
+            cmd += ["--project-file", project]
+        p = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
         if p.returncode != 0:
             return f"indexer failed ({p.returncode}):\n{p.stderr.strip() or p.stdout.strip()}"
         with self.conn() as c:
