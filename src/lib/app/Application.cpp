@@ -339,7 +339,7 @@ void Application::handleMessage(MessageRefresh* message)
 {
 	TRACE("app refresh");
 
-	refreshProject(message->all ? RefreshMode::ALL_FILES : RefreshMode::UPDATED_FILES);
+	refreshProject(message->refreshMode);
 }
 
 void Application::handleMessage(MessageRefreshUI* message)

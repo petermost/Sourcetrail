@@ -714,7 +714,7 @@ void QtMainWindow::refresh()
 void QtMainWindow::forceRefresh()
 {
 	MessageIndexingShowDialog().dispatch();
-	MessageRefresh().refreshAll().dispatch();
+	MessageRefresh(RefreshMode::ALL_FILES).dispatch();
 }
 
 void QtMainWindow::saveAsImage()

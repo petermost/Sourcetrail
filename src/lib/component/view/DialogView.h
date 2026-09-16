@@ -75,10 +75,11 @@ public:
 	virtual int confirm(const std::string& message, const std::vector<std::string>& options);
 
 protected:
+	bool m_dialogsHideable = false;
+
+private:
 	const UseCase m_useCase;
 	StorageAccess* m_storageAccess;
-
-	bool m_dialogsHideable = false;
 };
 
 #endif	  // DIALOG_VIEW_H

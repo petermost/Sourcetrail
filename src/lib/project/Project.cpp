@@ -692,7 +692,7 @@ void Project::buildIndex(RefreshInfo info, std::shared_ptr<DialogView> dialogVie
 			std::make_shared<TaskLambda>([dialogView, this]() {
 				Task::dispatch(TabIds::app(), std::make_shared<TaskLambda>([dialogView, this]() {
 								   MessageIndexingShowDialog().dispatch();
-								   MessageRefresh().refreshAll().dispatch();
+								   MessageRefresh(RefreshMode::ALL_FILES).dispatch();
 							   }));
 			})),
 		std::make_shared<TaskGroupSequence>()->addChildTasks(std::make_shared<TaskLambda>([this]() {

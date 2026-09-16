@@ -2,27 +2,24 @@
 #define MESSAGE_REFRESH_H
 
 #include "Message.h"
+#include "RefreshInfo.h"
 
 class MessageRefresh: public Message<MessageRefresh>
 {
 public:
-	MessageRefresh() = default;
-
-	MessageRefresh& refreshAll()
+	MessageRefresh(RefreshMode refreshMode = RefreshMode::UPDATED_FILES)
+		: refreshMode(refreshMode)
 	{
-		all = true;
-		return *this;
 	}
 
 	void print(std::ostream& os) const override
 	{
-		if (all)
+		if (refreshMode == RefreshMode::ALL_FILES)
 		{
 			os << "all";
 		}
 	}
-
-	bool all = false;
+	const RefreshMode refreshMode;
 };
 
 #endif	  // MESSAGE_REFRESH_H
