@@ -41,7 +41,7 @@ std::vector<FilePath> utility::CompilationDatabase::getFrameworkHeaderPaths() co
 void utility::CompilationDatabase::init()
 {
 	std::string error;
-	std::shared_ptr<clang::tooling::JSONCompilationDatabase> cdb(
+	std::shared_ptr<clang::tooling::CompilationDatabase> cdb(
 		clang::tooling::JSONCompilationDatabase::loadFromFile(
 			m_filePath.str(),
 			error,

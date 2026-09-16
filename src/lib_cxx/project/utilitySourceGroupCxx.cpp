@@ -1,7 +1,5 @@
 #include "utilitySourceGroupCxx.h"
 
-#include <clang/Tooling/JSONCompilationDatabase.h>
-
 #include "CanonicalFilePathCache.h"
 #include "CxxCompilationDatabaseSingle.h"
 #include "CxxDiagnosticConsumer.h"
@@ -20,6 +18,8 @@
 #include "utility.h"
 #include "utilityString.h"
 #include "ToolChain.h"
+
+#include <clang/Tooling/JSONCompilationDatabase.h>
 
 using namespace std;
 using namespace clang::tooling;
