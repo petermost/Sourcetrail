@@ -220,7 +220,7 @@ void ApplicationSettings::setScreenScaleFactor(float scaleFactor)
 
 bool ApplicationSettings::getLoggingEnabled() const
 {
-	return getValue<bool>("application/logging_enabled", true);
+	return getValue<bool>("application/logging_enabled", false);
 }
 
 void ApplicationSettings::setLoggingEnabled(bool value)
