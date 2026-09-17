@@ -15,3 +15,9 @@ vcpkg_installed/
 *.srctrldb
 *-shm
 *-wal
+
+# Python bytecode, editor backups
+__pycache__/
+*.pyc
+*.bak
+*.bak[0-9]
