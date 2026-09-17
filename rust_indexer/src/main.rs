@@ -23,6 +23,7 @@ struct Args {
     database_version: Option<i64>,
     write_project: Option<PathBuf>,
     project_file: Option<PathBuf>,
+    dump_commands: bool,
 }
 
 fn parse_args() -> Result<Args> {
@@ -33,6 +34,7 @@ fn parse_args() -> Result<Args> {
         database_version: None,
         write_project: None,
         project_file: None,
+        dump_commands: false,
     };
     let mut it = std::env::args().skip(1);
     while let Some(flag) = it.next() {
@@ -44,6 +46,7 @@ fn parse_args() -> Result<Args> {
             "--database-version" => a.database_version = value()?.parse().ok(),
             "--write-project" => a.write_project = Some(PathBuf::from(value()?)),
             "--project-file" => a.project_file = Some(PathBuf::from(value()?)),
+            "--dump-commands" => a.dump_commands = true,
             "-h" | "--help" => {
                 println!("{}", HELP);
                 std::process::exit(0);
@@ -51,7 +54,7 @@ fn parse_args() -> Result<Args> {
             other => bail!("unknown argument: {other}"),
         }
     }
-    if a.database.as_os_str().is_empty() {
+    if a.database.as_os_str().is_empty() && !a.dump_commands {
         bail!("--database-file-path is required\n\n{HELP}");
     }
     Ok(a)
@@ -65,7 +68,11 @@ sourcetrail_rust_indexer --database-file-path <db> [options]
   --database-version <n>      Sourcetrail's storage version, checked against this build
   --project-file <file>       store this .srctrlprj in the database, so Sourcetrail
                               does not call the index outdated on every open
-  --write-project <file>      also write a .srctrlprj pointing at the database";
+  --write-project <file>      also write a .srctrlprj pointing at the database
+  --dump-commands             print the #[tauri::command] functions as JSON
+                              ({invoke name: serialized node name}) and exit;
+                              the TypeScript indexer uses this to link invoke()
+                              calls to the command they reach. Needs no database.";
 
 fn main() -> Result<()> {
     let args = parse_args()?;
@@ -105,6 +112,19 @@ fn main() -> Result<()> {
             .map(|p| p.canonicalize().unwrap_or_else(|_| p.clone()))
             .collect()
     };
+
+    if args.dump_commands {
+        let mut out = String::from("{");
+        for (i, (name, serialized)) in index.tauri_commands().into_iter().enumerate() {
+            if i > 0 {
+                out.push(',');
+            }
+            out.push_str(&format!("\n  {}: {}", json_string(&name), json_string(&serialized)));
+        }
+        out.push_str("\n}");
+        println!("{out}");
+        return Ok(());
+    }
 
     let mut database = db::Db::open(&args.database)
         .with_context(|| format!("opening {}", args.database.display()))?;
@@ -204,4 +224,24 @@ fn project_xml(src_root: &Path) -> String {
 "#,
         src = src_root.display()
     )
+}
+
+/// Minimal JSON string escaping. Serialized names carry tabs, signatures can
+/// carry quotes and backslashes; nothing here needs a serde dependency.
+fn json_string(s: &str) -> String {
+    let mut out = String::with_capacity(s.len() + 2);
+    out.push('"');
+    for c in s.chars() {
+        match c {
+            '"' => out.push_str("\\\""),
+            '\\' => out.push_str("\\\\"),
+            '\n' => out.push_str("\\n"),
+            '\r' => out.push_str("\\r"),
+            '\t' => out.push_str("\\t"),
+            c if (c as u32) < 0x20 => out.push_str(&format!("\\u{:04x}", c as u32)),
+            c => out.push(c),
+        }
+    }
+    out.push('"');
+    out
 }

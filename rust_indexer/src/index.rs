@@ -30,6 +30,9 @@ pub struct CrateIndex {
     /// Definitions and references must agree on these or Sourcetrail sees two
     /// separate symbols, so they live here rather than being recomputed.
     sigs: HashMap<String, (String, String)>,
+    /// `#[tauri::command]` name as the frontend spells it in `invoke(...)` -> fqn.
+    /// The TypeScript indexer asks for this map to link `invoke('x')` to `fn x`.
+    commands: HashMap<String, String>,
 }
 
 impl CrateIndex {
@@ -53,6 +56,7 @@ impl CrateIndex {
             by_name: HashMap::new(),
             methods: HashMap::new(),
             sigs: HashMap::new(),
+            commands: HashMap::new(),
         };
 
         for path in me.files.clone() {
@@ -191,12 +195,13 @@ impl CrateIndex {
                         }
                     }
                 }
-                syn::Item::Fn(f) => self.scan_fn(
-                    join(scope, &f.sig.ident.to_string()),
-                    &f.sig,
-                    db::node::FUNCTION,
-                    lines,
-                ),
+                syn::Item::Fn(f) => {
+                    let fqn = join(scope, &f.sig.ident.to_string());
+                    if f.attrs.iter().any(is_tauri_command) {
+                        self.commands.insert(f.sig.ident.to_string(), fqn.clone());
+                    }
+                    self.scan_fn(fqn, &f.sig, db::node::FUNCTION, lines);
+                }
                 syn::Item::Const(c) => self.scan_typed(
                     join(scope, &c.ident.to_string()),
                     &c.ty,
@@ -243,6 +248,22 @@ impl CrateIndex {
 
     pub fn is_defined(&self, fqn: &str) -> Option<i32> {
         self.defs.get(fqn).copied()
+    }
+
+    /// `invoke(...)` name -> the serialized node name of the command it reaches.
+    /// Sorted, so the output is stable between runs.
+    pub fn tauri_commands(&self) -> Vec<(String, String)> {
+        let mut out: Vec<(String, String)> = self
+            .commands
+            .iter()
+            .map(|(name, fqn)| {
+                let parts: Vec<&str> = fqn.split("::").collect();
+                let (prefix, postfix) = self.sigs.get(fqn).cloned().unwrap_or_default();
+                (name.clone(), db::serialize_name(&parts, &prefix, &postfix))
+            })
+            .collect();
+        out.sort();
+        out
     }
 }
 
@@ -1008,6 +1029,12 @@ impl<'ast> syn::visit::Visit<'ast> for Body<'_, '_> {
         // is the upgrade if that turns out to matter.
         self.reference(&node.path, db::edge::MACRO_USAGE, db::node::MACRO);
     }
+}
+
+/// `#[tauri::command]`, the only spelling Tauri's macro accepts on a free function.
+fn is_tauri_command(a: &syn::Attribute) -> bool {
+    let segs: Vec<String> = a.path().segments.iter().map(|s| s.ident.to_string()).collect();
+    segs == ["tauri", "command"]
 }
 
 fn collect_use_paths(tree: &syn::UseTree, prefix: &mut Vec<String>, out: &mut Vec<String>) {

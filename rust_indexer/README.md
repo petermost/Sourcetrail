@@ -1,5 +1,9 @@
 # Rust indexer for Sourcetrail
 
+> Python lives next door in `../python_indexer`, TypeScript in `../ts_indexer`,
+> and all three write into the **same** database — Sourcetrail merges source
+> groups, so the whole repo ends up in one graph.
+
 Indexes Rust sources into Sourcetrail's SQLite format, so a Rust crate can be
 browsed in the same graph/code view as the C++ and Java language packages.
 
@@ -44,6 +48,21 @@ sourcetrail_rust_indexer \
     --database-file-path Project.srctrldb \
     --write-project Project.srctrlprj
 ```
+
+## Tauri commands, for the TypeScript indexer
+
+`--dump-commands` prints every `#[tauri::command]` function as JSON, mapping the
+name the frontend passes to `invoke(...)` onto the serialized node name of the
+Rust function:
+
+```
+sourcetrail_rust_indexer --dump-commands --crate-root path/to/crate
+```
+
+No database is touched. The TypeScript indexer calls this to turn
+`invoke('add_folder')` into a real call edge; asking here rather than
+rebuilding the name over there keeps this indexer the only thing that decides
+how a Rust symbol is named.
 
 ## What it records
 
@@ -113,7 +132,7 @@ JSON-RPC, nur Python-stdlib — keine Abhängigkeiten):
 | `search_symbols` | Symbole per Namensfragment finden, optional nach Art gefiltert |
 | `symbol` | Ein Symbol komplett: Art, Signatur, Definitionsort, was es aufruft/nutzt, wer es aufruft/nutzt — je mit Fundstellen |
 | `file_symbols` | Alle Definitionen einer Datei mit Zeilenbereichen |
-| `reindex` | Index von Grund auf neu bauen |
+| `reindex` | Index von Grund auf neu bauen (Rust, Python **und** TypeScript) |
 
 Anbinden:
 
@@ -121,8 +140,12 @@ Anbinden:
 claude mcp add --scope user asset-bridge-index -- \
   python3 /home/elisha/surcetai/Sourcetrail/rust_indexer/mcp_server.py \
   --db /home/elisha/surcetai/asset-bridge-index/AssetBridge.srctrldb \
-  --crate-root /home/elisha/surcetai/Asset-Bridge/src-tauri
+  --crate-root "/home/elisha/Dokumente/Asset Bridge/src-tauri"
 ```
+
+`--python-root`/`--python-indexer` und `--typescript-root`/`--typescript-indexer`
+lassen sich setzen; ohne Angabe ist die Wurzel jeweils der Ordner über dem Crate
+und der Indexer der in `../python_indexer` bzw. `../ts_indexer`.
 
 Selbsttest (Namensdekodierung + kompletter MCP-Handshake):
 
