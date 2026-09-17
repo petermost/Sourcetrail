@@ -19,7 +19,8 @@ META, NAME, PART, SIG = "\tm", "\tn", "\ts", "\tp"
 
 NODE_KINDS = {
     1 << 0: "symbol", 1 << 1: "type", 1 << 2: "builtin", 1 << 3: "module",
-    1 << 6: "struct", 1 << 8: "trait", 1 << 10: "static", 1 << 11: "field",
+    1 << 6: "struct", 1 << 7: "class", 1 << 8: "interface", 1 << 10: "static",
+    1 << 11: "field",
     1 << 12: "fn", 1 << 13: "method", 1 << 14: "enum", 1 << 15: "variant",
     1 << 16: "typedef", 1 << 17: "typeparam", 1 << 18: "file",
     1 << 19: "macro", 1 << 20: "union",
@@ -50,8 +51,11 @@ def unpack(serialized):
 
 
 class Index:
-    def __init__(self, db_path, crate_root, indexer):
+    def __init__(self, db_path, crate_root, indexer, py_root=None, py_indexer=None,
+                 ts_root=None, ts_indexer=None):
         self.db_path, self.crate_root, self.indexer = db_path, crate_root, indexer
+        self.py_root, self.py_indexer = py_root, py_indexer
+        self.ts_root, self.ts_indexer = ts_root, ts_indexer
 
     def conn(self):
         if not os.path.exists(self.db_path):
@@ -90,10 +94,18 @@ class Index:
         return self.location(c, element_id, SCOPE_LOC) or self.location(c, element_id, TOKEN_LOC)
 
     def rel(self, path):
-        try:
-            return os.path.relpath(path, self.crate_root)
-        except ValueError:
-            return path
+        """Shortest readable path: against the crate, else the repo root."""
+        best = path
+        for base in (self.crate_root, self.py_root):
+            if not base:
+                continue
+            try:
+                r = os.path.relpath(path, base)
+            except ValueError:
+                continue
+            if not r.startswith("..") and len(r) < len(best):
+                best = r
+        return best
 
     def scope(self, c, node_id):
         return c.execute(
@@ -228,27 +240,39 @@ class Index:
             stale = self.db_path.replace(".srctrldb", extra)
             if os.path.exists(stale):
                 os.remove(stale)
-        cmd = [self.indexer, "--database-file-path", self.db_path,
-               "--crate-root", self.crate_root]
+        runs = [[self.indexer, "--database-file-path", self.db_path,
+                 "--crate-root", self.crate_root]]
+        # Sourcetrail merges several source groups into one database, so the
+        # Python indexer just writes into the same file after the Rust one.
+        for root, script in ((self.py_root, self.py_indexer), (self.ts_root, self.ts_indexer)):
+            if root and os.path.isfile(script or ""):
+                runs.append([sys.executable, script,
+                             "--database-file-path", self.db_path,
+                             "--project-root", root,
+                             "--exclude", ".claude/worktrees"])
         project = self.db_path.replace(".srctrldb", ".srctrlprj")
         if os.path.exists(project):
-            cmd += ["--project-file", project]
-        p = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
-        if p.returncode != 0:
-            return f"indexer failed ({p.returncode}):\n{p.stderr.strip() or p.stdout.strip()}"
+            runs[0] += ["--project-file", project]
+        for cmd in runs:
+            p = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+            if p.returncode != 0:
+                return (f"{os.path.basename(cmd[0] if cmd[0] != sys.executable else cmd[1])} "
+                        f"failed ({p.returncode}):\n{p.stderr.strip() or p.stdout.strip()}")
         with self.conn() as c:
             n = c.execute("SELECT COUNT(*) FROM node").fetchone()[0]
             e = c.execute("SELECT COUNT(*) FROM edge").fetchone()[0]
             f = c.execute("SELECT COUNT(*) FROM file").fetchone()[0]
             err = c.execute("SELECT COUNT(*) FROM error").fetchone()[0]
-        return (f"reindexed {self.crate_root}\n  {f} files, {n} symbols, {e} references, "
+        extra = [r for r in (self.py_root, self.ts_root) if r]
+        return (f"reindexed {self.crate_root}" + "".join(f" + {r}" for r in extra)
+                + f"\n  {f} files, {n} symbols, {e} references, "
                 f"{err} errors\nReopen or refresh the project in Sourcetrail to see it.")
 
 
 TOOLS = [
     {
         "name": "search_symbols",
-        "description": "Find indexed Rust symbols whose full path contains a substring. "
+        "description": "Find indexed symbols (Rust, Python and TypeScript) whose full path contains a substring. "
                        "Use this first when you only know part of a name.",
         "inputSchema": {
             "type": "object",
@@ -284,7 +308,7 @@ TOOLS = [
     },
     {
         "name": "reindex",
-        "description": "Re-run the Rust indexer over the crate and rebuild the index from scratch. "
+        "description": "Re-run the Rust, Python and TypeScript indexers and rebuild the index from scratch. "
                        "Call after source changes so lookups reflect the current code.",
         "inputSchema": {"type": "object", "properties": {}},
     },
@@ -376,7 +400,17 @@ def main(argv):
         sys.exit(__doc__)
     here = os.path.dirname(os.path.abspath(__file__))
     indexer = args.get("--indexer", os.path.join(here, "target/release/sourcetrail_rust_indexer"))
-    index = Index(os.path.abspath(db), os.path.abspath(root), indexer)
+    py_indexer = args.get("--python-indexer", os.path.join(
+        os.path.dirname(here), "python_indexer/sourcetrail_python_indexer.py"))
+    ts_indexer = args.get("--typescript-indexer", os.path.join(
+        os.path.dirname(here), "ts_indexer/sourcetrail_ts_indexer.py"))
+    # default: the repo root, one level above the crate
+    repo = os.path.dirname(os.path.abspath(root))
+    py_root = args.get("--python-root", repo)
+    ts_root = args.get("--typescript-root", repo)
+    index = Index(os.path.abspath(db), os.path.abspath(root), indexer,
+                  os.path.abspath(py_root), py_indexer,
+                  os.path.abspath(ts_root), ts_indexer)
     (self_test if "--self-test" in argv else serve)(index)
 
 
