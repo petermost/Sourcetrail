@@ -535,6 +535,13 @@ pub fn emit_file(db: &mut Db, index: &CrateIndex, path: &Path) -> Result<()> {
     Ok(())
 }
 
+/// Sourcetrail stores *local* time: `FileSystem::getLastWriteTime` runs the
+/// file's UTC stamp through `utc_to_local` before comparing it against this
+/// column. A UTC stamp here makes every file look modified, and then a jump
+/// from an editor lands on the file instead of the symbol under the cursor.
+///
+/// `date` owns the timezone database, including which DST rule was in force at
+/// *that* moment rather than today - reimplementing that would be a date crate.
 fn mtime(path: &Path) -> String {
     let secs = std::fs::metadata(path)
         .and_then(|m| m.modified())
@@ -542,7 +549,24 @@ fn mtime(path: &Path) -> String {
         .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
         .map(|d| d.as_secs())
         .unwrap_or(0);
-    // Sourcetrail stores "%Y-%m-%d %H:%M:%S" (see TimeStamp::toString).
+    if let Ok(out) = std::process::Command::new("date")
+        .args(["-d", &format!("@{secs}"), "+%Y-%m-%d %H:%M:%S"])
+        .output()
+    {
+        if out.status.success() {
+            let stamp = String::from_utf8_lossy(&out.stdout).trim().to_string();
+            if !stamp.is_empty() {
+                return stamp;
+            }
+        }
+    }
+    utc_stamp(secs)
+}
+
+/// Fallback for a system without `date`. Sourcetrail's format is
+/// "%Y-%m-%d %H:%M:%S" (see `TimeStamp::toString`); off by the UTC offset,
+/// which costs jump-to-symbol but leaves the index itself correct.
+fn utc_stamp(secs: u64) -> String {
     let days = secs / 86400;
     let (y, m, d) = civil_from_days(days as i64);
     let rem = secs % 86400;
