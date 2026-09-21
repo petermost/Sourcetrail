@@ -76,7 +76,7 @@ std::set<FilePath> SourceGroup::filterToContainedFilePaths(
 
 		for (const FilePath& indexedFileOrDirectoryPath: indexedFileOrDirectoryPaths)
 		{
-			if (indexedFileOrDirectoryPath == filePath ||
+			if (indexedFileOrDirectoryPath.getPath() == filePath.getPath() ||
 				indexedFileOrDirectoryPath.contains(filePath))
 			{
 				isInIndexedPaths = true;

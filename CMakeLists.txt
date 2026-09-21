@@ -40,7 +40,7 @@ set(QT_CREATOR_SKIP_PACKAGE_MANAGER_SETUP ON)
 # Project
 ###############################################################################
 
-project(Sourcetrail VERSION 2026.9.16 HOMEPAGE_URL "http://sourcetrail.de")
+project(Sourcetrail VERSION 2026.9.21 HOMEPAGE_URL "http://sourcetrail.de")
 
 include(cmake/Sourcetrail.cmake)
 
@@ -126,7 +126,7 @@ elseif (isMsvcCompiler)
 	add_link_options("$<$<CONFIG:Release>:/LTCG;/OPT:REF,ICF>")
 
 	# For profiling:
-	#add_compile_options("$<$<CONFIG:RELEASE>:/Zi>")
+	#add_compile_options("$<$<CONFIG:Release>:/Zi>")
 	#add_link_options("$<$<CONFIG:Release>:/DEBUG>")
 endif()
 
@@ -596,7 +596,11 @@ configureLicenseFile(src/lib_gui/licenses.h)
 # Installing/Packaging
 ###############################################################################
 
-install(DIRECTORY "${CMAKE_BINARY_DIR}/app/" DESTINATION "${PROJECT_NAME}/app/" USE_SOURCE_PERMISSIONS)
+install(DIRECTORY "${CMAKE_BINARY_DIR}/app/" 
+	DESTINATION "${PROJECT_NAME}/app/" 
+	USE_SOURCE_PERMISSIONS
+	PATTERN "*.pdb" EXCLUDE
+)
 set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
 
 set(CPACK_PACKAGE_VERSION ${CMAKE_PROJECT_VERSION})
