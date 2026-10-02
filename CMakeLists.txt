@@ -42,15 +42,15 @@ set(QT_CREATOR_SKIP_PACKAGE_MANAGER_SETUP ON)
 
 project(Sourcetrail VERSION 2026.9.21 HOMEPAGE_URL "http://sourcetrail.de")
 
+# Prohibit in-source-builds:
+
+if (CMAKE_BINARY_DIR STREQUAL CMAKE_SOURCE_DIR)
+	message(FATAL_ERROR "In-source-builds are not supported!")
+endif()
+
 include(cmake/Sourcetrail.cmake)
 
 configureFile(cmake/productVersion.h.in src/lib/productVersion.h)
-
-# Prohibit in-source-builds:
-
-if (${CMAKE_BINARY_DIR} STREQUAL ${CMAKE_SOURCE_DIR})
-	message(FATAL_ERROR "In-source-builds are not supported!")
-endif()
 
 # Set default build type to 'Release':
 
@@ -384,9 +384,7 @@ if (isVcpkgBuild)
 	endif()
 	add_library(External_lib_tinyxml ALIAS unofficial-tinyxml::unofficial-tinyxml)
 else()
-	if (UNIX)
-		find_package(PkgConfig REQUIRED)
-	endif()
+	find_package(PkgConfig REQUIRED)
 	pkg_check_modules(tinyxml tinyxml IMPORTED_TARGET REQUIRED)
 	add_library(External_lib_tinyxml ALIAS PkgConfig::tinyxml)
 endif()

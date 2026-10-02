@@ -108,7 +108,7 @@ endfunction()
 
 function(checkVersionRange libraryName version versionMin versionMax)
 	# Version range in find_package has quite often not the desired effect, so check version ranges manually:
-	if (NOT (${version} VERSION_GREATER_EQUAL ${versionMin} AND ${version} VERSION_LESS ${versionMax}))
+	if (NOT (version VERSION_GREATER_EQUAL versionMin AND version VERSION_LESS versionMax))
 		message(FATAL_ERROR "${libraryName} version ${version} is not supported! Must be in range >= ${versionMin} and < ${versionMax}")
 	endif()
 endfunction()
