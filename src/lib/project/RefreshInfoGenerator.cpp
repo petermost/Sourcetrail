@@ -40,33 +40,33 @@ RefreshInfo RefreshInfoGenerator::getRefreshInfoForUpdatedFiles(
 		}
 
 		// checking source and header files
-		for (const FileInfo& info: fileInfosFromStorage)
+		for (const FileInfo& storageInfo: fileInfosFromStorage)
 		{
-			if (alreadyKnownPaths.find(info.path) != alreadyKnownPaths.end() && info.path.exists())
+			if (alreadyKnownPaths.find(storageInfo.path) != alreadyKnownPaths.end() && storageInfo.path.exists())
 			{
-				if (storage->getFilePathIndexed(info.path))
+				if (storage->getFilePathIndexed(storageInfo.path))
 				{
-					if (didFileChange(info, storage))
+					if (didFileChange(storageInfo, storage))
 					{
-						changedFilePaths.insert(info.path);
+						changedFilePaths.insert(storageInfo.path);
 					}
 					else
 					{
-						unchangedIndexedFilePaths.insert(info.path);
+						unchangedIndexedFilePaths.insert(storageInfo.path);
 					}
 				}
 				else
 				{
-					changedFilePaths.insert(info.path);
+					changedFilePaths.insert(storageInfo.path);
 				}
 			}
-			else if (!storage->getFilePathIndexed(info.path) && !didFileChange(info, storage))
+			else if (!storage->getFilePathIndexed(storageInfo.path) && !didFileChange(storageInfo, storage))
 			{
-				unchangedNonindexedFilePaths.insert(info.path);
+				unchangedNonindexedFilePaths.insert(storageInfo.path);
 			}
 			else	// file has been removed
 			{
-				changedFilePaths.insert(info.path);
+				changedFilePaths.insert(storageInfo.path);
 			}
 		}
 	}
@@ -230,36 +230,23 @@ std::set<FilePath> RefreshInfoGenerator::getAllSourceFilePaths(
 	return allSourceFilePaths;
 }
 
-bool RefreshInfoGenerator::didFileChange(
-	const FileInfo& info, std::shared_ptr<const PersistentStorage> storage)
+bool RefreshInfoGenerator::didFileChange(const FileInfo& storageInfo, std::shared_ptr<const PersistentStorage> storage)
 {
-	FileInfo diskFileInfo = FileSystem::getFileInfoForPath(info.path);
-	if (diskFileInfo.lastWriteTime > info.lastWriteTime)
+	FileInfo diskFileInfo = FileSystem::getFileInfoForPath(storageInfo.path);
+	if (diskFileInfo.lastWriteTime > storageInfo.lastWriteTime)
 	{
-		if (!storage->hasContentForFile(info.path))
+		if (!storage->hasContentForFile(storageInfo.path))
 		{
 			return true;
 		}
 
-		std::shared_ptr<TextAccess> storedFileContent = storage->getFileContent(info.path, false);
+		// Prevent files from reindexing when the content hasn't changed.
+		// Note: QtCodeFileTitleButton::updateTexts will mark files 'out-of-date' on different timestamps alone.
+
 		std::shared_ptr<TextAccess> diskFileContent = TextAccess::createFromFile(diskFileInfo.path);
+		std::shared_ptr<TextAccess> storageFileContent = storage->getFileContent(storageInfo.path, false);
 
-		const std::vector<std::string>& diskFileLines = diskFileContent->getAllLines();
-		const std::vector<std::string>& storedFileLines = storedFileContent->getAllLines();
-
-		if (diskFileLines.size() != storedFileLines.size())
-		{
-			return true;
-		}
-
-		for (size_t i = 0; i < diskFileLines.size(); i++)
-		{
-			if (diskFileLines[i] != storedFileLines[i])
-			{
-				return true;
-			}
-		}
-		return false;
+		return diskFileContent->getAllLines() != storageFileContent->getAllLines();
 	}
 	return false;
 }

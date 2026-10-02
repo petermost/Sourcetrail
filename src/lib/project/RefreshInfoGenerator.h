@@ -29,7 +29,7 @@ private:
 	static std::set<FilePath> getAllSourceFilePaths(
 		const std::vector<std::shared_ptr<SourceGroup>>& sourceGroups);
 
-	static bool didFileChange(const FileInfo& info, std::shared_ptr<const PersistentStorage> storage);
+	static bool didFileChange(const FileInfo& storageInfo, std::shared_ptr<const PersistentStorage> storage);
 };
 
 #endif	  // REFRESH_INFO_GENERATOR_H
