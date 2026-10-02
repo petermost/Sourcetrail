@@ -1,5 +1,12 @@
 ### Changelog
 
+#### 2026.10
+- Indexing: Improve performance of `Updated files` check
+- Framework: Fix crash in `MessageQueue::unregisterListener` ([#72](https://github.com/petermost/Sourcetrail/issues/72))
+- Logging: Prevent Windows console when starting via Explorer
+- Logging: Don't enable logging by default on initial start
+- Indexing: Remove Python support
+
 #### 2026.6
 - C/C++: Add indexing of C-style casts
 - Logging: Fix deletion of old log files
