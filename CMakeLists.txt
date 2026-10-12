@@ -445,8 +445,9 @@ if (BUILD_CXX_LANGUAGE_PACKAGE)
 	# single version.
 	#
 	# Use a minimum version to prevent picking up newer LLVM/Clang versions:
-	set(CLANG_MIN_VERSION 21.1)
-	set(CLANG_MAX_VERSION 22)
+
+	set(CLANG_MIN_VERSION 22.1.2)
+	set(CLANG_MAX_VERSION 23)
 	find_package(Clang ${CLANG_MIN_VERSION} CONFIG REQUIRED) # Version range xx...<yy doesn't work.
 	message(STATUS "Found LLVM: ${LLVM_VERSION}") # ${LLVM_INSTALL_PREFIX} ${CLANG_INSTALL_PREFIX}")
 	checkVersionRange("Clang" ${LLVM_VERSION} ${CLANG_MIN_VERSION} ${CLANG_MAX_VERSION})
@@ -506,6 +507,7 @@ if (BUILD_CXX_LANGUAGE_PACKAGE)
 				clangAST
 				clangLex
 				clangBasic
+				clangOptions
 			)
 	endif()
 	
