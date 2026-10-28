@@ -67,11 +67,11 @@ public:
 
 	// Virtual for CxxVerboseAstVisitor:
 	virtual bool TraverseDecl(clang::Decl* d);
-	virtual bool TraverseTypeLoc(clang::TypeLoc tl);
+	virtual bool TraverseTypeLoc(clang::TypeLoc tl, bool traverseQualifier = true);
 	virtual bool TraverseStmt(clang::Stmt* stmt);
 
-	bool TraverseQualifiedTypeLoc(clang::QualifiedTypeLoc tl);
-	bool TraverseType(clang::QualType t);
+	bool TraverseQualifiedTypeLoc(clang::QualifiedTypeLoc tl, bool traverseQualifier = true);
+	bool TraverseType(clang::QualType t, bool traverseQualifier = true);
 	bool TraverseCXXRecordDecl(clang::CXXRecordDecl* d);
 	bool traverseCXXBaseSpecifierHelper(const clang::CXXBaseSpecifier& d);
 	bool TraverseCXXMethodDecl(clang::CXXMethodDecl* d);
@@ -90,7 +90,7 @@ public:
 	bool TraverseClassTemplatePartialSpecializationDecl(clang::ClassTemplatePartialSpecializationDecl* d);
 	bool TraverseDeclRefExpr(clang::DeclRefExpr* s);
 	bool TraverseCXXForRangeStmt(clang::CXXForRangeStmt* s);
-	bool TraverseTemplateSpecializationTypeLoc(clang::TemplateSpecializationTypeLoc loc);
+	bool TraverseTemplateSpecializationTypeLoc(clang::TemplateSpecializationTypeLoc loc, bool traverseQualifier = true);
 	bool TraverseUnresolvedLookupExpr(clang::UnresolvedLookupExpr* s);
 	bool TraverseUnresolvedMemberExpr(clang::UnresolvedMemberExpr* S);
 	bool TraverseTemplateArgumentLoc(const clang::TemplateArgumentLoc& loc);

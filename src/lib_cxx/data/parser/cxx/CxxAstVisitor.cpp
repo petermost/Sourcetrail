@@ -98,7 +98,7 @@ bool CxxAstVisitor::shouldVisitImplicitCode() const
 		{                                                                                          \
 			CODE_BEFORE;                                                                           \
 		}                                                                                          \
-		Base::Traverse##__NAME_TYPE__(v);                                                          \
+		ret = Base::Traverse##__NAME_TYPE__(v);                                                    \
 		{                                                                                          \
 			CODE_AFTER;                                                                            \
 		}                                                                                          \
@@ -107,7 +107,7 @@ bool CxxAstVisitor::shouldVisitImplicitCode() const
 	}
 
 #define DEF_TRAVERSE_CUSTOM_TYPE(__NAME_TYPE__, __PARAM_TYPE__, CODE_BEFORE, CODE_AFTER)           \
-	bool CxxAstVisitor::Traverse##__NAME_TYPE__(clang::__PARAM_TYPE__ v)                           \
+	bool CxxAstVisitor::Traverse##__NAME_TYPE__(clang::__PARAM_TYPE__ v, bool traverseQualifier)   \
 	{                                                                                              \
 		ASSERT_CRTP_OVERRIDE(Traverse##__NAME_TYPE__);                                             \
 		FOREACH_COMPONENT(beginTraverse##__NAME_TYPE__(v));                                        \
@@ -115,7 +115,7 @@ bool CxxAstVisitor::shouldVisitImplicitCode() const
 		{                                                                                          \
 			CODE_BEFORE;                                                                           \
 		}                                                                                          \
-		Base::Traverse##__NAME_TYPE__(v);                                                          \
+		ret = Base::Traverse##__NAME_TYPE__(v, traverseQualifier);                                 \
 		{                                                                                          \
 			CODE_AFTER;                                                                            \
 		}                                                                                          \
@@ -179,11 +179,11 @@ bool CxxAstVisitor::TraverseDecl(clang::Decl* decl)
 }
 
 // same as Base::TraverseQualifiedTypeLoc(..) but we need to make sure to call this.TraverseTypeLoc(..)
-bool CxxAstVisitor::TraverseQualifiedTypeLoc(clang::QualifiedTypeLoc tl)
+bool CxxAstVisitor::TraverseQualifiedTypeLoc(clang::QualifiedTypeLoc tl, bool traverseQualifier)
 {
 	ASSERT_CRTP_OVERRIDE(TraverseQualifiedTypeLoc);
 
-	return TraverseTypeLoc(tl.getUnqualifiedLoc());
+	return TraverseTypeLoc(tl.getUnqualifiedLoc(), traverseQualifier);
 }
 
 DEF_TRAVERSE_TYPE(TypeLoc, {}, {})
@@ -315,9 +315,18 @@ bool CxxAstVisitor::TraverseNestedNameSpecifierLoc(clang::NestedNameSpecifierLoc
 		FOREACH_COMPONENT(beginTraverseNestedNameSpecifierLoc(loc));
 
 		// todo: call method of base class...
-		if (clang::NestedNameSpecifierLoc prefix = loc.getPrefix())
+		switch (loc.getNestedNameSpecifier().getKind())
 		{
-			ret = TraverseNestedNameSpecifierLoc(prefix);
+		case clang::NestedNameSpecifier::Kind::Namespace:
+			ret = TraverseNestedNameSpecifierLoc(loc.castAsNamespaceAndPrefix().Prefix);
+			break;
+		case clang::NestedNameSpecifier::Kind::Type:
+			ret = TraverseNestedNameSpecifierLoc(loc.castAsTypeLoc().getPrefix());
+			break;
+		case clang::NestedNameSpecifier::Kind::Global:
+		case clang::NestedNameSpecifier::Kind::MicrosoftSuper:
+		case clang::NestedNameSpecifier::Kind::Null:
+			break;
 		}
 
 		FOREACH_COMPONENT(endTraverseNestedNameSpecifierLoc(loc));
@@ -733,7 +742,6 @@ bool CxxAstVisitor::shouldHandleTypeLoc(const clang::TypeLoc& tl) const
 		tl.getAs<clang::TemplateSpecializationTypeLoc>() ||
 		tl.getAs<clang::InjectedClassNameTypeLoc>() ||
 		tl.getAs<clang::DependentNameTypeLoc>() ||
-		tl.getAs<clang::DependentTemplateSpecializationTypeLoc>() ||
 		tl.getAs<clang::SubstTemplateTypeParmTypeLoc>() ||
 		tl.getAs<clang::BuiltinTypeLoc>();
 }

@@ -3279,10 +3279,8 @@ TEST_CASE("cxx parser finds use of dependent template specialization type")
 		"};\n"
 		"B<bool>::type f = 0.0f;\n");
 
-	REQUIRE(utility::containsElement<std::string>(
-		client->typeUses, "B<typename U>::type -> A<typename T>::type<float> <12:10 12:17>"));
-	REQUIRE(utility::containsElement<std::string>(
-		client->typeUses, "B<bool>::type f -> B<bool>::type <14:10 14:13>"));
+	REQUIRE(utility::containsElement(client->typeUses, "B<bool>::type -> A<bool>::type<float> <12:34 12:37>"s));
+	REQUIRE(utility::containsElement(client->typeUses, "B<bool>::type f -> B<bool>::type <14:10 14:13>"s));
 }
 
 TEST_CASE(

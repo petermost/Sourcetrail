@@ -22,7 +22,7 @@ public:
 private:
 	bool TraverseDecl(clang::Decl* d) override;
 	bool TraverseStmt(clang::Stmt* stmt) override;
-	bool TraverseTypeLoc(clang::TypeLoc tl) override;
+	bool TraverseTypeLoc(clang::TypeLoc tl, bool traverseQualifier = true) override;
 
 	std::string getIndentString() const;
 	static std::string obfuscateName(const std::string& name);

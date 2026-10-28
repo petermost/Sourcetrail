@@ -2,6 +2,7 @@
 
 #include <clang/AST/DeclCXX.h>
 #include <clang/AST/DeclTemplate.h>
+#include <clang/AST/TypeLoc.h>
 #include <clang/Basic/FileManager.h>
 #include <clang/Lex/Preprocessor.h>
 
@@ -152,6 +153,44 @@ string utility::getSourceText(const clang::ASTContext *astContext, const clang::
 	const StringRef sourceText = Lexer::getSourceText(charSourceRange, sourceManager, langOptions);
 
 	return sourceText.str();
+}
+
+clang::SourceLocation utility::getTypeNameLoc(clang::TypeLoc typeLoc)
+{
+	if (!typeLoc)
+	{
+		return {};
+	}
+
+	if (const clang::TagTypeLoc tagTypeLoc = typeLoc.getAs<clang::TagTypeLoc>())
+	{
+		return tagTypeLoc.getNameLoc();
+	}
+	if (const clang::TypedefTypeLoc typedefTypeLoc = typeLoc.getAs<clang::TypedefTypeLoc>())
+	{
+		return typedefTypeLoc.getNameLoc();
+	}
+	if (const clang::UsingTypeLoc usingTypeLoc = typeLoc.getAs<clang::UsingTypeLoc>())
+	{
+		return usingTypeLoc.getNameLoc();
+	}
+	if (const clang::UnresolvedUsingTypeLoc unresolvedUsingTypeLoc = typeLoc.getAs<clang::UnresolvedUsingTypeLoc>())
+	{
+		return unresolvedUsingTypeLoc.getNameLoc();
+	}
+	if (const clang::InjectedClassNameTypeLoc injectedClassNameTypeLoc = typeLoc.getAs<clang::InjectedClassNameTypeLoc>())
+	{
+		return injectedClassNameTypeLoc.getNameLoc();
+	}
+	if (const clang::DependentNameTypeLoc dependentNameTypeLoc = typeLoc.getAs<clang::DependentNameTypeLoc>())
+	{
+		return dependentNameTypeLoc.getNameLoc();
+	}
+	if (const clang::TemplateSpecializationTypeLoc templateSpecializationTypeLoc = typeLoc.getAs<clang::TemplateSpecializationTypeLoc>())
+	{
+		return templateSpecializationTypeLoc.getTemplateNameLoc();
+	}
+	return typeLoc.getBeginLoc();
 }
 
 ParseLocation utility::getParseLocation(

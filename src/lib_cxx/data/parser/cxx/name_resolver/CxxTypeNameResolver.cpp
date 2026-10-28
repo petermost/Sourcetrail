@@ -52,11 +52,6 @@ std::unique_ptr<CxxTypeName> CxxTypeNameResolver::getName(const clang::Type* typ
 		{
 			return getName(type->getAs<clang::AttributedType>()->getModifiedType());
 		}
-		case clang::Type::InjectedClassName:
-		{
-			return getName(
-				type->getAs<clang::InjectedClassNameType>()->getInjectedSpecializationType());
-		}
 		case clang::Type::Typedef:
 		{
 			std::unique_ptr<CxxDeclName> declName = CxxDeclNameResolver(this).getName(
@@ -109,10 +104,7 @@ std::unique_ptr<CxxTypeName> CxxTypeNameResolver::getName(const clang::Type* typ
 			}
 			return typeName;
 		}
-		case clang::Type::Elaborated:
-		{
-			return getName(clang::dyn_cast<clang::ElaboratedType>(type)->getNamedType());
-		}
+		case clang::Type::InjectedClassName:
 		case clang::Type::Enum:
 		case clang::Type::Record:
 		{
@@ -215,27 +207,6 @@ std::unique_ptr<CxxTypeName> CxxTypeNameResolver::getName(const clang::Type* typ
 			return std::make_unique<CxxTypeName>(
 				dependentType->getIdentifier()->getName().str(),
 				std::vector<std::string>(),
-				std::move(specifierName));
-		}
-		case clang::Type::DependentTemplateSpecialization:
-		{
-			const clang::DependentTemplateSpecializationType* dependentType =
-				clang::dyn_cast<clang::DependentTemplateSpecializationType>(type);
-			const clang::DependentTemplateStorage &dependentTemplateName = dependentType->getDependentTemplateName();
-			std::unique_ptr<CxxName> specifierName = CxxSpecifierNameResolver(this).getName(
-				dependentTemplateName.getQualifier());
-
-			std::vector<std::string> templateArguments;
-			CxxTemplateArgumentNameResolver resolver(this);
-			for (const clang::TemplateArgument &templateArgument : dependentType->template_arguments())
-			{
-				templateArguments.push_back(
-					resolver.getTemplateArgumentName(templateArgument));
-			}
-
-			return std::make_unique<CxxTypeName>(
-				dependentTemplateName.getName().getIdentifier()->getName().str(),
-				std::move(templateArguments),
 				std::move(specifierName));
 		}
 		case clang::Type::PackExpansion:

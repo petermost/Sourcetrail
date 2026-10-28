@@ -40,33 +40,31 @@ void CxxAstVisitorComponentIndexer::beginTraverseNestedNameSpecifierLoc(
 		return;
 	}
 
-	switch (loc.getNestedNameSpecifier()->getKind())
+	switch (loc.getNestedNameSpecifier().getKind())
 	{
-	case clang::NestedNameSpecifier::Identifier:
-		break;
-	case clang::NestedNameSpecifier::Namespace:
+	case clang::NestedNameSpecifier::Kind::Namespace:
 	{
-		Id symbolId = getOrCreateSymbolId(loc.getNestedNameSpecifier()->getAsNamespace());
-		m_client->recordSymbolKind(symbolId, SymbolKind::NAMESPACE);
-		m_client->recordLocation(
-			symbolId, getParseLocation(loc.getLocalBeginLoc()), ParseLocationType::QUALIFIER);
-	}
-	break;
-	case clang::NestedNameSpecifier::NamespaceAlias:
-	{
-		Id symbolId = getOrCreateSymbolId(loc.getNestedNameSpecifier()->getAsNamespaceAlias());
+		const clang::NamespaceBaseDecl *nameSpaceDecl = loc.getNestedNameSpecifier().getAsNamespaceAndPrefix().Namespace;
+		Id symbolId = getOrCreateSymbolId(nameSpaceDecl);
 		m_client->recordSymbolKind(symbolId, SymbolKind::NAMESPACE);
 
-		symbolId = getOrCreateSymbolId(
-			loc.getNestedNameSpecifier()->getAsNamespaceAlias()->getAliasedNamespace());
-		m_client->recordSymbolKind(symbolId, SymbolKind::NAMESPACE);
+		if (const clang::NamespaceAliasDecl *nameSpaceAliasDecl = clang::dyn_cast<clang::NamespaceAliasDecl>(nameSpaceDecl))
+		{
+			symbolId = getOrCreateSymbolId(nameSpaceAliasDecl->getAliasedNamespace());
+			m_client->recordSymbolKind(symbolId, SymbolKind::NAMESPACE);
+		}
+		else
+		{
+			m_client->recordLocation(symbolId, getParseLocation(loc.getLocalBeginLoc()), ParseLocationType::QUALIFIER);
+		}
 	}
 	break;
-	case clang::NestedNameSpecifier::Global:
-	case clang::NestedNameSpecifier::Super:
+	case clang::NestedNameSpecifier::Kind::Null:
+	case clang::NestedNameSpecifier::Kind::Global:
+	case clang::NestedNameSpecifier::Kind::MicrosoftSuper:
 		break;
-	case clang::NestedNameSpecifier::TypeSpec:
-		if (const clang::CXXRecordDecl* recordDecl = loc.getNestedNameSpecifier()->getAsRecordDecl())
+	case clang::NestedNameSpecifier::Kind::Type:
+		if (const clang::CXXRecordDecl* recordDecl = loc.getNestedNameSpecifier().getAsRecordDecl())
 		{
 			SymbolKind symbolKind = SymbolKind::UNDEFINED;
 			if (recordDecl->isClass())
@@ -86,13 +84,12 @@ void CxxAstVisitorComponentIndexer::beginTraverseNestedNameSpecifierLoc(
 			{
 				const Id symbolId = getOrCreateSymbolId(recordDecl);
 				m_client->recordSymbolKind(symbolId, symbolKind);
-				m_client->recordLocation(
-					symbolId, getParseLocation(loc.getLocalBeginLoc()), ParseLocationType::QUALIFIER);
+				m_client->recordLocation(symbolId, getParseLocation(utility::getTypeNameLoc(loc.castAsTypeLoc())), ParseLocationType::QUALIFIER);
 			}
 		}
-		else if (const clang::Type* type = loc.getNestedNameSpecifier()->getAsType())
+		else if (const clang::Type* type = loc.getNestedNameSpecifier().getAsType())
 		{
-			const ParseLocation parseLocation = getParseLocation(loc.getLocalBeginLoc());
+			const ParseLocation parseLocation = getParseLocation(utility::getTypeNameLoc(loc.castAsTypeLoc()));
 
 			if (const clang::TemplateTypeParmType* tpt =
 					clang::dyn_cast_or_null<clang::TemplateTypeParmType>(type))
@@ -391,11 +388,11 @@ void CxxAstVisitorComponentIndexer::visitVarDecl(clang::VarDecl* d)
 				{
 					if (const AutoType *autoVariableType = dyn_cast<AutoType>(autoTypeLoc.getTypePtr()))
 					{
-						if (const ConceptDecl *conceptDecl = autoVariableType->getTypeConstraintConcept())
+						if (const TemplateDecl *templateDecl = autoVariableType->getTypeConstraintConcept())
 						{
 							// Record concept name location:
 							const ParseLocation conceptNameLocation = getParseLocation(autoTypeLoc.getConceptNameLoc());
-							m_client->recordReference(ReferenceKind::USAGE, getOrCreateSymbolId(conceptDecl), getOrCreateSymbolId(d), conceptNameLocation);
+							m_client->recordReference(ReferenceKind::USAGE, getOrCreateSymbolId(templateDecl), getOrCreateSymbolId(d), conceptNameLocation);
 
 							// Record 'auto' location:
 							const ParseLocation autoKeywordLocation = getParseLocation(autoTypeLoc.getNameLoc());
@@ -592,11 +589,11 @@ void CxxAstVisitorComponentIndexer::visitFunctionDecl(clang::FunctionDecl* d)
 			{
 				const Id contextSymbolId = getOrCreateSymbolId(d);
 
-				if (const ConceptDecl *conceptDecl = autoReturnType->getTypeConstraintConcept())
+				if (const TemplateDecl *templateDecl = autoReturnType->getTypeConstraintConcept())
 				{
 					// Record the concept reference:
 					const ParseLocation conceptNameLocation = getParseLocation(returnTypeSourceRange.getBegin());
-					m_client->recordReference(ReferenceKind::USAGE, getOrCreateSymbolId(conceptDecl), getOrCreateSymbolId(d), conceptNameLocation);
+					m_client->recordReference(ReferenceKind::USAGE, getOrCreateSymbolId(templateDecl), getOrCreateSymbolId(d), conceptNameLocation);
 
 					// Record the auto type:
 					const ParseLocation autoKeywordLocation = getParseLocation(returnTypeSourceRange.getEnd());
@@ -883,17 +880,7 @@ void CxxAstVisitorComponentIndexer::visitTypeLoc(clang::TypeLoc tl)
 				m_client->recordDefinitionKind(symbolId, DefinitionKind::EXPLICIT);
 			}
 
-			clang::SourceLocation loc;
-			if (const clang::DependentNameTypeLoc &dntl = tl.getAs<clang::DependentNameTypeLoc>())
-			{
-				loc = dntl.getNameLoc();
-			}
-			else
-			{
-				loc = tl.getBeginLoc();
-			}
-
-			const ParseLocation parseLocation = getParseLocation(loc);
+			const ParseLocation parseLocation = getParseLocation(utility::getTypeNameLoc(tl));
 
 			m_client->recordReference(getAstVisitor()->getTypeRefKindComponent()->isTraversingInheritance() ? ReferenceKind::INHERITANCE : ReferenceKind::TYPE_USAGE,
 				symbolId, getOrCreateSymbolId(getAstVisitor()->getContextComponent()->getContext(1)),	// we skip the last element because it refers to this typeloc.
@@ -1219,9 +1206,9 @@ void CxxAstVisitorComponentIndexer::recordConceptReference(const T *d)
 
 void CxxAstVisitorComponentIndexer::recordNamedConceptReference(const ConceptReference *conceptReference)
 {
-	if (const ConceptDecl *conceptDecl = conceptReference->getNamedConcept())
+	if (const TemplateDecl *templateDecl = conceptReference->getNamedConcept())
 	{
-		const Id conceptDeclId = getOrCreateSymbolId(conceptDecl);
+		const Id conceptDeclId = getOrCreateSymbolId(templateDecl);
 		const Id contextSymbolId = getOrCreateSymbolId(getAstVisitor()->getContextComponent()->getContext());
 		const ParseLocation conceptNameLocation = getParseLocation(conceptReference->getLocation());
 

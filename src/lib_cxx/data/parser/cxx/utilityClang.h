@@ -36,6 +36,7 @@ bool isParameter(const clang::ValueDecl* d);
 SymbolKind getSymbolKind(const clang::VarDecl* d);
 std::string getFileNameOfFileEntry(const clang::FileEntryRef &entry);
 std::string getSourceText(const clang::ASTContext *context, const clang::SourceRange &sourceRange);
+clang::SourceLocation getTypeNameLoc(clang::TypeLoc typeLoc);
 
 ParseLocation getParseLocation(
 	const clang::SourceLocation& sourceLocation,

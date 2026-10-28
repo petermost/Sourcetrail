@@ -76,7 +76,7 @@ bool CxxVerboseAstVisitor::TraverseStmt(clang::Stmt* stmt)
 	return true;
 }
 
-bool CxxVerboseAstVisitor::TraverseTypeLoc(clang::TypeLoc tl)
+bool CxxVerboseAstVisitor::TraverseTypeLoc(clang::TypeLoc tl, bool traverseQualifier)
 {
 	if (!tl.isNull())
 	{
@@ -89,7 +89,7 @@ bool CxxVerboseAstVisitor::TraverseTypeLoc(clang::TypeLoc tl)
 			[[maybe_unused]]
 			ScopedSwitcher<unsigned int> switcher(m_indentation, m_indentation + 1);
 			
-			return CxxAstVisitor::TraverseTypeLoc(tl);
+			return CxxAstVisitor::TraverseTypeLoc(tl, traverseQualifier);
 		}
 	}
 	return true;

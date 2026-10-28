@@ -13,7 +13,7 @@ public:
 	CxxSpecifierNameResolver(CanonicalFilePathCache* canonicalFilePathCache);
 	CxxSpecifierNameResolver(const CxxNameResolver* other);
 
-	std::unique_ptr<CxxName> getName(const clang::NestedNameSpecifier* nestedNameSpecifier);
+	std::unique_ptr<CxxName> getName(const clang::NestedNameSpecifier &nestedNameSpecifier);
 };
 
 #endif	  // CXX_SPECIFIER_NAME_RESOLVER_H
