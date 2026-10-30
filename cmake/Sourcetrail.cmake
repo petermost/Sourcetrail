@@ -237,6 +237,7 @@ function(setClangTargetOptions targetName)
 			# Disabled warnings:
 			#
 			-Wno-unused-lambda-capture
+			-Wno-c2y-extensions
 	)
 endfunction()
 

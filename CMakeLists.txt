@@ -103,27 +103,24 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Find includes in corresponding build directories:
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+# Let cmake handle the interprocedural optimization/LTO:
+# Note: With Clang-22 on (K)Ubuntu 26.04 this will lead to
+# "undefined reference to `clang::NestedNameSpecifier::getAsRecordDecl() const"
+# but hopefully this will work for Clang based distributions out of the box.
+
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
+
 # Use recommended optimization switches:
 
 if (isGccCompiler OR isClangCompiler)
 	# https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 	# CMakeCache.txt entry: "-O3 -DNDEBUG"
-	add_compile_options("$<$<CONFIG:Release>:-O3;-fno-fast-math;-flto=auto>")
-	add_link_options("$<$<CONFIG:Release>:-flto=auto>")
-	
-	# Release-Build with Clang v21 on (K)Ubuntu v25.10 fails:
-	# 1) `-flto=auto` fails with: "error loading plugin: /usr/lib/llvm-21/bin/../lib/LLVMgold.so: cannot open shared object file"
-	# 2) `-fuse-ld=lld` fails with: "ld.lld: error: relocation refers to a discarded section: .text._ZN7testing4Test5SetupEv"
-	#
-	# Try to prevent build problems on Clang based distributions:
-	if (isClangCompiler)
-		add_link_options("$<$<CONFIG:Release>:-fuse-ld=lld>")
-	endif()
+	add_compile_options("$<$<CONFIG:Release>:-O3;-fno-fast-math>")
 elseif (isMsvcCompiler)
 	# https://learn.microsoft.com/en-us/cpp/build/optimization-best-practices
 	# CMakeCache.txt entry: "/O2 /Ob2 /DNDEBUG"
 	add_compile_options("$<$<CONFIG:Release>:/O2;/Gy;/GL;/fp:precise;/GS->")
-	add_link_options("$<$<CONFIG:Release>:/LTCG;/OPT:REF,ICF>")
+	add_link_options("$<$<CONFIG:Release>:/OPT:REF,ICF>")
 
 	# For profiling:
 	#add_compile_options("$<$<CONFIG:Release>:/Zi>")
