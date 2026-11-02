@@ -67,7 +67,8 @@
 			"name": "vcpkg-presets",
 			"cacheVariables": {
 				"CMAKE_TOOLCHAIN_FILE": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
-				"VCPKG_TARGET_TRIPLET": "x64-arm64-linux-windows-osx-static-md"
+				"VCPKG_TARGET_TRIPLET": "x64-arm64-linux-windows-osx-static-md",
+				"VCPKG_INSTALL_OPTIONS": "--x-abi-tools-use-exact-versions;--no-print-usage"
 			}
 		},
 		{

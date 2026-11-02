@@ -14,20 +14,6 @@ else()
 	set(isVcpkgBuild FALSE)
 endif()
 
-if (isVcpkgBuild)
-	set(VCPKG_INSTALL_OPTIONS
-		# Don't print package usages:
-		--no-print-usage
-
-		# Prevent rebuilding after a compiler update:
-		--x-abi-tools-use-exact-versions
-		
-		# Clean everything except sources:
-		#--clean-downloads-after-build
-		#--clean-packages-after-build
-	)
-endif()
-
 # Prevent Qt Creator from disrupting system builds:
 # See: https://www.qt.io/blog/qt-creator-cmake-package-manager-auto-setup
 # Note: Can also be disabled via:
@@ -40,7 +26,7 @@ set(QT_CREATOR_SKIP_PACKAGE_MANAGER_SETUP ON)
 # Project
 ###############################################################################
 
-project(Sourcetrail VERSION 2026.10.28 HOMEPAGE_URL "http://sourcetrail.de")
+project(Sourcetrail VERSION 2026.11.2 HOMEPAGE_URL "http://sourcetrail.de")
 
 # Prohibit in-source-builds:
 
@@ -262,7 +248,7 @@ if (isVcpkgBuild)
 endif()
 
 set(BOOST_MIN_VERSION 1.83)
-set(BOOST_MAX_VERSION 1.92)
+set(BOOST_MAX_VERSION 1.93)
 
 find_package(Boost CONFIG REQUIRED 
 	COMPONENTS
@@ -571,7 +557,7 @@ add_subdirectory(src/app)
 
 if (BUILD_UNIT_TESTS_PACKAGE)
 	set(CATCH2_MIN_VERSION 3.7)
-	set(CATCH2_MAX_VERSION 3.16)
+	set(CATCH2_MAX_VERSION 3.17)
 
 	find_package(Catch2 CONFIG REQUIRED)
 	message(STATUS "Found Catch2 ${Catch2_VERSION}")
