@@ -54,16 +54,16 @@ By sponsoring me with **$10 per month**, you will gain access to the following *
 
 |Name   |System|Vcpkg |
 |-------|------|------|
-|Qt6    |6.10.2 |6.11.1|
-|Boost  |1.90.0|1.91.0|
-|SQLite3|3.46.1|3.53.4|
+|Qt6    |6.10.2|6.11.3|
+|Boost  |1.90.0|1.92.0|
+|SQLite3|3.46.1|3.54.1|
 |TinyXML|2.6.2 |2.6.2 |
 
 **C++**
 
 |Name      |System/Vcpkg|
 |----------|------------|
-|Clang/LLVM|21.1.2      |
+|Clang/LLVM|22.1.2      |
 
 **Java**
 
@@ -77,7 +77,7 @@ By sponsoring me with **$10 per month**, you will gain access to the following *
 **Tests**
 |Name  |System|Vcpkg |
 |------|------|------|
-|Catch2|3.7.1 |3.15.3|
+|Catch2|3.7.1 |3.16.1|
 |GTest |1.17.0|1.18.0|
 
 ### Changes

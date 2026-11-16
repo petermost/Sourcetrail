@@ -26,7 +26,7 @@ set(QT_CREATOR_SKIP_PACKAGE_MANAGER_SETUP ON)
 # Project
 ###############################################################################
 
-project(Sourcetrail VERSION 2026.11.2 HOMEPAGE_URL "http://sourcetrail.de")
+project(Sourcetrail VERSION 2026.11.16 HOMEPAGE_URL "http://sourcetrail.de")
 
 # Prohibit in-source-builds:
 
@@ -339,18 +339,9 @@ target_link_libraries(External_lib_qt
 # SQLite / External_lib_sqlite3 / External_lib_cppsqlite3
 ###############################################################################
 
-if (isVcpkgBuild)
-	find_package(unofficial-sqlite3 CONFIG REQUIRED)
-	if (NOT DEFINED SQLite3_VERSION)
-		# Use quotes to indicate a version literal:
-		set(SQLite3_VERSION "\"3.53.1\"")
-	endif()
-	add_library(External_lib_sqlite3 ALIAS unofficial::sqlite3::sqlite3)
-else()
-	find_package(SQLite3 REQUIRED)
-	add_library(External_lib_sqlite3 ALIAS SQLite::SQLite3)
-endif()
-message(STATUS "Found SQLite3 ${SQLite3_VERSION}")
+find_package(SQLite3 REQUIRED)
+add_library(External_lib_sqlite3 ALIAS SQLite::SQLite3)
+message(STATUS "Found SQLite3 ${SQLite3_VERSION}: ${SQLite3_INCLUDE_DIR}")
 
 add_subdirectory(src/external)
 # message(STATUS "Using CppSQLite3 ${CppSQLite3_VERSION}")
